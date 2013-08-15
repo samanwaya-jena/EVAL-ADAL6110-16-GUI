@@ -1,0 +1,1125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BB7E9839-2DAC-47FC-910F-C8FC5AC693D4}</ProjectGuid>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseIntelIPP>false</UseIntelIPP>
+    <UseIntelTBB>false</UseIntelTBB>
+    <InstrumentIntelTBB>false</InstrumentIntelTBB>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;C:\Program Files (x86)\PCL 1.6.0/include/pcl-1.6;C:\Program Files (x86)\PCL 1.6.0/3rdParty/Eigen/include;C:\Program Files (x86)\PCL 1.6.0/3rdParty/Boost/include;C:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include;C:\Program Files (x86)\PCL 1.6.0/3rdParty/Qhull/include;C:\Program Files (x86)\PCL 1.6.0/3rdParty/VTK/include/VTK-5.8;C:/OpenCV2.4.4/opencv/modules/videostab/include;C:/OpenCV2.4.4/opencv/modules/stitching/include;C:/OpenCV2.4.4/opencv/modules/contrib/include;C:/OpenCV2.4.4/opencv/modules/legacy/include;C:/OpenCV2.4.4/opencv/modules/calib3d/include;C:/OpenCV2.4.4/opencv/modules/features2d/include;C:/OpenCV2.4.4/opencv/modules/nonfree/include;C:/OpenCV2.4.4/opencv/modules/photo/include;C:/OpenCV2.4.4/opencv/modules/objdetect/include;C:/OpenCV2.4.4/opencv/modules/video/include;C:/OpenCV2.4.4/opencv/modules/ml/include;C:/OpenCV2.4.4/opencv/modules/highgui/include;C:/OpenCV2.4.4/opencv/modules/imgproc/include;C:/OpenCV2.4.4/opencv/modules/flann/include;C:/OpenCV2.4.4/opencv/modules/core/include;C:/OpenCV2.4.4/opencv/include;C:/OpenCV2.4.4/opencv;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;c:/opencv2.4.4/opencv/lib/debug;c:/opencv2.4.4/3rdParty/lib/debug;%PCL_ROOT%/lib;%PCL_ROOT%/3rdParty/Boost/lib;%PCL_ROOT%/3rdParty/Eigen/lib;%PCL_ROOT%/3rdParty/Flann/lib;%PCL_ROOT%/3rdParty/QHull/lib;%PCL_ROOT%/3rdParty/VTK/lib/VTK-5.8;%OPEN_NI_LIB%;c:/EasySync;C:/Program Files (x86)/Intel/Composer XE/ipp/lib/ia32;C:/Program Files (x86)/Intel/Composer XE/ipp/lib/ia32/$(Configuration);$(QWTDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Concurrentd.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;ippvm_l.lib;ippcc_l.lib;ippcv_l.lib;ippi_l.lib;ipps_l.lib;ippcore_l.lib;opencv_core244d.lib;opencv_flann244d.lib;opencv_imgproc244d.lib;opencv_highgui244d.lib;opencv_ml244d.lib;opencv_video244d.lib;opencv_objdetect244d.lib;opencv_photo244d.lib;opencv_nonfree244d.lib;opencv_features2d244d.lib;opencv_calib3d244d.lib;opencv_legacy244d.lib;opencv_contrib244d.lib;opencv_stitching244d.lib;opencv_videostab244d.lib;pcl_common_debug.lib;pcl_apps_debug.lib;pcl_features_debug.lib;pcl_filters_debug.lib;pcl_io_debug.lib;pcl_io_ply_release.lib;pcl_kdtree_release.lib;pcl_keypoints_debug.lib;pcl_octree_debug.lib;pcl_registration_debug.lib;pcl_sample_consensus_debug.lib;pcl_tracking_debug.lib;pcl_visualization_debug.lib;pcl_search_release.lib;pcl_segmentation_debug.lib;pcl_surface_debug.lib;MapReduceMPI-gd.lib;mpistubs-gd.lib;QVTK-gd.lib;vtkalglib-gd.lib;vtkCharts-gd.lib;vtkCommon-gd.lib;vtkDICOMParser-gd.lib;vtkexoIIc-gd.lib;vtkexpat-gd.lib;vtkFiltering-gd.lib;vtkfreetype-gd.lib;vtkftgl-gd.lib;vtkGenericFiltering-gd.lib;vtkGeovis-gd.lib;vtkGraphics-gd.lib;vtkhdf5-gd.lib;vtkHybrid-gd.lib;vtkImaging-gd.lib;vtkInfovis-gd.lib;vtkIO-gd.lib;vtkjpeg-gd.lib;vtklibxml2-gd.lib;vtkmetaio-gd.lib;vtkNetCDF-gd.lib;vtkNetCDF_cxx-gd.lib;vtkpng-gd.lib;vtkproj4-gd.lib;vtkRendering-gd.lib;vtksqlite-gd.lib;vtksys-gd.lib;vtktiff-gd.lib;vtkverdict-gd.lib;vtkViews-gd.lib;vtkVolumeRendering-gd.lib;vtkWidgets-gd.lib;vtkzlib-gd.lib;USBCanPlusDllF.LIB;qwtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;C:\Program Files (x86)\PCL 1.6.0/include/pcl-1.6;C:\Program Files (x86)\PCL 1.6.0/3rdParty/Eigen/include;C:\Program Files (x86)\PCL 1.6.0/3rdParty/Boost/include;C:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include;C:\Program Files (x86)\PCL 1.6.0/3rdParty/Qhull/include;C:\Program Files (x86)\PCL 1.6.0/3rdParty/VTK/include/VTK-5.8;C:/OpenCV2.4.4/opencv/modules/videostab/include;C:/OpenCV2.4.4/opencv/modules/stitching/include;C:/OpenCV2.4.4/opencv/modules/contrib/include;C:/OpenCV2.4.4/opencv/modules/legacy/include;C:/OpenCV2.4.4/opencv/modules/calib3d/include;C:/OpenCV2.4.4/opencv/modules/features2d/include;C:/OpenCV2.4.4/opencv/modules/nonfree/include;C:/OpenCV2.4.4/opencv/modules/photo/include;C:/OpenCV2.4.4/opencv/modules/objdetect/include;C:/OpenCV2.4.4/opencv/modules/video/include;C:/OpenCV2.4.4/opencv/modules/ml/include;C:/OpenCV2.4.4/opencv/modules/highgui/include;C:/OpenCV2.4.4/opencv/modules/imgproc/include;C:/OpenCV2.4.4/opencv/modules/flann/include;C:/OpenCV2.4.4/opencv/modules/core/include;C:/OpenCV2.4.4/opencv/include;C:/OpenCV2.4.4/opencv;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;c:/opencv2.4.4/opencv/lib/release;c:/opencv2.4.4/3rdParty/lib/release;%PCL_ROOT%/lib;%PCL_ROOT%/3rdParty/Boost/lib;%PCL_ROOT%/3rdParty/Eigen/lib;%PCL_ROOT%/3rdParty/Flann/lib;%PCL_ROOT%/3rdParty/QHull/lib;%PCL_ROOT%/3rdParty/VTK/lib/VTK-5.8;%OPEN_NI_LIB%;c:/EasySync;C:/Program Files (x86)/Intel/Composer XE/ipp/lib/ia32;C:/Program Files (x86)/Intel/Composer XE/ipp/lib/ia32/$(Configuration);$(QWTDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Concurrent.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;ippvm_l.lib;ippcc_l.lib;ippcv_l.lib;ippi_l.lib;ipps_l.lib;ippcore_l.lib;opencv_core244.lib;opencv_flann244.lib;opencv_imgproc244.lib;opencv_highgui244.lib;opencv_ml244.lib;opencv_video244.lib;opencv_objdetect244.lib;opencv_photo244.lib;opencv_nonfree244.lib;opencv_features2d244.lib;opencv_calib3d244.lib;opencv_legacy244.lib;opencv_contrib244.lib;opencv_stitching244.lib;opencv_videostab244.lib;pcl_common_release.lib;pcl_apps_release.lib;pcl_features_release.lib;pcl_filters_release.lib;pcl_io_release.lib;pcl_io_ply_release.lib;pcl_kdtree_release.lib;pcl_keypoints_release.lib;pcl_octree_release.lib;pcl_registration_release.lib;pcl_sample_consensus_release.lib;pcl_tracking_release.lib;pcl_visualization_release.lib;pcl_search_release.lib;pcl_segmentation_release.lib;pcl_surface_release.lib;MapReduceMPI.lib;mpistubs.lib;QVTK.lib;vtkalglib.lib;vtkCharts.lib;vtkCommon.lib;vtkDICOMParser.lib;vtkexoIIc.lib;vtkexpat.lib;vtkFiltering.lib;vtkfreetype.lib;vtkftgl.lib;vtkGenericFiltering.lib;vtkGeovis.lib;vtkGraphics.lib;vtkhdf5.lib;vtkHybrid.lib;vtkImaging.lib;vtkInfovis.lib;vtkIO.lib;vtkjpeg.lib;vtklibxml2.lib;vtkmetaio.lib;vtkNetCDF.lib;vtkNetCDF_cxx.lib;vtkpng.lib;vtkproj4.lib;vtkRendering.lib;vtksqlite.lib;vtksys.lib;vtktiff.lib;vtkverdict.lib;vtkViews.lib;vtkVolumeRendering.lib;vtkWidgets.lib;vtkzlib.lib;USBCanPlusDllF.LIB;qwt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AWLQtScope\awlqtscope.cpp" />
+    <ClCompile Include="..\AWLQtScope\awlscopeplot.cpp" />
+    <ClCompile Include="..\AWLQtScope\curvedata.cpp" />
+    <ClCompile Include="..\AWLQtScope\knob.cpp" />
+    <ClCompile Include="..\AWLQtScope\signaldata.cpp" />
+    <ClCompile Include="..\AWLQtScope\wheelbox.cpp" />
+    <ClCompile Include="awlqtdemo.cpp" />
+    <ClCompile Include="AWLSettings.cpp" />
+    <ClCompile Include="DebugPrintf.cpp" />
+    <ClCompile Include="fov_2dscan.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_awlqtscope.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_awlscopeplot.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_fov_2dscan.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_knob.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_awlqtscope.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_fov_2dscan.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="range_image.cpp" />
+    <ClCompile Include="ReceiverCANCapture.cpp" />
+    <ClCompile Include="ReceiverCapture.cpp" />
+    <ClCompile Include="ReceiverFileCapture.cpp" />
+    <ClCompile Include="ReceiverUDPCapture.cpp" />
+    <ClCompile Include="Sensor.cpp" />
+    <ClCompile Include="Subscription.cpp" />
+    <ClCompile Include="Tracker.cpp" />
+    <ClCompile Include="VideoCapture.cpp" />
+    <ClCompile Include="VideoViewer.cpp" />
+    <ClCompile Include="FusedCloudViewer.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_awlqtdemo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_awlqtdemo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_awlqtdemo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="awlqtdemo.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing awlqtdemo.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="awlqtdemo.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <SubType>Designer</SubType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\AWLQtScope\wheelbox.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\AWLQtScope\knob.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\AWLQtScope\awlscopeplot.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\AWLQtScope\awlqtscope.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <ClInclude Include="..\AWLQtScope\curvedata.h" />
+    <ClInclude Include="..\AWLQtScope\signaldata.h" />
+    <ClInclude Include="AWLSettings.h" />
+    <ClInclude Include="BlockingReader.h" />
+    <ClInclude Include="DebugPrintf.h" />
+    <ClInclude Include="DetectionStruct.h" />
+    <CustomBuild Include="fov_2dscan.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing fov_2dscan.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing fov_2dscan.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+    </CustomBuild>
+    <ClInclude Include="FusedCloudViewer.h" />
+    <ClInclude Include="GeneratedFiles\ui_awlqtdemo.h" />
+    <ClInclude Include="GeneratedFiles\ui_awlqtscope.h" />
+    <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h" />
+    <ClInclude Include="ReceiverCANCapture.h" />
+    <ClInclude Include="ReceiverCapture.h" />
+    <ClInclude Include="ReceiverFileCapture.h" />
+    <ClInclude Include="Sensor.h" />
+    <ClInclude Include="Subscription.h" />
+    <ClInclude Include="Tracker.h" />
+    <ClInclude Include="VideoCapture.h" />
+    <ClInclude Include="VideoViewer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="awlqtdemo.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Rcc%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Rcc%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AWLQtDemo.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\AWLQtScope\awlqtscope.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="FOV_2DScan.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\FTCJTAG.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\icudt49.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\icudt49d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\icuin49.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\icuin49d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\icuuc49.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\icuuc49d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\libEGL.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\libEGLd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\libGLESv2.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\libGLESv2d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\libMPSSE.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\nimCodecs.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\nimMockNodes.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\nimRecorder.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_calib3d244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_calib3d244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_contrib244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_contrib244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_core244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_core244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_features2d244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_features2d244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_ffmpeg244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_flann244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_flann244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_gpu244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_highgui244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_highgui244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_imgproc244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_imgproc244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_legacy244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_legacy244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_ml244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_ml244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_nonfree244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_nonfree244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_objdetect244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_objdetect244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_photo244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_photo244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_stitching244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_stitching244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_ts244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_ts244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_video244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_video244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_videostab244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_videostab244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_world244.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_world244d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\OpenNI.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\OpenNI.jni.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\OpenNI.Net.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\OpenNIFilter.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_apps_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_apps_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_common_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_common_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_features_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_features_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_filters_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_filters_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_geometry_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_geometry_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_io_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_io_ply_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_io_ply_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_io_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_kdtree_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_kdtree_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_keypoints_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_keypoints_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_octree_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_octree_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_registration_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_registration_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_sample_consensus_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_sample_consensus_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_search_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_search_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_segmentation_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_segmentation_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_surface_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_surface_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_tracking_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_tracking_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_visualization_debug.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\pcl_visualization_release.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Policy.1.1.OpenNI.Net.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Policy.1.2.OpenNI.Net.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Policy.1.3.OpenNI.Net.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\PublisherPolicy.config">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\PublisherPolicy1.1.config">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\PublisherPolicy1.2.config">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\PublisherPolicy1.3.config">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5CLucene.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5CLucened.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Concurrent.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Concurrentd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Core.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Cored.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Declarative.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Declaratived.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Designer.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5DesignerComponents.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5DesignerComponentsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Designerd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Gui.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Guid.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Help.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Helpd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Multimedia.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Multimediad.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5MultimediaQuick_p.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5MultimediaQuick_pd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5MultimediaWidgets.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5MultimediaWidgetsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Network.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Networkd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5OpenGL.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5OpenGLd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5PrintSupport.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5PrintSupportd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Qml.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Qmld.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Quick.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Quickd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickParticles.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickParticlesd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickTest.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickTestd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Script.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Scriptd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5ScriptTools.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5ScriptToolsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Sql.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Sqld.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Svg.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Svgd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Test.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Testd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5V8.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5V8d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebKit.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebKitd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebKitWidgets.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebKitWidgetsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Widgets.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Widgetsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Xml.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Xmld.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5XmlPatterns.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5XmlPatternsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\qwt.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\qwtd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Aerostar-logoForIcon128.bmp" />
+    <None Include="awlqtdemo.ini">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame1.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame2.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame3.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame4.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame5.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame6.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelFrame7.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask1.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask2.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask3.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask4.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask5.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask6.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ChannelMask7.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="InstallableDLLs\D3DCompiler_43.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\FTCJTAG.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\icudt49.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\icudt49d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\icuin49.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\icuin49d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\icuuc49.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\icuuc49d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\libEGL.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\libEGLd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\libGLESv2.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\libGLESv2d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\libMPSSE.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_calib3d244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_calib3d244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_contrib244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_contrib244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_core244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_core244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_features2d244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_features2d244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_ffmpeg244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_flann244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_flann244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_gpu244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_highgui244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_highgui244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_imgproc244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_imgproc244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_legacy244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_legacy244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_ml244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_ml244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_nonfree244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_nonfree244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_objdetect244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_objdetect244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_photo244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_photo244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_stitching244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_stitching244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_ts244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_ts244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_video244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_video244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_videostab244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_videostab244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_world244.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\opencv_world244d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5CLucene.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5CLucened.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Concurrent.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Concurrentd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Core.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Cored.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Declarative.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Declaratived.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Designer.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5DesignerComponents.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5DesignerComponentsd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Designerd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Gui.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Guid.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Help.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Helpd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Multimedia.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Multimediad.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5MultimediaQuick_p.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5MultimediaQuick_pd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5MultimediaWidgets.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5MultimediaWidgetsd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Network.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Networkd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5OpenGL.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5OpenGLd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5PrintSupport.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5PrintSupportd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Qml.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Qmld.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Quick.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Quickd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5QuickParticles.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5QuickParticlesd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5QuickTest.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5QuickTestd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Script.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Scriptd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5ScriptTools.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5ScriptToolsd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Sql.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Sqld.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Svg.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Svgd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Test.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Testd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5V8.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5V8d.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5WebKit.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5WebKitd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5WebKitWidgets.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5WebKitWidgetsd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Widgets.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Widgetsd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Xml.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5Xmld.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5XmlPatterns.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\Qt5XmlPatternsd.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\qwt.dll">
+      <FileType>Document</FileType>
+    </Content>
+    <Content Include="InstallableDLLs\qwtd.dll">
+      <FileType>Document</FileType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="InstallableDLLs\CopyDLLDependencies.BAT" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" Qt5Version_x0020_Win32="5.0.1" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
