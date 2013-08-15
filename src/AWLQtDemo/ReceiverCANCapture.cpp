@@ -238,22 +238,36 @@ void ReceiverCANCapture::DoOneThreadIteration()
 		AWLCANMessage msg;
 		float distance;
 
-
+		// If the simulated data mode is enabled,
+		// inject distance information by simulating receiver data.
 		if (bSimulatedDataEnabled && ((GetElapsed() - lastElapsed) >= 10)) 
 		{
-			FakeChannelDistance(20);
-			FakeChannelDistance(21);
-			FakeChannelDistance(22);
-			FakeChannelDistance(23);
-			FakeChannelDistance(24);
-			FakeChannelDistance(36);
+			if (injectType == eInjectRamp)
+			{
+				FakeChannelDistanceRamp(20);
+				FakeChannelDistanceRamp(21);
+				FakeChannelDistanceRamp(22);
+				FakeChannelDistanceRamp(23);
+				FakeChannelDistanceRamp(24);
+				FakeChannelDistanceRamp(36);
+			}
+			else 
+			{
+				FakeChannelDistanceNoisy(20);
+				FakeChannelDistanceNoisy(21);
+				FakeChannelDistanceNoisy(22);
+				FakeChannelDistanceNoisy(23);
+				FakeChannelDistanceNoisy(24);
+				FakeChannelDistanceNoisy(36);
+			}
+
 			lastElapsed = GetElapsed();
 		}
 
 		if (port && reader && port->is_open()) 
 		{
 			char c;
-			// read from the serial port until we get a
+			// read from the serial port until we get a#
 			// \n or until a read times-out (500ms)
 			if (reader->read_char(c)) 
 			{
@@ -1310,16 +1324,18 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 	bool bMessageOk = WriteMessage(message);
 
 
-#if 1 // Simulate rsponse for tests
-	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
-	receiverStatus.fpgaRegisterAddressRead = registerAddress;
-	receiverStatus.fpgaRegisterValueRead = registerValue;
-	receiverStatus.bUpdated = true;
-	rawLock.unlock();
+   if (bEnableDemo)
+   {
+		// Simulate rsponse for tests
+		// Everything went well when we changed or queried the register. Note the new value.
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		receiverStatus.fpgaRegisterAddressRead = registerAddress;
+		receiverStatus.fpgaRegisterValueRead = registerValue;
+		receiverStatus.bUpdated = true;
+		rawLock.unlock();
+   }
 
-#endif
-	return(bMessageOk);
+   return(bMessageOk);
 }
 
 bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t registerValue)
@@ -1337,15 +1353,17 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 
 	bool bMessageOk = WriteMessage(message);
 
-#if 1 // Simulate rsponse for tests
-	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
-	receiverStatus.adcRegisterAddressRead = registerAddress;
-	receiverStatus.adcRegisterValueRead = registerValue;
-	receiverStatus.bUpdated = true;
-	rawLock.unlock();
+   if (bEnableDemo)
+   {
+		// Simulate rsponse for tests
+		// Everything went well when we changed or queried the register. Note the new value.
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		receiverStatus.adcRegisterAddressRead = registerAddress;
+		receiverStatus.adcRegisterValueRead = registerValue;
+		receiverStatus.bUpdated = true;
+		rawLock.unlock();
+   }
 
-#endif
 	return(bMessageOk);
 }
 
@@ -1383,9 +1401,9 @@ bool ReceiverCANCapture::QueryADCRegister(uint16_t registerAddress)
 	return(bMessageOk);
 }
 
-#if 0
+#if 1
 static double lastDistance = 0;
-void ReceiverCANCapture::FakeChannelDistance(int channel)
+void ReceiverCANCapture::FakeChannelDistanceRamp(int channel)
 
 {
 
@@ -1452,11 +1470,11 @@ void ReceiverCANCapture::FakeChannelDistance(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
+		DebugFilePrintf(outFile, "Fake");
 	}
 
 }
 
-#else
 const float simulatedDistance1 = 20.0;
 const float simulatedDistanced2 = 12.0;
 
@@ -1464,7 +1482,7 @@ const float maxSimulatedJitter = 0.9;
 const float simulatedPresenceRatio = 0.3;
 const int   maxSimulatedFalsePositives = 3;
 
-void ReceiverCANCapture::FakeChannelDistance(int channel)
+void ReceiverCANCapture::FakeChannelDistanceNoisy(int channel)
 
 {
 

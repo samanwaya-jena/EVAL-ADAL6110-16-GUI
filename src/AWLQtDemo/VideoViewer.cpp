@@ -183,7 +183,7 @@ void VideoViewer::DoThreadLoop()
 
 	mThreadExited = true;
 }
-
+	
 
 void VideoViewer::DoThreadIteration()
 

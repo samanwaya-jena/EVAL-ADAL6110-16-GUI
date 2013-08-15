@@ -43,6 +43,10 @@ public:
 	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
 
+	// Demo mode
+	bool bEnableDemo;
+	int  demoInjectType;
+
 	// Calibration parameters
 	float sensorHeight;
 	float sensorDepth;
