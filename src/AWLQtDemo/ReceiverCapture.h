@@ -189,7 +189,14 @@ public:
 		} bitFieldData;
 	} ChannelMask;
 
-// public Methods
+	typedef enum  
+	{
+		eInjectRamp = 0,
+		eInjectNoisy = 1
+	}
+	InjectType;
+	
+	// public Methods
 public:
 
 	ReceiverCapture() {};
@@ -551,6 +558,13 @@ protected:
 
 	/** \brief  controls the injection of simulated data.  Injection is enabled when true */
 	bool  bSimulatedDataEnabled;
+
+	/** \brief  defines the type of data injected.  */
+	InjectType injectType;
+
+	/** \brief  controls demo features such as simulatedFeedback.  demo features are on when true */
+	bool bEnableDemo;
+
 };
 
 

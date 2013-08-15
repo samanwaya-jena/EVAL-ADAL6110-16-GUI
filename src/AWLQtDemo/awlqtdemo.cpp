@@ -60,6 +60,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	int bottom = scr.bottom() - (this->frameSize().height())-10;
 	move(scr.left(), bottom); 
 
+	// In demo mode, put demo mode in window title
+	if (globalSettings->bEnableDemo)
+	{
+		this->setWindowTitle(this->windowTitle()+" [DEMO Mode]");
+	}
 
 	PrepareTableViews();
 
@@ -98,12 +103,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-	videoViewer = VideoViewer::Ptr(new VideoViewer("Camera View", videoCapture, receiverCapture, receiver));
+	videoViewer = VideoViewer::Ptr(new VideoViewer(this->windowTitle().toStdString(), videoCapture, receiverCapture, receiver));
+
 	//  Create the fused viewer, that will instantiate all the point-cloud views.
 	// All point cloud updates feed from the receiver's point-cloud data.
 	// The fused Viewer also uses the receiver configuration info to build the background decorations  
 	// used in point-cloud
-	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(receiver));
+	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString(), receiver));
 
 	// Initialize the controls from the settings in INI file
 	ui.sensorHeightSpinBox->setValue(globalSettings->sensorHeight);
@@ -138,7 +144,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
-	
+	m2DScan->setWindowTitle(this->windowTitle());
+
 	mCfgSensor.shortRangeDistance = globalSettings->shortRangeDistance;
     mCfgSensor.shortRangeDistanceStartLimited = globalSettings->shortRangeDistanceStartLimited;
     mCfgSensor.shortRangeAngle = globalSettings->shortRangeAngle;
@@ -179,7 +186,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	 DisplayReceiverStatus();
 
 #if 1
-	// Start the threads and display the windows (optional)
+	// Start the threads and display the windows if they are defined as startup in the ini file
 	if (globalSettings->bDisplay2DWindow) 
 	{
 		ui.action2D->toggle();
@@ -201,7 +208,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 #endif
 
-
+	// In demo mode, automatically force the injection of data on receiver.
+	// put demo mode in window title
+	if (globalSettings->bEnableDemo)
+	{
+		ui.injectSimulatedCheckbox->setChecked(true);
+		m2DScan->setWindowTitle(this->windowTitle());
+	}
 }
 
 AWLQtDemo::~AWLQtDemo()

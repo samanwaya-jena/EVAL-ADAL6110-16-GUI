@@ -375,10 +375,11 @@ void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
 }
 
-FusedCloudViewer::FusedCloudViewer( boost::shared_ptr<awl::ReceiverProjector> inReceiver)
+FusedCloudViewer::FusedCloudViewer(std::string inWindowName, boost::shared_ptr<awl::ReceiverProjector> inReceiver)
 :
 mStopRequested(false),
 sourceProjector(inReceiver),
+windowName(inWindowName),
 viewers()
 {
   
@@ -387,7 +388,7 @@ viewers()
 void FusedCloudViewer::CreateViewerView()
 
 {
-  CloudViewerWin::Ptr viewerPtr(new CloudViewerWin(sourceProjector, CloudViewerWin::eHandlerRGB, "Fused View", "Fused Cloud"));
+  CloudViewerWin::Ptr viewerPtr(new CloudViewerWin(sourceProjector, CloudViewerWin::eHandlerRGB, windowName, "Fused Cloud"));
   viewers.push_back(viewerPtr);
 
   viewerPtr->viewer->setBackgroundColor(0.3, 0.3, 0.3);

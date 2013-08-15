@@ -83,6 +83,11 @@ bool AWLSettings::ReadSettings()
 	bDisplayCameraWindow = settings.value("displayCameraWindow").toBool();
 	settings.endGroup();
 
+	settings.beginGroup("demoMode");
+	bEnableDemo = settings.value("enableDemo").toBool();
+	demoInjectType = settings.value("injectType").toInt();
+	settings.endGroup();
+
 	settings.beginGroup("calibration");
 	sensorHeight = settings.value("sensorHeight").toFloat();
 	sensorDepth = settings.value("sensorDepth").toFloat();

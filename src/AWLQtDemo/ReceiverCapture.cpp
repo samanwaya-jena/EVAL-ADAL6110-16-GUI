@@ -31,14 +31,17 @@ frameID(0),
 snapshotFrameID(0),
 currentReceiverCaptureSubscriptions(new(Subscription)),
 bIsThreaded(false),
-bSimulatedDataEnabled(false)
+bSimulatedDataEnabled(false),
+bEnableDemo(false),
+injectType(eInjectRamp)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	minDistance = globalSettings->displayedRangeMin;
 	maxDistance = globalSettings->displayedRangeMax;
 	measurementOffset = globalSettings->rangeOffset;
-
+	bEnableDemo = globalSettings->bEnableDemo;
+	injectType = (InjectType) globalSettings->demoInjectType;
 	startTime = boost::posix_time::microsec_clock::local_time();
 	InitStatus();
 }

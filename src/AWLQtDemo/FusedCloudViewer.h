@@ -261,7 +261,7 @@ protected:
 
 	/** \brief Our subscription identifier to access to the clud produced by projector. */
 	Subscription::SubscriberID currentCloudSubscriberID;
- };
+};
 
 
 
@@ -295,7 +295,8 @@ protected:
 					  double r, double g, double b,
 					  const std::string &inLineName, int lineID=0); 
 public:
-	FusedCloudViewer( boost::shared_ptr<awl::ReceiverProjector> inReceiver);
+
+	FusedCloudViewer(std::string inWindowName,  boost::shared_ptr<awl::ReceiverProjector> inReceiver);
 	~FusedCloudViewer() {};
 
     // Create the thread and start work
@@ -321,6 +322,8 @@ public:
 protected:
 	double sensorHeight;
 	int	   pixelSize;
+   /** \brief Title of the window used to display the cloud. */
+	std::string windowName;
 };
 
 }; // namespace awl

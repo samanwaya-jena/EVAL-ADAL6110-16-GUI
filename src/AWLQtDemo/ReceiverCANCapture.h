@@ -230,7 +230,17 @@ protected:
  	    * \param[in] inMsg   CAN message contents
       */
 	void ParseChannelDistance(AWLCANMessage &inMsg);
-void FakeChannelDistance(int channel);
+
+	
+	/** \brief Inject distance information in the channel,  using ramp simulation
+ 	    * \param[in] channel   channel in whhich data is injected
+      */
+	void FakeChannelDistanceRamp(int channel);
+
+	/** \brief Inject distance information in the channel,  using noisy data simulation
+ 	    * \param[in] channel   channel in whhich data is injected
+      */
+	void FakeChannelDistanceNoisy(int channel);
 
 	/** \brief Read the intensity readings from CAN messages (40-46 50-56)
  	    * \param[in] inMsg   CAN message contents
