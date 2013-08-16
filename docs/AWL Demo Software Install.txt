@@ -1,0 +1,7 @@
+AWL Demo Software [DEMO Mode] – Install instructions
+This package will install the AWL Demo Software on your computer.
+By default, the software will be installed to C:\Aerostar\Aerostar AWLQtDemo.
+To proceed with the install: 
+- UNZIP the file to a local directory.
+- Execute SETUP.EXE.
+

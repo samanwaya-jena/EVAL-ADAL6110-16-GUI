@@ -242,6 +242,11 @@ protected:
       */
 	void FakeChannelDistanceNoisy(int channel);
 
+		/** \brief Inject distance information in the channel,  usingslow move simulation
+ 	    * \param[in] channel   channel in which data is injected
+      */
+	void FakeChannelDistanceSlowMove(int channel);
+
 	/** \brief Read the intensity readings from CAN messages (40-46 50-56)
  	    * \param[in] inMsg   CAN message contents
      */

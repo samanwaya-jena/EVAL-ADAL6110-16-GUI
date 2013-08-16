@@ -104,7 +104,12 @@ void FOV_2DScan::drawAngularRuler(QPainter* p)
 
 void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float distance, int channel, int id)
 {
-    drawTextDetection(p, angle, distance, QString::number(channel) + "." + QString::number(id) + " : " + QString::number(distance)+" m", Qt::black, true, getColorFromDistance(distance));
+	QColor backColor = getColorFromDistance(distance);
+	QColor penColor = Qt::black;
+
+	if (backColor.lightness() < 128) penColor = Qt::white;
+
+    drawTextDetection(p, angle, distance, QString("Ch.") + QString::number(channel) + " : " + QString::number(distance)+" m", penColor, true, backColor);
 }
 
 void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
@@ -124,7 +129,8 @@ void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString t
     rect.setSize(rect.size()+QSize(10,10));
     rect.moveTo(start + QPoint((width()/2)-rect.width()/2, height()-rect.height()));
 
-    p->setPen(foregroundColor);
+	QColor pencolor = backgroundcolor.darker(150);
+    p->setPen(pencolor);
     p->setBrush(backgroundcolor);
 
     tempRect = rect;
@@ -179,7 +185,8 @@ void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString t
 
     leftRight = !leftRight;
 
-    p->drawText(tempRect, Qt::AlignCenter, text);
+	 p->setPen(foregroundColor);
+     p->drawText(tempRect, Qt::AlignCenter, text);
 
 }
 

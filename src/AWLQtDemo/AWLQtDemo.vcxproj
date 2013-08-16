@@ -532,6 +532,12 @@
     <None Include="..\InstallableDLLs\pcl_visualization_release.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\InstallableDLLs\platforms\qwindows.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\InstallableDLLs\Policy.1.1.OpenNI.Net.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -733,7 +739,10 @@
     <None Include="..\InstallableDLLs\qwtd.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Aerostar-logoForIcon128.bmp" />
+    <None Include="Aerostar-logoForIcon128.bmp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="AWLQtDemo.ico" />
     <None Include="awlqtdemo.ini">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <FileType>Document</FileType>

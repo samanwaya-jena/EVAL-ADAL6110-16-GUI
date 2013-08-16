@@ -281,9 +281,6 @@
     <None Include="awlqtdemo.ini">
       <Filter>Installable Files</Filter>
     </None>
-    <None Include="Aerostar-logoForIcon128.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
       <Filter>Installable DLLs</Filter>
     </None>
@@ -754,6 +751,18 @@
     </None>
     <None Include="..\InstallableDLLs\qwtd.dll">
       <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="Aerostar-logoForIcon128.bmp">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\platforms\qwindows.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="AWLQtDemo.ico">
+      <Filter>Installable Files</Filter>
     </None>
   </ItemGroup>
 </Project>

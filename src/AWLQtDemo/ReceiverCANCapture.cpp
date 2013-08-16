@@ -251,7 +251,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceRamp(24);
 				FakeChannelDistanceRamp(36);
 			}
-			else 
+			else if (injectType == eInjectNoisy)
 			{
 				FakeChannelDistanceNoisy(20);
 				FakeChannelDistanceNoisy(21);
@@ -260,6 +260,17 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceNoisy(24);
 				FakeChannelDistanceNoisy(36);
 			}
+			else 
+			{
+				FakeChannelDistanceSlowMove(20);
+				FakeChannelDistanceSlowMove(21);
+				FakeChannelDistanceSlowMove(22);
+				FakeChannelDistanceSlowMove(23);
+				FakeChannelDistanceSlowMove(24);
+				FakeChannelDistanceSlowMove(25);
+				FakeChannelDistanceNoisy(36);
+			}
+
 
 			lastElapsed = GetElapsed();
 		}
@@ -1547,4 +1558,154 @@ void ReceiverCANCapture::FakeChannelDistanceNoisy(int channel)
 	}
 
 }
+
+
+// Sensor transitions going from left to right...
+
+const int channelTransitionQty(13);
+int channelTransitions[channelTransitionQty][2] =
+{
+	{0, -1},
+	{0, 1},
+	{1, -1},
+	{1, 4},
+	{1, -1},
+	{1, 5},
+	{5, -1},
+	{5, 2},
+	{2, -1},
+	{2, 6},
+	{2, -1},
+	{2, 3},
+	{3, -1}
+};
+
+
+int lastTransition = 0;
+int transitionDirection = 1;
+int directionPacing = 5000/channelTransitionQty; /* Every 3 seconds, we move from left to right */
+int nextElapsedDirection = 0;
+
+float distanceIncrement = 0.1;
+int distancePacing = 120; /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
+int nextElapsedDistance = 0;
+
+
+void ReceiverCANCapture::FakeChannelDistanceSlowMove(int channel)
+
+{
+
+	int detectOffset = 0;
+
+	if (channel >= 30) 
+	{
+		channel = channel - 30;
+		detectOffset = 4;
+	}
+	else 
+	{
+		channel = channel - 20;
+	}
+	
+	// JYD:  Watch out ---- Channel order is patched here, because of CAN bug
+	channel = channelReorder[channel];
+
+	if (channel >= 0) 
+	{
+		int elapsed = (int) GetElapsed();
+		
+		// Every "directionPacing" milliseconds, we move from left to right;
+		if (elapsed > nextElapsedDirection) 
+		{
+			// We update ournext time stamp, and make sure it exceeds current time.
+			while (nextElapsedDirection < elapsed) nextElapsedDirection += directionPacing;
+
+			lastTransition += transitionDirection;
+			
+			// Going too far right, we change direction
+			if (lastTransition >= channelTransitionQty) 
+			{
+				lastTransition = channelTransitionQty - 1;
+				transitionDirection = -1;
+			}
+
+			// Going too far left, we change direction
+			if (lastTransition < 0) 
+			{
+				lastTransition = 0;
+				transitionDirection = +1;
+			}
+		}
+
+		float distanceMin = AWLSettings::GetGlobalSettings()->displayedRangeMin;
+		float distanceMax = AWLSettings::GetGlobalSettings()->displayedRangeMax;
+
+		float shortRangeMax = AWLSettings::GetGlobalSettings()->shortRangeDistance;
+
+		// Every "distancePacing" milliseconds, we move backwards or forward;
+		if (elapsed > nextElapsedDistance) 
+		{
+				// We update ournext time stamp, and make sure it exceeds current time.
+			while (nextElapsedDistance < elapsed) nextElapsedDistance += distancePacing;
+
+			lastDistance += distanceIncrement;
+			
+			// Going too far , we change direction
+			if (lastDistance >= distanceMax) 
+			{
+				lastDistance = distanceMax;
+				distanceIncrement = -distanceIncrement;
+			}
+
+			// Going too far left, we change direction
+			if (lastDistance < distanceMin) 
+			{
+				lastDistance = distanceMin;
+				distanceIncrement = -distanceIncrement;
+			}
+		}
+
+		currentFrame->channelFrames[channel]->timeStamp = elapsed;
+		int channelA = channelTransitions[lastTransition][0];
+		int channelB = channelTransitions[lastTransition][1];
+
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+		// Short range channels don't display at more than shortRangeMax.
+		if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
+		{
+			currentFrame->channelFrames[channelA]->detections[0]->distance =lastDistance;
+			currentFrame->channelFrames[channelA]->detections[0]->trackID = 0;
+			currentFrame->channelFrames[channelA]->detections[0]->velocity = 0;
+			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
+		}
+
+		// There may be detection in a single channel
+		if (channelB >= 0) 
+		{
+			if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
+			{
+				currentFrame->channelFrames[channelB]->detections[0]->distance =lastDistance;
+				currentFrame->channelFrames[channelB]->detections[0]->trackID = 0;
+				currentFrame->channelFrames[channelB]->detections[0]->velocity = 0;
+				currentFrame->channelFrames[channel]->timeStamp = elapsed;
+			}
+		}
+
+
+
+		rawLock.unlock();
+		lastElapsed = elapsed;
+	
+	}
+
+	if (channel == 6 && detectOffset == 4)
+	{
+		ProcessCompletedFrame();
+		DebugFilePrintf(outFile, "Fake");
+	}
+
+}
+
+
 #endif
