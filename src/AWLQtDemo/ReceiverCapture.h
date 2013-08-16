@@ -192,7 +192,8 @@ public:
 	typedef enum  
 	{
 		eInjectRamp = 0,
-		eInjectNoisy = 1
+		eInjectNoisy = 1,
+		eInjectSlowMove = 2
 	}
 	InjectType;
 	
