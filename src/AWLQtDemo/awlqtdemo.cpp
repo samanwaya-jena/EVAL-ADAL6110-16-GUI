@@ -167,6 +167,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
 	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
 
+	connect(ui.actionQuitter, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
 	// View signals and slots on close
 	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
 	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
@@ -1082,4 +1083,7 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 	}
 }
 
-
+void AWLQtDemo::closeEvent(QCloseEvent * event)
+{
+	qApp->closeAllWindows();
+}	

@@ -21,8 +21,8 @@ public slots:
 
 protected :
     void paintEvent(QPaintEvent *p);
-	void	closeEvent(QCloseEvent * event);
-
+	void closeEvent(QCloseEvent * event);
+	void resizeEvent(QResizeEvent * event);
 private:
 
     float Ratio;

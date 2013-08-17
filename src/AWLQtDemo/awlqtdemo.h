@@ -80,7 +80,7 @@ protected:
 	void AddDistanceToText(int detectionID, QTableWidget *pTable, float distance);
 	void DisplayReceiverStatus();
 	void DisplayReceiverValuesTo2DScanView();
-
+	void closeEvent(QCloseEvent * event);
 
 	void FillFPGAList(AWLSettings *settingsPtr);
 	void FillADCList(AWLSettings *settingsPtr);
