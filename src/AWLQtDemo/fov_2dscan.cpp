@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
+using namespace awl;
+
 #define PI 3.1416
 
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
@@ -12,7 +14,10 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 {
     Ratio = 1;
     ShowPalette = true;
-
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	mergeDetectionMode = globalSettings->mergeDetectionMode;
+	mergeDisplayMode = globalSettings->mergeDisplayMode;
+	ShowPalette = globalSettings->showPalette;
 	// Position the widget on the top left corner
 	QRect scr = QApplication::desktop()->screenGeometry();
 	move(scr.left(), scr.top()+5); 
@@ -90,9 +95,94 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
     leftQty = 0;
     rightQty = 0;
     leftRight = true;
-    DetectionDataVect::iterator i;
-    for (i = copyData.begin(); i != copyData.end(); ++i)
-        drawDetection(&painter, i->angle, i->angleWidth, i->distance, i->fromChannel, i->id);
+
+	for (int index = 0; index < mergedData.count(); index++)
+	{
+		if (mergedData[index].count() > 1)
+		{
+			drawMergedData(&painter, &mergedData[index]);
+		}
+		else
+		{
+			if (mergeDisplayMode == eMergeDistanceDisplay)
+			{
+				drawDetection(&painter, mergedData[index][0].angle, mergedData[index][0].angleWidth, 
+								mergedData[index][0].distance, mergedData[index][0].fromChannel, mergedData[index][0].id);
+			}
+		}
+	}
+
+	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
+	{
+		DetectionDataVect::iterator i;
+		for (i = copyData.begin(); i != copyData.end(); ++i)
+			drawDetection(&painter, i->angle, i->angleWidth, i->distance, i->fromChannel, i->id);
+	}
+
+
+
+}
+
+void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
+{
+	int index;
+	float distanceMin = config.longRangeDistance;
+	float distanceMax = 0;
+	float angleMin = config.shortRangeAngle/2;
+	float angleMax = -config.shortRangeAngle/2;
+
+    DetectionDataVect::const_iterator i;
+
+	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
+    for (i = data->begin(); i != data->end(); ++i)
+    {
+		if (i->angle > angleMax)
+			angleMax = i->angle;
+		if (i->angle < angleMin)
+			angleMin = i->angle;
+
+		if (i->distance > distanceMax)
+			distanceMax = i->distance;
+		if (i->distance < distanceMin)
+			distanceMin = i->distance;
+	}
+
+	QColor backColor = getColorFromDistance((distanceMin +  distanceMax)/2);
+
+	QColor pencolor = backColor.darker(150);
+    p->setPen(pencolor);
+	p->setBrush(backColor.lighter(150));
+
+	float angleMinInRad = degree_to_rad(angleMin+180);
+	float angleMaxInRad = degree_to_rad(angleMax+180);
+
+    QPoint bottomLeft(0, (distanceMin*Ratio));
+	QPoint topRight(0, (distanceMax*Ratio));
+    QPoint temp;
+
+    temp = bottomLeft;
+    bottomLeft.setX(temp.x()*cosf(angleMinInRad) - temp.y()*sinf(angleMinInRad));
+    bottomLeft.setY(temp.y()*cosf(angleMinInRad) + temp.x()*sinf(angleMinInRad));
+
+	temp = topRight;
+    topRight.setX(temp.x()*cosf(angleMaxInRad) - temp.y()*sinf(angleMaxInRad));
+    topRight.setY(temp.y()*cosf(angleMaxInRad) + temp.x()*sinf(angleMaxInRad));
+
+	if (bottomLeft.y() < topRight.y())
+	{
+		temp = topRight;
+		topRight.setY(bottomLeft.y());
+		bottomLeft.setY(temp.y());
+	}
+
+    QRect rect;
+
+	rect.setBottomLeft(bottomLeft);
+	rect.setTopRight(topRight);
+	rect.setSize(rect.size()+QSize(15,15));
+	rect.moveTo(bottomLeft + QPoint((width()/2)-9, height()-rect.height()+1));
+	//rect.moveTo(start + QPoint((width()/2)-rect.width()/2, height()-rect.height()));
+	p->drawRect(rect);
 
 }
 
@@ -307,6 +397,7 @@ void FOV_2DScan::slotDetectionDataChanged(DetectionDataVect* data)
 
     copyData.clear();
 
+	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
     for (i = data->begin(); i != data->end(); ++i)
     {
 		if (i->distance > config.longRangeDistance)
@@ -329,8 +420,74 @@ void FOV_2DScan::slotDetectionDataChanged(DetectionDataVect* data)
         copyData.insert(index,*i);
     }
 
-
+	mergeDetection();
     update();
+}
+
+void FOV_2DScan::mergeDetection()
+{
+	int indexMerged;
+	int index;
+	int indexPoint;
+	bool found;
+
+	mergedData.clear();
+	for (indexPoint = 0; indexPoint < copyData.count(); ++indexPoint)
+	{
+		found = false;
+		if (mergeDetectionMode != eNoMerge)
+		{
+			for (indexMerged = 0; indexMerged < mergedData.count(); ++indexMerged)
+			{
+				if (mergedData[indexMerged].count())
+				{
+					for (index = 0; index < mergedData[indexMerged].count(); ++index)
+					{
+						if (isInRange(&copyData[indexPoint],&mergedData[indexMerged][index] ))
+						{
+							found = true;
+							break;
+						}
+					}
+
+					if (found)
+						break;
+				}
+			}
+		}
+
+		if (!found)
+		{
+			mergedData.append(DetectionDataVect());
+			mergedData[indexMerged].append(copyData[indexPoint]);
+		}
+		else
+			mergedData[indexMerged].append(copyData[indexPoint]);
+    }
+
+}
+
+bool FOV_2DScan::isInRange(DetectionData* detection1, DetectionData* detection2 )
+{
+	bool distInRange = false;
+	bool angleInRange = false;
+
+	if (mergeDetectionMode == eRadial)
+	{
+		if ((detection1->distance < (detection2->distance + 0.15)) && 
+		(detection1->distance > (detection2->distance - 0.15)))
+		{
+			distInRange = true;
+		}
+	}
+
+	if (((detection1->angle+(detection1->angleWidth/2)) > (detection2->angle-(detection2->angleWidth/2))) || 
+		((detection2->angle+(detection2->angleWidth/2)) > (detection1->angle-(detection1->angleWidth/2))))
+	{
+		angleInRange = true;
+	}
+
+	return (angleInRange && distInRange);
 }
 
 void FOV_2DScan::closeEvent(QCloseEvent * event)

@@ -71,6 +71,10 @@ public:
 	float longRangeAngle;
 	float longRangeAngleStartLimited;
 
+	bool showPalette;
+	int mergeDetectionMode;
+	int mergeDisplayMode;
+
 	// CAN
 	QString sCANCommPort;       // Default is "COM16"
 	QString sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
