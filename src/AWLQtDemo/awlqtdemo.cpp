@@ -611,6 +611,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 							detect.id = detection->detectionID;
 							detect.fromChannel =  detection->channelID;
 							detect.angle = currentAngle;
+							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
 
 							vect.append(detect);
 
