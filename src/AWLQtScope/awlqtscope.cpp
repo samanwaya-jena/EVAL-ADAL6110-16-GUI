@@ -149,7 +149,7 @@ void AWLQtScope::stop()
 	if (d_timerId != 0)
 	{
 		killTimer(d_timerId);
-		d_timerId = -1;
+		d_timerId = 0;
 	}
 }
 
@@ -381,4 +381,10 @@ void AWLQtScope::on_scopeCurveStyleLines_setChecked(bool bChecked)
 			d_plot[i]->setCurveStyle(curveStyle);
 		}
 	}
+}
+
+void AWLQtScope::closeEvent(QCloseEvent * event)
+{
+	stop();
+	emit closed();
 }

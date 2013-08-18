@@ -68,14 +68,12 @@ AWLScopePlot::AWLScopePlot( QWidget *parent):
 
 AWLScopePlot::~AWLScopePlot()
 {
-	delete d_clock;
 	delete d_directPainter;
 }
 
 void AWLScopePlot::setupInterface()
 
 {
-	d_clock = new QwtSystemClock();
 	d_interval = QwtInterval(0.0, 10.0);
     d_directPainter = new QwtPlotDirectPainter();
 
@@ -136,7 +134,9 @@ void AWLScopePlot::start(ReceiverCapture::Ptr inReceiverCapture, int inChannelID
  	d_channelID = inChannelID;
 	d_receiverCapture = inReceiverCapture;
 	d_currentReceiverCaptureSubscriberID = d_receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
-    d_clock->start();
+
+	// Update the plot according to the clock;
+	incrementInterval();
 }
 
 void AWLScopePlot::replot()
@@ -172,7 +172,7 @@ void AWLScopePlot::setIntervalLength( double interval )
 bool AWLScopePlot::doTimeUpdate()
 
 {
-    const double elapsed = d_clock->elapsed() / 1000.0;
+    const double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
 
     if ( elapsed > d_interval.maxValue() ) 
 	{
@@ -228,7 +228,7 @@ void AWLScopePlot::updateCurve()
 
 void AWLScopePlot::incrementInterval()
 {
-    double elapsed = d_clock->elapsed() / 1000.0;
+    double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
 	elapsed = ceil(elapsed);
 
 	double minValue = ((elapsed - d_interval.width()));

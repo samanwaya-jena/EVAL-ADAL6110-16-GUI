@@ -69,9 +69,6 @@ private:
 
     QwtInterval d_interval;
 
-    QwtSystemClock *d_clock;
-
-
 	ReceiverCapture::Ptr d_receiverCapture;
 	int d_channelID;
 	uint32_t d_lastFrameID;

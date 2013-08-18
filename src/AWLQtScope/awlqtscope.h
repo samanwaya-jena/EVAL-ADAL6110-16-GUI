@@ -51,6 +51,7 @@ public:
 	
 Q_SIGNALS:
 	// No signals yet.
+   void closed();
 
 private slots:
 	void on_scopeModeRaw_setChecked(bool bChecked);
@@ -63,6 +64,8 @@ public Q_SLOTS:
     virtual void timerEvent( QTimerEvent * );
 
 protected:
+	void	closeEvent(QCloseEvent * event);
+
 	void updateCurveDataRaw();
 	void updateCurveDataTrackDistance();
 
