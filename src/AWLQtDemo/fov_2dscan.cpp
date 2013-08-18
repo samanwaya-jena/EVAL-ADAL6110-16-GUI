@@ -45,6 +45,11 @@ void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
     update();
 }
 
+void FOV_2DScan::resizeEvent(QResizeEvent * event)
+{
+	Ratio = (height()-(height()*0.1)) / config.longRangeDistance;
+}
+
 void FOV_2DScan::paintEvent(QPaintEvent *)
 {
 
