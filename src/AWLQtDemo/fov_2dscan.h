@@ -3,6 +3,8 @@
 
 #include <QFrame>
 #include <QPainter>
+#include <QAction>
+#include <QActionGroup>
 
 #include "DetectionStruct.h"
 #include "AWLSettings.h"
@@ -28,12 +30,23 @@ public:
 		eMergeDistanceDisplay=2 // Rectangle without detection, display only one distance
 	} MergeDisplayMode;
 
+	typedef enum MeasureMode
+	{
+		eMeasureRadial=0, //Radial distance from sensor
+		eMeasureFromBumper=1 // Distance from bumper
+	} MeasureMode;
+	
 signals:
     void closed();
 
 public slots:
     void slotConfigChanged(ConfigSensor*);
     void slotDetectionDataChanged(DetectionDataVect* data);
+	void ShowContextMenu(const QPoint& pos);
+	void slotPaletteAction();
+	void slotMergeDetectionAction();
+	void slotMergeDisplayAction();
+	void slotMeasureModeAction();
 
 protected :
     void paintEvent(QPaintEvent *p);
@@ -55,8 +68,28 @@ private:
     bool leftRight;
     int leftQty;
     int rightQty;
-	int mergeDetectionMode;
-	int mergeDisplayMode;
+	MergeDetectionMode mergeDetectionMode;
+	MergeDisplayMode mergeDisplayMode;
+	MeasureMode measureMode;
+	float mergeAcceptance;
+
+	//Action Item
+	QActionGroup* groupMergeDetectionMode;
+	QAction* noMergeAction;
+	QAction* radialAction;
+	QAction* distanceAction;
+
+	QActionGroup* groupMergeDisplayMode;
+	QAction* noMergeDisplayAction;
+	QAction* individualDistanceDisplayAction;
+	QAction* mergeDistanceDisplayAction;
+
+	QActionGroup* groupMeasureMode;
+	QAction* measureRadialAction;
+	QAction* measureFromBumperAction; 
+
+	QAction* showPaletteAction;
+
 
     void drawArc(QPainter* p, float angle, float angleWidth, float length);
     void drawPie(QPainter* p, float angle, float angleWidth, float length);
@@ -66,13 +99,14 @@ private:
     void drawTextDetection(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
     float degree_to_rad (float degrees);
     void drawAngularRuler(QPainter* p);
-    void drawDetection(QPainter* p, float angle, float width, float distance, int channel, int id);
+    void drawDetection(QPainter* p, float angle, float width, float distanceRadial, float distanceFromBumper, int channel, int id);
 	void mergeDetection();
 	bool isInRange(DetectionData* detection1, DetectionData* detection2 );
     QColor getColorFromDistance(float distance);
     void drawPalette(QPainter* p);
 	void drawMergedData(QPainter* p, DetectionDataVect* data);
-
+	void createAction();
+	
 };
 
 #endif // FOV_2DSCAN_H

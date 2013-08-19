@@ -117,6 +117,8 @@ bool AWLSettings::ReadSettings()
 	showPalette = settings.value("showPalette").toInt();
 	mergeDetectionMode = settings.value("mergeDetectionMode").toInt();
 	mergeDisplayMode = settings.value("mergeDisplayMode").toInt();
+	measureMode = settings.value("measureMode").toInt();
+	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
 	settings.endGroup();
 
 	settings.beginGroup("CAN");

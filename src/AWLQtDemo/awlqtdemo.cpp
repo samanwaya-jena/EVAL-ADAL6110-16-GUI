@@ -612,7 +612,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 							detect.fromChannel =  detection->channelID;
 							detect.angle = currentAngle;
 							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
-
+							detect.distanceFromBumper = (-(detect.distance*cosf(DEG2RAD(detect.angle+180))))-mCfgSensor.distanceFromBumper;
 							vect.append(detect);
 
 							//AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);

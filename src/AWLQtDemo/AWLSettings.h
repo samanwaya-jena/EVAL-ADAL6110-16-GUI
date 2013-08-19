@@ -74,6 +74,8 @@ public:
 	bool showPalette;
 	int mergeDetectionMode;
 	int mergeDisplayMode;
+	int measureMode;
+	float mergeAcceptance;
 
 	// CAN
 	QString sCANCommPort;       // Default is "COM16"

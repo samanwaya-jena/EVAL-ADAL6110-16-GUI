@@ -7,7 +7,8 @@
 typedef struct
 {
     int id;									// Id of the detected object
-    float distance;							// Distance from sensor
+    float distance;							// Distance from sensor (Radial)
+	float distanceFromBumper;				// Distance from bumper
     float angle;							// Angle where the object is detected (Center)
     float angleWidth;						// Size of the object (in fact, angle width of the sensor)
 	int fromChannel;						// Channel where the object was detected

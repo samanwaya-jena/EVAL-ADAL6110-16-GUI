@@ -1,7 +1,7 @@
 #include "fov_2dscan.h"
 #include <QPainter>
 #include <math.h>
-
+#include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
 
@@ -15,8 +15,10 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
     Ratio = 1;
     ShowPalette = true;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	mergeDetectionMode = globalSettings->mergeDetectionMode;
-	mergeDisplayMode = globalSettings->mergeDisplayMode;
+	mergeDetectionMode = (MergeDetectionMode)globalSettings->mergeDetectionMode;
+	mergeDisplayMode = (MergeDisplayMode)globalSettings->mergeDisplayMode;
+	measureMode = (MeasureMode)globalSettings->measureMode;
+	mergeAcceptance = globalSettings->mergeAcceptance;
 	ShowPalette = globalSettings->showPalette;
 	// Position the widget on the top left corner
 	QRect scr = QApplication::desktop()->screenGeometry();
@@ -27,7 +29,154 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
     rgbshortRangeLimited = qRgba(184,220,175,127);
     rgbshortRange = qRgba(54,166,38,127);
 
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));
+
+	createAction();
+	
+
     setMinimumSize(480,480);
+}
+
+void FOV_2DScan::createAction()
+{
+
+	groupMergeDetectionMode = new QActionGroup( this );
+	noMergeAction = new QAction("No merge target", this);
+	radialAction = new QAction("Merge Radial", this);
+	distanceAction = new QAction("Merge From Bumper", this);
+
+	noMergeAction->setCheckable(true);
+	noMergeAction->setActionGroup(groupMergeDetectionMode);
+
+	radialAction->setCheckable(true);
+	radialAction->setActionGroup(groupMergeDetectionMode);
+
+	distanceAction->setCheckable(true);
+	distanceAction->setActionGroup(groupMergeDetectionMode);
+
+	if (mergeDetectionMode == eNoMerge)
+	{
+		noMergeAction->setChecked(true);
+	}
+	else if (mergeDetectionMode == eRadial)
+	{
+		radialAction->setChecked(true);
+	}
+	else
+	{
+		distanceAction->setChecked(true);
+	}
+
+	connect(groupMergeDetectionMode, SIGNAL(triggered(QAction*)), this, SLOT(slotMergeDetectionAction()));
+
+	groupMergeDisplayMode = new QActionGroup( this );
+	noMergeDisplayAction = new QAction("No Merge Display", this);
+	individualDistanceDisplayAction = new QAction("Individual Distance Display", this);
+	mergeDistanceDisplayAction = new QAction("Merge Distance Display", this);
+
+
+	noMergeDisplayAction->setCheckable(true);
+	noMergeDisplayAction->setActionGroup(groupMergeDisplayMode);
+
+	individualDistanceDisplayAction->setCheckable(true);
+	individualDistanceDisplayAction->setActionGroup(groupMergeDisplayMode);
+
+	mergeDistanceDisplayAction->setCheckable(true);
+	mergeDistanceDisplayAction->setActionGroup(groupMergeDisplayMode);
+
+	if (mergeDisplayMode == eNoMergeDisplay)
+	{
+		noMergeDisplayAction->setChecked(true);
+	}
+	else if (mergeDisplayMode == eIndividualDistanceDisplay)
+	{
+		individualDistanceDisplayAction->setChecked(true);
+	}
+	else
+	{
+		mergeDistanceDisplayAction->setChecked(true);
+	}
+
+
+	connect(groupMergeDisplayMode, SIGNAL(triggered(QAction*)), this, SLOT(slotMergeDisplayAction()));
+
+	groupMeasureMode = new QActionGroup( this );
+	measureRadialAction = new QAction("Use radial measure", this);
+	measureFromBumperAction = new QAction("No from bumper measure", this);
+	
+	
+	measureRadialAction->setCheckable(true);
+	measureRadialAction->setActionGroup(groupMeasureMode);
+
+	measureFromBumperAction->setCheckable(true);
+	measureFromBumperAction->setActionGroup(groupMeasureMode);
+
+	if (measureMode == eMeasureRadial)
+	{
+		measureRadialAction->setChecked(true);
+	}
+	else
+	{
+		measureFromBumperAction->setChecked(true);
+	}
+
+	connect(groupMeasureMode, SIGNAL(triggered(QAction*)), this, SLOT(slotMeasureModeAction()));
+
+	showPaletteAction = new QAction("Palette", this);
+	showPaletteAction->setCheckable(true);
+	showPaletteAction->setChecked(ShowPalette);
+
+	connect(showPaletteAction, SIGNAL(triggered()), this, SLOT(slotPaletteAction()));
+}
+
+void FOV_2DScan::slotPaletteAction()
+{
+	ShowPalette = showPaletteAction->isChecked();
+}
+
+void FOV_2DScan::slotMergeDetectionAction()
+{
+	if (noMergeAction->isChecked())
+	{
+		mergeDetectionMode = eNoMerge;
+	}
+	else if (radialAction->isChecked())
+	{
+		mergeDetectionMode = eRadial;
+	}
+	else
+	{
+		mergeDetectionMode = eDistance;
+	}
+}
+
+void FOV_2DScan::slotMergeDisplayAction()
+{
+	if (noMergeDisplayAction->isChecked())
+	{
+		mergeDisplayMode = eNoMergeDisplay;
+	}
+	else if (individualDistanceDisplayAction->isChecked())
+	{
+		mergeDisplayMode = eIndividualDistanceDisplay;
+	}
+	else
+	{
+		mergeDisplayMode = eMergeDistanceDisplay;
+	}
+}
+
+void FOV_2DScan::slotMeasureModeAction()
+{
+	if (measureRadialAction->isChecked())
+	{
+		measureMode = eMeasureRadial;
+	}
+	else
+	{
+		measureMode = eMeasureFromBumper;
+	}
 }
 
 void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
@@ -61,6 +210,10 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.fillRect(0,0,width(),height(),QBrush(Qt::white));
 
+	//Draw bumper line
+	painter.setBrush(QBrush(Qt::darkGray));
+	painter.drawRect(QRect(width()/3, height()-config.distanceFromBumper*Ratio, width()/3, config.distanceFromBumper*Ratio));
+
     painter.setPen(Qt::NoPen);
     painter.setBrush(QBrush(QColor(rgblongRangeLimited)));
     drawPie(&painter, -config.longRangeAngle/2, config.longRangeAngle, config.longRangeDistance);
@@ -89,6 +242,8 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
     if (ShowPalette)
         drawPalette(&painter);
 
+
+
     lastLeftTextHeight = height();
     lastRightTextHeight = height();
 
@@ -96,18 +251,21 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
     rightQty = 0;
     leftRight = true;
 
-	for (int index = 0; index < mergedData.count(); index++)
+	if (mergeDisplayMode != eNoMergeDisplay)
 	{
-		if (mergedData[index].count() > 1)
+		for (int index = 0; index < mergedData.count(); index++)
 		{
-			drawMergedData(&painter, &mergedData[index]);
-		}
-		else
-		{
-			if (mergeDisplayMode == eMergeDistanceDisplay)
+			if (mergedData[index].count() > 1)
 			{
-				drawDetection(&painter, mergedData[index][0].angle, mergedData[index][0].angleWidth, 
-								mergedData[index][0].distance, mergedData[index][0].fromChannel, mergedData[index][0].id);
+				drawMergedData(&painter, &mergedData[index]);
+			}
+			else
+			{
+				if (mergeDisplayMode == eMergeDistanceDisplay)
+				{
+					drawDetection(&painter, mergedData[index][0].angle, mergedData[index][0].angleWidth, 
+									mergedData[index][0].distance, mergedData[index][0].distanceFromBumper, mergedData[index][0].fromChannel, mergedData[index][0].id);
+				}
 			}
 		}
 	}
@@ -116,7 +274,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	{
 		DetectionDataVect::iterator i;
 		for (i = copyData.begin(); i != copyData.end(); ++i)
-			drawDetection(&painter, i->angle, i->angleWidth, i->distance, i->fromChannel, i->id);
+			drawDetection(&painter, i->angle, i->angleWidth, i->distance, i->distanceFromBumper ,i->fromChannel, i->id);
 	}
 
 
@@ -128,8 +286,11 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 	int index;
 	float distanceMin = config.longRangeDistance;
 	float distanceMax = 0;
+	float distanceFromBumperMin = config.longRangeDistance;
+	float distanceFromBumperMax = 0;
 	float angleMin = config.shortRangeAngle/2;
 	float angleMax = -config.shortRangeAngle/2;
+	QPolygon poly;
 
     DetectionDataVect::const_iterator i;
 
@@ -145,13 +306,47 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 			distanceMax = i->distance;
 		if (i->distance < distanceMin)
 			distanceMin = i->distance;
+
+		if (i->distanceFromBumper > distanceFromBumperMax)
+			distanceFromBumperMax = i->distanceFromBumper;
+		if (i->distanceFromBumper < distanceFromBumperMin)
+			distanceFromBumperMin = i->distanceFromBumper;
 	}
 
 	QColor backColor = getColorFromDistance((distanceMin +  distanceMax)/2);
 
 	QColor pencolor = backColor.darker(150);
     p->setPen(pencolor);
-	p->setBrush(backColor.lighter(150));
+
+	if (mergeDisplayMode != eMergeDistanceDisplay)
+	{
+		p->setBrush(backColor.lighter(150));
+	}
+	else
+	{
+		QString textToDisplay;
+
+		if (measureMode == eMeasureRadial)
+		{
+			textToDisplay = QString("Ch.XX : " + QString::number(distanceMin, 'f', 2)+" m to "+ QString::number(distanceMax, 'f', 2)+" m");
+			//backColor = getColorFromDistance(distanceRadial);
+		}
+		else
+		{
+			textToDisplay = QString("Ch.XX : "  + QString::number(distanceFromBumperMin, 'f', 2)+" m to "+ QString::number(distanceFromBumperMax, 'f', 2)+" m");
+			//backColor = getColorFromDistance(distanceFromBumper);
+		}
+	
+		if (backColor.lightness() < 128) 
+			pencolor = Qt::white;
+		else
+			pencolor = Qt::black;
+
+		drawTextDetection(p, (angleMin+angleMax)/2, (distanceMin+distanceMax)/2, textToDisplay, pencolor, true, backColor);
+	}
+
+	pencolor = backColor.darker(150);
+    p->setPen(pencolor);
 
 	float angleMinInRad = degree_to_rad(angleMin+180);
 	float angleMaxInRad = degree_to_rad(angleMax+180);
@@ -181,8 +376,11 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 	rect.setTopRight(topRight);
 	rect.setSize(rect.size()+QSize(15,15));
 	rect.moveTo(bottomLeft + QPoint((width()/2)-9, height()-rect.height()+1));
-	//rect.moveTo(start + QPoint((width()/2)-rect.width()/2, height()-rect.height()));
+
 	p->drawRect(rect);
+
+	
+
 
 }
 
@@ -197,14 +395,26 @@ void FOV_2DScan::drawAngularRuler(QPainter* p)
     }
 }
 
-void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float distance, int channel, int id)
+void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float distanceRadial, float distanceFromBumper, int channel, int id)
 {
-	QColor backColor = getColorFromDistance(distance);
+	QColor backColor;
 	QColor penColor = Qt::black;
+	QString textToDisplay;
 
+	if (measureMode == eMeasureRadial)
+	{
+		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceRadial, 'f', 2)+" m";
+		backColor = getColorFromDistance(distanceRadial);
+	}
+	else
+	{
+		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceFromBumper, 'f', 2)+" m";
+		backColor = getColorFromDistance(distanceFromBumper);
+	}
+	
 	if (backColor.lightness() < 128) penColor = Qt::white;
 
-    drawTextDetection(p, angle, distance, QString("Ch.") + QString::number(channel) + " : " + QString::number(distance)+" m", penColor, true, backColor);
+    drawTextDetection(p, angle, distanceRadial, textToDisplay, penColor, true, backColor);
 }
 
 void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
@@ -435,8 +645,10 @@ void FOV_2DScan::mergeDetection()
 	for (indexPoint = 0; indexPoint < copyData.count(); ++indexPoint)
 	{
 		found = false;
+		indexMerged = 0;
 		if (mergeDetectionMode != eNoMerge)
 		{
+
 			for (indexMerged = 0; indexMerged < mergedData.count(); ++indexMerged)
 			{
 				if (mergedData[indexMerged].count())
@@ -459,7 +671,7 @@ void FOV_2DScan::mergeDetection()
 		if (!found)
 		{
 			mergedData.append(DetectionDataVect());
-			mergedData[indexMerged].append(copyData[indexPoint]);
+			mergedData.last().append(copyData[indexPoint]);
 		}
 		else
 			mergedData[indexMerged].append(copyData[indexPoint]);
@@ -474,8 +686,16 @@ bool FOV_2DScan::isInRange(DetectionData* detection1, DetectionData* detection2 
 
 	if (mergeDetectionMode == eRadial)
 	{
-		if ((detection1->distance < (detection2->distance + 0.15)) && 
-		(detection1->distance > (detection2->distance - 0.15)))
+		if ((detection1->distance < (detection2->distance + mergeAcceptance)) && 
+		(detection1->distance > (detection2->distance - mergeAcceptance)))
+		{
+			distInRange = true;
+		}
+	}
+	else if (mergeDetectionMode == eDistance)
+	{
+		if ((detection1->distanceFromBumper < (detection2->distanceFromBumper + mergeAcceptance)) && 
+		(detection1->distanceFromBumper > (detection2->distanceFromBumper - mergeAcceptance)))
 		{
 			distInRange = true;
 		}
@@ -493,4 +713,43 @@ bool FOV_2DScan::isInRange(DetectionData* detection1, DetectionData* detection2 
 void FOV_2DScan::closeEvent(QCloseEvent * event)
 {
 	emit closed();
+}
+
+void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
+{
+    // for most widgets
+    QPoint globalPos = mapToGlobal(pos);
+    // for QAbstractScrollArea and derived classes you would use:
+    // QPoint globalPos = myWidget->viewport()->mapToGlobal(pos); 
+
+
+	QMenu mainMenu;
+	QMenu* menuMergeDetection = mainMenu.addMenu("Merge Detection Mode");
+	QMenu* menuMergeDisplay = mainMenu.addMenu("Merge Display Mode");
+	QMenu* menuMeasureMode = mainMenu.addMenu("Measure Mode");
+   
+	menuMergeDetection->addAction(noMergeAction);
+	menuMergeDetection->addAction(radialAction);
+	menuMergeDetection->addAction(distanceAction);
+
+	menuMergeDisplay->addAction(noMergeDisplayAction);
+	menuMergeDisplay->addAction(individualDistanceDisplayAction);
+	menuMergeDisplay->addAction(mergeDistanceDisplayAction);
+
+	menuMeasureMode->addAction(measureRadialAction);
+	menuMeasureMode->addAction(measureFromBumperAction);
+
+	mainMenu.addAction(showPaletteAction);
+
+    QAction* selectedItem = mainMenu.exec(globalPos);
+    if (selectedItem)
+    {
+//		if (selectedItem == palette)
+//			ShowPalette = !ShowPalette;
+        // something was chosen, do stuff
+    }
+    else
+    {
+        // nothing was chosen
+    }
 }
