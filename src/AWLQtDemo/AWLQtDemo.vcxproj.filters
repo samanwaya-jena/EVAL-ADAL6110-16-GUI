@@ -42,6 +42,9 @@
     <Filter Include="Installable DLLs">
       <UniqueIdentifier>{2288fec3-c645-4398-b66e-947cd4c5104a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Installable Plugins">
+      <UniqueIdentifier>{7fc9c3c1-d6ce-4b0f-98c4-2562e15940fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -227,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -755,14 +761,15 @@
     <None Include="Aerostar-logoForIcon128.bmp">
       <Filter>Installable Files</Filter>
     </None>
-    <None Include="..\InstallableDLLs\platforms\qwindows.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
     <None Include="AWLQtDemo.ico">
       <Filter>Installable Files</Filter>
+    </None>
+    <None Include="plugin1.bin" />
+    <None Include="..\InstallableDLLs\platforms\qwindows.dll">
+      <Filter>Installable Plugins</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
+      <Filter>Installable Plugins</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -213,6 +213,7 @@
     <ClInclude Include="ReceiverCANCapture.h" />
     <ClInclude Include="ReceiverCapture.h" />
     <ClInclude Include="ReceiverFileCapture.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Sensor.h" />
     <ClInclude Include="Subscription.h" />
     <ClInclude Include="Tracker.h" />
@@ -230,6 +231,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Rcc%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+      <SubType>Designer</SubType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -532,12 +534,8 @@
     <None Include="..\InstallableDLLs\pcl_visualization_release.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\InstallableDLLs\platforms\qwindows.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
+    <None Include="..\InstallableDLLs\platforms\qwindows.dll" />
+    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll" />
     <None Include="..\InstallableDLLs\Policy.1.1.OpenNI.Net.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -790,6 +788,7 @@
     <None Include="ChannelMask7.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="plugin1.bin" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="InstallableDLLs\D3DCompiler_43.dll">
