@@ -1010,7 +1010,7 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 
 	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
-	if (comboIndex <= 0) return;
+	if (comboIndex < 0) return;
 
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	registerAddress = settingsPtr->registersFPGA[comboIndex].address;

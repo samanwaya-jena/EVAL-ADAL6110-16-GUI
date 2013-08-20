@@ -292,6 +292,12 @@ void ReceiverCANCapture::DoOneThreadIteration()
 					}
 					responseString.clear();
 				}
+				else if (c == 0x07) // BELL 
+				{
+					DebugFilePrintf(outFile, "CanLine error: %s\n", responseString.c_str());
+					responseString.clear();
+				}
+
 			}
 			// read_char returned false.  
 			// This means we have a time out on the port after receiveTimeOutInMillisec.
@@ -389,9 +395,14 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 		return bResult;
 	}
 
-	if (inResponse[0] != 't') 
+	if (inResponse[0] == 'z')
 	{
-		DebugFilePrintf(outFile, "CanLine bad: %s", inResponse.c_str());
+		DebugFilePrintf(outFile, "CanLine ack: %s\n", inResponse.c_str());
+		return (bResult);
+	}
+	else if (inResponse[0] != 't') 
+	{
+		DebugFilePrintf(outFile, "CanLine bad: %s\n", inResponse.c_str());
 		return (bResult);
 	}
 
@@ -766,7 +777,7 @@ void ReceiverCANCapture::ParseParameterQuery(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterResponse(AWLCANMessage &inMsg)
 {
-	unsigned char paramType = inMsg.data[2];
+	unsigned char paramType = inMsg.data[1];
 
 	switch (paramType) {
 	case 0x01:
@@ -807,7 +818,7 @@ void ReceiverCANCapture::ParseParameterResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterError(AWLCANMessage &inMsg)
 {
-	unsigned char paramType = inMsg.data[2];
+	unsigned char paramType = inMsg.data[1];
 
 	switch (paramType) {
 	case 0x01:
@@ -864,7 +875,7 @@ void ReceiverCANCapture::ParseParameterAlgoParameterResponse(AWLCANMessage &inMs
 void ReceiverCANCapture::ParseParameterFPGARegisterResponse(AWLCANMessage &inMsg)
 {
 	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
-	uint16_t registerValue=  *(uint16_t *) &inMsg.data[4];
+	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
@@ -882,7 +893,7 @@ void ReceiverCANCapture::ParseParameterBiasResponse(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseParameterADCRegisterResponse(AWLCANMessage &inMsg)
 {
 	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
-	uint16_t registerValue=  *(uint16_t *) &inMsg.data[4];
+	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
@@ -1224,6 +1235,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::Chann
 	bool bMessageOk = WriteMessage(message);
 
 	receiverStatus.bInPlayback = bMessageOk;
+	if (frameRate > 0) receiverStatus.frameRate = frameRate;
 	return(bMessageOk);
 }
 
@@ -1248,6 +1260,8 @@ bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ReceiverCapture::Channel
 	bool bMessageOk = WriteMessage(message);
 
 	receiverStatus.bInRecord = bMessageOk;
+	if (frameRate > 0) receiverStatus.frameRate = frameRate;
+
 	return(bMessageOk);
 }
 
@@ -1271,7 +1285,12 @@ bool ReceiverCANCapture::StopPlayback()
 
 	bool bMessageOk = WriteMessage(message);
 
-	if (bMessageOk) receiverStatus.bInPlayback = false;
+	if (bMessageOk)
+	{
+		receiverStatus.bInPlayback = false;
+		receiverStatus.bInRecord = false;
+	}
+
 	return(bMessageOk);
 }
 	
@@ -1295,7 +1314,11 @@ bool ReceiverCANCapture::StopRecord()
 
 	bool bMessageOk = WriteMessage(message);
 
-	return(bMessageOk);	receiverStatus.bInRecord = false;
+	if (bMessageOk)
+	{
+		receiverStatus.bInPlayback = false;
+		receiverStatus.bInRecord = false;
+	}
 	return(bMessageOk);
 }
 
