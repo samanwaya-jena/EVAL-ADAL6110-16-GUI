@@ -48,16 +48,6 @@ mThread()
 
 	SetSourceProjector(sourceProjector);
 
-#if 0
-	// Set Viewer Window to the given widget, if it exists
-	vtkSmartPointer<vtkRenderWindow> renderWindow = viewer->getRenderWindow();
-	widget->SetRenderWindow(renderWindow);
-
-    // these are useful to add to make the controls more like pcd_viewer
-    viewer->setupInteractor (widget.GetInteractor (), widget.GetRenderWindow ());
-    viewer->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-#endif
-
 	SetCurrentColorHandlerType(currentHandlerType);
 	
 	// Set callbacks for viewer
@@ -70,7 +60,6 @@ CloudViewerWin::~CloudViewerWin()
 {
 	if (!WasStopped()) Stop();
 }
-
 
 pcl::visualization::PCLVisualizer::ColorHandler * 
 CloudViewerWin::SetCurrentColorHandlerType(ColorHandlerType inColorHandlerType)
@@ -127,7 +116,8 @@ void CloudViewerWin::Go()
 void   CloudViewerWin::Stop() 
 {
 	if (mStopRequested) return;
-    mStopRequested = true;
+	mStopRequested = true;
+
 #if 0
 	if (mThread) 
 	{
@@ -136,6 +126,19 @@ void   CloudViewerWin::Stop()
 		m_thread = NULL;
 	}
 #endif
+
+	// We should close the window following this strange sequence.
+	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
+	// finalizes the application
+	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
+	vtkRenderWindowInteractor* interactor = viewer->getRenderWindow()->GetInteractor();
+	interactor->GetRenderWindow()->Finalize();
+	viewer->getRenderWindow()->SetWindowId(0);
+
+	viewer.reset();
+
+	if (viewerWnd) DestroyWindow(viewerWnd);
+
 }
 
 bool  CloudViewerWin::WasStopped()
@@ -558,15 +561,9 @@ void  FusedCloudViewer::Stop()
 	for (int i = 0; i < viewerQty; i++) 
 	{
 		viewers[i]->Stop();
-#if 1
-		//Close the window
-		vtkSmartPointer<vtkRenderWindow> window = viewers[i]->viewer->getRenderWindow ();
-		if (window) window->Finalize();
-#endif
 	}
 
 	viewers.clear();
-
 }
 	
 bool  FusedCloudViewer::WasStopped()

@@ -435,10 +435,13 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	if (fusedCloudViewer) 
 	{
-		if (fusedCloudViewer->viewers[0]) 
+		if (fusedCloudViewer->viewers.size() >= 1)
 		{
 		double height = ui.sensorHeightSpinBox->value();
 		fusedCloudViewer->viewers[0]->SetSensorHeight(height);
+
+	    mCfgSensor.distanceFromGround = height;
+		m2DScan->slotConfigChanged(&mCfgSensor);
 		}
 	}
 }
@@ -448,10 +451,14 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	if (fusedCloudViewer) 
 	{
-		if (fusedCloudViewer->viewers[0]) 
+		if (fusedCloudViewer->viewers.size() >= 1)
 		{
 		double depth = ui.sensorDepthSpinBox->value();
 		fusedCloudViewer->viewers[0]->SetSensorDepth(depth);
+
+	    
+		mCfgSensor.distanceFromBumper = 0 - depth;
+		m2DScan->slotConfigChanged(&mCfgSensor);
 		}
 	}
 }
@@ -549,6 +556,13 @@ void AWLQtDemo::on_timerTimeout()
 #endif
 		}
 	}
+
+	// Update the menus for the 3D view and camera view, since we do not get any notifiocation from them
+	if (ui.action3D_View->isChecked() && (!fusedCloudViewer || fusedCloudViewer->WasStopped())) 
+	{
+		ui.action3D_View->toggle();
+	}
+
 
 #if 0 // closing the fused viewer windows does not stop the application anymore
 	if (bContinue  && fusedCloudViewer && !fusedCloudViewer->WasStopped())
@@ -883,7 +897,6 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 
 	if (pTable->isVisible()) pTable->item(detectionID, 0)->setText(str);
 }
-
 
 void AWLQtDemo::on_view3DActionToggled()
 {
