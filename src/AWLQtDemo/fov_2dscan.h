@@ -19,7 +19,7 @@ public:
 	{
 		eNoMerge=0, //NONE
 		eRadial=1, //According to radial distance
-		eDistance=2 //  According to bumper distance
+		eLongitudinal=2 //  According to bumper distance
 	} MergeDetectionMode;
 
 
@@ -33,7 +33,7 @@ public:
 	typedef enum MeasureMode
 	{
 		eMeasureRadial=0, //Radial distance from sensor
-		eMeasureFromBumper=1 // Distance from bumper
+		eMeasureLongitudinal=1 // Distance from bumper
 	} MeasureMode;
 	
 signals:
@@ -44,7 +44,6 @@ public slots:
     void slotDetectionDataChanged(DetectionDataVect* data);
 	void ShowContextMenu(const QPoint& pos);
 	void slotPaletteAction();
-	void slotMergeDetectionAction();
 	void slotMergeDisplayAction();
 	void slotMeasureModeAction();
 
@@ -74,10 +73,6 @@ private:
 	float mergeAcceptance;
 
 	//Action Item
-	QActionGroup* groupMergeDetectionMode;
-	QAction* noMergeAction;
-	QAction* radialAction;
-	QAction* distanceAction;
 
 	QActionGroup* groupMergeDisplayMode;
 	QAction* noMergeDisplayAction;
@@ -86,7 +81,7 @@ private:
 
 	QActionGroup* groupMeasureMode;
 	QAction* measureRadialAction;
-	QAction* measureFromBumperAction; 
+	QAction* measureLongitudinalAction; 
 
 	QAction* showPaletteAction;
 
@@ -99,7 +94,7 @@ private:
     void drawTextDetection(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
     float degree_to_rad (float degrees);
     void drawAngularRuler(QPainter* p);
-    void drawDetection(QPainter* p, float angle, float width, float distanceRadial, float distanceFromBumper, int channel, int id);
+    void drawDetection(QPainter* p, float angle, float width, float distanceRadial, float distanceLongitudinal, int channel, int id);
 	void mergeDetection();
 	bool isInRange(DetectionData* detection1, DetectionData* detection2 );
     QColor getColorFromDistance(float distance);

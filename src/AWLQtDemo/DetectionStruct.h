@@ -7,8 +7,8 @@
 typedef struct
 {
     int id;									// Id of the detected object
-    float distance;							// Distance from sensor (Radial)
-	float distanceFromBumper;				// Distance from bumper
+    float distanceRadial;					// Distance from sensor (Radial)
+	float distanceLongitudinal;				// Distance from bumper
     float angle;							// Angle where the object is detected (Center)
     float angleWidth;						// Size of the object (in fact, angle width of the sensor)
 	int fromChannel;						// Channel where the object was detected
@@ -27,8 +27,8 @@ typedef struct
     float longRangeAngle;					// Max angle width for long range sensor (Including limited angle)
     float longRangeAngleStartLimited;		// Limited angle for long range sensor 
 
-    float distanceFromBumper;				// Sensor distance from bumper 
-    float distanceFromGround;				// Sensor distance from ground
+    float sensorDepth;				// Sensor distance from bumper 
+    float sensorHeight;				// Sensor distance from ground
 }ConfigSensor;
 
 typedef QVector<DetectionData> DetectionDataVect;

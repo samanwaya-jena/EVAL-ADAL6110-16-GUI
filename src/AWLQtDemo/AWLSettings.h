@@ -72,7 +72,6 @@ public:
 	float longRangeAngleStartLimited;
 
 	bool showPalette;
-	int mergeDetectionMode;
 	int mergeDisplayMode;
 	int measureMode;
 	float mergeAcceptance;

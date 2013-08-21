@@ -156,8 +156,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-    mCfgSensor.distanceFromBumper = 0 - globalSettings->sensorDepth;
-    mCfgSensor.distanceFromGround = globalSettings->sensorHeight;
+    mCfgSensor.sensorDepth = 0 - globalSettings->sensorDepth;
+    mCfgSensor.sensorHeight = globalSettings->sensorHeight;
 
 	m2DScan->slotConfigChanged(&mCfgSensor);
 
@@ -433,33 +433,43 @@ void AWLQtDemo::on_pixelSizeSpin_editingFinished()
 
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
+	double height = ui.sensorHeightSpinBox->value();
+
 	if (fusedCloudViewer) 
 	{
 		if (fusedCloudViewer->viewers.size() >= 1)
 		{
-		double height = ui.sensorHeightSpinBox->value();
-		fusedCloudViewer->viewers[0]->SetSensorHeight(height);
+		
+			fusedCloudViewer->viewers[0]->SetSensorHeight(height);
 
-	    mCfgSensor.distanceFromGround = height;
-		m2DScan->slotConfigChanged(&mCfgSensor);
 		}
+	}
+
+	if (m2DScan && !m2DScan->isHidden())
+	{
+	    mCfgSensor.sensorHeight = height;
+		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
 }
 
 
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
+	double depth = ui.sensorDepthSpinBox->value();
+
 	if (fusedCloudViewer) 
 	{
 		if (fusedCloudViewer->viewers.size() >= 1)
 		{
-		double depth = ui.sensorDepthSpinBox->value();
-		fusedCloudViewer->viewers[0]->SetSensorDepth(depth);
-
-	    
-		mCfgSensor.distanceFromBumper = 0 - depth;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		
+			fusedCloudViewer->viewers[0]->SetSensorDepth(depth);
 		}
+	}
+
+	if (m2DScan && !m2DScan->isHidden())
+	{
+	    mCfgSensor.sensorDepth = 0 - depth;
+		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
 }
 
@@ -621,12 +631,12 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 						if ((detection->distance >= receiverCapture->GetMinDistance()) && 
 							(detection->distance <= receiverCapture->GetMaxDistance())) 
 						{
-							detect.distance = detection->distance;
+							detect.distanceRadial = detection->distance;
 							detect.id = detection->detectionID;
 							detect.fromChannel =  detection->channelID;
 							detect.angle = currentAngle;
 							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
-							detect.distanceFromBumper = (-(detect.distance*cosf(DEG2RAD(detect.angle+180))))-mCfgSensor.distanceFromBumper;
+							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))))-mCfgSensor.sensorDepth;
 							vect.append(detect);
 
 							//AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);

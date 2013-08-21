@@ -115,7 +115,6 @@ bool AWLSettings::ReadSettings()
 	longRangeAngleStartLimited = settings.value("longRangeAngleStartLimited").toFloat();
 
 	showPalette = settings.value("showPalette").toInt();
-	mergeDetectionMode = settings.value("mergeDetectionMode").toInt();
 	mergeDisplayMode = settings.value("mergeDisplayMode").toInt();
 	measureMode = settings.value("measureMode").toInt();
 	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
