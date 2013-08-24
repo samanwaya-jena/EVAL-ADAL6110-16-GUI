@@ -19,6 +19,10 @@ Thumbs.db
 *.cache
 *.ilk
 *.log
+*.sdf
+*.opensdf
+*vcxproj.user
+*.ipch
 [Bb]in
 [Dd]ebug*/
 *.lib
@@ -27,9 +31,8 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-#Additionnal Visual Studio files
-*.sdf
-*.opensdf
-*vcxproj.user
-*.ipch
 [Gg]eneratedFiles*/
+*.h
+*.cpp
+[Ii]pch*/
+*.ipch

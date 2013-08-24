@@ -16,6 +16,8 @@
 
 #include "Subscription.h"
 #include "Tracker.h"
+#include "AWLSettings.h"
+
 using namespace std;
 using namespace pcl;
 
@@ -158,6 +160,11 @@ public:
 	uint32_t fpgaRegisterValueRead;
 	uint16_t adcRegisterAddressRead;
 	uint32_t adcRegisterValueRead;
+	uint16_t gpioRegisterAddressRead;
+	uint32_t gpioRegisterValueRead;
+
+	uint16_t currentAlgo;
+	uint16_t currentAlgoPendingUpdates;
 }
 ReceiverStatus;
 
@@ -169,8 +176,10 @@ ReceiverStatus;
   */
 class ReceiverCapture
 {
-// Public types
+// Public types and constants
 public:
+	
+	static const int maximumSensorFrames;  // Maximum number of frames kept in frame buffer
 	typedef boost::shared_ptr<ReceiverCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCapture> ConstPtr;
 
@@ -426,7 +435,13 @@ public:
     */
 	virtual bool StopRecord();
 
-	
+	/** \brief Issues the command to set the current algorithm in the FPGA.
+	  *\param[in] algorigthmID  ID of the selected algorithm.
+	* \return true if success.  false on error.
+	*/
+		
+	virtual bool SetAlgorithm(uint16_t algorithmID);
+
 	/** \brief Sets an internal FPGA register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
 	  *\param[in] registerValue Value to put into register.
@@ -442,11 +457,40 @@ public:
 	*/
 	virtual bool SetADCRegister(uint16_t registerAddress, uint32_t registerValue);
 
+	/** \brief Sets an internal GPIO register to the value sent as argument. 
+	  *\param[in] registerAddress Adrress of the register to change.
+	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
+	* \return true if success.  false on error.
+	*/
+		
+	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue);
+
+	/** \brief Sets algorithm parameters to the value sent as argument. 
+	  *\param[in] registerAddress Adrress of the parameter to change.
+	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
+	* \return true if success.  false on error.
+	*/
+		
+	virtual bool SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+
+	/** \brief Sets global  algorithm parameters to the value sent as argument. 
+	  *\param[in] registerAddress Adrress of the parameter to change.
+	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
+	* \return true if success.  false on error.
+	*/
+		
+	virtual bool SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+
+	/** \  an asynchronous query command to get the current algorithm.
+	* \return true if success.  false on error.
+	*/
+	virtual bool QueryAlgorithm();
+
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member. 
+	  *          placed in the receiverStatus member and in globalSettings. 
 		*/
 	virtual bool QueryFPGARegister(uint16_t registerAddress);
 
@@ -454,9 +498,33 @@ public:
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member. 
+	  *          placed in the receiverStatus member and in globalSettings. 
 		*/
 	virtual bool QueryADCRegister(uint16_t registerAddress);
+
+	/** \brief Send an asynchronous query command for a GPIO register. 
+		 *\param[in] registerAddress Adrress of the register to query.
+	  * \return true if success.  false on error.
+	  * \remarks On reception of the answer to query the register address and value will be
+	  *          placed in the receiverStatus member and in the globalSettings. 
+		*/
+	virtual bool QueryGPIORegister(uint16_t registerAddress);
+
+	/** \brief Send an asynchronous query command for an algorithm parameter. 
+		 *\param[in] registerAddress Adrress of the register to query.
+	  * \return true if success.  false on error.
+	  * \remarks On reception of the answer to query the register address and value will be
+	  *          placed in the receiverStatus member and in the globalSettings. 
+		*/
+	virtual bool QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
+
+		/** \brief Send an asynchronous query command for a global algorithm parameter. 
+		 *\param[in] registerAddress Adrress of the register to query.
+	  * \return true if success.  false on error.
+	  * \remarks On reception of the answer to query the register address and value will be
+	  *          placed in the receiverStatus member and in the globalSettings. 
+		*/
+	virtual bool QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
 
 	// public variables
 public:
@@ -502,7 +570,30 @@ public:
 protected:
 
 	
-	void FakeChannelDistance(int channel);
+	/** \brief Once all distances have been acquired in the current frame,
+	  *        push that frame into the frame buffer.
+	  *         Make sure the frameBuffer does not exceed the maximum number of frames
+	  * 		by removing the oldest frames, if necessary.
+	  *         Then, create a new "current frame" for processing.
+	  *         This should be canned only once, when all frame messages are received.
+	  *         Currently, it is invoked on reception of message 36 (las distance from last channel)
+      */
+	virtual void ProcessCompletedFrame();
+
+	/** \brief Inject distance information in the channel,  using ramp simulation
+ 	    * \param[in] channel   channel in whhich data is injected
+      */
+	void FakeChannelDistanceRamp(int channel);
+
+	/** \brief Inject distance information in the channel,  using noisy data simulation
+ 	    * \param[in] channel   channel in whhich data is injected
+      */
+	void FakeChannelDistanceNoisy(int channel);
+
+		/** \brief Inject distance information in the channel,  usingslow move simulation
+ 	    * \param[in] channel   channel in which data is injected
+      */
+	void FakeChannelDistanceSlowMove(int channel);
 
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
@@ -566,6 +657,15 @@ protected:
 	/** \brief  controls demo features such as simulatedFeedback.  demo features are on when true */
 	bool bEnableDemo;
 
+	
+	/** \brief  Pointer to the current frame information during frame acquisition */
+	SensorFrame::Ptr currentFrame;
+
+	/** \brief  Time tracker for the last frame used to calculate pacing delays in simulations. */
+	double lastElapsed;
+
+	/** \brief  debug file. */
+	ofstream outFile;
 };
 
 
