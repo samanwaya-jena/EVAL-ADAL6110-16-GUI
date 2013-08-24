@@ -36,3 +36,4 @@ _ReSharper*/
 *.cpp
 [Ii]pch*/
 *.ipch
+src/AWLQtDemo/BareBusLog.dat
