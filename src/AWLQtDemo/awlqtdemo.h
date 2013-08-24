@@ -23,10 +23,22 @@ using namespace pcl;
 namespace awl
 {
 
+
+
 class AWLQtDemo : public QMainWindow
 {
 	Q_OBJECT
 
+//		public types and enums:
+public:
+	typedef enum ParameterColumn 
+	{
+	eParameterCheckColumn = 0,
+	eParameterDescriptionColumn = 1,
+	eParameterValueColumn = 2,
+	eParameterConfirmColumn = 3
+	}
+	ParameterColumn;
 public:
 	AWLQtDemo(int argc, char *argv[]);
 	~AWLQtDemo();
@@ -59,6 +71,18 @@ private slots:
 	void on_registerFPGAGetPushButton_clicked();
 	void on_registerADCSetPushButton_clicked();
 	void on_registerADCGetPushButton_clicked();
+	void on_registerGPIOSetPushButton_clicked();
+	void on_registerGPIOGetPushButton_clicked();
+
+	void on_algo1RadioButton_setChecked(bool bChecked);
+	void on_algo2RadioButton_setChecked(bool bChecked);
+	void on_algo3RadioButton_setChecked(bool bChecked);
+
+	void on_algoParametersSetPushButton_clicked();
+	void on_algoParametersGetPushButton_clicked();
+
+	void on_globalParametersSetPushButton_clicked();
+	void on_globalParametersGetPushButton_clicked();
 
 	void on_view3DActionToggled();
 	void on_view2DActionToggled();
@@ -75,6 +99,13 @@ private slots:
 
 protected:
 	void PrepareTableViews();
+
+	void PrepareParametersView();
+	void UpdateParametersView();
+
+	void PrepareGlobalParametersView();
+	void UpdateGlobalParametersView();
+
 	void DisplayReceiverValues();
 	void AddDistanceToText(int detectionID,  QTableWidget *pTable , Detection::Ptr &detection);
 	void AddDistanceToText(int detectionID, QTableWidget *pTable, float distance);
@@ -84,6 +115,9 @@ protected:
 
 	void FillFPGAList(AWLSettings *settingsPtr);
 	void FillADCList(AWLSettings *settingsPtr);
+	void FillGPIOList(AWLSettings *settingsPtr);
+
+	void UpdateGPIOList();
 
 private:
 	Ui::AWLQtDemoClass ui;

@@ -1,5 +1,5 @@
-#ifndef AWL_RECEIVER_CAN_CAPTURE_H
-#define AWL_RECEIVER_CAN_CAPTURE_H
+#ifndef AWL_RECEIVER_BAREMETAL_CAPTURE_H
+#define AWL_RECEIVER_BAREMETAL_CAPTURE_H
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
@@ -31,51 +31,47 @@ namespace awl
 typedef struct {
     unsigned long id;        // Message id
     unsigned long timestamp; // timestamp in milliseconds	
-    unsigned char flags;     // [extended_id|1][RTR:1][reserver:6]
-    unsigned char len;       // Frame size (0.8)
-    unsigned char data[8]; // Databytes 0..7
-} AWLCANMessage;
+	uint8_t command;
+
+	uint16_t address;
+	uint32_t value;
+
+	int16_t	 frameID;
+    int16_t  channelID;
+	int16_t  peakIndex;
+	int16_t	 intensity;
+} 
+AWLBareMessage;
 
 
-/** \brief Threaded ReceiverCANCapture class is used to acquire data  from LIDA
+
+/** \brief Threaded ReceiverBareMetalCapture class is used to acquire data  from LIDA
    *		through CAN bus.
   *        The receiver file capture buffers up a few frames to faciulitae processing afterwards.
   * \author Jean-Yves Deschênes
   */
-class ReceiverCANCapture: public ReceiverCapture
+class ReceiverBareMetalCapture: public ReceiverCapture
 {
 // Public types
 public:
-	typedef boost::shared_ptr<ReceiverCANCapture> Ptr;
-    typedef boost::shared_ptr<ReceiverCANCapture> ConstPtr;
+	typedef boost::shared_ptr<ReceiverBareMetalCapture> Ptr;
+    typedef boost::shared_ptr<ReceiverBareMetalCapture> ConstPtr;
 
-	typedef enum eCANRates
-	{
-		rate10Kbps = 0,
-		rate20Kbps = 1,
-		rate50Kbps = 2,
-		rate100Kbps = 3,
-		rate125Kbps = 4,
-		rate250Kbps = 5,
-		rate500Kbps = 6,
-		rate800Kbps = 7,
-		rate1000Kbps = 8
-	};
 
 // public Methods
 public:
 
-	/** \brief ReceiverCANCapture constructor.
+	/** \brief ReceiverBareMetalCapture constructor.
  	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
  	    * \param[in] inDetectionsPerChannel number of detections per channel
       */
 
-	ReceiverCANCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannels, int argc, char** argv);
+	ReceiverBareMetalCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannels, int argc, char** argv);
 
-	/** \brief ReceiverCANCapture Destructor.  Insures that all threads are stopped before destruction.
+	/** \brief ReceiverBareMetalCapture Destructor.  Insures that all threads are stopped before destruction.
       */
-	virtual ~ReceiverCANCapture();
+	virtual ~ReceiverBareMetalCapture();
 
 	/** \brief Start the lidar Data Projection  thread
       */
@@ -100,7 +96,7 @@ public:
 	/** \brief Parse the CAN messages and call the appropriate processing function 
  	    * \param[in] inMsg  CAN message contents
       */
-	void ParseMessage(AWLCANMessage &inMsg);
+	void ParseMessage(AWLBareMessage &inMsg);
 
 		/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.
@@ -253,13 +249,6 @@ public:
 // Protected methods
 protected:
 
-	/** \brief Process the command line arguments related to the CAN port.
-	  *        Arguments are :  --bitRate%s  the bitrate command to the canPort, according to EasySync documents.
-	  *                         ("S2" = 50Kbps, "S8" = 1Mbps)
-	  *                         --comPort%s the com port identifier (default is "COM16");.
-	  */
-	virtual void ProcessCommandLineArguments(int argc, char** argv);
-
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
       */
@@ -274,108 +263,104 @@ protected:
 	  * \param[out] outMsg  The formatted CAN message.  Is invalid when false is returned.
 	  * \return true if the inResponse line contains a structured CAN message, false otherwise.
       */
-	bool ParseLine(std::string inResponse, AWLCANMessage &outMsg);
+	bool ParseLine(std::string inResponse, AWLBareMessage &outMsg);
 
 	/** \brief Read the sensor status message (001)
  	    * \param[in] inMsg  CAN message contents
       */
-	void ParseSensorStatus(AWLCANMessage &inMsg);
+	void ParseSensorStatus(AWLBareMessage &inMsg);
 
 	/** \brief Read the sensor boot status message (002)
  	    * \param[in] inMsg  CAN message contents
       */
-	void ParseSensorBoot(AWLCANMessage &inMsg);
+	void ParseSensorBoot(AWLBareMessage &inMsg);
 
 	/** \brief Read the distance readings from CAN messages (20-26 30-36)
  	    * \param[in] inMsg   CAN message contents
       */
-	void ParseChannelDistance(AWLCANMessage &inMsg);
-
-	
-
+	void ParseChannelDistance(AWLBareMessage &inMsg);
 
 	/** \brief Read the intensity readings from CAN messages (40-46 50-56)
  	    * \param[in] inMsg   CAN message contents
      */
-	void ParseChannelIntensity(AWLCANMessage &inMsg);
-
+	void ParseChannelIntensity(AWLBareMessage &inMsg);
 	
 	/** \brief Parse control messages (80) and dispatch to appropriate handling method 
  	    * \param[in] inMsg   CAN message contents
      */	
-	void ParseControlMessage(AWLCANMessage &inMsg);
+	void ParseControlMessage(AWLBareMessage &inMsg);
 
 	/** \brief Process the debug / parameter / set_parameter message (0xC0)
  	    * \param[in] inMsg   CAN message contents
 		* \ remarks	This message is normally a master message.  It is ignored. 
      */	
-	void ParseParameterSet(AWLCANMessage &inMsg);
+	void ParseParameterSet(AWLBareMessage &inMsg);
 
 	/** \brief Process the debug / parameter / Query message (0xC1)
  	    * \param[in] inMsg   CAN message contents
 		* \ remarks	This message is normally a master message.  It is ignored. 
      */	
-	void ParseParameterQuery(AWLCANMessage &inMsg);
+	void ParseParameterQuery(AWLBareMessage &inMsg);
 
 	/** \brief Process the debug / parameter / response message (0xC2)
  	    * \param[in] inMsg   CAN message contents
      */	
-	void ParseParameterResponse(AWLCANMessage &inMsg);
+	void ParseParameterResponse(AWLBareMessage &inMsg);
 
 	/** \brief Process the debug / parameter / error message (0xC3)
  	    * \param[in] inMsg   CAN message contents
 		* \remarks  The error flag is set in the receiverStatus.
      */	
-	void ParseParameterError(AWLCANMessage &inMsg);
+	void ParseParameterError(AWLBareMessage &inMsg);
 
 
-	void ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg);
-	void ParseParameterAlgoParameterResponse(AWLCANMessage &inMsg);
-	void ParseParameterFPGARegisterResponse(AWLCANMessage &inMsg);
-	void ParseParameterBiasResponse(AWLCANMessage &inMsg);
-	void ParseParameterADCRegisterResponse(AWLCANMessage &inMsg);
-	void ParseParameterPresetResponse(AWLCANMessage &inMsg);
-	void ParseParameterGlobalParameterResponse(AWLCANMessage &inMsg);
-	void ParseParameterGPIORegisterResponse(AWLCANMessage &inMsg);
-	void ParseParameterDateTimeResponse(AWLCANMessage &inMsg);
-	void ParseParameterRecordResponse(AWLCANMessage &inMsg);
-	void ParseParameterPlaybackResponse(AWLCANMessage &inMsg);
+	void ParseParameterAlgoSelectResponse(AWLBareMessage &inMsg);
+	void ParseParameterAlgoParameterResponse(AWLBareMessage &inMsg);
+	void ParseParameterFPGARegisterResponse(AWLBareMessage &inMsg);
+	void ParseParameterBiasResponse(AWLBareMessage &inMsg);
+	void ParseParameterADCRegisterResponse(AWLBareMessage &inMsg);
+	void ParseParameterPresetResponse(AWLBareMessage &inMsg);
+	void ParseParameterGlobalParameterResponse(AWLBareMessage &inMsg);
+	void ParseParameterGPIORegisterResponse(AWLBareMessage &inMsg);
+	void ParseParameterDateTimeResponse(AWLBareMessage &inMsg);
+	void ParseParameterRecordResponse(AWLBareMessage &inMsg);
+	void ParseParameterPlaybackResponse(AWLBareMessage &inMsg);
 
-	void ParseParameterAlgoSelectError(AWLCANMessage &inMsg);
-	void ParseParameterAlgoParameterError(AWLCANMessage &inMsg);
-	void ParseParameterFPGARegisterError(AWLCANMessage &inMsg);
-	void ParseParameterBiasError(AWLCANMessage &inMsg);
-	void ParseParameterADCRegisterError(AWLCANMessage &inMsg);
-	void ParseParameterPresetError(AWLCANMessage &inMsg);
-	void ParseParameterGlobalParameterError(AWLCANMessage &inMsg);
-	void ParseParameterGPIORegisterError(AWLCANMessage &inMsg);
-	void ParseParameterDateTimeError(AWLCANMessage &inMsg);
-	void ParseParameterRecordError(AWLCANMessage &inMsg);
-	void ParseParameterPlaybackError(AWLCANMessage &inMsg);
+	void ParseParameterAlgoSelectError(AWLBareMessage &inMsg);
+	void ParseParameterAlgoParameterError(AWLBareMessage &inMsg);
+	void ParseParameterFPGARegisterError(AWLBareMessage &inMsg);
+	void ParseParameterBiasError(AWLBareMessage &inMsg);
+	void ParseParameterADCRegisterError(AWLBareMessage &inMsg);
+	void ParseParameterPresetError(AWLBareMessage &inMsg);
+	void ParseParameterGlobalParameterError(AWLBareMessage &inMsg);
+	void ParseParameterGPIORegisterError(AWLBareMessage &inMsg);
+	void ParseParameterDateTimeError(AWLBareMessage &inMsg);
+	void ParseParameterRecordError(AWLBareMessage &inMsg);
+	void ParseParameterPlaybackError(AWLBareMessage &inMsg);
 
 	/** \brief Open the CAN port
 	  * \returns true if the port is successfully opened, false otherwise.
 	  * \remarks Once the port is successfully opened, use the "reader" pointer to access the can data.
 	  *          If opening the port fails, reader is set to NULL.
 	  */
-	bool OpenCANPort();
+	bool OpenBareMetalPort();
 
 
 	/** \brief Closes the CAN port and associated objects.
 	  * \returns true if the port is successfully closed, false otherwise.
 	  */
-	bool CloseCANPort();
+	bool CloseBareMetalPort();
 
 	/** \brief Synchronous write of a sting in the stream 
  	  * \param[in] inString  Message to send
       */
 	void WriteString(std::string inString);
 
-	/** \brief Synchronous write of a CAN message in the stream 
+	/** \brief Synchronous write of a serial message in the stream 
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
       */
-	bool WriteMessage(const AWLCANMessage &inMsg);
+	bool WriteMessage(const AWLBareMessage &inMsg);
 
 	/** \brief Put the current date and time to the CAN port
  	  * \return true iof the function was successful. false otherwise.
@@ -386,15 +371,12 @@ protected:
 	bool GetStandardID(std::string &inResponse,  unsigned long &outID, int startIndex);
 
 
+
 // Protected variables
 protected:
-		std::string	sBitRate;
 		std::string sCommPort;
 		long serialPortRate;
-		uint16_t yearOffset;		   // All CAN Dates are offset from 1900
-		uint16_t monthOffset;			// All CAN months start at 0.  Posix starts aty 1.
-
-
+		
 		boost::posix_time::ptime reconnectTime;
 
 		// This trick will be used to determine when we have a complete frame.

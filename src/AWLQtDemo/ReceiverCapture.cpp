@@ -15,6 +15,7 @@
 #include "AWLSettings.h"
 #include "tracker.h"
 #include "ReceiverCapture.h"
+#include "DebugPrintf.h"
 
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
@@ -23,17 +24,22 @@ using namespace std;
 using namespace pcl;
 using namespace awl;
 
+const int ReceiverCapture::maximumSensorFrames(100);
+
+
 ReceiverCapture::ReceiverCapture(int sequenceID, int inReceiverChannelQty, int inDetectionsPerChannel):
 receiverChannelQty(inReceiverChannelQty),
 detectionsPerChannel(inDetectionsPerChannel),
 acquisitionSequence(new AcquisitionSequence(sequenceID, inReceiverChannelQty, inDetectionsPerChannel)),
 frameID(0),
 snapshotFrameID(0),
+currentFrame(new SensorFrame(0, inReceiverChannelQty, inDetectionsPerChannel)),
 currentReceiverCaptureSubscriptions(new(Subscription)),
 bIsThreaded(false),
 bSimulatedDataEnabled(false),
 bEnableDemo(false),
-injectType(eInjectRamp)
+injectType(eInjectRamp),
+lastElapsed(0)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -42,6 +48,10 @@ injectType(eInjectRamp)
 	measurementOffset = globalSettings->rangeOffset;
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
+
+	receiverStatus.currentAlgo = globalSettings->defaultAlgo;
+	receiverStatus.currentAlgoPendingUpdates = 0;
+	
 	startTime = boost::posix_time::microsec_clock::local_time();
 	InitStatus();
 }
@@ -61,6 +71,11 @@ bSimulatedDataEnabled(false)
 	minDistance = globalSettings->displayedRangeMin;
 	maxDistance = globalSettings->displayedRangeMax;
 	measurementOffset = globalSettings->rangeOffset;
+	bEnableDemo = globalSettings->bEnableDemo;
+	injectType = (InjectType) globalSettings->demoInjectType;
+
+	receiverStatus.currentAlgo = globalSettings->defaultAlgo;
+	receiverStatus.currentAlgoPendingUpdates = 0;
 
 	InitStatus();
 }
@@ -119,6 +134,8 @@ void ReceiverCapture::InitStatus()
 	receiverStatus.fpgaRegisterValueRead = 0;
 	receiverStatus.adcRegisterAddressRead = 0;
 	receiverStatus.adcRegisterValueRead = 0;
+	receiverStatus.gpioRegisterAddressRead = 0;
+	receiverStatus.gpioRegisterValueRead = 0;
 }
 
 void  ReceiverCapture::Go(bool inIsThreaded) 
@@ -342,12 +359,38 @@ bool ReceiverCapture::StartCalibration(uint8_t frameQty, float beta, ReceiverCap
 	return(true);
 }
 
+bool ReceiverCapture::SetAlgorithm(uint16_t algorithmID)
+{
+	return(true);
+}
+
 bool ReceiverCapture::SetFPGARegister(uint16_t registerAddress, uint32_t registerValue)
 {
 	return(true);
 }
 
 bool ReceiverCapture::SetADCRegister(uint16_t registerAddress, uint32_t registerValue)
+{
+	return(true);
+}
+
+
+bool ReceiverCapture::SetGPIORegister(uint16_t registerAddress, uint32_t registerValue)
+{
+	return(true);
+}
+
+bool ReceiverCapture::SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue)
+{
+	return(true);
+}
+
+bool ReceiverCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue)
+{
+	return(true);
+}
+
+bool ReceiverCapture::QueryAlgorithm()
 {
 	return(true);
 }
@@ -361,6 +404,22 @@ bool ReceiverCapture::QueryADCRegister(uint16_t registerAddress)
 {
 	return(true);
 }
+
+bool ReceiverCapture::QueryGPIORegister(uint16_t registerAddress)
+{
+	return(true);
+}
+
+bool ReceiverCapture::QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress)
+{
+	return(true);
+}
+
+bool ReceiverCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress)
+{
+	return(true);
+}
+
 
 void ReceiverCapture::DoThreadLoop()
 
@@ -406,3 +465,357 @@ double ReceiverCapture::GetElapsed()
 }
 
 
+
+void ReceiverCapture::ProcessCompletedFrame()
+
+{
+	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+	// timestamp the currentFrame
+	double elapsed = GetElapsed();
+	currentFrame->timeStamp = GetElapsed();
+	// And timestamp all the distances
+	int channelQty = currentFrame->channelFrames.size();
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
+	{
+			ChannelFrame::Ptr channelPtr = currentFrame->channelFrames.at(channelIndex);
+			channelPtr->timeStamp = currentFrame->timeStamp;
+
+			int detectionQty = channelPtr->detections.size();
+			for (int detectionIndex = 0; detectionIndex < detectionQty; detectionIndex++) 
+			{
+				Detection::Ptr detection = channelPtr->detections.at(detectionIndex);
+				detection->timeStamp = currentFrame->timeStamp;
+				detection->firstTimeStamp = currentFrame->timeStamp;
+			}
+	}
+
+
+	// Push the current frame in the frame buffer
+	acquisitionSequence->sensorFrames.push(currentFrame);
+	currentReceiverCaptureSubscriptions->PutNews();
+
+	// Make sure we do not keep too many of those frames around.
+	// Remove the older frame if we exceed the buffer capacity
+	if (acquisitionSequence->sensorFrames.size() > maximumSensorFrames) 
+	{
+		acquisitionSequence->sensorFrames.pop();
+	}
+
+	
+	// Recalculate the tracks
+	acquisitionSequence->BuildTracks(currentFrame->timeStamp);
+
+	// Create a new current frame.
+	uint32_t frameID = acquisitionSequence->AllocateFrameID();
+	int channelsRequired = acquisitionSequence->channelQty;
+	int detectionsRequired = acquisitionSequence->detectionQty;
+	
+	currentFrame = SensorFrame::Ptr(new SensorFrame(frameID, channelsRequired, detectionsRequired));
+
+
+	rawLock.unlock();
+
+	DebugFilePrintf(outFile, "FrameID- %lu", frameID);
+}
+
+
+#if 1
+static double lastDistance = 0;
+void ReceiverCapture::FakeChannelDistanceRamp(int channel)
+
+{
+
+	int detectOffset = 0;
+
+	if (channel >= 30) 
+	{
+		channel = channel - 30;
+		detectOffset = 4;
+	}
+	else 
+	{
+		channel = channel - 20;
+	}
+#if 0
+		// JYD:  Watch out ---- Channel order is patched here, because of CAN bug
+	channel = channelReorder[channel];
+#endif
+	if (channel >= 0) 
+	{
+
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		int elapsed = (int) GetElapsed();
+		float distance = elapsed % 4000 ;
+		distance /= 100;
+
+		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
+		if (distance < minDistance  || distance > 40) distance = 0.0;
+
+		lastDistance = distance;
+
+		int detectionIndex = 0+detectOffset;
+		
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+
+		// Only the first channel displays a distance
+		distance += 5;
+		if (distance < minDistance  || distance  > 40) distance = 0.0;
+		detectionIndex = 1+detectOffset;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+
+		
+		distance += 5;
+
+		if (distance < minDistance  || distance  > 40) distance = 0.0;
+		detectionIndex = 2+detectOffset;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+
+		distance += 5;
+	
+		if (distance < minDistance  || distance > 40) distance = 0.0;
+		detectionIndex = 3+detectOffset;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
+		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		rawLock.unlock();
+	}
+
+	if (channel == 6 && detectOffset == 4)
+	{
+		ProcessCompletedFrame();
+		DebugFilePrintf(outFile, "Fake");
+	}
+
+}
+
+const float simulatedDistance1 = 20.0;
+const float simulatedDistanced2 = 12.0;
+
+const float maxSimulatedJitter = 0.9;
+const float simulatedPresenceRatio = 0.3;
+const int   maxSimulatedFalsePositives = 3;
+
+void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
+
+{
+
+	int detectOffset = 0;
+
+	if (channel >= 30) 
+	{
+		channel = channel - 30;
+		detectOffset = 4;
+	}
+	else 
+	{
+		channel = channel - 20;
+	}
+#if 0
+		// JYD:  Watch out ---- Channel order is patched here, because of CAN bug
+	channel = channelReorder[channel];
+#endif
+	if (channel == 0) 
+	{
+
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		int elapsed = (int) GetElapsed();
+
+		double distance = simulatedDistance1; 
+		// Add jitter to the detection
+		distance += ((maxSimulatedJitter * rand() / RAND_MAX)) - (maxSimulatedJitter/2);
+		
+		// Check if we should create a "false negative to the detection
+		bool bIsPresent = (rand()*1.0 / RAND_MAX) < simulatedPresenceRatio;
+
+		if (distance < minDistance  || distance  > maxDistance) distance = 0.0;
+
+		int detectionIndex = 0+detectOffset;
+		if (bIsPresent) 
+		{
+			currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
+			currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
+			currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+			detectionIndex++;
+		}
+
+		int falsePositiveQty = ((maxSimulatedFalsePositives * rand() / RAND_MAX));
+		for (int i = 0; i < falsePositiveQty; i++) 
+		{
+			// Simulate the distance between minDistance maxDistance
+			distance = minDistance + ((maxDistance - minDistance) * rand() / RAND_MAX);
+			currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
+			currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
+			currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+
+			detectionIndex++;
+		}
+
+
+		rawLock.unlock();
+	}
+
+	if (channel == 6 && detectOffset == 4)
+	{
+		DebugFilePrintf(outFile, "Fake");
+		ProcessCompletedFrame();
+	}
+
+}
+
+
+// Sensor transitions going from left to right...
+
+const int channelTransitionQty(13);
+int channelTransitions[channelTransitionQty][2] =
+{
+	{0, -1},
+	{0, 1},
+	{1, -1},
+	{1, 4},
+	{1, -1},
+	{1, 5},
+	{5, -1},
+	{5, 2},
+	{2, -1},
+	{2, 6},
+	{2, -1},
+	{2, 3},
+	{3, -1}
+};
+
+
+int lastTransition = 0;
+int transitionDirection = 1;
+int directionPacing = 5000/channelTransitionQty; /* Every 3 seconds, we move from left to right */
+int nextElapsedDirection = 0;
+
+float distanceIncrement = 0.1;
+int distancePacing = 120; /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
+int nextElapsedDistance = 0;
+
+
+void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
+
+{
+
+	int detectOffset = 0;
+
+	if (channel >= 30) 
+	{
+		channel = channel - 30;
+		detectOffset = 4;
+	}
+	else 
+	{
+		channel = channel - 20;
+	}
+#if 0	
+	// JYD:  Watch out ---- Channel order is patched here, because of CAN bug
+	channel = channelReorder[channel];
+#endif
+	if (channel >= 0) 
+	{
+		int elapsed = (int) GetElapsed();
+		
+		// Every "directionPacing" milliseconds, we move from left to right;
+		if (elapsed > nextElapsedDirection) 
+		{
+			// We update ournext time stamp, and make sure it exceeds current time.
+			while (nextElapsedDirection < elapsed) nextElapsedDirection += directionPacing;
+
+			lastTransition += transitionDirection;
+			
+			// Going too far right, we change direction
+			if (lastTransition >= channelTransitionQty) 
+			{
+				lastTransition = channelTransitionQty - 1;
+				transitionDirection = -1;
+			}
+
+			// Going too far left, we change direction
+			if (lastTransition < 0) 
+			{
+				lastTransition = 0;
+				transitionDirection = +1;
+			}
+		}
+
+		float distanceMin = AWLSettings::GetGlobalSettings()->displayedRangeMin;
+		float distanceMax = AWLSettings::GetGlobalSettings()->displayedRangeMax;
+
+		float shortRangeMax = AWLSettings::GetGlobalSettings()->shortRangeDistance;
+
+		// Every "distancePacing" milliseconds, we move backwards or forward;
+		if (elapsed > nextElapsedDistance) 
+		{
+				// We update ournext time stamp, and make sure it exceeds current time.
+			while (nextElapsedDistance < elapsed) nextElapsedDistance += distancePacing;
+
+			lastDistance += distanceIncrement;
+			
+			// Going too far , we change direction
+			if (lastDistance >= distanceMax) 
+			{
+				lastDistance = distanceMax;
+				distanceIncrement = -distanceIncrement;
+			}
+
+			// Going too far left, we change direction
+			if (lastDistance < distanceMin) 
+			{
+				lastDistance = distanceMin;
+				distanceIncrement = -distanceIncrement;
+			}
+		}
+
+		currentFrame->channelFrames[channel]->timeStamp = elapsed;
+		int channelA = channelTransitions[lastTransition][0];
+		int channelB = channelTransitions[lastTransition][1];
+
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+		// Short range channels don't display at more than shortRangeMax.
+		if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
+		{
+			currentFrame->channelFrames[channelA]->detections[0]->distance =lastDistance;
+			currentFrame->channelFrames[channelA]->detections[0]->trackID = 0;
+			currentFrame->channelFrames[channelA]->detections[0]->velocity = 0;
+			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
+		}
+
+		// There may be detection in a single channel
+		if (channelB >= 0) 
+		{
+			if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
+			{
+				currentFrame->channelFrames[channelB]->detections[0]->distance =lastDistance;
+				currentFrame->channelFrames[channelB]->detections[0]->trackID = 0;
+				currentFrame->channelFrames[channelB]->detections[0]->velocity = 0;
+				currentFrame->channelFrames[channel]->timeStamp = elapsed;
+			}
+		}
+
+
+
+		rawLock.unlock();
+		lastElapsed = elapsed;
+	
+	}
+
+	if (channel == 6 && detectOffset == 4)
+	{
+		ProcessCompletedFrame();
+		DebugFilePrintf(outFile, "Fake");
+	}
+
+}
+
+
+#endif

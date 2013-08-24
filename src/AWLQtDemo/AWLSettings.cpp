@@ -26,6 +26,7 @@ sCANCommPort("COM16"),
 sCANBitRate("S8")
 
 {
+	cameraView = 3;
 }
 
 AWLSettings * AWLSettings::InitSettings()
@@ -53,6 +54,7 @@ bool AWLSettings::ReadSettings()
 		registerFPGA.address = settings.value("address").toUInt();
 		registerFPGA.sDescription = settings.value("description").toString();
 		registerFPGA.value = 0L;
+		registerFPGA.pendingUpdates = 0;
 		
 		registersFPGA.append(registerFPGA);
 	}
@@ -70,10 +72,81 @@ bool AWLSettings::ReadSettings()
 		registerADC.address = settings.value("address").toUInt();
 		registerADC.sDescription = settings.value("description").toString();
 		registerADC.value = 0L;
+		registerADC.pendingUpdates = 0;
 		registersADC.append(registerADC);
 
 	}
 	settings.endArray();
+	settings.endGroup();
+
+	settings.beginGroup("GPIOs");
+	size = settings.beginReadArray("register");
+	for (int i = 0; i < size; ++i) 
+	{
+		settings.setArrayIndex(i);
+		RegisterSettings registerGPIO;
+		registerGPIO.sIndex = settings.value("index").toString();
+		registerGPIO.address = settings.value("address").toUInt();
+		registerGPIO.sDescription = settings.value("description").toString();
+		registerGPIO.value = 0L;
+		registerGPIO.pendingUpdates = 0;
+		registersGPIO.append(registerGPIO);
+
+	}
+	settings.endArray();
+	settings.endGroup();
+
+	// Default algo
+	settings.beginGroup("algos");
+	defaultAlgo = settings.value("defaultAlgo").toInt();
+	settings.endGroup();
+
+	// Load all algorithm parameters for all algorithms and for global parameters
+	for (int algoIndex = 0; algoIndex <= ALGO_QTY; algoIndex++)
+	{
+		QString sAlgoGroupName;
+		sAlgoGroupName.sprintf("Algo%02d", algoIndex);
+
+		settings.beginGroup(sAlgoGroupName);
+
+		sAlgoNames[algoIndex] = settings.value("algoName").toString();
+
+		size = settings.beginReadArray("parameter");
+		for (int i = 0; i < size; ++i) 
+		{
+			settings.setArrayIndex(i);
+			AlgorithmParameters parameters;
+			parameters.sIndex = settings.value("index").toString();
+			parameters.address = settings.value("address").toUInt();
+			parameters.sDescription = settings.value("description").toString();
+			QString sType = settings.value("type").toString();
+			if (!sType.compare("int")) 
+			{
+				parameters.paramType = eAlgoParamInt;
+				parameters.intValue = settings.value("default").toInt();
+				parameters.floatValue = 0.0;
+			}
+			else if (!sType.compare("float")) 
+			{
+				parameters.paramType = eAlgoParamFloat;
+				parameters.floatValue = 0;
+				parameters.floatValue = settings.value("default").toFloat();
+			}
+
+			parameters.pendingUpdates = 0;
+			parametersAlgos[algoIndex].append(parameters);
+
+		}
+
+		settings.endArray();
+		settings.endGroup();
+	}
+
+	// Other settings
+
+	settings.beginGroup("demoMode");
+	bEnableDemo = settings.value("enableDemo").toBool();
+	this->demoInjectType = settings.value("injectType").toInt();
 	settings.endGroup();
 
 	settings.beginGroup("layout");
@@ -81,11 +154,6 @@ bool AWLSettings::ReadSettings()
 	bDisplay2DWindow = settings.value("display2DWindow").toBool();
 	bDisplayScopeWindow = settings.value("displayScopeWindow").toBool();
 	bDisplayCameraWindow = settings.value("displayCameraWindow").toBool();
-	settings.endGroup();
-
-	settings.beginGroup("demoMode");
-	bEnableDemo = settings.value("enableDemo").toBool();
-	demoInjectType = settings.value("injectType").toInt();
 	settings.endGroup();
 
 	settings.beginGroup("calibration");
@@ -121,6 +189,16 @@ bool AWLSettings::ReadSettings()
 	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
 	settings.endGroup();
 
+	
+	settings.beginGroup("receiver");
+	sReceiverType = settings.value("receiverType").toString();
+	settings.endGroup();
+
+	settings.beginGroup("bareMetalComm");
+	sBareMetalCommPort = settings.value("commPort").toString();
+	serialBareMetalPortRate = settings.value("serialPortRate").toLongLong();
+	settings.endGroup();
+
 	settings.beginGroup("CAN");
 	sCANCommPort = settings.value("commPort").toString();
 	sCANBitRate = settings.value("bitRate").toString();
@@ -141,3 +219,60 @@ bool AWLSettings::ReadSettings()
 
 	return(true);
 }
+
+
+int AWLSettings::FindRegisterFPGAByAddress(uint16_t inAddress)
+
+{
+	for (int i = 0; i < registersFPGA.count(); i++) 
+	{
+		if (registersFPGA[i].address == inAddress)
+		{
+			return(i);
+		}
+	}
+
+	return(-1);
+}
+
+int AWLSettings::FindRegisterADCByAddress(uint16_t inAddress)
+
+{
+	for (int i = 0; i < registersADC.count(); i++) 
+	{
+		if (registersADC[i].address == inAddress)
+		{
+			return(i);
+		}
+	}
+
+	return(-1);
+}
+
+int AWLSettings::FindRegisterGPIOByAddress(uint16_t inAddress)
+
+{
+	for (int i = 0; i < registersGPIO.count(); i++) 
+	{
+		if (registersGPIO[i].address == inAddress)
+		{
+			return(i);
+		}
+	}
+
+	return(-1);
+}
+
+int AWLSettings::FindAlgoParamByAddress(QList<AlgorithmParameters>&paramList, uint16_t inAddress)
+{
+	for (int i = 0; i < paramList.count(); i++) 
+	{
+		if (paramList[i].address == inAddress)
+		{
+			return(i);
+		}
+	}
+
+	return(-1);
+}
+

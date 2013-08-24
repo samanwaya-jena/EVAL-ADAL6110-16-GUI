@@ -24,7 +24,6 @@ using namespace std;
 using namespace pcl;
 using namespace awl;
 
-ofstream outFile;
 
 ReceiverUDPCapture::ReceiverUDPCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel):
 ReceiverCapture(inSequenceID, inReceiverChannelQty, inDetectionsPerChannel),

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>317</height>
+    <height>316</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -569,7 +569,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
@@ -590,7 +590,7 @@ stop: 0.3 #808080
         <x>126</x>
         <y>10</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -612,7 +612,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -676,7 +679,7 @@ color: rgb(255,255,255);</string>
         <x>376</x>
         <y>10</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -698,7 +701,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -762,7 +768,7 @@ color: rgb(255,255,255);</string>
         <x>627</x>
         <y>10</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -781,7 +787,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -845,7 +854,7 @@ color: rgb(255,255,255);</string>
         <x>5</x>
         <y>120</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -867,7 +876,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -931,7 +943,7 @@ color: rgb(255,255,255);</string>
         <x>256</x>
         <y>120</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -953,7 +965,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -1017,7 +1032,7 @@ color: rgb(255,255,255);</string>
         <x>507</x>
         <y>120</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -1039,7 +1054,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -1103,7 +1121,7 @@ color: rgb(255,255,255);</string>
         <x>760</x>
         <y>120</y>
         <width>240</width>
-        <height>105</height>
+        <height>107</height>
        </rect>
       </property>
       <property name="font">
@@ -1125,7 +1143,10 @@ color: rgb(255,255,255);</string>
        <enum>QFrame::Panel</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
       </property>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -1182,6 +1203,492 @@ color: rgb(255,255,255);</string>
         <string>Level</string>
        </property>
       </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="calibrationTab">
+     <attribute name="title">
+      <string>Calibration</string>
+     </attribute>
+     <widget class="QGroupBox" name="internalCalibrationGroupBox">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>10</y>
+        <width>201</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Internal Calibration</string>
+      </property>
+      <widget class="QGroupBox" name="calibrationChannelMaskGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>171</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Channel mask</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <widget class="QCheckBox" name="calibrationChannel7CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>20</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>7</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="calibrationChannel6CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>20</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>6</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="calibrationChannel5CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>20</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>5</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="calibrationChannel2CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>70</x>
+          <y>40</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string> 2</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="calibrationChannel3CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>40</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>3</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="calibrationChannel1CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>40</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string> 1</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="calibrationChannel4CheckBox">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>40</y>
+          <width>31</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>4</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="calibrationBetaLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>53</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>Beta:</string>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="calibrationBetaDoubleSpinBox">
+       <property name="geometry">
+        <rect>
+         <x>91</x>
+         <y>50</y>
+         <width>51</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="calibrationFrameQtySpinBox">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>20</y>
+         <width>51</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="suffix">
+        <string/>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="value">
+        <number>100</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="calibrationFrameQtyLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>23</y>
+         <width>61</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>Frame qty:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="calibrateButton">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>180</y>
+         <width>75</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Calibrate</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="externalcalibrationGroupBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>371</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Sensor Range and position</string>
+      </property>
+      <widget class="QGroupBox" name="sensorPositionGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>341</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Sensor Position</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <widget class="QDoubleSpinBox" name="sensorHeightSpinBox">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>20</y>
+          <width>62</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="suffix">
+         <string>m.</string>
+        </property>
+        <property name="minimum">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>10.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>1.380000000000000</double>
+        </property>
+       </widget>
+       <widget class="QLabel" name="sensorHeightLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>21</y>
+          <width>71</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Sensor height:</string>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="sensorDepthSpinBox">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>19</y>
+          <width>62</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="suffix">
+         <string>m.</string>
+        </property>
+        <property name="minimum">
+         <double>-100.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>10.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>-1.000000000000000</double>
+        </property>
+       </widget>
+       <widget class="QLabel" name="sensorDepthLabel">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>20</y>
+          <width>71</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Sensor depth:</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="receiverCalibrationGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>341</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Measurement Offsets</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <widget class="QLabel" name="measurementOffsetLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>23</y>
+          <width>71</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Range offset:</string>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="measurementOffsetSpinBox">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>20</y>
+          <width>62</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="suffix">
+         <string>m.</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="minimum">
+         <double>-40.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>40.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="sensorRangeGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>341</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Displayed Range</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <widget class="QLabel" name="sensorRangeMinLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>23</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Range min:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="sensorRangeMaxLabel">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>23</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Range max:</string>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="sensorRangeMinSpinBox">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>20</y>
+          <width>62</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="suffix">
+         <string>m.</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="sensorRangeMaxSpinBox">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>20</y>
+          <width>62</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="suffix">
+         <string>m.</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>30.000000000000000</double>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="controlTab">
@@ -1522,85 +2029,17 @@ color: rgb(255,255,255);</string>
        </widget>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="algoGroupBox">
-      <property name="geometry">
-       <rect>
-        <x>510</x>
-        <y>10</y>
-        <width>121</width>
-        <height>111</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Detection Algorithm</string>
-      </property>
-      <widget class="QRadioButton" name="algo1Checkbox">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>70</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Threshold</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="algo2RadioButton">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>40</y>
-         <width>70</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Wavelet 1</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="algo3RadioButton">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>60</y>
-         <width>70</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Wavelet 2</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="algo4RadioButton">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>80</y>
-         <width>70</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Double-d</string>
-       </property>
-      </widget>
-     </widget>
      <widget class="QGroupBox" name="injectSimulatedGroupBox">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>190</y>
+        <x>520</x>
+        <y>10</y>
         <width>121</width>
         <height>41</height>
        </rect>
       </property>
       <property name="title">
-       <string>Inject Ramp</string>
+       <string>Simulation</string>
       </property>
       <widget class="QCheckBox" name="injectSimulatedCheckbox">
        <property name="geometry">
@@ -2276,7 +2715,7 @@ color: rgb(255,255,255);</string>
       </widget>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab">
+    <widget class="QWidget" name="registersTab">
      <attribute name="title">
       <string>Registers</string>
      </attribute>
@@ -2627,489 +3066,474 @@ color: rgb(255,255,255);</string>
       </widget>
      </widget>
     </widget>
-    <widget class="QWidget" name="calibrationTab">
+    <widget class="QWidget" name="gpiosTab">
      <attribute name="title">
-      <string>Calibration</string>
+      <string>GPIOs</string>
      </attribute>
-     <widget class="QGroupBox" name="internalCalibrationGroupBox">
+     <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>20</x>
         <y>10</y>
-        <width>201</width>
+        <width>311</width>
         <height>211</height>
        </rect>
       </property>
       <property name="title">
-       <string>Internal Calibration</string>
+       <string>GPIOs</string>
       </property>
-      <widget class="QGroupBox" name="calibrationChannelMaskGroupBox">
+      <widget class="QListWidget" name="registerGPIOListWidget">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>171</width>
-         <height>61</height>
+         <x>20</x>
+         <y>30</y>
+         <width>261</width>
+         <height>121</height>
+        </rect>
+       </property>
+       <property name="midLineWidth">
+        <number>-1</number>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="verticalScrollMode">
+        <enum>QAbstractItemView::ScrollPerItem</enum>
+       </property>
+       <property name="flow">
+        <enum>QListView::TopToBottom</enum>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="viewMode">
+        <enum>QListView::ListMode</enum>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="registerGPIOGetPushButton">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Get</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="registerGPIOSetPushButton">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Set</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="AlgoTab">
+     <attribute name="title">
+      <string>Algo Control</string>
+     </attribute>
+     <widget class="QGroupBox" name="algoGroupBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>521</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Algorithm parameters</string>
+      </property>
+      <widget class="QGroupBox" name="algoSelectGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>121</width>
+         <height>91</height>
         </rect>
        </property>
        <property name="title">
-        <string>Channel mask</string>
+        <string>Detection Algorithm</string>
        </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-       <widget class="QCheckBox" name="calibrationChannel7CheckBox">
+       <widget class="QRadioButton" name="algo1RadioButton">
         <property name="geometry">
          <rect>
-          <x>130</x>
+          <x>10</x>
           <y>20</y>
-          <width>31</width>
+          <width>70</width>
           <height>17</height>
          </rect>
         </property>
         <property name="text">
-         <string>7</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="calibrationChannel6CheckBox">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>20</y>
-          <width>31</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>6</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="calibrationChannel5CheckBox">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>20</y>
-          <width>31</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>5</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="calibrationChannel2CheckBox">
-        <property name="geometry">
-         <rect>
-          <x>70</x>
-          <y>40</y>
-          <width>31</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string> 2</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="calibrationChannel3CheckBox">
-        <property name="geometry">
-         <rect>
-          <x>110</x>
-          <y>40</y>
-          <width>31</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>3</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="calibrationChannel1CheckBox">
-        <property name="geometry">
-         <rect>
-          <x>30</x>
-          <y>40</y>
-          <width>31</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string> 1</string>
+         <string>Threshold</string>
         </property>
         <property name="checked">
          <bool>false</bool>
         </property>
        </widget>
-       <widget class="QCheckBox" name="calibrationChannel4CheckBox">
+       <widget class="QRadioButton" name="algo2RadioButton">
         <property name="geometry">
          <rect>
-          <x>140</x>
+          <x>10</x>
           <y>40</y>
-          <width>31</width>
+          <width>70</width>
           <height>17</height>
          </rect>
         </property>
         <property name="text">
-         <string>4</string>
+         <string>Double W</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="algo3RadioButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>70</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Double D</string>
         </property>
        </widget>
       </widget>
-      <widget class="QLabel" name="calibrationBetaLabel">
+      <widget class="QTableWidget" name="parametersTable">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>53</y>
-         <width>31</width>
-         <height>16</height>
+         <x>160</x>
+         <y>30</y>
+         <width>341</width>
+         <height>131</height>
         </rect>
        </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
-       <property name="text">
-        <string>Beta:</string>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="calibrationBetaDoubleSpinBox">
-       <property name="geometry">
-        <rect>
-         <x>91</x>
-         <y>50</y>
-         <width>51</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="calibrationFrameQtySpinBox">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>20</y>
-         <width>51</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="value">
-        <number>100</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="calibrationFrameQtyLabel">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>23</y>
-         <width>61</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="text">
-        <string>Frame qty:</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="calibrateButton">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>180</y>
-         <width>75</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Calibrate</string>
-       </property>
-       <property name="checkable">
+       <property name="autoFillBackground">
         <bool>true</bool>
        </property>
-       <property name="checked">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(96,96,96);
+gridline-color: rgb(199, 199, 199);
+border-color: rgb(255, 255, 255);
+color: rgb(255,255,255);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>2</number>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="gridStyle">
+        <enum>Qt::SolidLine</enum>
+       </property>
+       <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="autoDefault">
+       <property name="cornerButtonEnabled">
         <bool>false</bool>
        </property>
-       <property name="default">
-        <bool>false</bool>
+       <property name="rowCount">
+        <number>8</number>
        </property>
-       <property name="flat">
+       <property name="columnCount">
+        <number>4</number>
+       </property>
+       <attribute name="horizontalHeaderVisible">
         <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>45</number>
+       </attribute>
+       <attribute name="horizontalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>10</number>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>21</number>
+       </attribute>
+       <attribute name="verticalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <column>
+        <property name="text">
+         <string>Select</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Description</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Value</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Confirm</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkState">
+         <enum>Checked</enum>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+        </property>
+       </item>
+      </widget>
+      <widget class="QPushButton" name="algoParametersSetPushButton">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Set</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="algoParametersGetPushButton">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Get</string>
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="externalcalibrationGroupBox">
+     <widget class="QGroupBox" name="globalParametersGroupBox">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>560</x>
         <y>10</y>
-        <width>371</width>
+        <width>381</width>
         <height>211</height>
        </rect>
       </property>
       <property name="title">
-       <string>Sensor Range and position</string>
+       <string>Global Parameters</string>
       </property>
-      <widget class="QGroupBox" name="sensorPositionGroupBox">
+      <widget class="QTableWidget" name="globalParametersTable">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>20</y>
+         <x>20</x>
+         <y>30</y>
          <width>341</width>
-         <height>51</height>
+         <height>131</height>
         </rect>
        </property>
-       <property name="title">
-        <string>Sensor Position</string>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
        </property>
-       <property name="flat">
+       <property name="autoFillBackground">
         <bool>true</bool>
        </property>
-       <widget class="QDoubleSpinBox" name="sensorHeightSpinBox">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>20</y>
-          <width>62</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="suffix">
-         <string>m.</string>
-        </property>
-        <property name="minimum">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>10.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="value">
-         <double>1.380000000000000</double>
-        </property>
-       </widget>
-       <widget class="QLabel" name="sensorHeightLabel">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>21</y>
-          <width>71</width>
-          <height>20</height>
-         </rect>
-        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(96,96,96);
+gridline-color: rgb(199, 199, 199);
+border-color: rgb(255, 255, 255);
+color: rgb(255,255,255);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>2</number>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="gridStyle">
+        <enum>Qt::SolidLine</enum>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="cornerButtonEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="rowCount">
+        <number>8</number>
+       </property>
+       <property name="columnCount">
+        <number>4</number>
+       </property>
+       <attribute name="horizontalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>45</number>
+       </attribute>
+       <attribute name="horizontalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>10</number>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>21</number>
+       </attribute>
+       <attribute name="verticalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <column>
         <property name="text">
-         <string>Sensor height:</string>
+         <string>Select</string>
         </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sensorDepthSpinBox">
-        <property name="geometry">
-         <rect>
-          <x>260</x>
-          <y>19</y>
-          <width>62</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="suffix">
-         <string>m.</string>
-        </property>
-        <property name="minimum">
-         <double>-100.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>10.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="value">
-         <double>-1.000000000000000</double>
-        </property>
-       </widget>
-       <widget class="QLabel" name="sensorDepthLabel">
-        <property name="geometry">
-         <rect>
-          <x>180</x>
-          <y>20</y>
-          <width>71</width>
-          <height>20</height>
-         </rect>
-        </property>
+       </column>
+       <column>
         <property name="text">
-         <string>Sensor depth:</string>
+         <string>Description</string>
         </property>
-       </widget>
+       </column>
+       <column>
+        <property name="text">
+         <string>Value</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Confirm</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkState">
+         <enum>Checked</enum>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+        </property>
+       </item>
       </widget>
-      <widget class="QGroupBox" name="receiverCalibrationGroupBox">
+      <widget class="QPushButton" name="globalParametersSetPushButton">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>150</y>
-         <width>341</width>
-         <height>51</height>
+         <x>90</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
         </rect>
        </property>
-       <property name="title">
-        <string>Measurement Offsets</string>
+       <property name="text">
+        <string>Set</string>
        </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <widget class="QLabel" name="measurementOffsetLabel">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>23</y>
-          <width>71</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Range offset:</string>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="measurementOffsetSpinBox">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>20</y>
-          <width>62</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="suffix">
-         <string>m.</string>
-        </property>
-        <property name="decimals">
-         <number>1</number>
-        </property>
-        <property name="minimum">
-         <double>-40.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>40.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-       </widget>
       </widget>
-      <widget class="QGroupBox" name="sensorRangeGroupBox">
+      <widget class="QPushButton" name="globalParametersGetPushButton">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>341</width>
-         <height>51</height>
+         <x>250</x>
+         <y>170</y>
+         <width>75</width>
+         <height>23</height>
         </rect>
        </property>
-       <property name="title">
-        <string>Displayed Range</string>
+       <property name="text">
+        <string>Get</string>
        </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-       <widget class="QLabel" name="sensorRangeMinLabel">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>23</y>
-          <width>61</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Range min:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="sensorRangeMaxLabel">
-        <property name="geometry">
-         <rect>
-          <x>180</x>
-          <y>23</y>
-          <width>61</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Range max:</string>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sensorRangeMinSpinBox">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>20</y>
-          <width>62</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="suffix">
-         <string>m.</string>
-        </property>
-        <property name="decimals">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <double>1000.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sensorRangeMaxSpinBox">
-        <property name="geometry">
-         <rect>
-          <x>260</x>
-          <y>20</y>
-          <width>62</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="suffix">
-         <string>m.</string>
-        </property>
-        <property name="decimals">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <double>1000.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="value">
-         <double>30.000000000000000</double>
-        </property>
-       </widget>
       </widget>
      </widget>
     </widget>
@@ -3589,7 +4013,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>268</x>
-     <y>303</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3605,7 +4029,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>406</x>
-     <y>302</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3664,12 +4088,12 @@ color: rgb(255,255,255);</string>
    <slot>on_simulatedDataInjectCheckBox_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>570</x>
-     <y>284</y>
+     <x>582</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>560</x>
-     <y>310</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3685,7 +4109,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
-     <y>310</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3701,7 +4125,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
-     <y>310</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3717,7 +4141,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
-     <y>310</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3733,7 +4157,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>507</x>
-     <y>310</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3749,7 +4173,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
-     <y>306</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3781,7 +4205,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
-     <y>310</y>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3797,7 +4221,151 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>538</x>
-     <y>310</y>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>registerGPIOSetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerGPIOSetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>247</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>registerGPIOGetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerGPIOGetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>231</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algoParametersSetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algoParametersSetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>322</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algoParametersGetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algoParametersGetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>474</x>
+     <y>249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>591</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algo1RadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algo1RadioButton_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>117</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algo2RadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algo2RadioButton_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>152</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algo3RadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algo3RadioButton_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>115</x>
+     <y>163</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>globalParametersSetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_globalParametersSetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>768</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>840</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>globalParametersGetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_globalParametersGetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>890</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>890</x>
+     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -3825,5 +4393,14 @@ color: rgb(255,255,255);</string>
   <slot>on_registerFPGAGetPushButton_clicked()</slot>
   <slot>on_registerADCSetPushButton_clicked()</slot>
   <slot>on_registerADCGetPushButton_clicked()</slot>
+  <slot>on_registerGPIOSetPushButton_clicked()</slot>
+  <slot>on_registerGPIOGetPushButton_clicked()</slot>
+  <slot>on_algoParametersSetPushButton_clicked()</slot>
+  <slot>on_algoParametersGetPushButton_clicked()</slot>
+  <slot>on_algo1RadioButton_setChecked(bool)</slot>
+  <slot>on_algo2RadioButton_setChecked(bool)</slot>
+  <slot>on_algo3RadioButton_setChecked(bool)</slot>
+  <slot>on_globalParametersSetPushButton_clicked()</slot>
+  <slot>on_globalParametersGetPushButton_clicked()</slot>
  </slots>
 </ui>
