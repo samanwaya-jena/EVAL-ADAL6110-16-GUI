@@ -161,7 +161,7 @@ bool  ReceiverCANCapture::CloseCANPort()
 		}
 
 
-		if (port) port->close();
+		if (port  && port->is_open()) port->close();
 		reader = NULL;
 		port = NULL;
 		return(true);
@@ -1392,8 +1392,6 @@ bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, Receiver
 	*((float *) &message.data[4]) = beta;
 
 	bool bMessageOk = WriteMessage(message);
-
-	receiverStatus.bInRecord = bMessageOk;
 	return(bMessageOk);
 }
 

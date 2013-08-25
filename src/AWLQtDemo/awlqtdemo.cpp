@@ -567,15 +567,24 @@ void AWLQtDemo::on_timerTimeout()
 #endif
 	if (bContinue && receiverCapture)
 	{
-		if (receiverCapture->receiverStatus.bUpdated) {
+		// Use the frame snapped by the  as the current frame
+		// all displays will reference to.
+		uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
+
+		// Update the status information
+		if (receiverCapture->receiverStatus.bUpdated) 
+		{
 			DisplayReceiverStatus();
 		}
 	}
 
+	// Uopdate the 3D display
 
-	if (bContinue && receiver) {
+	if (bContinue && receiver) 
+	{
 		receiver->DoThreadIteration();
-		if (receiver->WasStopped()) bContinue = false;
+
+	if (receiver->WasStopped()) bContinue = false;
 	}
 
 
@@ -620,9 +629,14 @@ void AWLQtDemo::on_timerTimeout()
 
 void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 {
-
+#if 0
+	// Force update of the frame displayed by user interfaces to the currentframe
 	uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-	
+#else
+	// Use the frame snapped by the main display timer as the current frame
+	// display will «
+	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
+#endif
 	DetectionDataVect vect;
 	DetectionData detect;
 	float currentAngle = 0;
@@ -1346,8 +1360,14 @@ void AWLQtDemo::DisplayReceiverValues()
 	tableWidgets[5] = ui.distanceTable6;
 	tableWidgets[6] = ui.distanceTable7;
 
+#if 0
+	// Force update of the frame displayed by user interfaces to the currentframe
 	uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-	
+#else
+	// Use the frame snapped by the main display timer as the current frame
+	// display will «
+	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
+#endif	
 	for (int channelID = 0; channelID < channelQty; channelID++) 
 	{
 		if (channelID < receiverCapture->GetChannelQty())
@@ -1403,28 +1423,107 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, Detecti
 
 	if (pTable->isVisible())
 	{
-		pTable->item(detectionID, 0)->setText(str);
-		pTable->item(detectionID, 1)->setText(velocityStr);
+		pTable->item(detectionID, eRealTimeDistanceColumn)->setText(str);
+		pTable->item(detectionID, eRealTimeVelocityColumn)->setText(velocityStr);
 	}
 
 }
 
-void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float distance)
+void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float distance, 
+								 TrackID trackID, 
+								 Detection::ThreatLevel threatLevel, 
+								float intensity,
+								float velocity)
 
 {
-	QString str;
+	QString distanceStr;
+	QString trackStr;
+	QString velocityStr;
+	QString intensityStr;
+	QString threatStr;
 
 
 	if (distance <= 0.0)
 	{
-		str.sprintf("");
+		distanceStr.sprintf("");
+		trackStr.sprintf("");
+		velocityStr.sprintf("");
+		intensityStr.sprintf("");
+		threatStr.sprintf("");
 	}
 	else
 	{
-		str.sprintf("%f", distance);
+		distanceStr.sprintf("%f", distance);
+
+		if (trackID > 0) 
+		{
+			trackStr.sprintf("%d", trackID);
+		}
+		else 
+		{
+			trackStr.sprintf("");
+		}
+
+
+		if (velocity != AWL_FNAN) 
+		{
+			velocityStr.sprintf("%.1f", velocity);
+		}
+		else 
+		{
+			velocityStr.sprintf("");
+		}
+
+		if (intensity != AWL_FNAN)
+		{
+			intensityStr.sprintf("%.0f", intensity * 100);
+		}
+		else 
+		{
+			intensityStr.sprintf("");
+		}
+
+
+		switch(threatLevel)
+		{
+		case Detection::eThreatNone:
+			{
+				threatStr.sprintf("");
+			}
+			break;
+
+		case Detection::eThreatLow:
+			{
+				threatStr.sprintf("Low");
+			}
+			break;
+
+		case Detection::eThreatWarn:
+			{
+				threatStr.sprintf("Warn");
+			}
+			break;
+
+		case Detection::eThreatCritical:
+			{
+				threatStr.sprintf("Critical");
+			}
+			break;
+
+		default:
+			{
+			}
+
+		}
 	}
 
-	if (pTable->isVisible()) pTable->item(detectionID, 0)->setText(str);
+	if (pTable->isVisible())
+	{
+		pTable->item(detectionID, eRealTimeDistanceColumn)->setText(distanceStr);
+		pTable->item(detectionID, eRealTimeVelocityColumn)->setText(velocityStr);
+		pTable->item(detectionID, eRealTimeLevelColumn)->setText(intensityStr);
+		pTable->item(detectionID, eRealTimeTrackColumn)->setText(trackStr);
+	}
 }
 
 void AWLQtDemo::on_view3DActionToggled()

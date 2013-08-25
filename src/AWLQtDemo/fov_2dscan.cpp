@@ -308,12 +308,12 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 
 		if (measureMode == eMeasureRadial)
 		{
-			textToDisplay = QString("Ch.XX : " + QString::number(distanceMin, 'f', 2)+" m to "+ QString::number(distanceMax, 'f', 2)+" m");
+			textToDisplay = QString("Ch.XX : " + QString::number(distanceMin, 'f', 1)+" m to "+ QString::number(distanceMax, 'f', 1)+" m");
 			//backColor = getColorFromDistance(distanceRadial);
 		}
 		else
 		{
-			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalMin, 'f', 2)+" m to "+ QString::number(distanceLongitudinalMax, 'f', 2)+" m");
+			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalMin, 'f', 1)+" m to "+ QString::number(distanceLongitudinalMax, 'f', 1)+" m");
 			//backColor = getColorFromDistance(distanceFromBumper);
 		}
 	
@@ -388,12 +388,14 @@ void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float dist
 
 	if (measureMode == eMeasureRadial)
 	{
-		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceRadial, 'f', 2)+" m";
+	
+		
+		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceRadial, 'f', 1)+" m";
 		backColor = getColorFromDistance(distanceRadial);
 	}
 	else
 	{
-		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceFromBumper, 'f', 2)+" m";
+		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceFromBumper, 'f', 1)+" m";
 		backColor = getColorFromDistance(distanceFromBumper);
 	}
 	
