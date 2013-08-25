@@ -134,7 +134,17 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	ui.pixelSizeSpinBox->setValue(globalSettings->pixelSize);	
 	ui.decimationSpinBox->setValue(globalSettings->decimation);
-	
+
+	// Default values
+	ui.calibrationChannel1CheckBox->setChecked(true);
+	ui.calibrationChannel2CheckBox->setChecked(true);
+	ui.calibrationChannel3CheckBox->setChecked(true);
+	ui.calibrationChannel4CheckBox->setChecked(true);
+	ui.calibrationChannel5CheckBox->setChecked(true);
+	ui.calibrationChannel6CheckBox->setChecked(true);
+	ui.calibrationChannel7CheckBox->setChecked(true);
+
+
 	CloudViewerWin::ColorHandlerType defaultColorType = (CloudViewerWin::ColorHandlerType) globalSettings->colorStyle;
 	switch (defaultColorType) 
 	{
@@ -527,12 +537,12 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 	ReceiverCapture::ChannelMask channelMask;
 
 	channelMask.bitFieldData.channel0 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.calibrationChannel1CheckBox->isChecked();
+	channelMask.bitFieldData.channel1 = ui.calibrationChannel2CheckBox->isChecked();
+	channelMask.bitFieldData.channel2 = ui.calibrationChannel3CheckBox->isChecked();
+	channelMask.bitFieldData.channel3 = ui.calibrationChannel4CheckBox->isChecked();
+	channelMask.bitFieldData.channel4 = ui.calibrationChannel5CheckBox->isChecked();
+	channelMask.bitFieldData.channel5 = ui.calibrationChannel6CheckBox->isChecked();
+	channelMask.bitFieldData.channel6 = ui.calibrationChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 
 	if (receiverCapture) 
