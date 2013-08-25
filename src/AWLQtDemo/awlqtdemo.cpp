@@ -170,7 +170,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-    mCfgSensor.sensorDepth = 0 - globalSettings->sensorDepth;
+    mCfgSensor.sensorDepth = globalSettings->sensorDepth;
     mCfgSensor.sensorHeight = globalSettings->sensorHeight;
 
 	m2DScan->slotConfigChanged(&mCfgSensor);
@@ -487,6 +487,11 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	double depth = ui.sensorDepthSpinBox->value();
 
+	if (receiverCapture) 
+	{
+		receiverCapture->SetSensorDepth(depth);
+	}
+
 	if (fusedCloudViewer) 
 	{
 		if (fusedCloudViewer->viewers.size() >= 1)
@@ -498,7 +503,7 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 	if (m2DScan && !m2DScan->isHidden())
 	{
-	    mCfgSensor.sensorDepth = 0 - depth;
+	    mCfgSensor.sensorDepth = depth;
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
 }
@@ -680,7 +685,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 							detect.fromChannel =  detection->channelID;
 							detect.angle = currentAngle;
 							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
-							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))))-mCfgSensor.sensorDepth;
+							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))));
 							vect.append(detect);
 
 							//AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);
@@ -1407,26 +1412,8 @@ void AWLQtDemo::DisplayReceiverValues()
 void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, Detection::Ptr &detection)
 
 {
-	QString str;
-	QString velocityStr;
-
-	if (detection->distance <= 0.0)
-	{
-		str.sprintf("");
-		velocityStr.sprintf("");
-	}
-	else
-	{
-		str.sprintf("%f", detection->distance);
-		velocityStr.sprintf("%.1f", detection->velocity);
-	}
-
-	if (pTable->isVisible())
-	{
-		pTable->item(detectionID, eRealTimeDistanceColumn)->setText(str);
-		pTable->item(detectionID, eRealTimeVelocityColumn)->setText(velocityStr);
-	}
-
+	AddDistanceToText(detectionID, pTable, detection->distance, detection->trackID, detection->threatLevel,
+		detection->intensity, detection->velocity);
 }
 
 void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float distance, 
@@ -1453,7 +1440,7 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 	}
 	else
 	{
-		distanceStr.sprintf("%f", distance);
+		distanceStr.sprintf("%.2f", distance);
 
 		if (trackID > 0) 
 		{

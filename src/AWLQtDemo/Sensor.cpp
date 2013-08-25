@@ -899,8 +899,11 @@ void ReceiverCoordinates::GetXYZFromRange(float inPointX, float inPointY, float 
 	// We offset the values to the sensor offset position
 	ioCloudPoint.y += sensorHeight;
 	ioCloudPoint.z += sensorDepth;
+#else
+	// We offset the values to the sensor offset position
+	// depth is compensated for at receiver level, so we undo the offset here. 
+	ioCloudPoint.z -= sensorDepth;
 #endif
-
 }
 
 	/** \brief Sets   horizontal camera FOV.

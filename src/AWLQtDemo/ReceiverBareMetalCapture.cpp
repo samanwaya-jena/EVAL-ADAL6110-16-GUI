@@ -216,7 +216,7 @@ void ReceiverBareMetalCapture::DoOneThreadIteration()
 				FakeChannelDistanceNoisy(24);
 				FakeChannelDistanceNoisy(36);
 			}
-			else 
+			else if (injectType == eInjectSlowMove)
 			{
 				FakeChannelDistanceSlowMove(20);
 				FakeChannelDistanceSlowMove(21);
@@ -225,6 +225,15 @@ void ReceiverBareMetalCapture::DoOneThreadIteration()
 				FakeChannelDistanceSlowMove(24);
 				FakeChannelDistanceSlowMove(25);
 				FakeChannelDistanceSlowMove(36);
+			}
+			else 
+			{
+				FakeChannelDistanceConstant(20);
+				FakeChannelDistanceConstant(21);
+				FakeChannelDistanceConstant(22);
+				FakeChannelDistanceConstant(23);
+				FakeChannelDistanceConstant(24);
+				FakeChannelDistanceConstant(36);
 			}
 
 
@@ -410,6 +419,7 @@ void ReceiverBareMetalCapture::ParseChannelDistance(AWLBareMessage &inMsg)
         distance = inMsg.peakIndex;
         distance *= .375; // meters per sample;
 		distance += measurementOffset;
+		distance += sensorDepth;
 
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;

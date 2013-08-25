@@ -184,7 +184,8 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
 	//Draw bumper line
 	painter.setBrush(QBrush(Qt::darkGray));
-	painter.drawRect(QRect(width()/3, height()-config.sensorDepth*Ratio, width()/3, config.sensorDepth*Ratio));
+	// Sensor depth is a negative offset from bumper!
+	painter.drawRect(QRect(width()/3, height()+config.sensorDepth*Ratio, width()/3, -config.sensorDepth*Ratio));
 
     painter.setPen(Qt::NoPen);
     painter.setBrush(QBrush(QColor(rgblongRangeLimited)));
@@ -341,12 +342,16 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
     temp = bottomLeft;
     bottomLeft.setX(temp.x()*cosf(angleMinInRad) - temp.y()*sinf(angleMinInRad));
     //bottomLeft.setY(temp.y()*cosf(angleMinInRad) + temp.x()*sinf(angleMinInRad));
-	bottomLeft.setY(-((distanceLongitudinalMin+config.sensorDepth)*Ratio));
+	// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
+	// So, subtract the sensorDepth that was initially added in captured data.
+	bottomLeft.setY(-((distanceLongitudinalMin-config.sensorDepth)*Ratio));
 
 	temp = topRight;
     topRight.setX(temp.x()*cosf(angleMaxInRad) - temp.y()*sinf(angleMaxInRad));
     //topRight.setY(temp.y()*cosf(angleMaxInRad) + temp.x()*sinf(angleMaxInRad));
-	topRight.setY(-((distanceLongitudinalMax+config.sensorDepth)*Ratio));
+	// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
+	// So, subtract the sensorDepth that was initially added in captured data.
+	topRight.setY(-((distanceLongitudinalMax-config.sensorDepth)*Ratio));
 
 	if (bottomLeft.y() < topRight.y())
 	{
@@ -363,10 +368,6 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 	rect.moveTo(bottomLeft + QPoint((width()/2)-9, height()-rect.height()+1));
 
 	p->drawRect(rect);
-
-	
-
-
 }
 
 void FOV_2DScan::drawAngularRuler(QPainter* p)
@@ -387,9 +388,7 @@ void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float dist
 	QString textToDisplay;
 
 	if (measureMode == eMeasureRadial)
-	{
-	
-		
+	{	
 		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceRadial, 'f', 1)+" m";
 		backColor = getColorFromDistance(distanceRadial);
 	}
@@ -401,17 +400,27 @@ void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float dist
 	
 	if (backColor.lightness() < 128) penColor = Qt::white;
 
+	// JYD; Real distance  is the radial distance, plus bumper offset.
+
     drawTextDetection(p, angle, distanceRadial, textToDisplay, penColor, true, backColor);
 }
 
 void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
 {
+
     float angleInRad = degree_to_rad(angle+180);
+
+#ifndef JYD
+	// Real position of object, from sensor on  the grid is postion + bumperOffset.
+	// the sensorDepth was added at the moment of capture, so we have to remove it here.
+	pos -= config.sensorDepth;
+#endif
 
     QPoint start(0, (pos*Ratio));
     QPoint temp;
     QRect tempRect;
     QPolygon poly;
+
 
     temp = start;
     start.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));

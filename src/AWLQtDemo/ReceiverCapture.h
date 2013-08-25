@@ -202,7 +202,8 @@ public:
 	{
 		eInjectRamp = 0,
 		eInjectNoisy = 1,
-		eInjectSlowMove = 2
+		eInjectSlowMove = 2,
+		eInjectConstant = 3
 	}
 	InjectType;
 	
@@ -357,9 +358,20 @@ public:
      */
 	 double GetElapsed();
 
+	 /** \brief Sets the sensor depth from bumper, which will be added to distance measurements,
+	  *       The sensor depth is normally negative (ex: -1.75 m on I30)
+      * \param[in] inSensorDepth sensor depth from bumper, typically a negative value.
+      */
+	void SetSensorDepth(double inSensorDepth);
+
+	/** \brief Gets the sensor depth from bumper, which is added to distance measurements,
+      * \param[out] outSensorDepth sensor depth from bumper, typically a negative value.
+      */
+	void GetSensorDepth(double &outSensorDepth);
+
 
 	/** \brief Add an offet to the distance measurements.  This is different from the sensor depth, which is distance from bumper.
-      * \param[in] inMeasurementOffset sensor depth, in meters (normally negative)
+      * \param[in] inMeasurementOffset measurementOffset introduced by detection algorithm
       * \remark measurement offset is an offset in distance from sensor caused by the nature of algorithm used.
       */
 	void SetMeasurementOffset(double inMeasurementOffset);
@@ -590,10 +602,15 @@ protected:
       */
 	void FakeChannelDistanceNoisy(int channel);
 
-		/** \brief Inject distance information in the channel,  usingslow move simulation
+	/** \brief Inject distance information in the channel,  usingslow move simulation
  	    * \param[in] channel   channel in which data is injected
       */
 	void FakeChannelDistanceSlowMove(int channel);
+
+	/** \brief Inject  a constant distance information in the channel
+ 	    * \param[in] channel   channel in which data is injected
+      */
+	void FakeChannelDistanceConstant(int channel);
 
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
@@ -644,6 +661,9 @@ protected:
 	 * \remark Initialized on object creation and evertytime the Go() method is called.
 	*/
 	boost::posix_time::ptime startTime;
+
+	/** \brief  sensor depth from bumper, typically a negative value. */
+	double  sensorDepth;
 
 	/** \brief  measurement offset from sensor, introduced by detection algorithm */
 	double  measurementOffset;

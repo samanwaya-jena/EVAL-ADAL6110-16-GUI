@@ -46,6 +46,7 @@ lastElapsed(0)
 	minDistance = globalSettings->displayedRangeMin;
 	maxDistance = globalSettings->displayedRangeMax;
 	measurementOffset = globalSettings->rangeOffset;
+	sensorDepth = globalSettings->sensorDepth;
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
 
@@ -71,6 +72,7 @@ bSimulatedDataEnabled(false)
 	minDistance = globalSettings->displayedRangeMin;
 	maxDistance = globalSettings->displayedRangeMax;
 	measurementOffset = globalSettings->rangeOffset;
+	sensorDepth = globalSettings->sensorDepth;
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
 
@@ -315,14 +317,21 @@ void ReceiverCapture::GetMeasurementOffset(double &outMeasurementOffset)
 	outMeasurementOffset = measurementOffset;
 }
 
+void ReceiverCapture::SetSensorDepth(double inSensorDepth)
+{
+	sensorDepth = inSensorDepth;
+}
+
+void ReceiverCapture::GetSensorDepth(double &outSensorDepth)
+{
+	outSensorDepth = sensorDepth;
+}
 
 bool ReceiverCapture::SetPlaybackFileName(std::string inPlaybackFileName)
 {
 	receiverStatus.sPlaybackFileName = inPlaybackFileName;
 	return(true);
 }
-
-
 
 bool ReceiverCapture::SetRecordFileName(std::string inRecordFileName)
 {
@@ -817,5 +826,60 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 
 }
 
+
+
+void ReceiverCapture::FakeChannelDistanceConstant(int channel)
+
+{
+
+	int detectOffset = 0;
+
+	if (channel >= 30) 
+	{
+		channel = channel - 30;
+		detectOffset = 4;
+	}
+	else 
+	{
+		channel = channel - 20;
+	}	
+#if 0	
+	// JYD:  Watch out ---- Channel order is patched here, because of CAN bug
+	channel = channelReorder[channel];
+#endif
+	float steadyDistance = 10.0; // Evantually, change this for a INI File variable
+	if (channel >= 0) 
+	{
+		int elapsed = (int) GetElapsed();
+		
+		float  distance = steadyDistance;
+		distance += measurementOffset;
+		distance += sensorDepth;
+
+		currentFrame->channelFrames[channel]->timeStamp = elapsed;
+
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+		// Short range channels don't display at more than shortRangeMax.
+		for (int channel = 0; channel < receiverChannelQty; channel++) 
+		{
+			currentFrame->channelFrames[channel]->detections[0]->distance =distance;
+			currentFrame->channelFrames[channel]->detections[0]->trackID = 0;
+			currentFrame->channelFrames[channel]->detections[0]->velocity = 0;
+			currentFrame->channelFrames[channel]->timeStamp = elapsed;
+		}
+
+		rawLock.unlock();
+		lastElapsed = elapsed;
+	
+	}
+
+	if (channel == 6 && detectOffset == 4)
+	{
+		ProcessCompletedFrame();
+		DebugFilePrintf(outFile, "Fake");
+	}
+
+}
 
 #endif

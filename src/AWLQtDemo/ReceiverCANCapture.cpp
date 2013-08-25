@@ -253,7 +253,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceNoisy(24);
 				FakeChannelDistanceNoisy(36);
 			}
-			else 
+			else if (injectType == eInjectSlowMove)
 			{
 				FakeChannelDistanceSlowMove(20);
 				FakeChannelDistanceSlowMove(21);
@@ -263,7 +263,16 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceSlowMove(25);
 				FakeChannelDistanceSlowMove(36);
 			}
-
+			else // (injectType == eInjectConstant)
+			{
+				FakeChannelDistanceConstant(20);
+				FakeChannelDistanceConstant(21);
+				FakeChannelDistanceConstant(22);
+				FakeChannelDistanceConstant(23);
+				FakeChannelDistanceConstant(24);
+				FakeChannelDistanceConstant(25);
+				FakeChannelDistanceConstant(36);
+			}
 
 			lastElapsed = GetElapsed();
 		}
@@ -585,6 +594,8 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		float distance = (float)(distancePtr[0]);
 		distance /= 100;
 		distance += measurementOffset;
+		distance += sensorDepth;
+
 
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
@@ -600,6 +611,8 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance = (float)(distancePtr[1]);
 		distance /= 100;
 		distance += measurementOffset;
+		distance += sensorDepth;
+
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 1+detectOffset;
@@ -612,6 +625,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance = (float)(distancePtr[2]);
 		distance /= 100;
 		distance += measurementOffset;
+		distance += sensorDepth;
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 2+detectOffset;
@@ -624,6 +638,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance = (float)(distancePtr[3]);
 		distance /= 100;
 		distance += measurementOffset;
+		distance += sensorDepth;
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 3+detectOffset;
