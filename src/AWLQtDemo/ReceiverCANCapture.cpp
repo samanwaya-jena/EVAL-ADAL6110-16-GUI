@@ -148,9 +148,13 @@ bool  ReceiverCANCapture::OpenCANPort()
 
 }
 
+static int closeCANReentryCount  = 0;
 bool  ReceiverCANCapture::CloseCANPort()
 
 {
+	if (closeCANReentryCount > 0) return(false);
+
+	closeCANReentryCount++;
 		try 
 		{
 			WriteString("C\n"); // Close port
@@ -164,6 +168,7 @@ bool  ReceiverCANCapture::CloseCANPort()
 		if (port  && port->is_open()) port->close();
 		reader = NULL;
 		port = NULL;
+	    closeCANReentryCount--;
 		return(true);
 }
 
