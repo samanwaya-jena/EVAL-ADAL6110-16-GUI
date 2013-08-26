@@ -259,8 +259,10 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 	int index;
 	float distanceMin = config.longRangeDistance;
 	float distanceMax = 0;
+	float distanceAverage = 0;
 	float distanceLongitudinalMin = config.longRangeDistance;
 	float distanceLongitudinalMax = 0;
+	float distanceLongitudinalAverage = 0;
 	float angleMin = config.shortRangeAngle/2;
 	float angleMax = -config.shortRangeAngle/2;
 	QPolygon poly;
@@ -278,12 +280,21 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 			distanceMax = i->distanceRadial;
 		if (i->distanceRadial < distanceMin)
 			distanceMin = i->distanceRadial;
+		distanceAverage += i->distanceRadial;
 
 		if (i->distanceLongitudinal > distanceLongitudinalMax)
 			distanceLongitudinalMax = i->distanceLongitudinal;
 		if (i->distanceLongitudinal < distanceLongitudinalMin)
 			distanceLongitudinalMin = i->distanceLongitudinal;
+		distanceLongitudinalAverage += i->distanceLongitudinal;
 	}
+	if (data->size()) 
+	{
+		distanceAverage /= data->size(); 
+		distanceLongitudinalAverage /= data->size();
+
+	}
+
 
 	QColor backColor;
 	
@@ -307,6 +318,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 	{
 		QString textToDisplay;
 
+#if 0 // JYD: Now instead of displaying range, we display centroid (average)é
 		if (measureMode == eMeasureRadial)
 		{
 			textToDisplay = QString("Ch.XX : " + QString::number(distanceMin, 'f', 1)+" m to "+ QString::number(distanceMax, 'f', 1)+" m");
@@ -317,7 +329,19 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalMin, 'f', 1)+" m to "+ QString::number(distanceLongitudinalMax, 'f', 1)+" m");
 			//backColor = getColorFromDistance(distanceFromBumper);
 		}
-	
+#else
+		if (measureMode == eMeasureRadial)
+		{
+			textToDisplay = QString("Ch.XX : " + QString::number(distanceAverage, 'f', 1)+" m");
+			//backColor = getColorFromDistance(distanceRadial);
+		}
+		else
+		{
+			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalAverage, 'f', 1)+" m");
+			//backColor = getColorFromDistance(distanceFromBumper);
+		}
+#endif
+
 		if (backColor.lightness() < 128) 
 			pencolor = Qt::white;
 		else

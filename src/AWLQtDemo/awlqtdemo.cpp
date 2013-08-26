@@ -770,13 +770,13 @@ void AWLQtDemo::DisplayReceiverStatus()
 		formattedString.sprintf("%04X", status.fpgaRegisterAddressRead / 4);
 		ui.registerFPGAAddressGetLineEdit->setText(formattedString);
 
-		formattedString.sprintf("%X", status.fpgaRegisterValueRead);
+		formattedString.sprintf("%08X", status.fpgaRegisterValueRead);
 		ui.registerFPGAValueGetLineEdit->setText(formattedString);
 
 		formattedString.sprintf("%04X", status.adcRegisterAddressRead);
 		ui.registerADCAddressGetLineEdit->setText(formattedString);
 
-		formattedString.sprintf("%X", status.adcRegisterValueRead);
+		formattedString.sprintf("%08X", status.adcRegisterValueRead);
 		ui.registerADCValueGetLineEdit->setText(formattedString);
 
 		UpdateGPIOList();
