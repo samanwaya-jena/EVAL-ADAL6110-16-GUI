@@ -185,6 +185,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	m2DScan->slotConfigChanged(&mCfgSensor);
 
+	// Calibration 
+
 	// Menu items signals and slots
 	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
 	connect(ui.actionCamera, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
@@ -248,6 +250,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.algo2RadioButton->setChecked(true);
 	}
 
+	// Calibration 
+	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
 
 	// In demo mode, automatically force the injection of data on receiver.
 	// put demo mode in window title
