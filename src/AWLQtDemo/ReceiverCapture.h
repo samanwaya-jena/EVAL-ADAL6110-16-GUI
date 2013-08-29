@@ -272,6 +272,19 @@ public:
       */
 	virtual float GetMaxDistance() {return maxDistance;};
 
+	/** \brief Return the minimum distance for detection
+      * \param[in] inMinDistance the new minimum distance
+      * \return float indicating the minimum distance.
+      */
+	virtual float SetMinDistance(float inMinDistance);
+
+	/** \brief Return the maxiimum distance for detection
+      * \param[in] inMaxDistance the new maximum distance
+      * \return float indicating the maximimum distance.
+      */
+	virtual float SetMaxDistance(float inMinDistance);
+
+
 	/** \brief Return the number of receiver channels used for video projection
       * \return int indicating the number of channels.
       */

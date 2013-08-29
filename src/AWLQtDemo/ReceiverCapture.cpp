@@ -20,6 +20,8 @@
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
 
+#define PROGRAMMABLE_RANGE 1
+
 using namespace std;
 using namespace pcl;
 using namespace awl;
@@ -559,7 +561,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 		distance /= 100;
 
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
-		if (distance < minDistance  || distance > 40) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 
 		lastDistance = distance;
 
@@ -571,7 +573,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 
 		// Only the first channel displays a distance
 		distance += 5;
-		if (distance < minDistance  || distance  > 40) distance = 0.0;
+		if (distance < minDistance  || distance  > maxDistance) distance = 0.0;
 		detectionIndex = 1+detectOffset;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
@@ -580,7 +582,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 		
 		distance += 5;
 
-		if (distance < minDistance  || distance  > 40) distance = 0.0;
+		if (distance < minDistance  || distance  > maxDistance) distance = 0.0;
 		detectionIndex = 2+detectOffset;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
@@ -588,7 +590,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 
 		distance += 5;
 	
-		if (distance < minDistance  || distance > 40) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 3+detectOffset;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
@@ -756,9 +758,13 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 			}
 		}
 
+#ifdef PROGRAMMABLE_RANGE
+		float distanceMin = minDistance;
+		float distanceMax = maxDistance;
+#else
 		float distanceMin = AWLSettings::GetGlobalSettings()->displayedRangeMin;
 		float distanceMax = AWLSettings::GetGlobalSettings()->displayedRangeMax;
-
+#endif
 		float shortRangeMax = AWLSettings::GetGlobalSettings()->shortRangeDistance;
 
 		// Every "distancePacing" milliseconds, we move backwards or forward;
@@ -880,6 +886,18 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 		DebugFilePrintf(outFile, "Fake");
 	}
 
+}
+
+float ReceiverCapture::SetMinDistance(float inMinDistance)
+{
+	minDistance = inMinDistance;
+	return (minDistance);
+}
+
+float ReceiverCapture::SetMaxDistance(float inMaxDistance)
+{
+	maxDistance = inMaxDistance;
+	return (maxDistance);
 }
 
 #endif

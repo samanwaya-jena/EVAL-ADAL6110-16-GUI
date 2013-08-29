@@ -53,7 +53,7 @@ ReceiverChannel::ReceiverChannel(	const int inChannelID, const float inFovX, con
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	sensorHeight = globalSettings->sensorHeight;
 	sensorDepth = globalSettings->sensorDepth;
-
+//	rangeMax = globalSettings->displayedRangeMax;
 
 
 	WCHAR directoryName[255];
@@ -401,6 +401,16 @@ void ReceiverChannel::GetSensorDepth(double &outSensorDepth)
 	outSensorDepth = sensorDepth;
 }
 
+void ReceiverChannel::SetRangeMax(double inRangeMax)
+{
+	rangeMax = inRangeMax;
+}
+
+void ReceiverChannel::GetRangeMax(double &outRangeMax)
+{
+	outRangeMax = rangeMax;
+}
+
 void ReceiverChannel::SetBackgroundPtr(ReceiverChannel::FramePtr inBackgroundPtr) 
 
 {
@@ -440,6 +450,7 @@ currentCloudSubscriptions(new(Subscription))
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	sensorHeight = globalSettings->sensorHeight;
 	sensorDepth = globalSettings->sensorDepth;
+	rangeMax = globalSettings->displayedRangeMax;
 	decimationX = globalSettings->decimation;
 	decimationY = globalSettings->decimation;
 
@@ -503,7 +514,7 @@ void ReceiverProjector::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	cameraFovY = videoCapture->GetCameraFovY();
 
 	mReceiverCoordinatesPtr = ReceiverCoordinates::Ptr(new ReceiverCoordinates(frameWidth, frameHeight, 
-                                                cameraFovX, cameraFovY, sensorHeight, sensorDepth));
+                                                cameraFovX, cameraFovY, sensorHeight, sensorDepth, rangeMax));
 
 	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
 	videoLock.unlock();
@@ -652,6 +663,7 @@ void ReceiverProjector::AddDistancesToCloud()
 		GetChannel(channelID)->SetDecimation(decimationX, decimationY);
 		GetChannel(channelID)->SetSensorHeight(sensorHeight);
 		GetChannel(channelID)->SetSensorDepth(sensorDepth);
+//		GetChannel(channelID)->SetRangeMax(rangeMax);
 		GetChannel(channelID)->SetReceiver(receiverCapture, currentReceiverCaptureSubscriberID );
 	}
 
@@ -809,9 +821,28 @@ void ReceiverProjector::SetSensorDepth(double inSensorDepth)
 	cloudLock.unlock();
 }
 
+
 void ReceiverProjector::GetSensorDepth(double &outSensorDepth)
 {
 	outSensorDepth = sensorDepth;
+}
+
+void ReceiverProjector::GetRangeMax(double &outRangeMax)
+{
+	outRangeMax = rangeMax;
+}
+
+void ReceiverProjector::SetRangeMax(double inRangeMax)
+{
+
+	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
+
+	rangeMax = inRangeMax;
+#if 0
+	// There is no management of the range max value in the coordinates ptr
+	mReceiverCoordinatesPtr->SetSensorHeight(inSensorDepth);
+#endif
+	cloudLock.unlock();
 }
 
 void ReceiverProjector::SetCameraFovX(double inFovX)
@@ -860,14 +891,15 @@ void ReceiverProjector::ResetCloud()
 
 
 ReceiverCoordinates::ReceiverCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, 
-	const double inSensorHeight, double inSensorDepth):
+	const double inSensorHeight, double inSensorDepth, double inRangeMax):
 pcl::RangeImage(),
 width(inWidth),
 height(inHeight),
 fovX(inFovX),
 fovY(inFovY),
 sensorHeight(inSensorHeight),
-sensorDepth(inSensorDepth)
+sensorDepth(inSensorDepth),
+rangeMax(inRangeMax)
 {
    // We now want to create a range image from the above point cloud, with an angular resolution
    // that corresponds to the video resolution

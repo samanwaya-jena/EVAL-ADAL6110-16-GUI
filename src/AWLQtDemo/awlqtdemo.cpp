@@ -494,6 +494,8 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	    mCfgSensor.sensorHeight = height;
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
+
+	AWLSettings::GetGlobalSettings()->sensorHeight = height;
 }
 
 
@@ -520,16 +522,84 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 	    mCfgSensor.sensorDepth = depth;
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
+
+	AWLSettings::GetGlobalSettings()->sensorDepth = depth;
+}
+
+void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
+{
+	double range = ui.sensorRangeMinSpinBox->value();
+#if 1
+	if (receiverCapture) 
+	{
+		receiverCapture->SetMinDistance(range);
+	}
+#endif
+
+#if 0 // There is no range min in the fusedCloudViewer
+	if (fusedCloudViewer) 
+	{
+		if (fusedCloudViewer->viewers.size() >= 1)
+		{
+		
+			fusedCloudViewer->viewers[0]->SetSensorDepth(range);
+		}
+	}
+#endif
+
+#if 0 // There is no rangeMin used in the 2D window
+	
+	if (m2DScan && !m2DScan->isHidden())
+	{
+	    mCfgSensor.sensorDepth = depth;
+		m2DScan->slotConfigChanged(&mCfgSensor);
+	}
+#endif
+
+	AWLSettings::GetGlobalSettings()->displayedRangeMin = range;
+}
+
+void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
+{
+	double range = ui.sensorRangeMaxSpinBox->value();
+
+	if (receiverCapture) 
+	{
+		receiverCapture->SetMaxDistance(range);
+	}
+
+	if (fusedCloudViewer) 
+	{
+		if (fusedCloudViewer->viewers.size() >= 1)
+		{
+		
+			fusedCloudViewer->viewers[0]->SetRangeMax(range);
+		}
+	}
+
+	
+	if (m2DScan && !m2DScan->isHidden())
+	{
+	    mCfgSensor.longRangeDistance = range;
+		m2DScan->slotConfigChanged(&mCfgSensor);
+	}
+
+	AWLSettings::GetGlobalSettings()->displayedRangeMax = range;
+	AWLSettings::GetGlobalSettings()->longRangeDistance = range;
 }
 
 
 void AWLQtDemo::on_measurementOffsetSpin_editingFinished()
 {
+	double offset = ui.measurementOffsetSpinBox->value();
+
 	if (receiverCapture) 
 	{
-		double offset = ui.measurementOffsetSpinBox->value();
 		receiverCapture->SetMeasurementOffset(offset);
 	}
+
+	AWLSettings::GetGlobalSettings()->rangeOffset = offset;
+
 }
 
 
