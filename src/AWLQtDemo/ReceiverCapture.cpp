@@ -610,7 +610,7 @@ const float simulatedDistance1 = 20.0;
 const float simulatedDistanced2 = 12.0;
 
 const float maxSimulatedJitter = 0.9;
-const float simulatedPresenceRatio = 0.3;
+const float simulatedPresenceRatio = 0.5;
 const int   maxSimulatedFalsePositives = 3;
 
 void ReceiverCapture::FakeChannelDistanceNoisy(int channel)

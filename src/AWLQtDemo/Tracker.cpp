@@ -20,16 +20,16 @@
 using namespace std;
 using namespace awl;
 
-const double defaultDistanceDamping = 0.6; //0.6 // damping to compute the last position of the track. Range 0-1.
+const double defaultDistanceDamping = 0.5; //0.6 // damping to compute the last position of the track. Range 0-1.
 const double defaultSpeedDamping =0.6;	// 0.6 //damping to compute the last velocity of the track	
 const double defaultTrackTimeOut = (0.5*1000); //0.5 * 10000 // Track inactivity time out (converted to milliseconds) 
-const double defaultDistanceThreshold = 1.0; //1-3 or 0.5// Maximum error to correlate, in meters
+const double defaultDistanceThreshold = 0.5; //1-3 or 0.5// Maximum error to correlate, in meters
 const double defaultMinimumDistance = 1.0; // Minimum distance at which we consider an obstacle valid.
 const double defaultRoundError = 0.5;  // Time difference between two time stamps at which we consider these as same.
 
-const double defaultProbabilityThreshold = 0.7; // Probability threshold for estimation of a valid track.
+const double defaultProbabilityThreshold = 0.75; // Probability threshold for estimation of a valid track.
 const double  defaultTrackInitialProbability = 0.3; // Initial probability for a track with single detection.
-const double  defaultTrackProbabilityLoss = 0.1;  // Loss of probability for a track that has no detection in a frame
+const double  defaultTrackProbabilityLoss = 0.05;  // Loss of probability for a track that has no detection in a frame
 const double  defaultTrackProbabilityGain = 0.3;  // Gain of probability for a track after sucessful detection
 
 
@@ -272,8 +272,15 @@ void AcquisitionSequence::UpdateTracks(double inTimeStamp)
 				if (_isnan(track->velocity) && track->detections.size() >= 2)
 				{
 					track->distance = track->detections[1]->distance;
+#ifndef DEBUG_JYD
+					int debugY;
+					if (track->distance <= 8.0) 
+					{
+						debugY++;
+					}
+#endif
 					track->velocity = track->detections[1]->distance - track->detections[0]->distance;
-					track->probability = 0.2;
+					track->probability = defaultTrackInitialProbability;
 				}
 				else 
 				{
@@ -282,6 +289,13 @@ void AcquisitionSequence::UpdateTracks(double inTimeStamp)
 									   ((1-speedDamping) * track->velocity);
 					track->distance = (avgDistance * distanceDamping) +
 									  ((1 - distanceDamping) * (track->distance + (track->velocity * timeDelta)));
+#ifndef DEBUG_JYD
+					int debugZ;
+					if (track->distance <= 8.0) 
+					{
+						debugZ++;
+					}
+#endif
 
 					track->probability += defaultTrackProbabilityGain;
 					if (track->probability > 1.0) track->probability = 1.0;
@@ -365,6 +379,12 @@ void AcquisitionSequence::CleanTracks(double inTimeStamp)
 	}// while.
 	
 	remainingCount = tracks.size();
+#ifndef DEBUG_JYD
+if (remainingCount < 7) {
+	int debugK = 32;
+}
+#endif
+
 }
 
 
@@ -427,6 +447,14 @@ int AcquisitionSequence::FitDetectionToTrack(double inTimeStamp, Detection::Ptr 
 				newTrack->timeStamp = track->timeStamp;
 
 				newTrack->distance = detection->distance;
+#ifndef DEBUG_JYD
+				int debugS;
+				if (newTrack->distance <= 8.0)
+				{
+					debugS++;
+				}
+
+#endif
 				newTrack->velocity = detection->velocity;
 
 				newTrack->detections.push_back(detection);
@@ -479,6 +507,7 @@ Track::Ptr & AcquisitionSequence::CreateTrack(double inTimeStamp, Track::Vector 
 		Track::Ptr &track = Track::Ptr(new Track(trackIDGenerator++, detection->distance, (float) 0.0, detection->firstTimeStamp, detection->firstTimeStamp, Detection::eThreatNone));
 		track->velocity = NAN;  // NAN - Not a number yet
 		track->distance = detection->distance;
+
 		track->timeStamp = detection->firstTimeStamp;
 		track->firstTimeStamp = detection->firstTimeStamp;
 		trackVector.push_back(track);
