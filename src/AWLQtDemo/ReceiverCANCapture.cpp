@@ -578,6 +578,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 	int detectOffset = 0;
 	uint16_t *distancePtr = (uint16_t *) inMsg.data;
 
+	float distanceScale = 1/1.3;  // Was (5.0 / 6.0)
 	if (inMsg.id >= 30) 
 	{
 		channel = inMsg.id - 30;
@@ -597,7 +598,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 int shortRangeOffset = 0;
 		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 		float distance = (float)(distancePtr[0]);
-		distance *= (5.0 / 6.0);
+		distance *= distanceScale;
 		distance /= 100;
 		if (channel <=3) distance += shortRangeOffset;  // 50 cm for short-range
 		distance += measurementOffset;
@@ -616,15 +617,11 @@ int shortRangeOffset = 0;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
 
 		distance = (float)(distancePtr[1]);
-#if 0
-		distance = 0.0;
-#else
-		distance *= (5.0 / 6.0);
+		distance *= distanceScale;
 		distance /= 100;
 		if (channel <=3) distance += shortRangeOffset;  // 50 cm for short-range
 		distance += measurementOffset;
 		distance += sensorDepth;
-#endif
 
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
@@ -636,15 +633,11 @@ int shortRangeOffset = 0;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
 
 		distance = (float)(distancePtr[2]);
-#if 0
-		distance = 0.0;
-#else
-		distance *= (5.0 / 6.0);
+		distance *= distanceScale;
 		distance /= 100;
 		if (channel <=3) distance += shortRangeOffset;  // 50 cm for short-range
 		distance += measurementOffset;
 		distance += sensorDepth;
-#endif
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 2+detectOffset;
@@ -655,15 +648,11 @@ int shortRangeOffset = 0;
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
 
 		distance = (float)(distancePtr[3]);
-#if 0
-		distance = 0.0;
-#else
-		distance *= (5.0 / 6.0);
+		distance *= distanceScale;
 		distance /= 100;
 		if (channel <=3) distance += shortRangeOffset;  // 50 cm for short-range
 		distance += measurementOffset;
 		distance += sensorDepth;
-#endif
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 3+detectOffset;
