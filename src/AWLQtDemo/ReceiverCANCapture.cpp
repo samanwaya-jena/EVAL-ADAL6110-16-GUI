@@ -578,7 +578,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 	int detectOffset = 0;
 	uint16_t *distancePtr = (uint16_t *) inMsg.data;
 
-	float distanceScale = 1/1.3;  // Was (5.0 / 6.0)
+	float distanceScale = 1/1.22;  // Was (5.0 / 6.0)
 	if (inMsg.id >= 30) 
 	{
 		channel = inMsg.id - 30;
