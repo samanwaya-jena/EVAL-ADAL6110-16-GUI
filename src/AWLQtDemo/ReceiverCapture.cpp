@@ -49,6 +49,7 @@ lastElapsed(0)
 	maxDistance = globalSettings->displayedRangeMax;
 	measurementOffset = globalSettings->rangeOffset;
 	sensorDepth = globalSettings->sensorDepth;
+	distanceScale = globalSettings->distanceScale;
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
 
@@ -75,6 +76,7 @@ bSimulatedDataEnabled(false)
 	maxDistance = globalSettings->displayedRangeMax;
 	measurementOffset = globalSettings->rangeOffset;
 	sensorDepth = globalSettings->sensorDepth;
+	distanceScale = globalSettings->distanceScale;
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
 
@@ -484,7 +486,13 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	// timestamp the currentFrame
 	double elapsed = GetElapsed();
+
+#if 1
 	currentFrame->timeStamp = GetElapsed();
+#else
+	currentFrame->timeStamp = (currentFrame->frameID * 10.0);  // 10ms per frame
+#endif
+
 	// And timestamp all the distances
 	int channelQty = currentFrame->channelFrames.size();
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
@@ -516,6 +524,8 @@ void ReceiverCapture::ProcessCompletedFrame()
 	
 	// Recalculate the tracks
 	acquisitionSequence->BuildTracks(currentFrame->timeStamp);
+	
+DebugFilePrintf(outFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeStamp, GetElapsed());
 
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();

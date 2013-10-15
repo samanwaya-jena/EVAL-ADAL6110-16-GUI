@@ -684,6 +684,9 @@ protected:
 	/** \brief  controls the injection of simulated data.  Injection is enabled when true */
 	bool  bSimulatedDataEnabled;
 
+	/** \brief  scaling error (multiplication) introduced by clock speed variations in configurations, should be 1 by default */
+	float  distanceScale;
+
 	/** \brief  defines the type of data injected.  */
 	InjectType injectType;
 

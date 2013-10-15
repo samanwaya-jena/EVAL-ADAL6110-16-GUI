@@ -46,6 +46,7 @@ const float NAN = std::numeric_limits<float>::quiet_NaN ();
 
 AcquisitionSequence::AcquisitionSequence(int inSequenceID):
 sequenceID(inSequenceID),
+	frameID(0),
 	frameID(0)
 #ifdef TRACK_TRACKER
 ,
@@ -64,6 +65,7 @@ AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int
 sequenceID(inSequenceID),
 channelQty(inChannelQty),
 detectionQty(inDetectionQty),
+frameID(0),
 frameID(0)
 #ifdef TRACK_TRACKER
 ,
@@ -82,6 +84,7 @@ AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int
 sequenceID(inSequenceID),
 channelQty(inChannelQty),
 detectionQty(inDetectionQty),
+frameID(0),
 frameID(0)
 #ifdef TRACK_TRACKER
 ,
@@ -103,6 +106,7 @@ AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int
 sequenceID(inSequenceID),
 channelQty(inChannelQty),
 detectionQty(inDetectionQty),
+frameID(0),
 frameID(0)
 #ifdef TRACK_TRACKER
 ,
