@@ -19,7 +19,7 @@
 
 using namespace std;
 using namespace awl;
-
+#if 0
 const double defaultDistanceDamping = 0.5; //0.6 // damping to compute the last position of the track. Range 0-1.
 const double defaultSpeedDamping =0.6;	// 0.6 //damping to compute the last velocity of the track	
 const double defaultTrackTimeOut = (0.5*1000); //0.5 * 10000 // Track inactivity time out (converted to milliseconds) 
@@ -31,7 +31,19 @@ const double defaultProbabilityThreshold = 0.75; // Probability threshold for es
 const double  defaultTrackInitialProbability = 0.3; // Initial probability for a track with single detection.
 const double  defaultTrackProbabilityLoss = 0.05;  // Loss of probability for a track that has no detection in a frame
 const double  defaultTrackProbabilityGain = 0.3;  // Gain of probability for a track after sucessful detection
+#else
+const double defaultDistanceDamping = 0.6; //0.6 // damping to compute the last position of the track. Range 0-1.
+const double defaultSpeedDamping =0.6;	// 0.6 //damping to compute the last velocity of the track	
+const double defaultTrackTimeOut = (1.0*1000); //0.5 * 10000 // Track inactivity time out (converted to milliseconds) 
+const double defaultDistanceThreshold = 1.5; //1-3 or 0.5// Maximum error to correlate, in meters
+const double defaultMinimumDistance = 1.0; // Minimum distance at which we consider an obstacle valid.
+const double defaultRoundError = 0.2;  // Time difference between two time stamps at which we consider these as same.
 
+const double defaultProbabilityThreshold = 0.6; // Probability threshold for estimation of a valid track.
+const double  defaultTrackInitialProbability = 0.1; // Initial probability for a track with single detection.
+const double  defaultTrackProbabilityLoss = 0.2;  // Loss of probability for a track that has no detection in a frame
+const double  defaultTrackProbabilityGain = 0.3;  // Gain of probability for a track after sucessful detection
+#endif
 
 
 const AcquisitionSequence::TrackingMode defaultTrackingMode = AcquisitionSequence::eTrackAllChannels;
@@ -46,17 +58,13 @@ const float NAN = std::numeric_limits<float>::quiet_NaN ();
 
 AcquisitionSequence::AcquisitionSequence(int inSequenceID):
 sequenceID(inSequenceID),
-	frameID(0),
-	frameID(0)
-#ifdef TRACK_TRACKER
-,
+frameID(0),
 distanceDamping(defaultDistanceDamping),  // damping to compute the last position of the track. Range 0-1.
 speedDamping(defaultSpeedDamping),	// damping to compute the last velocity of the track	
 trackTimeOut(defaultTrackTimeOut),		// Track inactivity time out (seconds) 
 distanceThreshold(defaultDistanceThreshold), // Maximum error to correlate, in meters
 minimumDistance (defaultMinimumDistance), // Minimum distance at which we consider an obstacle valid.
 trackingMode(defaultTrackingMode)
-#endif
 
 {
 }
@@ -66,16 +74,12 @@ sequenceID(inSequenceID),
 channelQty(inChannelQty),
 detectionQty(inDetectionQty),
 frameID(0),
-frameID(0)
-#ifdef TRACK_TRACKER
-,
 distanceDamping(defaultDistanceDamping),  // damping to compute the last position of the track. Range 0-1.
 speedDamping(defaultSpeedDamping),	// damping to compute the last velocity of the track	
 trackTimeOut(defaultTrackTimeOut),		// Track inactivity time out (seconds) 
 distanceThreshold(defaultDistanceThreshold), // Maximum error to correlate, in meters
 minimumDistance (defaultMinimumDistance), // Minimum distance at which we consider an obstacle valid.
 trackingMode(defaultTrackingMode)
-#endif
 
 {
 }
@@ -85,18 +89,12 @@ sequenceID(inSequenceID),
 channelQty(inChannelQty),
 detectionQty(inDetectionQty),
 frameID(0),
-frameID(0)
-#ifdef TRACK_TRACKER
-,
 distanceDamping(defaultDistanceDamping),  // damping to compute the last position of the track. Range 0-1.
 speedDamping(defaultSpeedDamping),	// damping to compute the last velocity of the track	
 trackTimeOut(defaultTrackTimeOut),		// Track inactivity time out (seconds) 
 distanceThreshold(defaultDistanceThreshold), // Maximum error to correlate, in meters
 minimumDistance (defaultMinimumDistance), // Minimum distance at which we consider an obstacle valid.
 trackingMode(defaultTrackingMode)
-#endif
-
-
 
 {
 	ReadFile(inTrackFile, inChannelQty, inDetectionQty);
@@ -107,17 +105,12 @@ sequenceID(inSequenceID),
 channelQty(inChannelQty),
 detectionQty(inDetectionQty),
 frameID(0),
-frameID(0)
-#ifdef TRACK_TRACKER
-,
 distanceDamping(defaultDistanceDamping),  // damping to compute the last position of the track. Range 0-1.
 speedDamping(defaultSpeedDamping),	// damping to compute the last velocity of the track	
 trackTimeOut(defaultTrackTimeOut),		// Track inactivity time out (seconds) 
 distanceThreshold(defaultDistanceThreshold), // Maximum error to correlate, in meters
 minimumDistance (defaultMinimumDistance), // Minimum distance at which we consider an obstacle valid.
 trackingMode(defaultTrackingMode)
-#endif
-
 
 {
 	ReadFile(trackFileName,  inChannelQty, inDetectionQty);
@@ -179,7 +172,6 @@ void AcquisitionSequence::Clear()
 	while (sensorFrames.size()) sensorFrames.pop();
 }
 
-#ifdef TRACK_TRACKER
 
 void AcquisitionSequence::BuildTracks(double inTimeStamp) 
 {
@@ -228,7 +220,7 @@ void AcquisitionSequence::UpdateTracks(double inTimeStamp)
 		int detectionsFound = 0;
 		double maxTimeStamp = track->timeStamp;
 		std::vector<Detection::Ptr>::iterator detectionIterator = track->detections.begin();
-#if 1
+
 		int detectionQty = track->detections.size();
 		while (detectionIterator != track->detections.end())
 		{
@@ -242,18 +234,7 @@ void AcquisitionSequence::UpdateTracks(double inTimeStamp)
 
 			detectionIterator++;
 		}
-#else
-		if (track->detections.size() >= 1)
-		{
-			detectionsFound = 1;
-			avgDistance = track->detections[track->detections.size()-1]->distance;
-			maxTimeStamp = track->detections[track->detections.size()-1]->timeStamp;
-		}
-		else
-		{
-			detectionsFound = 0;
-		}
-#endif
+
 		// Estimate distance and velocity for the track
 		if (!detectionsFound) 
 		{
@@ -276,14 +257,9 @@ void AcquisitionSequence::UpdateTracks(double inTimeStamp)
 				if (_isnan(track->velocity) && track->detections.size() >= 2)
 				{
 					track->distance = track->detections[1]->distance;
-#ifndef DEBUG_JYD
-					int debugY;
-					if (track->distance <= 8.0) 
-					{
-						debugY++;
-					}
-#endif
-					track->velocity = track->detections[1]->distance - track->detections[0]->distance;
+
+					track->velocity = (track->detections[1]->distance - track->detections[0]->distance) /
+						               (timeDelta);
 					track->probability = defaultTrackInitialProbability;
 				}
 				else 
@@ -339,6 +315,7 @@ void AcquisitionSequence::CleanTracks(double inTimeStamp)
 
 	int isExpiredCount = 0;
 	int isOldCount = 0;
+	int isFastCount = 0;	
 	int keepCount = 0;
 	int remainingCount = 0;
 
@@ -347,7 +324,12 @@ void AcquisitionSequence::CleanTracks(double inTimeStamp)
 		Track::Ptr track = *trackIterator;
 		bool bSameTime = (inTimeStamp - track->timeStamp) < defaultRoundError;
 		bool bIsExpiredTrack =  abs(inTimeStamp - track->timeStamp) > trackTimeOut;
+#if 0
 		bool bIsOldEmptyTrack = (track->detections.size() <= 1) && !bSameTime;
+#else
+		bool bIsOldEmptyTrack = (track->detections.size() <= 1) && (abs(inTimeStamp - track->timeStamp) > (0.1*1000));
+#endif
+		bool bIsTooFastTrack = (!_isnan(track->velocity)) && (track->velocity > 50); // 100 m/s is arbitrary number
 
 		if (bIsExpiredTrack) 
 		{
@@ -359,7 +341,14 @@ void AcquisitionSequence::CleanTracks(double inTimeStamp)
 			trackIterator = tracks.erase(trackIterator);
 			isOldCount++;
 		}
-
+#if 1
+		else if (bIsTooFastTrack)
+		{
+DebugFilePrintf("TooFast %u", track->trackID);
+			trackIterator = tracks.erase(trackIterator);
+			isFastCount++;
+		}
+#endif
 		else
 		{
 			// Clear all detections from previous frames.
@@ -411,7 +400,7 @@ int AcquisitionSequence::FitDetectionToTrack(double inTimeStamp, Detection::Ptr 
 		Track::Ptr track = tracks[trackIndex];
 		float timeDelta = (detection->timeStamp - track->timeStamp);  
 		bool bSameTime = timeDelta <= defaultRoundError;
-		timeDelta /= 1000;// Time stamps are in msec
+		timeDelta /= 1000;// Time stamps are in msec. Bring them back in seconds
 
 		// Determine if the track is worthy of consideration for a match
 		bool bTrackValid = false;
@@ -425,18 +414,10 @@ int AcquisitionSequence::FitDetectionToTrack(double inTimeStamp, Detection::Ptr 
 		}
 		else if (trackingMode == eTrackAllChannels)
 		{
-#if 0
-			if (!track->Contains(detection))
-			{
-				if ((!bSameTime) || (!track->Contains(detection->channelID))) bTrackValid = true;
-			}
-#else
 			if ((track->Contains(detection->channelID)) && (!track->Contains(detection)))
 			{
 				if (!bSameTime)	bTrackValid =true;
 			}
-#endif
-
 		}
 
 		// If the track is a candidate to receive our detection....
@@ -459,8 +440,12 @@ int AcquisitionSequence::FitDetectionToTrack(double inTimeStamp, Detection::Ptr 
 				}
 
 #endif
+#if 0
 				newTrack->velocity = detection->velocity;
-
+#else
+				newTrack->velocity = (detection->distance - track->detections[0]->distance) /
+			  	                   (timeDelta);
+#endif
 				newTrack->detections.push_back(detection);
 
 				bTrackFound = true;
@@ -472,7 +457,14 @@ int AcquisitionSequence::FitDetectionToTrack(double inTimeStamp, Detection::Ptr 
 				estimatedTrackDistance = track->distance + (track->velocity * timeDelta);
 				distanceDelta = detection->distance - estimatedTrackDistance;
 
+#if 0
 				if (abs(distanceDelta) <= distanceThreshold)
+#else
+				double localDistanceThreshold = abs(track->velocity) * timeDelta;
+				if (localDistanceThreshold < distanceThreshold) localDistanceThreshold = distanceThreshold;
+
+				if (abs(distanceDelta) <= localDistanceThreshold)
+#endif
 				{
 					track->detections.push_back(detection);
 					bTrackFound = true;
@@ -487,10 +479,13 @@ int AcquisitionSequence::FitDetectionToTrack(double inTimeStamp, Detection::Ptr 
 	{
 		tracks.push_back(tracksToCreate[trackIndex]);
 	}
-
+#if 1
 	// If no track found, add a new track at this point....
 
 	if ((!bTrackFound)) 
+#else
+	if (true)
+#endif
 	{
 		Track::Ptr track = CreateTrack(inTimeStamp, tracks, detection);
 		detection->velocity = track->velocity;
@@ -523,7 +518,6 @@ Track::Ptr & AcquisitionSequence::CreateTrack(double inTimeStamp, Track::Vector 
 		return(track);
 }
 
-#endif
 
 bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame)
 {
