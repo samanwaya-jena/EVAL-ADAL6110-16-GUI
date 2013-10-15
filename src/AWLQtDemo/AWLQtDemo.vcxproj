@@ -266,6 +266,18 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100d.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>

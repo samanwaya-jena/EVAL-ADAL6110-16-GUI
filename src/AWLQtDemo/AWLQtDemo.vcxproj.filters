@@ -777,5 +777,17 @@
     <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
       <Filter>Installable Plugins</Filter>
     </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100d.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100d.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
   </ItemGroup>
 </Project>
