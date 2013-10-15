@@ -62,10 +62,7 @@ private:
     QRgb rgblongRange;
     QRgb rgbshortRangeLimited;
     QRgb rgbshortRange;
-    int lastLeftTextHeight;
     int lastRightTextHeight;
-    bool leftRight;
-    int leftQty;
     int rightQty;
 	MergeDetectionMode mergeDetectionMode;
 	MergeDisplayMode mergeDisplayMode;

@@ -184,6 +184,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
 	//Draw bumper line
 	painter.setBrush(QBrush(Qt::darkGray));
+
 	// Sensor depth is a negative offset from bumper!
 	painter.drawRect(QRect(width()/3, height()+config.sensorDepth*Ratio, width()/3, -config.sensorDepth*Ratio));
 
@@ -215,14 +216,9 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
     if (ShowPalette)
         drawPalette(&painter);
 
-
-
-    lastLeftTextHeight = height();
     lastRightTextHeight = height();
 
-    leftQty = 0;
     rightQty = 0;
-    leftRight = true;
 
 	if (mergeDisplayMode != eNoMergeDisplay)
 	{
@@ -280,6 +276,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 			distanceMax = i->distanceRadial;
 		if (i->distanceRadial < distanceMin)
 			distanceMin = i->distanceRadial;
+
 		distanceAverage += i->distanceRadial;
 
 		if (i->distanceLongitudinal > distanceLongitudinalMax)
@@ -288,11 +285,11 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 			distanceLongitudinalMin = i->distanceLongitudinal;
 		distanceLongitudinalAverage += i->distanceLongitudinal;
 	}
+
 	if (data->size()) 
 	{
 		distanceAverage /= data->size(); 
 		distanceLongitudinalAverage /= data->size();
-
 	}
 
 
@@ -318,37 +315,24 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 	{
 		QString textToDisplay;
 
-#if 0 // JYD: Now instead of displaying range, we display centroid (average)é
+
 		if (measureMode == eMeasureRadial)
 		{
-			textToDisplay = QString("Ch.XX : " + QString::number(distanceMin, 'f', 1)+" m to "+ QString::number(distanceMax, 'f', 1)+" m");
+			textToDisplay = QString("Ch.XX : " + QString::number(distanceMin, 'f', 1)+" m");
 			//backColor = getColorFromDistance(distanceRadial);
 		}
 		else
 		{
-			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalMin, 'f', 1)+" m to "+ QString::number(distanceLongitudinalMax, 'f', 1)+" m");
+			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalMin, 'f', 1)+" m");
 			//backColor = getColorFromDistance(distanceFromBumper);
 		}
-#else
-		if (measureMode == eMeasureRadial)
-		{
-			textToDisplay = QString("Ch.XX : " + QString::number(distanceAverage, 'f', 1)+" m");
-			//backColor = getColorFromDistance(distanceRadial);
-		}
-		else
-		{
-			textToDisplay = QString("Ch.XX : "  + QString::number(distanceLongitudinalAverage, 'f', 1)+" m");
-			//backColor = getColorFromDistance(distanceFromBumper);
-		}
-#endif
 
 		if (backColor.lightness() < 128) 
 			pencolor = Qt::white;
 		else
 			pencolor = Qt::black;
 
-		drawTextDetection(p, (angleMin+angleMax)/2, (distanceMin+distanceMax)/2, textToDisplay, pencolor, true, backColor);
-		//drawTextDetection(p, (angleMin+angleMax)/2, (distanceLongitudinalMin+distanceLongitudinalMax)/2, textToDisplay, pencolor, true, backColor);
+		drawTextDetection(p, (angleMin+angleMax)/2, distanceMin, textToDisplay, pencolor, true, backColor);
 	}
 
 	pencolor = backColor.darker(150);
@@ -359,20 +343,17 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data)
 
     QPoint bottomLeft(0, (distanceMin*Ratio));
 	QPoint topRight(0, (distanceMax*Ratio));
-	//QPoint bottomLeft(0, ((distanceLongitudinalMin+config.sensorDepth)*Ratio));
-	//QPoint topRight(0, ((distanceLongitudinalMax+config.sensorDepth)*Ratio));
     QPoint temp;
 
     temp = bottomLeft;
     bottomLeft.setX(temp.x()*cosf(angleMinInRad) - temp.y()*sinf(angleMinInRad));
-    //bottomLeft.setY(temp.y()*cosf(angleMinInRad) + temp.x()*sinf(angleMinInRad));
-	// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
+ 	// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
 	// So, subtract the sensorDepth that was initially added in captured data.
 	bottomLeft.setY(-((distanceLongitudinalMin-config.sensorDepth)*Ratio));
 
 	temp = topRight;
     topRight.setX(temp.x()*cosf(angleMaxInRad) - temp.y()*sinf(angleMaxInRad));
-    //topRight.setY(temp.y()*cosf(angleMaxInRad) + temp.x()*sinf(angleMaxInRad));
+
 	// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
 	// So, subtract the sensorDepth that was initially added in captured data.
 	topRight.setY(-((distanceLongitudinalMax-config.sensorDepth)*Ratio));
@@ -425,7 +406,6 @@ void FOV_2DScan::drawDetection(QPainter* p, float angle, float width, float dist
 	if (backColor.lightness() < 128) penColor = Qt::white;
 
 	// JYD; Real distance  is the radial distance, plus bumper offset.
-
     drawTextDetection(p, angle, distanceRadial, textToDisplay, penColor, true, backColor);
 }
 
@@ -434,17 +414,14 @@ void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString t
 
     float angleInRad = degree_to_rad(angle+180);
 
-#ifndef JYD
 	// Real position of object, from sensor on  the grid is postion + bumperOffset.
 	// the sensorDepth was added at the moment of capture, so we have to remove it here.
 	pos -= config.sensorDepth;
-#endif
 
     QPoint start(0, (pos*Ratio));
     QPoint temp;
     QRect tempRect;
     QPolygon poly;
-
 
     temp = start;
     start.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));
@@ -459,56 +436,28 @@ void FOV_2DScan::drawTextDetection(QPainter* p,float angle, float pos, QString t
     p->setBrush(backgroundcolor);
 
     tempRect = rect;
-    if (angle < 0)
-    {
-        if (lastLeftTextHeight < tempRect.bottom()+3)
-        {
-            tempRect.moveCenter(QPoint(tempRect.center().x(), lastLeftTextHeight - tempRect.height()));
-        }
 
-		tempRect.moveCenter(QPoint(60 + tempRect.width()/2, tempRect.bottom()-6));
+	if (lastRightTextHeight < tempRect.bottom()+3)
+	{
+		tempRect.moveCenter(QPoint(tempRect.center().x(), lastRightTextHeight - tempRect.height()));
+	}
 
-        poly.append(QPoint(rect.center().x()+2,rect.center().y()+5));
-        poly.append(QPoint(tempRect.center().x()+51,tempRect.center().y()-1));
-        poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
-        poly.append(QPoint(tempRect.center().x(),tempRect.center().y()+1));
-        poly.append(QPoint(tempRect.center().x()+49,tempRect.center().y()+1));
+	tempRect.moveCenter(QPoint(width()-tempRect.width(), tempRect.bottom()-6));
 
-        poly.append(QPoint(rect.center().x()-2,rect.center().y()+7));
-        p->drawPolygon(poly);
+	poly.append(QPoint(rect.center().x()-2,rect.center().y()+5));
+	poly.append(QPoint(tempRect.center().x()-51,tempRect.center().y()-1));
+	poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
+	poly.append(QPoint(tempRect.center().x(),tempRect.center().y()+1));
+	poly.append(QPoint(tempRect.center().x()-49,tempRect.center().y()+1));
 
-
-        p->drawEllipse(QPoint(rect.center().x(), rect.bottom()-6), 6, 6);
-        p->drawEllipse(QPoint(60 + tempRect.width()/2, tempRect.bottom()-12), tempRect.size().width()/2, tempRect.size().height()/2);
-        lastLeftTextHeight = tempRect.top();
-        leftQty++;
-    }
-    else
-    {
-        if (lastRightTextHeight < tempRect.bottom()+3)
-        {
-            tempRect.moveCenter(QPoint(tempRect.center().x(), lastRightTextHeight - tempRect.height()));
-        }
-
-        tempRect.moveCenter(QPoint(width()-tempRect.width(), tempRect.bottom()-6));
-
-        poly.append(QPoint(rect.center().x()-2,rect.center().y()+5));
-        poly.append(QPoint(tempRect.center().x()-51,tempRect.center().y()-1));
-        poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
-        poly.append(QPoint(tempRect.center().x(),tempRect.center().y()+1));
-        poly.append(QPoint(tempRect.center().x()-49,tempRect.center().y()+1));
-
-        poly.append(QPoint(rect.center().x()+2,rect.center().y()+7));
-        p->drawPolygon(poly);
+	poly.append(QPoint(rect.center().x()+2,rect.center().y()+7));
+	p->drawPolygon(poly);
 
 
-        p->drawEllipse(QPoint(rect.center().x(), rect.bottom()-6), 6, 6);
-        p->drawEllipse(QPoint(width()-tempRect.width(), tempRect.bottom()-12), tempRect.size().width()/2, tempRect.size().height()/2);
-        lastRightTextHeight = tempRect.top();
-        rightQty++;
-    }
-
-    leftRight = !leftRight;
+	p->drawEllipse(QPoint(rect.center().x(), rect.bottom()-6), 6, 6);
+	p->drawEllipse(QPoint(width()-tempRect.width(), tempRect.bottom()-12), tempRect.size().width()/2, tempRect.size().height()/2);
+	lastRightTextHeight = tempRect.top();
+	rightQty++;
 
 	 p->setPen(foregroundColor);
      p->drawText(tempRect, Qt::AlignCenter, text);
@@ -616,7 +565,6 @@ void FOV_2DScan::drawPalette(QPainter* p)
     p->setPen(Qt::black);
     p->setBrush(myGradient);
     p->drawRect(0, height()*0.1, 30, height()*0.9);
-
 }
 
 
@@ -771,5 +719,4 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	mainMenu.addAction(showPaletteAction);
 
     mainMenu.exec(globalPos);
-
 }
