@@ -134,7 +134,17 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	ui.pixelSizeSpinBox->setValue(globalSettings->pixelSize);	
 	ui.decimationSpinBox->setValue(globalSettings->decimation);
-	
+
+	// Default values
+	ui.calibrationChannel1CheckBox->setChecked(true);
+	ui.calibrationChannel2CheckBox->setChecked(true);
+	ui.calibrationChannel3CheckBox->setChecked(true);
+	ui.calibrationChannel4CheckBox->setChecked(true);
+	ui.calibrationChannel5CheckBox->setChecked(true);
+	ui.calibrationChannel6CheckBox->setChecked(true);
+	ui.calibrationChannel7CheckBox->setChecked(true);
+
+
 	CloudViewerWin::ColorHandlerType defaultColorType = (CloudViewerWin::ColorHandlerType) globalSettings->colorStyle;
 	switch (defaultColorType) 
 	{
@@ -170,10 +180,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-    mCfgSensor.sensorDepth = 0 - globalSettings->sensorDepth;
+    mCfgSensor.sensorDepth = globalSettings->sensorDepth;
     mCfgSensor.sensorHeight = globalSettings->sensorHeight;
 
 	m2DScan->slotConfigChanged(&mCfgSensor);
+
+	// Calibration 
 
 	// Menu items signals and slots
 	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
@@ -238,6 +250,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.algo2RadioButton->setChecked(true);
 	}
 
+	// Calibration 
+	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
 
 	// In demo mode, automatically force the injection of data on receiver.
 	// put demo mode in window title
@@ -480,12 +494,19 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	    mCfgSensor.sensorHeight = height;
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
+
+	AWLSettings::GetGlobalSettings()->sensorHeight = height;
 }
 
 
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	double depth = ui.sensorDepthSpinBox->value();
+
+	if (receiverCapture) 
+	{
+		receiverCapture->SetSensorDepth(depth);
+	}
 
 	if (fusedCloudViewer) 
 	{
@@ -498,19 +519,87 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 	if (m2DScan && !m2DScan->isHidden())
 	{
-	    mCfgSensor.sensorDepth = 0 - depth;
+	    mCfgSensor.sensorDepth = depth;
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
+
+	AWLSettings::GetGlobalSettings()->sensorDepth = depth;
+}
+
+void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
+{
+	double range = ui.sensorRangeMinSpinBox->value();
+#if 1
+	if (receiverCapture) 
+	{
+		receiverCapture->SetMinDistance(range);
+	}
+#endif
+
+#if 0 // There is no range min in the fusedCloudViewer
+	if (fusedCloudViewer) 
+	{
+		if (fusedCloudViewer->viewers.size() >= 1)
+		{
+		
+			fusedCloudViewer->viewers[0]->SetSensorDepth(range);
+		}
+	}
+#endif
+
+#if 0 // There is no rangeMin used in the 2D window
+	
+	if (m2DScan && !m2DScan->isHidden())
+	{
+	    mCfgSensor.sensorDepth = depth;
+		m2DScan->slotConfigChanged(&mCfgSensor);
+	}
+#endif
+
+	AWLSettings::GetGlobalSettings()->displayedRangeMin = range;
+}
+
+void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
+{
+	double range = ui.sensorRangeMaxSpinBox->value();
+
+	if (receiverCapture) 
+	{
+		receiverCapture->SetMaxDistance(range);
+	}
+
+	if (fusedCloudViewer) 
+	{
+		if (fusedCloudViewer->viewers.size() >= 1)
+		{
+		
+			fusedCloudViewer->viewers[0]->SetRangeMax(range);
+		}
+	}
+
+	
+	if (m2DScan && !m2DScan->isHidden())
+	{
+	    mCfgSensor.longRangeDistance = range;
+		m2DScan->slotConfigChanged(&mCfgSensor);
+	}
+
+	AWLSettings::GetGlobalSettings()->displayedRangeMax = range;
+	AWLSettings::GetGlobalSettings()->longRangeDistance = range;
 }
 
 
 void AWLQtDemo::on_measurementOffsetSpin_editingFinished()
 {
+	double offset = ui.measurementOffsetSpinBox->value();
+
 	if (receiverCapture) 
 	{
-		double offset = ui.measurementOffsetSpinBox->value();
 		receiverCapture->SetMeasurementOffset(offset);
 	}
+
+	AWLSettings::GetGlobalSettings()->rangeOffset = offset;
+
 }
 
 
@@ -522,12 +611,12 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 	ReceiverCapture::ChannelMask channelMask;
 
 	channelMask.bitFieldData.channel0 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.calibrationChannel1CheckBox->isChecked();
+	channelMask.bitFieldData.channel1 = ui.calibrationChannel2CheckBox->isChecked();
+	channelMask.bitFieldData.channel2 = ui.calibrationChannel3CheckBox->isChecked();
+	channelMask.bitFieldData.channel3 = ui.calibrationChannel4CheckBox->isChecked();
+	channelMask.bitFieldData.channel4 = ui.calibrationChannel5CheckBox->isChecked();
+	channelMask.bitFieldData.channel5 = ui.calibrationChannel6CheckBox->isChecked();
+	channelMask.bitFieldData.channel6 = ui.calibrationChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 
 	if (receiverCapture) 
@@ -567,15 +656,24 @@ void AWLQtDemo::on_timerTimeout()
 #endif
 	if (bContinue && receiverCapture)
 	{
-		if (receiverCapture->receiverStatus.bUpdated) {
+		// Use the frame snapped by the  as the current frame
+		// all displays will reference to.
+		uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
+
+		// Update the status information
+		if (receiverCapture->receiverStatus.bUpdated) 
+		{
 			DisplayReceiverStatus();
 		}
 	}
 
+	// Uopdate the 3D display
 
-	if (bContinue && receiver) {
+	if (bContinue && receiver) 
+	{
 		receiver->DoThreadIteration();
-		if (receiver->WasStopped()) bContinue = false;
+
+	if (receiver->WasStopped()) bContinue = false;
 	}
 
 
@@ -620,9 +718,14 @@ void AWLQtDemo::on_timerTimeout()
 
 void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 {
-
+#if 0
+	// Force update of the frame displayed by user interfaces to the currentframe
 	uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-	
+#else
+	// Use the frame snapped by the main display timer as the current frame
+	// display will «
+	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
+#endif
 	DetectionDataVect vect;
 	DetectionData detect;
 	float currentAngle = 0;
@@ -666,7 +769,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 							detect.fromChannel =  detection->channelID;
 							detect.angle = currentAngle;
 							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
-							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))))-mCfgSensor.sensorDepth;
+							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))));
 							vect.append(detect);
 
 							//AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);
@@ -741,13 +844,13 @@ void AWLQtDemo::DisplayReceiverStatus()
 		formattedString.sprintf("%04X", status.fpgaRegisterAddressRead / 4);
 		ui.registerFPGAAddressGetLineEdit->setText(formattedString);
 
-		formattedString.sprintf("%X", status.fpgaRegisterValueRead);
+		formattedString.sprintf("%08X", status.fpgaRegisterValueRead);
 		ui.registerFPGAValueGetLineEdit->setText(formattedString);
 
 		formattedString.sprintf("%04X", status.adcRegisterAddressRead);
 		ui.registerADCAddressGetLineEdit->setText(formattedString);
 
-		formattedString.sprintf("%X", status.adcRegisterValueRead);
+		formattedString.sprintf("%08X", status.adcRegisterValueRead);
 		ui.registerADCValueGetLineEdit->setText(formattedString);
 
 		UpdateGPIOList();
@@ -1346,8 +1449,14 @@ void AWLQtDemo::DisplayReceiverValues()
 	tableWidgets[5] = ui.distanceTable6;
 	tableWidgets[6] = ui.distanceTable7;
 
+#if 0
+	// Force update of the frame displayed by user interfaces to the currentframe
 	uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-	
+#else
+	// Use the frame snapped by the main display timer as the current frame
+	// display will «
+	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
+#endif	
 	for (int channelID = 0; channelID < channelQty; channelID++) 
 	{
 		if (channelID < receiverCapture->GetChannelQty())
@@ -1387,44 +1496,105 @@ void AWLQtDemo::DisplayReceiverValues()
 void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, Detection::Ptr &detection)
 
 {
-	QString str;
-	QString velocityStr;
-
-	if (detection->distance <= 0.0)
-	{
-		str.sprintf("");
-		velocityStr.sprintf("");
-	}
-	else
-	{
-		str.sprintf("%f", detection->distance);
-		velocityStr.sprintf("%.1f", detection->velocity);
-	}
-
-	if (pTable->isVisible())
-	{
-		pTable->item(detectionID, 0)->setText(str);
-		pTable->item(detectionID, 1)->setText(velocityStr);
-	}
-
+	AddDistanceToText(detectionID, pTable, detection->distance, detection->trackID, detection->threatLevel,
+		detection->intensity, detection->velocity);
 }
 
-void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float distance)
+void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float distance, 
+								 TrackID trackID, 
+								 Detection::ThreatLevel threatLevel, 
+								float intensity,
+								float velocity)
 
 {
-	QString str;
+	QString distanceStr;
+	QString trackStr;
+	QString velocityStr;
+	QString intensityStr;
+	QString threatStr;
 
 
 	if (distance <= 0.0)
 	{
-		str.sprintf("");
+		distanceStr.sprintf("");
+		trackStr.sprintf("");
+		velocityStr.sprintf("");
+		intensityStr.sprintf("");
+		threatStr.sprintf("");
 	}
 	else
 	{
-		str.sprintf("%f", distance);
+		distanceStr.sprintf("%.2f", distance);
+
+		if (trackID > 0) 
+		{
+			trackStr.sprintf("%d", trackID);
+		}
+		else 
+		{
+			trackStr.sprintf("");
+		}
+
+
+		if (velocity != AWL_FNAN) 
+		{
+			velocityStr.sprintf("%.1f", velocity);
+		}
+		else 
+		{
+			velocityStr.sprintf("");
+		}
+
+		if (intensity != AWL_FNAN)
+		{
+			intensityStr.sprintf("%.0f", intensity * 100);
+		}
+		else 
+		{
+			intensityStr.sprintf("");
+		}
+
+
+		switch(threatLevel)
+		{
+		case Detection::eThreatNone:
+			{
+				threatStr.sprintf("");
+			}
+			break;
+
+		case Detection::eThreatLow:
+			{
+				threatStr.sprintf("Low");
+			}
+			break;
+
+		case Detection::eThreatWarn:
+			{
+				threatStr.sprintf("Warn");
+			}
+			break;
+
+		case Detection::eThreatCritical:
+			{
+				threatStr.sprintf("Critical");
+			}
+			break;
+
+		default:
+			{
+			}
+
+		}
 	}
 
-	if (pTable->isVisible()) pTable->item(detectionID, 0)->setText(str);
+	if (pTable->isVisible())
+	{
+		pTable->item(detectionID, eRealTimeDistanceColumn)->setText(distanceStr);
+		pTable->item(detectionID, eRealTimeVelocityColumn)->setText(velocityStr);
+		pTable->item(detectionID, eRealTimeLevelColumn)->setText(intensityStr);
+		pTable->item(detectionID, eRealTimeTrackColumn)->setText(trackStr);
+	}
 }
 
 void AWLQtDemo::on_view3DActionToggled()

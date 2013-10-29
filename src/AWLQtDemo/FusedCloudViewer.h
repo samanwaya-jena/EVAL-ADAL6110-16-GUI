@@ -224,6 +224,16 @@ public:
       */
 	void GetSensorDepth(double &sensorDepth);
 
+	/** \brief Modify the viewer's maximum display range.
+      * \param[in] inRangeMax maximum range of the sensor, in meters
+      */
+	void SetRangeMax(double inRangeMax);
+
+	/** \brief Get the viewer's maximum display range.
+      * \param[out] outRangeMax maximum range of the sensor, in meters
+      */
+	void GetRangeMax(double &outRangeMax);
+
 
 	/** \brief Return the mutex for internal data.
       * \return a boost mutex for the object.
@@ -319,8 +329,33 @@ public:
       */
 	void GetSensorHeight(double &sensorHeight);
 
+		/** \brief Modify the viewer's sensor depth parameter.
+      * \param[in] inSensorDepth sensor depth, in meters
+      */
+
+	void SetSensorDepth(double inSensorDepth);
+
+	/** \brief Get the viewer's sensor depth in meters.
+      * \param[out] outSensorDepth sensor depth.
+      */
+	void GetSensorDepth(double &sensorDepth);
+
+	/** \brief Modify the viewer's maximum display range.
+      * \param[in] inRangeMax maximum range of the sensor, in meters
+      */
+	void SetRangeMax(double inRangeMax);
+
+	/** \brief Get the viewer's maximum display range.
+      * \param[out] outRangeMax maximum range of the sensor, in meters
+      */
+	void GetRangeMax(double &outRangeMax);
+
+
 protected:
 	double sensorHeight;
+	double sensorDepth;
+	double rangeMax;
+
 	int	   pixelSize;
    /** \brief Title of the window used to display the cloud. */
 	std::string windowName;

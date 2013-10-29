@@ -258,52 +258,75 @@ void AWLQtScope::updateCurveDataTrackDistance()
 
 	boost::mutex::scoped_lock updateLock( d_receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
 
-	// Get the currentTracking info 
-	Track::Vector &tracks = d_receiverCapture->acquisitionSequence->GetTracks();
-	int trackQty = tracks.size();
-
-
-	// Note the date and time;
+	// Determine which frames need to be updated
+	int startFrame = d_receiverCapture->acquisitionSequence->FindFrameIndex(d_lastFrameID)+1;
 	int lastFrame = d_receiverCapture->GetFrameQty()-1;
-	double elapsed = d_receiverCapture->GetFrameTimeAtIndex(lastFrame);
+	d_lastFrameID = d_receiverCapture->GetLastFrameID();  // Mark the last frame for posterity
 
-	// Note that elapsed in in millisec and our curves expect seconds.
-	elapsed /= 1000;
-
-	// Add the data from all the the latest track info to the scope
-	int channelQty = d_curveDataArray.size();
-	for (int channelID = 0; channelID < channelQty; channelID++)
+	// Add the data from all the new frames to the scope
+	for (int frameIndex = startFrame; frameIndex <= lastFrame; frameIndex++) 
 	{
-		// Thread safe
+		// Get the currentTracking info 
+		Track::Vector &tracks = d_receiverCapture->acquisitionSequence->GetTracks();
 		int trackQty = tracks.size();
-		int trackIndex = 0;
-		int maxTracks = d_curveDataArray[channelID]->size();
-			
-		for (int i = 0; i < trackQty; i++)
-		{
-			Track::Ptr track = tracks.at(i);
-			double deltaTime = track->timeStamp - track->firstTimeStamp;
 
-			if ((track->Contains(channelID)) && 
-				(track->distance >= d_receiverCapture->GetMinDistance()) && 
-				(track->distance <= d_receiverCapture->GetMaxDistance()) &&
-				(track->IsProbable()) &&
-				(trackIndex < d_curveDataArray[channelID]->size())) 
+
+		// Note the date and time;
+		int lastFrame = d_receiverCapture->GetFrameQty()-1;
+		double elapsed = d_receiverCapture->GetFrameTimeAtIndex(frameIndex);
+
+		// Note that elapsed in in millisec and our curves expect seconds.
+		elapsed /= 1000;
+
+		// Add the data from all the the latest track info to the scope
+		int channelQty = d_curveDataArray.size();
+		for (int channelID = 0; channelID < channelQty; channelID++)
+		{
+			// Thread safe
+			int trackQty = tracks.size();
+			int trackIndex = 0;
+			int maxTracks = d_curveDataArray[channelID]->size();
+
+			for (int i = 0; i < trackQty; i++)
 			{
-				// Replace the new point to the end, with detected value
-				const QPointF s(elapsed,  track->distance);
-				d_curveDataArray[channelID]->at(trackIndex++)->addValue(s);
-			} 
-		} // For i;
+				Track::Ptr track = tracks.at(i);
+				double deltaTime = track->timeStamp - track->firstTimeStamp;
 
-		// Add empty values to the remaining empty tracks
-		for  (int i = trackIndex; i < maxTracks; i++) 
-		{
-			const QPointF s(elapsed, 0.0);
+				if ((track->Contains(channelID)) && 
+					(track->distance >= d_receiverCapture->GetMinDistance()) && 
+					(track->distance <= d_receiverCapture->GetMaxDistance()) &&
+					(track->IsProbable()) &&
+					(trackIndex < d_curveDataArray[channelID]->size())) 
+				{
+					// Replace the new point to the end, with detected value
+					const QPointF s(elapsed,  track->distance);
+#ifndef DEBUG_JYD
+					int debugX = 0;
+					if (track->distance < 8.0)
+					{
+						debugX++;
+					}
+#endif
+					d_curveDataArray[channelID]->at(trackIndex++)->addValue(s);
+				} 
+			} // For i;
+
+#ifndef DEBUG_JYD
+			int debugY = 0;
+			if (trackIndex == 0) 
+			{
+				debugY++;
+			}
+#endif
+			// Add empty values to the remaining empty tracks
+			for  (int i = trackIndex; i < maxTracks; i++) 
+			{
+				const QPointF s(elapsed, 0.0);
 				d_curveDataArray[channelID]->at(i)->addValue(s);
-		} // For i;
+			} // For i;
 
-	} // for channelID
+		} // for channelID
+	} // For frameIndex
 
 	updateLock.unlock();
 }
@@ -322,7 +345,6 @@ void AWLQtScope::on_scopeModeRaw_setChecked(bool bChecked)
 			d_receiverCapture->acquisitionSequence->SetTrackingMode(AcquisitionSequence::eTrackAllChannels);
 		} 
 	}
-
 }
 
 void AWLQtScope::on_scopeModeTrackDistance_setChecked(bool bChecked)

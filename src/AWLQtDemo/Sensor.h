@@ -47,7 +47,8 @@ protected:
 	double  sensorHeight;
 	/** \brief  sensor depth from bumper (ideally, should be negative)*/
 	double  sensorDepth;
-
+	/** \brief  diplay plane for max range*/
+	double rangeMax;
 
 	// public variables
 public:
@@ -55,7 +56,7 @@ public:
 
 // public functions
 public:
-	ReceiverCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, const double inSensorHeight, double inSensorDepth);
+	ReceiverCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, const double inSensorHeight, double inSensorDepth, double iRangeMax);
 
 	void ReceiverCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
 									PointXYZRGB &ioCloudPoint);
@@ -307,6 +308,16 @@ public:
       */
 	void GetSensorDepth(double &outSensorDepth);
 
+	/** \brief Modify the viewer's maximum display range.
+      * \param[in] inRangeMax maximum range of the sensor, in meters
+      */
+	void SetRangeMax(double inRangeMax);
+
+	/** \brief Get the viewer's maximum display range.
+      * \param[out] outRangeMax maximum range of the sensor, in meters
+      */
+	void GetRangeMax(double &outRangeMax);
+
 	/** \brief Modify the viewer'sreceiver.
       * \param[in] inReceiver pointer to receiver
       */
@@ -453,6 +464,15 @@ public:
       */
 	void GetSensorDepth(double &sensorDepth);
 
+	/** \brief Modify the viewer's maximum display range.
+      * \param[in] inRangeMax maximum range of the sensor, in meters
+      */
+	void SetRangeMax(double inRangeMax);
+
+	/** \brief Get the viewer's maximum display range.
+      * \param[out] outRangeMax maximum range of the sensor, in meters
+      */
+	void GetRangeMax(double &outRangeMax);
 
 	/** \brief Modify the videoCapture source.  Thread safe
                Update the internal video format description variables to reflect the new source.
@@ -592,6 +612,9 @@ protected:
 	double  sensorHeight;
 	/** \brief  sensor depth from bumber (ideally, should be negative)*/
 	double  sensorDepth;
+	/** \brief  maximum range (which is also distance at whick we project image place)*/
+	double  rangeMax;
+
 
 	/** \brief Current video frame width. */
 	int frameWidth;

@@ -20,6 +20,9 @@
 using namespace pcl;
 
 
+// Not a number
+#define AWL_FNAN  (std::numeric_limits<float>::quiet_NaN ())
+
 namespace awl
 {
 
@@ -39,6 +42,16 @@ public:
 	eParameterConfirmColumn = 3
 	}
 	ParameterColumn;
+
+	typedef enum RealTimeColumn
+	{
+		eRealTimeDistanceColumn = 0,
+		eRealTimeVelocityColumn = 1,
+		eRealTimeTrackColumn = 2,
+		eRealTimeLevelColumn = 3
+	};
+
+
 public:
 	AWLQtDemo(int argc, char *argv[]);
 	~AWLQtDemo();
@@ -61,6 +74,8 @@ private slots:
 
 	void on_sensorHeightSpin_editingFinished();
 	void on_sensorDepthSpin_editingFinished();
+	void on_calibrationRangeMinSpin_editingFinished();
+	void on_calibrationRangeMaxSpin_editingFinished();
 	void on_measurementOffsetSpin_editingFinished();
 	void on_decimationSpin_editingFinished();
 	void on_pixelSizeSpin_editingFinished();
@@ -108,7 +123,12 @@ protected:
 
 	void DisplayReceiverValues();
 	void AddDistanceToText(int detectionID,  QTableWidget *pTable , Detection::Ptr &detection);
-	void AddDistanceToText(int detectionID, QTableWidget *pTable, float distance);
+	void AddDistanceToText(int detectionID, QTableWidget *pTable, float distance, 
+					       TrackID trackID = 0, 
+						   Detection::ThreatLevel level = Detection::eThreatNone, 
+						   float intensity = AWL_FNAN,
+						   float velocity = AWL_FNAN);
+
 	void DisplayReceiverStatus();
 	void DisplayReceiverValuesTo2DScanView();
 	void closeEvent(QCloseEvent * event);

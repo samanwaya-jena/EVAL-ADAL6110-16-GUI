@@ -289,6 +289,17 @@ void CloudViewerWin::GetSensorDepth(double &outSensorDepth)
 	sourceProjector->GetSensorDepth(outSensorDepth);
 }
 
+
+void CloudViewerWin::SetRangeMax(double inRangeMax)
+{
+	sourceProjector->SetRangeMax(inRangeMax);
+}
+
+void CloudViewerWin::GetRangeMax(double &outRangeMax)
+{
+	sourceProjector->GetRangeMax(outRangeMax);
+}
+
 void CloudViewerWin::SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisualizer> inViewer, CloudViewerWin::CameraView inAngle)
 {
 	double topView[11] = {55, 115, 0, -8, 25, -1.35, 82, 25, 1.0, 0, 0};
@@ -474,6 +485,9 @@ void FusedCloudViewer::DrawGrid()
 	sourceProjector->GetSensorHeight(originY);
 	sourceProjector->GetSensorDepth(originZ);
 
+	double rangeMax = 0.0;
+	sourceProjector->GetRangeMax(rangeMax);
+
 	// draw a grid to correspond to sensor FOV 
 	int channelQty = sourceProjector->GetChannelQty();
 
@@ -521,11 +535,11 @@ void FusedCloudViewer::DrawGrid()
 
 	for (double x = (-10.0-originX); x <= (10.0-originX); x += 2.0)  
 	{
-		AddViewerLines(x, -originY, -originZ, x, -originY, 30.0-originZ, 0, 0, 0, "GroundLineX", (int) x);
+		AddViewerLines(x, -originY, -originZ, x, -originY, rangeMax-originZ, 0, 0, 0, "GroundLineX", (int) x);
 	}
 
 
-	for (double z= 0.0-originZ; z <= 30.0-originZ; z += 2.0)  
+	for (double z= 0.0-originZ; z <= rangeMax-originZ; z += 2.0)  
 	{
 		double shade =  z*3.0/255.0;
 		AddViewerLines(-10.0-originX, -originY, z, 10-originX, -originY , z, shade, shade, shade, "GroundLineZ", (int) z);
@@ -593,3 +607,39 @@ void FusedCloudViewer::SpinOnce(int time, bool forceRedraw)
 	}
 }
 
+
+void  FusedCloudViewer::SetSensorHeight(double inSensorHeight) 
+{
+	if (mStopRequested) return;
+
+    mStopRequested = true;
+	int viewerQty(viewers.size());
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		viewers[i]->SetSensorHeight(inSensorHeight);
+	}
+}
+
+void  FusedCloudViewer::SetSensorDepth(double inSensorDepth) 
+{
+	if (mStopRequested) return;
+
+    mStopRequested = true;
+	int viewerQty(viewers.size());
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		viewers[i]->SetSensorDepth(inSensorDepth);
+	}
+}
+
+void  FusedCloudViewer::SetRangeMax(double inRangeMax) 
+{
+	if (mStopRequested) return;
+
+    mStopRequested = true;
+	int viewerQty(viewers.size());
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		viewers[i]->SetSensorHeight(inRangeMax);
+	}
+}

@@ -202,7 +202,8 @@ public:
 	{
 		eInjectRamp = 0,
 		eInjectNoisy = 1,
-		eInjectSlowMove = 2
+		eInjectSlowMove = 2,
+		eInjectConstant = 3
 	}
 	InjectType;
 	
@@ -270,6 +271,19 @@ public:
       * \return float indicating the maximimum distance.
       */
 	virtual float GetMaxDistance() {return maxDistance;};
+
+	/** \brief Return the minimum distance for detection
+      * \param[in] inMinDistance the new minimum distance
+      * \return float indicating the minimum distance.
+      */
+	virtual float SetMinDistance(float inMinDistance);
+
+	/** \brief Return the maxiimum distance for detection
+      * \param[in] inMaxDistance the new maximum distance
+      * \return float indicating the maximimum distance.
+      */
+	virtual float SetMaxDistance(float inMinDistance);
+
 
 	/** \brief Return the number of receiver channels used for video projection
       * \return int indicating the number of channels.
@@ -357,9 +371,20 @@ public:
      */
 	 double GetElapsed();
 
+	 /** \brief Sets the sensor depth from bumper, which will be added to distance measurements,
+	  *       The sensor depth is normally negative (ex: -1.75 m on I30)
+      * \param[in] inSensorDepth sensor depth from bumper, typically a negative value.
+      */
+	void SetSensorDepth(double inSensorDepth);
+
+	/** \brief Gets the sensor depth from bumper, which is added to distance measurements,
+      * \param[out] outSensorDepth sensor depth from bumper, typically a negative value.
+      */
+	void GetSensorDepth(double &outSensorDepth);
+
 
 	/** \brief Add an offet to the distance measurements.  This is different from the sensor depth, which is distance from bumper.
-      * \param[in] inMeasurementOffset sensor depth, in meters (normally negative)
+      * \param[in] inMeasurementOffset measurementOffset introduced by detection algorithm
       * \remark measurement offset is an offset in distance from sensor caused by the nature of algorithm used.
       */
 	void SetMeasurementOffset(double inMeasurementOffset);
@@ -590,10 +615,15 @@ protected:
       */
 	void FakeChannelDistanceNoisy(int channel);
 
-		/** \brief Inject distance information in the channel,  usingslow move simulation
+	/** \brief Inject distance information in the channel,  usingslow move simulation
  	    * \param[in] channel   channel in which data is injected
       */
 	void FakeChannelDistanceSlowMove(int channel);
+
+	/** \brief Inject  a constant distance information in the channel
+ 	    * \param[in] channel   channel in which data is injected
+      */
+	void FakeChannelDistanceConstant(int channel);
 
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
@@ -645,11 +675,17 @@ protected:
 	*/
 	boost::posix_time::ptime startTime;
 
+	/** \brief  sensor depth from bumper, typically a negative value. */
+	double  sensorDepth;
+
 	/** \brief  measurement offset from sensor, introduced by detection algorithm */
 	double  measurementOffset;
 
 	/** \brief  controls the injection of simulated data.  Injection is enabled when true */
 	bool  bSimulatedDataEnabled;
+
+	/** \brief  scaling error (multiplication) introduced by clock speed variations in configurations, should be 1 by default */
+	float  distanceScale;
 
 	/** \brief  defines the type of data injected.  */
 	InjectType injectType;

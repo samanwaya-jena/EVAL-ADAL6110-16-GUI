@@ -162,6 +162,8 @@ bool AWLSettings::ReadSettings()
 	displayedRangeMin = settings.value("displayedRangeMin").toFloat();
 	displayedRangeMax = settings.value("displayedRangeMax").toFloat();
 	rangeOffset = settings.value("rangeOffset").toFloat();
+	distanceScale = settings.value("distanceScale").toFloat();
+
 	settings.endGroup();
 
 	settings.beginGroup("display3D");

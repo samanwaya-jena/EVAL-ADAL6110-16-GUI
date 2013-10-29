@@ -118,6 +118,7 @@ public:
 	float displayedRangeMin;
 	float displayedRangeMax;
 	float rangeOffset;
+	float distanceScale;
 
 	// 3D display options
 	int decimation;

@@ -47,7 +47,7 @@ public:
 		eThreatWarn = 2,  // Target may have collision course, but not acertained yet
 		eThreatCritical = 3, // target is within collision range
 	}
-	eThreatLevel;
+	ThreatLevel;
 
 public:
 	

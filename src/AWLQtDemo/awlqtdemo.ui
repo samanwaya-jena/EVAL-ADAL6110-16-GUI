@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>316</height>
+    <height>313</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -569,7 +569,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>1</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
@@ -1353,7 +1353,7 @@ color: rgb(255,255,255);</string>
       <widget class="QDoubleSpinBox" name="calibrationBetaDoubleSpinBox">
        <property name="geometry">
         <rect>
-         <x>91</x>
+         <x>86</x>
          <y>50</y>
          <width>51</width>
          <height>22</height>
@@ -4005,15 +4005,15 @@ color: rgb(255,255,255);</string>
    <sender>sensorHeightSpinBox</sender>
    <signal>editingFinished()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerFPGASetPushButton_clicked()</slot>
+   <slot>on_sensorHeightSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>178</x>
      <y>121</y>
     </hint>
     <hint type="destinationlabel">
-     <x>268</x>
-     <y>301</y>
+     <x>385</x>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4028,8 +4028,8 @@ color: rgb(255,255,255);</string>
      <y>118</y>
     </hint>
     <hint type="destinationlabel">
-     <x>406</x>
-     <y>301</y>
+     <x>360</x>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4076,8 +4076,8 @@ color: rgb(255,255,255);</string>
      <y>250</y>
     </hint>
     <hint type="destinationlabel">
-     <x>489</x>
-     <y>301</y>
+     <x>358</x>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4093,7 +4093,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>560</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4109,7 +4109,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4125,7 +4125,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4141,7 +4141,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4157,7 +4157,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>507</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4173,7 +4173,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4189,7 +4189,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>72</x>
-     <y>298</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4205,7 +4205,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4221,7 +4221,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>538</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4253,7 +4253,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4269,7 +4269,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>325</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4285,7 +4285,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4301,7 +4301,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>117</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4317,7 +4317,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>152</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4333,7 +4333,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>201</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4344,12 +4344,12 @@ color: rgb(255,255,255);</string>
    <slot>on_globalParametersSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>768</x>
-     <y>253</y>
+     <x>736</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
      <x>840</x>
-     <y>301</y>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4365,7 +4365,39 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>890</x>
-     <y>301</y>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMinSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>127</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMaxSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
@@ -4402,5 +4434,7 @@ color: rgb(255,255,255);</string>
   <slot>on_algo3RadioButton_setChecked(bool)</slot>
   <slot>on_globalParametersSetPushButton_clicked()</slot>
   <slot>on_globalParametersGetPushButton_clicked()</slot>
+  <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
+  <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
  </slots>
 </ui>
