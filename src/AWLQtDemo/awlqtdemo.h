@@ -79,6 +79,9 @@ private slots:
 	void on_measurementOffsetSpin_editingFinished();
 	void on_decimationSpin_editingFinished();
 	void on_pixelSizeSpin_editingFinished();
+	void on_targetHintDistanceSpin_editingFinished();
+	void on_targetHintAngleSpin_editingFinished();
+
 
 	void on_calibratePushButton_clicked();
 

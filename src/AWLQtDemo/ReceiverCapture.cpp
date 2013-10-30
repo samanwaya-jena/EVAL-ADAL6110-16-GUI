@@ -525,7 +525,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 	// Recalculate the tracks
 	acquisitionSequence->BuildTracks(currentFrame->timeStamp);
 	
-DebugFilePrintf(outFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeStamp, GetElapsed());
+DebugFilePrintf(debugFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeStamp, GetElapsed());
 
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
@@ -537,7 +537,7 @@ DebugFilePrintf(outFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeS
 
 	rawLock.unlock();
 
-	DebugFilePrintf(outFile, "FrameID- %lu", frameID);
+	DebugFilePrintf(debugFile, "FrameID- %lu", frameID);
 }
 
 
@@ -611,7 +611,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -684,7 +684,7 @@ void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
 
 	if (channel == 6 && detectOffset == 4)
 	{
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 		ProcessCompletedFrame();
 	}
 
@@ -837,7 +837,7 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -893,7 +893,7 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }

@@ -16,7 +16,8 @@ sensorDepth(0.0),
 displayedRangeMin(0.0),
 displayedRangeMax(0.0),
 rangeOffset(0.0),
-
+targetHintDistance(0.0),
+targetHintAngle(0.0),
 decimation(3),
 pixelSize(1),
 colorStyle(0),
@@ -96,6 +97,12 @@ bool AWLSettings::ReadSettings()
 	settings.endArray();
 	settings.endGroup();
 
+	// Debug and log file control
+	settings.beginGroup("debug");
+	bWriteDebugFile = settings.value("enableDebugFile").toBool();
+	bWriteLogFile = settings.value("enableLogFile").toBool();
+	settings.endGroup();
+
 	// Default algo
 	settings.beginGroup("algos");
 	defaultAlgo = settings.value("defaultAlgo").toInt();
@@ -163,7 +170,8 @@ bool AWLSettings::ReadSettings()
 	displayedRangeMax = settings.value("displayedRangeMax").toFloat();
 	rangeOffset = settings.value("rangeOffset").toFloat();
 	distanceScale = settings.value("distanceScale").toFloat();
-
+	targetHintDistance = settings.value("targetHintDistance").toFloat();
+	targetHintAngle = settings.value("targetHintAngle").toFloat();
 	settings.endGroup();
 
 	settings.beginGroup("display3D");
@@ -216,7 +224,6 @@ bool AWLSettings::ReadSettings()
 	cameraFovXDegrees = settings.value("cameraFovX").toFloat();
 	cameraFovYDegrees = settings.value("cameraFovY").toFloat();
 	settings.endGroup();
-
 
 	return(true);
 }

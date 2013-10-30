@@ -131,6 +131,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.measurementOffsetSpinBox->setValue(globalSettings->rangeOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->displayedRangeMin);
 	ui.sensorRangeMaxSpinBox->setValue(globalSettings->displayedRangeMax);
+	ui.targetHintDistanceSpinBox->setValue(globalSettings->targetHintDistance);
+	ui.targetHintAngleSpinBox->setValue(globalSettings->targetHintAngle);
+
 
 	ui.pixelSizeSpinBox->setValue(globalSettings->pixelSize);	
 	ui.decimationSpinBox->setValue(globalSettings->decimation);
@@ -628,6 +631,20 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 	DisplayReceiverStatus();
 }
 
+void AWLQtDemo::on_targetHintDistanceSpin_editingFinished()
+{
+	double distance = ui.targetHintDistanceSpinBox->value();
+
+	AWLSettings::GetGlobalSettings()->targetHintDistance = distance;
+}
+
+void AWLQtDemo::on_targetHintAngleSpin_editingFinished()
+{
+	double angle = ui.targetHintAngleSpinBox->value();
+
+	AWLSettings::GetGlobalSettings()->targetHintAngle = angle;
+}
+
 
 void AWLQtDemo::on_timerTimeout()
 {
@@ -718,14 +735,10 @@ void AWLQtDemo::on_timerTimeout()
 
 void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 {
-#if 0
-	// Force update of the frame displayed by user interfaces to the currentframe
-	uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-#else
+
 	// Use the frame snapped by the main display timer as the current frame
 	// display will «
 	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
-#endif
 	DetectionDataVect vect;
 	DetectionData detect;
 	float currentAngle = 0;

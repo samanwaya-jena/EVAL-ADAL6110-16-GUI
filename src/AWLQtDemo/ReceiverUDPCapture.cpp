@@ -35,7 +35,7 @@ currentFrame(new SensorFrame(0, inReceiverChannelQty, inDetectionsPerChannel)),
 lastMessageID(0)
 
 {
-	outFile.open("UDPLog.dat");
+	debugFile.open("UDPLog.dat");
 
 	// Get the command line arguments and initialize socket data
 
@@ -50,7 +50,7 @@ lastMessageID(0)
 
 ReceiverUDPCapture::~ReceiverUDPCapture()
 {
-	outFile.close();
+	debugFile.close();
 	Stop();
 
 	if (receiveFD) CloseUDPSocket();
@@ -76,12 +76,12 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 	sprintf(str, "Connecting to server %s on UDP port %d\n", serverIP,
 		serverUDPPort);	
 	std::string myString(str);
-	outFile << str;
+	debugFile << str;
 
 	if ((*receiveFD = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		sprintf(str, "DatagramSocketError\n");	
 		std::string myString(str);
-		outFile << str;		
+		debugFile << str;		
 		
 		perror("datagram socket");
 		return;
@@ -93,7 +93,7 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 	{
 		sprintf(str, "fcntl 1 Error\n");	
 		std::string myString(str);
-		outFile << str;			
+		debugFile << str;			
 		perror("fcntl 1");
 		flags = 0;
 		return;
@@ -103,7 +103,7 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 	{
 		sprintf(str, "fcntl 2 Error\n");	
 		std::string myString(str);
-		outFile << str;			
+		debugFile << str;			
 		perror("fcntl 2");
 		return;
 	}
@@ -113,7 +113,7 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 	{
 		sprintf(str, "GtSockOpt 1 Error\n");	
 		std::string myString(str);
-		outFile << str;			
+		debugFile << str;			
 
 		perror("getsockopt 1");
 		return;
@@ -121,14 +121,14 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 
 	sprintf(str, "RECVBUF = %d\n", optval);	
 	std::string myString(str);
-	outFile << str;	
+	debugFile << str;	
 
 	optval *= 2;
 	if (setsockopt(*receiveFD, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1) 
 	{
 		sprintf(str, "SetSockOpt Error\n");	
 		std::string myString(str);
-		outFile << str;			
+		debugFile << str;			
 
 		perror("setsockopt");
 		return;
@@ -139,7 +139,7 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 	{
 		sprintf(str, "GetSockOpt2 Error\n");	
 		std::string myString(str);
-		outFile << str;		
+		debugFile << str;		
 
 		perror("getsockopt 2");
 		return;
@@ -147,7 +147,7 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 
 	sprintf(str, "RECVBUF = %d\n", optval);	
 	std::string myString(str);
-	outFile << str;	
+	debugFile << str;	
 
 
 	memset(servAddr, 0, sizeof(*serv_addr));
@@ -164,7 +164,7 @@ struct sockaddr_in *sendData, struct sockaddr_in *servAddr)
 	{
 		sprintf(str, "Bind Error\n");	
 		std::string myString(str);
-		outFile << str;			
+		debugFile << str;			
 
 		perror("bind");
 		return;
@@ -276,7 +276,7 @@ void ReceiverUDPCapture::DoOneThreadIteration()
 					std::string timeStr(boost::posix_time::to_simple_string(myTime));
 					sprintf(str, "Msg %d - %s- \n", msgID, timeStr.c_str());
 					std::string myString(str);
-					outFile << myString;
+					debugFile << myString;
 
 					lastMessageID = msgID;
 				}
@@ -288,7 +288,7 @@ void ReceiverUDPCapture::DoOneThreadIteration()
 				std::string timeStr(boost::posix_time::to_simple_string(myTime));
 				sprintf(str, "-   %s -  result %d, status %d\n", timeStr.c_str(), result, canplus_Status(canHandle));
 				std::string myString(str);
-				outFile << myString;
+				debugFile << myString;
 
 				// If result == 0, we are just in a read time out.
 				// if result < 0 it is a error.  Flush and restart
@@ -369,7 +369,7 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 
 	sprintf(str, "Msg %d - %s - Val %d %d %d %d\n", inMsg.id, timeStr.c_str(), distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
 	std::string myString(str);
-	outFile << myString;
+	debugFile << myString;
 }
 
 void ReceiverCANCapture::ProcessChannelIntensity(AWLCANMessage &inMsg)
@@ -428,7 +428,7 @@ void ReceiverCANCapture::ProcessChannelIntensity(AWLCANMessage &inMsg)
 
 	sprintf(str, "Msg %d - %s - Val %d %d %d %d\n", inMsg.id, timeStr.c_str(), intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
 	std::string myString(str);
-	outFile << myString;
+	debugFile << myString;
 }
 
 void ReceiverCANCapture::ProcessCompletedFrame()

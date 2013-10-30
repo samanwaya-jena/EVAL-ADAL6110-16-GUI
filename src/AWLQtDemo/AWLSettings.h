@@ -119,6 +119,8 @@ public:
 	float displayedRangeMax;
 	float rangeOffset;
 	float distanceScale;
+	float targetHintDistance;
+	float targetHintAngle;
 
 	// 3D display options
 	int decimation;
@@ -162,6 +164,10 @@ public:
 	// Camera
 	float cameraFovXDegrees;
 	float cameraFovYDegrees;
+
+	// Debug
+	bool bWriteDebugFile;
+	bool bWriteLogFile;
 
 
 protected:

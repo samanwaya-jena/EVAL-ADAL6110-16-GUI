@@ -701,7 +701,10 @@ protected:
 	double lastElapsed;
 
 	/** \brief  debug file. */
-	ofstream outFile;
+	ofstream debugFile;
+
+	/** \brief  Log file. */
+	ofstream logFile;
 };
 
 
