@@ -460,6 +460,17 @@ public:
     */
 	virtual bool StopRecord();
 
+	/** \brief Starts the logging of distance data. 
+      * \return true if success.  false on error
+     */
+	virtual bool BeginDistanceLog(){return true;}
+
+	/** \brief Starts the logging of distance data. 
+      * \return true if success.  false on error
+     */
+	virtual bool EndDistanceLog(){return true;}
+
+
 	/** \brief Issues the command to set the current algorithm in the FPGA.
 	  *\param[in] algorigthmID  ID of the selected algorithm.
 	* \return true if success.  false on error.

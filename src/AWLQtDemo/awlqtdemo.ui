@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>315</height>
+    <height>317</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1713,12 +1713,12 @@ color: rgb(255,255,255);</string>
        <rect>
         <x>620</x>
         <y>10</y>
-        <width>201</width>
-        <height>91</height>
+        <width>181</width>
+        <height>111</height>
        </rect>
       </property>
       <property name="title">
-       <string>Target hint</string>
+       <string>Obstacle log hint</string>
       </property>
       <widget class="QLabel" name="targetHintAngleLabel">
        <property name="geometry">
@@ -1806,6 +1806,31 @@ color: rgb(255,255,255);</string>
        </property>
        <property name="value">
         <double>5.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="distanceLogFileCheckbox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>121</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Logging Enabled</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
        </property>
       </widget>
      </widget>
@@ -4552,6 +4577,22 @@ color: rgb(255,255,255);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>distanceLogFileCheckbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>666</x>
+     <y>155</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>641</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_colorImageRadioButton_setChecked(bool)</slot>
@@ -4589,5 +4630,6 @@ color: rgb(255,255,255);</string>
   <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
   <slot>on_targetHintDistanceSpin_editingFinished()</slot>
   <slot>on_targetHintAngleSpin_editingFinished()</slot>
+  <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
  </slots>
 </ui>

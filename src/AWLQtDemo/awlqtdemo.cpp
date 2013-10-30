@@ -166,6 +166,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.injectSimulatedCheckbox->setChecked(receiverCapture->IsSimulatedDataEnabled());
 	}
 
+	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
+
 	 scopeWindow = new AWLQtScope();
 	 //scopeWindow->show();
 
@@ -645,6 +647,21 @@ void AWLQtDemo::on_targetHintAngleSpin_editingFinished()
 	AWLSettings::GetGlobalSettings()->targetHintAngle = angle;
 }
 
+
+void AWLQtDemo::on_distanceLogCheckBox_setChecked(bool  bChecked)
+{
+
+	if (bChecked) 
+	{
+		AWLSettings::GetGlobalSettings()->bWriteLogFile = bChecked;
+		if (receiverCapture) receiverCapture->BeginDistanceLog();
+	}
+	else 
+	{
+		if (receiverCapture) receiverCapture->EndDistanceLog();
+		AWLSettings::GetGlobalSettings()->bWriteLogFile = bChecked;
+	}
+}
 
 void AWLQtDemo::on_timerTimeout()
 {

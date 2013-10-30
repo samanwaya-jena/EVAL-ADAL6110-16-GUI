@@ -54,7 +54,7 @@ responseString("")
 	monthOffset = globalSettings->monthOffsetCAN;
 
 	OpenDebugFile(debugFile, "CanBusLog.dat");
-	OpenLogFile(logFile, "MessageLog.dat");
+
 	ProcessCommandLineArguments(argc, argv);
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
@@ -72,6 +72,7 @@ ReceiverCANCapture::~ReceiverCANCapture()
 
 	CloseCANPort();
 	CloseDebugFile(debugFile);
+	EndDistanceLog();
 	CloseLogFile(logFile);
 	Stop(); // Stop the thread
 }
@@ -656,7 +657,7 @@ if (channel >= 0)
 	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
 	if (block == 0) 
 	{
-		DebugFilePrintf(logFile, "Channel,%d,Expected,%f,%f,Val,%f,%f,%f,%f, , , , ", channel,
+		LogFilePrintf(logFile, ",Channel,%d,Expected,%f,%f,Val,%f,%f,%f,%f, , , , ", channel,
 			AWLSettings::GetGlobalSettings()->targetHintDistance,
 			AWLSettings::GetGlobalSettings()->targetHintAngle,
 			currentFrame->channelFrames[channel]->detections[0]->distance,
@@ -666,13 +667,15 @@ if (channel >= 0)
 	}
 	else if (block == 1) 
 	{
-		DebugFilePrintf(logFile, "Channel,%d,Expected,%f,%f,Val, , , , ,%f,%f,%f,%f", channel,
+#if 0 // We only log the first four distances
+		LogFilePrintf(logFile, ",Channel,%d,Expected,%f,%f,Val, , , , ,%f,%f,%f,%f", channel,
 			AWLSettings::GetGlobalSettings()->targetHintDistance,
 			AWLSettings::GetGlobalSettings()->targetHintAngle,
 			currentFrame->channelFrames[channel]->detections[4]->distance,
 			currentFrame->channelFrames[channel]->detections[5]->distance,
 			currentFrame->channelFrames[channel]->detections[6]->distance,
 			currentFrame->channelFrames[channel]->detections[7]->distance);
+#endif
 	}
 }
 
@@ -1869,4 +1872,20 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameters> &pa
 	return(bMessageOk);
 }
 
+bool ReceiverCANCapture::BeginDistanceLog()
 
+{
+	if (!logFile.is_open())
+	{
+		OpenLogFile(logFile, "DistanceLog.dat");
+	}
+
+	LogFilePrintf(logFile, "Start distance log");
+	return(true);
+}
+
+bool ReceiverCANCapture::EndDistanceLog()
+
+{
+	return(false);
+}
