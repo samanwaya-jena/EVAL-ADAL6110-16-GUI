@@ -114,7 +114,6 @@ bool  ReceiverCANCapture::OpenCANPort()
 	try
 	{
 	port = new boost::asio::serial_port(io, sCommPort);
-
     port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
 	}
 	catch (...)
@@ -133,11 +132,18 @@ bool  ReceiverCANCapture::OpenCANPort()
     // A blocking reader for this port that 
     // will time out a read after 500 milliseconds.
 	reader = new blocking_reader(*port, receiveTimeOutInMillisec);
+#if 1
+	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
+#endif
 
 	// Send the initialization strings
 	WriteString(sBitRate+"\r"); // Set CAN Rate ("S2"->50Kbps, "S3"->100Kbps, "S8"->1Gbps)
 	WriteString("O\r");  // Open
+	WriteString("Z0\r");  // Make sure no timestamps are attached
 	WriteString("E\r");  // Flush/ Resync
+#if 1
+	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
+#endif
 
 	if (reader) 
 		return(true);
@@ -188,6 +194,16 @@ void  ReceiverCANCapture::Go(bool inIsThreaded)
 	if (bIsThreaded) 
 	{
 		mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverCANCapture::DoThreadLoop, this)));
+#if 1
+		// Set the priority under windows.  This is the most critical display thread 
+		// for user interaction
+	
+
+		 HANDLE th = mThread->native_handle();
+		 SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
+		//   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+#endif
+
 	}
 }
  
@@ -290,10 +306,10 @@ void ReceiverCANCapture::DoOneThreadIteration()
 			char c;
 			// read from the serial port until we get a
 			// carriage return or until a read times-out (500ms)
-			if (reader->read_char(c)) 
+
+		if (reader->read_char(c)) 
 			{
 				responseString.push_back(c);
-	
 				if (c == '\r') 
 				{
 					if (ParseLine(responseString, msg))
@@ -366,7 +382,7 @@ bool ReceiverCANCapture::GetDataByte(std::string &inResponse, uint8_t &outByte, 
 		}
 		else 
 		{
-			DebugFilePrintf(debugFile, "CanLine error1: %s", inResponse.c_str());
+			DebugFilePrintf(debugFile, "CanLine error - Invalid char: %s-%c", inResponse.c_str(), theChar);
 			return(false);
 		}
 	}
@@ -400,7 +416,7 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 	bool bResult = false;
 	if (inResponse.length() < 2) 
 	{
-		DebugFilePrintf(debugFile, "CanLine empty");
+		DebugFilePrintf(debugFile, "CanLine empty %s", inResponse.c_str());
 		return bResult;
 	}
 
@@ -481,8 +497,6 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelDistance(inMsg);
 		lastMessageID = msgID;
-		// On the last distance message, notify send the sensor frame to the application.
-		if (msgID == 36) ProcessCompletedFrame();
 	}
 	else if (msgID >= 40 && msgID <= 46) 
 	{
@@ -493,6 +507,8 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelIntensity(inMsg);
 		lastMessageID = msgID;
+		// On the last distance message, notify send the sensor frame to the application.
+		if (msgID == 56) ProcessCompletedFrame();	
 	}
 	else if (msgID == 80) /* Command */
 	{
@@ -654,10 +670,15 @@ if (channel >= 0)
 		rawLock.unlock();
 	}
 
+	// Debug and Log messages
 	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
 	if (block == 0) 
 	{
-		LogFilePrintf(logFile, ",Channel,%d,Expected,%f,%f,Val,%f,%f,%f,%f, , , , ", channel,
+#if 0 // If set to 1, we only long the first distance
+	if (inMsg.id == 20)
+#endif
+		//Date;Comment (empty);"Track"/"Dist";TrackID;"Channel";....
+		LogFilePrintf(logFile, " ;Dist;;Channel;%d;Expected;%.2f;%.1f;Val;%.2f;%.2f;%.2f;%.2f; ; ; ; ", channel,
 			AWLSettings::GetGlobalSettings()->targetHintDistance,
 			AWLSettings::GetGlobalSettings()->targetHintAngle,
 			currentFrame->channelFrames[channel]->detections[0]->distance,
@@ -667,8 +688,11 @@ if (channel >= 0)
 	}
 	else if (block == 1) 
 	{
-#if 0 // We only log the first four distances
-		LogFilePrintf(logFile, ",Channel,%d,Expected,%f,%f,Val, , , , ,%f,%f,%f,%f", channel,
+#if 0 // if set to 1, wwe only log the last distance
+		if (inMsg.id == 36)
+
+		//Date;Comment (empty);"Track"/"Dist";TrackID;"Channel";....
+		LogFilePrintf(logFile, " ;Dist;;Channel;%d;Expected;%f;%f;Val; ; ; ; ;%f;%f;%f;%f", channel,
 			AWLSettings::GetGlobalSettings()->targetHintDistance,
 			AWLSettings::GetGlobalSettings()->targetHintAngle,
 			currentFrame->channelFrames[channel]->detections[4]->distance,
@@ -1008,11 +1032,17 @@ void ReceiverCANCapture::ParseParameterDateTimeResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterRecordResponse(AWLCANMessage &inMsg)
 {
+	// Message should be sent as a response when we set record filename.
+	// Otherwise it is not used. We ignore the message for the moment.
 }
+
 
 void ReceiverCANCapture::ParseParameterPlaybackResponse(AWLCANMessage &inMsg)
 {
+	// Message should be sent as a response when we set playbackfilename.
+	// Otherwise it is not used. We ignore the message for the moment.
 }
+
 
 void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 {
@@ -1030,7 +1060,8 @@ void ReceiverCANCapture::ParseParameterAlgoParameterError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);}
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
+}
 
 void ReceiverCANCapture::ParseParameterFPGARegisterError(AWLCANMessage &inMsg)
 {
@@ -1168,9 +1199,7 @@ bool ReceiverCANCapture::WriteMessage(const AWLCANMessage &inMsg)
           0x06 = PRESET
 		  0x07 = GLOBAL_PARAMETER (Histogram)
 		  0x08 = GPIO_CONTROL
-          0x20 = DATE
-          0x21 = TIME
-          0x22 = reserved for TIMEZONE
+          0x20 = DATE_TIME
           0xD0 = RECORD_FILENAME (zero-terminated)
           0xD1 = PLAYBACK_FILENAME (zero-terminated)
 02-03: Address (U16_LE)
@@ -1211,10 +1240,9 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xC0;   // SET_PARAMETER
-	message.data[1] = 0x20;    // SET_DATE
+	message.data[1] = 0x20;    // SET_DATE_TIME
 
-	message.data[2] = 0x00; // Address[0] : Not used
-	message.data[3] = 0x00; // Address[1] : Not used
+	*((uint16_t*)&message.data[2]) = 0x0001; // SET_DATE
 	*((uint16_t*)&message.data[4]) = year-yearOffset;
 	message.data[6] = (unsigned char) month-monthOffset;
 	message.data[7] = (unsigned char) day;
@@ -1226,10 +1254,9 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xC0;   // SET_PARAMETER
-	message.data[1] = 0x21;    // SET_TIME
+	message.data[1] = 0x20;    // SET_DATE_TIME
 
-	message.data[2] = 0x00; // Address[0] : Not used
-	message.data[3] = 0x00; // Address[1] : Not used
+	*((uint16_t*)&message.data[2]) = 0x0002; // SET_TIME
 	message.data[4] = (unsigned char) hours;
 	message.data[5] = (unsigned char) minutes;
 	message.data[6] = (unsigned char) seconds;
@@ -1326,10 +1353,10 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::Chann
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xD1;   // PLAYBACK_RAW
-	message.data[1] = channelMask.byteData;   
+	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops playback
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = frameRate; // Address[1] : Not used
+	message.data[3] = frameRate; // Frame rate in HZ. 00: Use actual
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1351,10 +1378,10 @@ bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ReceiverCapture::Channel
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xD0;   // Record_RAW
-	message.data[1] = channelMask.byteData;   
+	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops record
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = frameRate; // Address[1] : Not used
+	message.data[3] = frameRate; 
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1877,7 +1904,7 @@ bool ReceiverCANCapture::BeginDistanceLog()
 {
 	if (!logFile.is_open())
 	{
-		OpenLogFile(logFile, "DistanceLog.dat");
+		OpenLogFile(logFile, "DistanceLog.dat", true);
 	}
 
 	LogFilePrintf(logFile, "Start distance log");

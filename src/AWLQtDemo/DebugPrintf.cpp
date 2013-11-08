@@ -19,6 +19,10 @@ namespace awl
 
 const char *sDebugFileName = "debug.dbg";
 
+// Field separator used in debug files.
+
+const char cFieldSeparator = ';'; 
+
 #ifdef _DEBUG
 const bool bIsInDebug = true;
 #else
@@ -31,7 +35,7 @@ void DebugFilePrintf(const char *format, ...)
 	if (AWLSettings::GetGlobalSettings()->bWriteDebugFile) 
 	{
 
-		// Open the debuug file
+		// Open the debug file
 		ofstream debugFile;
 		bool bOpen = OpenDebugFile(debugFile, sDebugFileName, true); 
 		if( !bOpen) return;
@@ -70,7 +74,8 @@ void DebugFilePrintf(ofstream &debugFile, const char *format, ...)
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 
 		std::string timeStr(boost::posix_time::to_simple_string(myTime));
-		timeStr += " ";
+		timeStr[11]=cFieldSeparator;
+		timeStr += cFieldSeparator;
 
 		va_list argList;
 		va_start (argList, format);
@@ -179,7 +184,8 @@ void LogFilePrintf(ofstream &logFile, const char *format, ...)
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 
 		std::string timeStr(boost::posix_time::to_simple_string(myTime));
-		timeStr += " ";
+		timeStr[11]=cFieldSeparator;
+		timeStr += cFieldSeparator;
 
 		va_list argList;
 		va_start (argList, format);
