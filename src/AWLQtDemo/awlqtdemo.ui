@@ -1925,7 +1925,7 @@ color: rgb(255,255,255);</string>
        <property name="checkable">
         <bool>false</bool>
        </property>
-       <widget class="QCheckBox" name="channel7CheckBox">
+       <widget class="QCheckBox" name="recordChannel7CheckBox">
         <property name="geometry">
          <rect>
           <x>190</x>
@@ -1938,7 +1938,7 @@ color: rgb(255,255,255);</string>
          <string>7</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="channel6CheckBox">
+       <widget class="QCheckBox" name="recordChannel6CheckBox">
         <property name="geometry">
          <rect>
           <x>150</x>
@@ -1951,7 +1951,7 @@ color: rgb(255,255,255);</string>
          <string>6</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="channel5CheckBox">
+       <widget class="QCheckBox" name="recordChannel5CheckBox">
         <property name="geometry">
          <rect>
           <x>110</x>
@@ -1964,7 +1964,7 @@ color: rgb(255,255,255);</string>
          <string>5</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="channel2CheckBox">
+       <widget class="QCheckBox" name="recordChannel2CheckBox">
         <property name="geometry">
          <rect>
           <x>130</x>
@@ -1977,7 +1977,7 @@ color: rgb(255,255,255);</string>
          <string> 2</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="channel3CheckBox">
+       <widget class="QCheckBox" name="recordChannel3CheckBox">
         <property name="geometry">
          <rect>
           <x>170</x>
@@ -1990,7 +1990,7 @@ color: rgb(255,255,255);</string>
          <string>3</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="channel1CheckBox">
+       <widget class="QCheckBox" name="recordChannel1CheckBox">
         <property name="geometry">
          <rect>
           <x>90</x>
@@ -2006,7 +2006,7 @@ color: rgb(255,255,255);</string>
          <bool>false</bool>
         </property>
        </widget>
-       <widget class="QCheckBox" name="channel4CheckBox">
+       <widget class="QCheckBox" name="recordChannel4CheckBox">
         <property name="geometry">
          <rect>
           <x>200</x>

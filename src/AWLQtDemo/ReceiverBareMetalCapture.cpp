@@ -1029,7 +1029,7 @@ bool ReceiverBareMetalCapture::SetRecordFileName(std::string inRecordFileName)
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverBareMetalCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
 {
 #if 0
     AWLBareMessage message;
@@ -1057,7 +1057,7 @@ bool ReceiverBareMetalCapture::StartPlayback(uint8_t frameRate, ReceiverCapture:
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverBareMetalCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 {
  #if 0
     AWLBareMessage message;
@@ -1149,7 +1149,7 @@ bool ReceiverBareMetalCapture::StopRecord()
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverBareMetalCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
 {
 #if 0
     AWLBareMessage message;

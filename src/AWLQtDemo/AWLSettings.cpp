@@ -24,7 +24,12 @@ colorStyle(0),
 cameraView(3),
 
 sCANCommPort("COM16"),
-sCANBitRate("S8")
+sCANBitRate("S8"),
+msgEnableObstacle(false),
+msgEnableDistance_1_4(true),
+msgEnableDistance_5_8(true),
+msgEnableIntensity_1_4(true),
+msgEnableIntensity_5_8(true)
 
 {
 	cameraView = 3;
@@ -201,6 +206,16 @@ bool AWLSettings::ReadSettings()
 	
 	settings.beginGroup("receiver");
 	sReceiverType = settings.value("receiverType").toString();
+	receiverChannelMask = settings.value("channelMask").toUInt();
+	receiverFrameRate = settings.value("frameRate").toUInt();
+
+	msgEnableObstacle = settings.value("msgEnableObstacle").toBool();
+	msgEnableDistance_1_4 = settings.value("msgEnableDistance_1_4").toBool();
+	msgEnableDistance_5_8 = settings.value("msgEnableDistance_5_8").toBool();
+	msgEnableIntensity_1_4 = settings.value("msgEnableIntensity_1_4").toBool();
+	msgEnableIntensity_5_8 = settings.value("msgEnableIntensity_5_8").toBool();
+
+
 	settings.endGroup();
 
 	settings.beginGroup("bareMetalComm");

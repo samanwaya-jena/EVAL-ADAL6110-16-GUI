@@ -118,7 +118,7 @@ public:
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartPlayback(uint8_t frameRate, ChannelMask channelMask);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
@@ -127,7 +127,7 @@ public:
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -151,7 +151,7 @@ public:
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
 
 
 	/** \brief Issues the command to set the current algorithm in the FPGA.

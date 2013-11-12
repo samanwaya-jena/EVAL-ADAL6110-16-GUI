@@ -122,7 +122,7 @@ public:
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartPlayback(uint8_t frameRate, ChannelMask channelMask);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
@@ -131,7 +131,7 @@ public:
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -155,7 +155,7 @@ public:
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
 
 	/** \brief Starts the logging of distance data. 
       * \return true if success.  false on error
@@ -211,6 +211,15 @@ public:
 	* \return true if success.  false on error.
 	*/
 	virtual bool SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+
+	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
+    * \param[in] frameRate new frame rate for the system. A value of 0 means no change
+    * \param[in] channelMask mask for the analyzed channels.
+    * \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
+	* \return true if success.  false on error.
+	*/
+		
+	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask);
 
 
 	/** \brief Issues an asynchronous query command to get the current algorithm.

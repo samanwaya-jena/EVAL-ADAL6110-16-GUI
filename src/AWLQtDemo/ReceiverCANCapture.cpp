@@ -62,6 +62,7 @@ responseString("")
 	if (OpenCANPort())
 	{
 		WriteCurrentDateTime();
+		ReceiverCapture::SetMessageFilters();
 	}
 
 	acquisitionSequence->Clear();
@@ -335,6 +336,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				if (OpenCANPort())
 				{
 					WriteCurrentDateTime();
+					ReceiverCapture::SetMessageFilters();
 				}
 			}
 
@@ -348,6 +350,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				if (OpenCANPort())
 				{
 					WriteCurrentDateTime();
+					ReceiverCapture::SetMessageFilters();
 				}
 			}
 
@@ -1344,7 +1347,7 @@ bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
 {
 	AWLCANMessage message;
 	
@@ -1369,7 +1372,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::Chann
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 {
 	AWLCANMessage message;
 	
@@ -1452,7 +1455,7 @@ bool ReceiverCANCapture::StopRecord()
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
 {
 	AWLCANMessage message;
 	
@@ -1666,7 +1669,7 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &para
 
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings-> FindAlgoParamByAddress(parametersList, registerAddress);
+	int index = globalSettings->FindAlgoParamByAddress(parametersList, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
@@ -1683,6 +1686,35 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &para
    }
 
 	return(bMessageOk);
+}
+
+
+bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+
+{
+	// Signal that we are waiting for an update of thet register settings.
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	AWLCANMessage message;
+	
+	message.id = 80;       // Message id: 80- Command message
+
+    message.len = 8;       // Frame size (0.8)
+    message.data[0] = 0xE1;   // Transmit_cooked enable flags
+
+	message.data[1] = channelMask.byteData; // Channel mask
+	message.data[2] = 0;  // Reserved
+	message.data[3] = frameRate; // New frame rate. oo= use actual.
+	message.data[4] = messageMask.byteData;
+	message.data[5] = 0;  // Reserved
+	message.data[6] = 0;  // Reserved
+	message.data[7] = 0;  // Reserved
+
+	bool bMessageOk = WriteMessage(message);
+
+	// The message has no confirmation built in
+
+   return(bMessageOk);
 }
 
 bool ReceiverCANCapture::QueryAlgorithm()

@@ -139,14 +139,50 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.decimationSpinBox->setValue(globalSettings->decimation);
 
 	// Default values
-	ui.calibrationChannel1CheckBox->setChecked(true);
-	ui.calibrationChannel2CheckBox->setChecked(true);
-	ui.calibrationChannel3CheckBox->setChecked(true);
-	ui.calibrationChannel4CheckBox->setChecked(true);
-	ui.calibrationChannel5CheckBox->setChecked(true);
-	ui.calibrationChannel6CheckBox->setChecked(true);
-	ui.calibrationChannel7CheckBox->setChecked(true);
+	ChannelMask channelMask;
 
+	if (receiverCapture) 
+	{
+		ui.recordChannel1CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel0);
+		ui.recordChannel2CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel1);
+		ui.recordChannel3CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel2);
+		ui.recordChannel4CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel3);
+		ui.recordChannel5CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel4);
+		ui.recordChannel6CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel5);
+		ui.recordChannel7CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel6);
+
+		ui.calibrationChannel1CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel0);
+		ui.calibrationChannel2CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel1);
+		ui.calibrationChannel3CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel2);
+		ui.calibrationChannel4CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel3);
+		ui.calibrationChannel5CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel4);
+		ui.calibrationChannel6CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel5);
+		ui.calibrationChannel7CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel6);
+
+		ui.frameRateSpinBox->setValue(receiverCapture->receiverStatus.frameRate);
+	}
+	else
+	{
+		ui.recordChannel1CheckBox->setChecked(true);
+		ui.recordChannel2CheckBox->setChecked(true);
+		ui.recordChannel3CheckBox->setChecked(true);
+		ui.recordChannel4CheckBox->setChecked(true);
+		ui.recordChannel5CheckBox->setChecked(true);
+		ui.recordChannel6CheckBox->setChecked(true);
+		ui.recordChannel7CheckBox->setChecked(true);
+
+
+		ui.calibrationChannel1CheckBox->setChecked(true);
+		ui.calibrationChannel2CheckBox->setChecked(true);
+		ui.calibrationChannel3CheckBox->setChecked(true);
+		ui.calibrationChannel4CheckBox->setChecked(true);
+		ui.calibrationChannel5CheckBox->setChecked(true);
+		ui.calibrationChannel6CheckBox->setChecked(true);
+		ui.calibrationChannel7CheckBox->setChecked(true);
+
+		
+		ui.frameRateSpinBox->setValue(globalSettings->receiverFrameRate);
+	}
 
 	CloudViewerWin::ColorHandlerType defaultColorType = (CloudViewerWin::ColorHandlerType) globalSettings->colorStyle;
 	switch (defaultColorType) 
@@ -383,15 +419,15 @@ void AWLQtDemo::on_recordPushButton_clicked()
 {
 	std::string sRecordFileName(ui.recordFileNameEdit->text().toStdString());
 	uint8_t frameRate = ui.frameRateSpinBox->value();
-	ReceiverCapture::ChannelMask channelMask;
+	ChannelMask channelMask;
 
-	channelMask.bitFieldData.channel0 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.channel2CheckBox->isChecked();
+	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
+	channelMask.bitFieldData.channel1 = ui.recordChannel2CheckBox->isChecked();
+	channelMask.bitFieldData.channel2 = ui.recordChannel3CheckBox->isChecked();
+	channelMask.bitFieldData.channel3 = ui.recordChannel4CheckBox->isChecked();
+	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
+	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
+	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 
 	if (receiverCapture) 
@@ -410,15 +446,15 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
 	uint8_t frameRate = ui.frameRateSpinBox->value();
-	ReceiverCapture::ChannelMask channelMask;
+	ChannelMask channelMask;
 
-	channelMask.bitFieldData.channel0 = ui.channel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.channel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.channel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.channel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.channel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.channel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.channel7CheckBox->isChecked();
+	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
+	channelMask.bitFieldData.channel1 = ui.recordChannel2CheckBox->isChecked();
+	channelMask.bitFieldData.channel2 = ui.recordChannel3CheckBox->isChecked();
+	channelMask.bitFieldData.channel3 = ui.recordChannel4CheckBox->isChecked();
+	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
+	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
+	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 	
 	if (receiverCapture) 
@@ -613,7 +649,7 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 {
 	uint8_t frameQty = ui.calibrationFrameQtySpinBox->value();
 	float   beta = ui.calibrationBetaDoubleSpinBox->value();
-	ReceiverCapture::ChannelMask channelMask;
+	ChannelMask channelMask;
 
 	channelMask.bitFieldData.channel0 = ui.calibrationChannel1CheckBox->isChecked();
 	channelMask.bitFieldData.channel1 = ui.calibrationChannel2CheckBox->isChecked();

@@ -26,6 +26,47 @@ const int maxReceiverFrames = 100;
 namespace awl
 {
 
+/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
+  *        and communications
+  * \author Jean-Yves Deschênes
+  */
+
+typedef union 
+{
+	uint8_t byteData;
+	struct  {
+		bool channel0	: 1;
+		bool channel1	: 1;
+		bool channel2	: 1;
+		bool channel3	: 1;
+		bool channel4	: 1;
+		bool channel5	: 1;
+		bool channel6	: 1;
+		bool unused		: 1;
+	} bitFieldData;
+} ChannelMask;
+
+/** \brief MessageMask struct describes receiver message groups that can be toggled on/off 
+  *        for customized operations or to preserve bandwidth  
+  *        and communications
+  * \author Jean-Yves Deschênes
+  */
+
+typedef union 
+{
+	uint8_t byteData;
+	struct  {
+		bool unused_0		: 1;
+		bool obstacle		: 1;
+		bool distance_1_4	: 1;
+		bool distance_5_8	: 1;
+		bool intensity_1_4	: 1;
+		bool intensity_5_8	: 1;
+		bool unused_6		: 1;
+		bool unused_7		: 1;
+	} bitFieldData;
+} MessageMask;
+
 /** \brief ReceiverStatus struct describes receiver operation status  
   * \author Jean-Yves Deschênes
   */
@@ -165,6 +206,9 @@ public:
 
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
+	
+	ChannelMask	channelMask;
+	MessageMask	messageMask;
 }
 ReceiverStatus;
 
@@ -182,21 +226,6 @@ public:
 	static const int maximumSensorFrames;  // Maximum number of frames kept in frame buffer
 	typedef boost::shared_ptr<ReceiverCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCapture> ConstPtr;
-
-	typedef union 
-	{
-		uint8_t byteData;
-		struct  {
-			bool channel0	: 1;
-			bool channel1	: 1;
-			bool channel2	: 1;
-			bool channel3	: 1;
-			bool channel4	: 1;
-			bool channel5	: 1;
-			bool channel6	: 1;
-			bool unused		: 1;
-		} bitFieldData;
-	} ChannelMask;
 
 	typedef enum  
 	{
@@ -425,7 +454,7 @@ public:
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartPlayback(uint8_t frameRate, ChannelMask channelMask);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
@@ -434,7 +463,7 @@ public:
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -450,7 +479,7 @@ public:
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask);
+	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
 
 
 	/** \brief Stops any current recording. 
@@ -516,6 +545,24 @@ public:
 	*/
 		
 	virtual bool SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+
+	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect the current global setting.
+	* \return true if success.  false on error.
+	* \remarks uses the AWLSettings::global settings variables to call  SetMessageFilters(frameRate, channelMask, messageMask)
+	*/
+		
+	virtual bool SetMessageFilters();
+
+
+	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
+    * \param[in] frameRate new frame rate for the system. A value of 0 means no change
+    * \param[in] channelMask mask for the analyzed channels.
+    * \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
+	* \return true if success.  false on error.
+	*/
+		
+	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask);
+
 
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.
@@ -604,7 +651,6 @@ public:
 
 // Protected methods
 protected:
-
 	
 	/** \brief Once all distances have been acquired in the current frame,
 	  *        push that frame into the frame buffer.
