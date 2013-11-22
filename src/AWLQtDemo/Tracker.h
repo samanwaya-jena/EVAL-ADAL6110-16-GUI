@@ -18,17 +18,46 @@
 #endif
 
 
-#define TRACK_TRACKER
-
 using namespace std;
 
 namespace awl
 {
+
+#if 0
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *) __nan)
+#else
+const float NAN = std::numeric_limits<float>::quiet_NaN ();
+#define isNAN(val) (val == NAN)
+#endif
+
+
 typedef uint16_t TrackID;
 
 class SensorFrame;
 class ChannelFrame;
 class Detection;
+
+/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
+  *        and communications
+  * \author Jean-Yves Deschênes
+  */
+
+typedef union 
+{
+	uint8_t byteData;
+	struct  {
+		bool channel0	: 1;
+		bool channel1	: 1;
+		bool channel2	: 1;
+		bool channel3	: 1;
+		bool channel4	: 1;
+		bool channel5	: 1;
+		bool channel6	: 1;
+		bool unused		: 1;
+	} bitFieldData;
+
+} ChannelMask;
 
 /** \brief The Detection class corresponds to a single detectio returned by the receiver.
            It holds the distance for the detection, its intensity, threat level
@@ -40,6 +69,7 @@ class Detection
 public:
 	typedef boost::shared_ptr<Detection> Ptr;
     typedef boost::shared_ptr<Detection> ConstPtr;
+	typedef std::vector<Detection::Ptr> Vector;
 
 	typedef enum ThreatLevel {
 		eThreatNone = 0,  // No threat level assigned
@@ -80,7 +110,19 @@ public:
 
 	/** \brief Velocity, in m/s */
 	float velocity;
-	
+
+	/** \brief acceleration, in m/s squared */
+	float acceleration;
+
+	/** \brief Time to collision, in seconds */
+	float timeToCollision;
+
+	/** \brief Required acceleration to zero speed, in m/s2seconds */
+	float decelerationToStop;
+
+	/** \brief Track Positive detection probability estimate */
+	float probability;
+
 	/** \brief Timestamp, in frames */
 	float timeStamp;
 
@@ -106,9 +148,7 @@ public:
 	typedef std::vector<Track::Ptr> Vector;
 
 	Track(int trackID);
-	Track(TrackID inTrackID,
-		float inDistance, float inVelocity, float inTimeStamp, float inFirstTimeStamp, 
-		   Detection::ThreatLevel inThreatLevel = Detection::eThreatNone);
+
 	bool IsValid();
 
 	int	GetTrackID() {return(trackID);}
@@ -116,12 +156,8 @@ public:
 	bool Contains(Detection::Ptr & inDetectionPtr);
 	bool Contains(int channelID);
 
-
-
-	/** \brief Return true if track probability level is above probability threshold.
-     * \return bool true if track probability level is above probability threshold..  False otherwise.
-      */
-	bool IsProbable();
+	// A track is built from 2 message sections.  Make sure both parts are entered before a track is completed.
+	bool IsComplete() { return (part1Entered && part2Entered); };
 
 public:
 	/** \brief Track ID. */
@@ -130,9 +166,22 @@ public:
 	/** \brief distance, in meters */
 	float distance;
 
-	/** \brief Velocity, in m/s */
+	/** \brief Velocity, in m/s.  Positive velocity means target is moving away from sensor */
 	float velocity;
-	
+
+	/** \brief acceleration, in m/s squared */
+	float acceleration;
+
+	/** \brief Time to collision, in seconds */
+	float timeToCollision;
+
+	/** \brief Required acceleration to zero speed, in m/s2seconds */
+	float decelerationToStop;
+
+	/** \brief Track Positive detection probability estimate */
+
+	float probability;
+
 	/** \brief Timestamp, in frames */
 	float timeStamp;
 
@@ -142,13 +191,16 @@ public:
 	/** \brief Threat level associated to detection */
 	Detection::ThreatLevel	threatLevel;
 
-	/** \brief Track Positive detection probability estimate */
+	/** \brief Channels in which detections were made for the track **/
+	uint8_t channels;
 
-	float probability;
+	Detection::Vector detections; 
 
-	std::vector<Detection::Ptr> detections; 
+	// A track is built from 2 message sections.  Make sure both parts are entered before a track is completed.
+
+	bool part1Entered;
+	bool part2Entered;
 protected:
-
 };
 
 /** \brief The ChannelFrame class holds the multiple detections associated to one channel, in one single time frame.
@@ -159,21 +211,23 @@ class ChannelFrame
 public:
 	typedef boost::shared_ptr<ChannelFrame> Ptr;
     typedef boost::shared_ptr<ChannelFrame> ConstPtr;
-
+	typedef std::vector<ChannelFrame::Ptr> Vector;
 public:
 	ChannelFrame(int channelID);
-	ChannelFrame(int channelID, int inDetectionQty);
 	ChannelFrame(int channelID, int inDetectionQty, ifstream &inTrackFile);
 	virtual ~ChannelFrame() {};
 
 
 	int GetChannelID() { return(channelID);}
+
+	bool FindDetection(int inDetectionID, Detection::Ptr &outDetection);
+
 public:
 	int channelID;
 	// Timestamp im milliseconds, elapsed from start of thread.
 	double timeStamp;
 
-	std::vector<Detection::Ptr> detections;
+	Detection::Vector detections;
 };
 
 
@@ -185,6 +239,7 @@ class SensorFrame
 public:
 	typedef boost::shared_ptr<SensorFrame> Ptr;
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
+	typedef std::queue<SensorFrame::Ptr> Queue;
 public:
 	SensorFrame(uint32_t inFrameID);
 	SensorFrame(uint32_t inFrameID, int inChannelQty, int inDetectionQty);
@@ -192,9 +247,13 @@ public:
 	virtual ~SensorFrame() {};
 
 	uint32_t	GetFrameID() {return(frameID);}
+	
+
+	Detection::Ptr MakeUniqueDetection(int channelID, int detectionID);
 public:
 	uint32_t frameID;
-	std::vector<ChannelFrame::Ptr> channelFrames;
+	ChannelFrame::Vector channelFrames;
+	Track::Vector tracks; 
 
 	// Timestamp im milliseconds, elapsed from start of thread.
 	double timeStamp;
@@ -224,9 +283,6 @@ public:
 	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, ifstream &inTrackFile);
 	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, std::string inFileName);
 
-	TrackingMode GetTrackingMode();
-	TrackingMode SetTrackingMode(AcquisitionSequence::TrackingMode inTrackingMode);
-
 	void ReadFile(std::string inFileName, int inChannelQty, int inDetectionQty);
 	void ReadFile(ifstream &inTrackFile, int inChannelQty, int inDetectionQty);
 
@@ -243,50 +299,31 @@ public:
 
 	uint32_t AllocateFrameID();
 
+	bool FindTrack(SensorFrame::Ptr currentFrame,TrackID trackID, Track::Ptr &outTrack);
+	Track::Ptr MakeUniqueTrack(SensorFrame::Ptr currentFrame,TrackID trackID);
+
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
 	ChannelFrame::Ptr & GetChannelAtIndex(int frameIndex, int channelIndex);
-	Detection::Ptr & GetDetectionAtIndex(int frameIndex, int channelIndex, int detectionIndex);
 
 	int FindFrameIndex(uint32_t frameID);
 	int GetLastFrameIndex();
 
+	// Build detections from the current track set.
+	void BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
 
-	void AcquisitionSequence::BuildTracks(double inTimeStamp);
-	Track::Vector &GetTracks() {return(tracks);};
+protected:
+	void UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 
 public: 
 	int sequenceID;
 	int channelQty;
 	int detectionQty;
-	std::queue<SensorFrame::Ptr> sensorFrames;
+	SensorFrame::Queue sensorFrames;
 	
 	std::string infoLine;
 
 	uint32_t frameID;
-
-protected:
-#ifdef TRACK_TRACKER
-
-	void UpdateTracks(double inTimeStamp);
-	void CleanTracks(double inTimeStamp);
-	int  FitDetectionToTrack(double inTimeStamp, Detection::Ptr & detection);
-	Track::Ptr & CreateTrack(double inTimeStamp, Track::Vector &trackVector, Detection::Ptr & detection);
-
-protected:
-	double distanceDamping; //(0.6);  // damping to compute the last position of the track. Range 0-1.
-	double speedDamping ;// (0.6);	// damping to compute the last velocity of the track	
-	double trackTimeOut; //(0.5);		// Track inactivity time out (seconds) 
-	double distanceThreshold; //(0.5); // Maximum error to correlate, in meters
-	double minimumDistance; //(1.0); // Minimum distance at which we consider an obstacle valid.
-
-	Track::Vector tracks; 
-
-	TrackingMode	trackingMode;
-
-#endif
 };
-
-
 
 } // namespace awl
 #endif // AWL_TRACKER_H

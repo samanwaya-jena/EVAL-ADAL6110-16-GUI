@@ -2,6 +2,8 @@
 #define DETECTIONSTRUCT_H
 
 #include <QVector>
+#include "Tracker.h"
+
 
 /** \brief Structure containing detected object information. */
 typedef struct
@@ -12,6 +14,22 @@ typedef struct
     float angle;							// Angle where the object is detected (Center)
     float angleWidth;						// Size of the object (in fact, angle width of the sensor)
 	int fromChannel;						// Channel where the object was detected
+
+	/** \brief Velocity, in m/s.  Positive velocity means target is moving away from sensor */
+	float velocity;
+
+	/** \brief acceleration, in m/s squared */
+	float acceleration;
+
+	/** \brief Time to collision, in seconds */
+	float timeToCollision;
+
+	/** \brief Required acceleration to zero speed, in m/s2seconds */
+	float decelerationToStop;
+
+	/** \brief Threat level associated to detection */
+	awl::Detection::ThreatLevel	threatLevel;
+
 }DetectionData;
 
 /** \brief Structure containing 2D View configuration. */

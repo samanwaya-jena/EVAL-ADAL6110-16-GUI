@@ -836,9 +836,11 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 							detect.angle = currentAngle;
 							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
 							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))));
+							detect.velocity = detection->velocity;
+							detect.acceleration = detection->acceleration;
+							detect.timeToCollision = detection->timeToCollision;
+							detect.threatLevel = detection ->threatLevel;
 							vect.append(detect);
-
-							//AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);
 						}
 					}
 				}
@@ -847,7 +849,6 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 	}
 
 	m2DScan->slotDetectionDataChanged(&vect);
-
 }
 
 void AWLQtDemo::DisplayReceiverStatus()
@@ -1515,14 +1516,10 @@ void AWLQtDemo::DisplayReceiverValues()
 	tableWidgets[5] = ui.distanceTable6;
 	tableWidgets[6] = ui.distanceTable7;
 
-#if 0
-	// Force update of the frame displayed by user interfaces to the currentframe
-	uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-#else
 	// Use the frame snapped by the main display timer as the current frame
 	// display will «
 	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
-#endif	
+
 	for (int channelID = 0; channelID < channelQty; channelID++) 
 	{
 		if (channelID < receiverCapture->GetChannelQty())
@@ -1550,7 +1547,7 @@ void AWLQtDemo::DisplayReceiverValues()
 					}
 					for  (int i = detectionIndex; i < tableWidgets[channelID]->rowCount(); i++) 
 					{
-							AddDistanceToText(i, tableWidgets[channelID], 0.0f);
+							AddDistanceToText(i, tableWidgets[channelID], 0);
 					}
 				}
 			}
@@ -1562,15 +1559,23 @@ void AWLQtDemo::DisplayReceiverValues()
 void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, Detection::Ptr &detection)
 
 {
-	AddDistanceToText(detectionID, pTable, detection->distance, detection->trackID, detection->threatLevel,
-		detection->intensity, detection->velocity);
+	if (detectionID >= pTable->rowCount()) return;
+
+	AddDistanceToText(detectionID, pTable, detection->trackID, detection->distance,  detection->threatLevel,
+		detection->intensity, detection->velocity, detection->acceleration, detection->timeToCollision,
+		detection->decelerationToStop, detection->probability);
 }
 
-void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float distance, 
-								 TrackID trackID, 
-								 Detection::ThreatLevel threatLevel, 
+void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable,  TrackID trackID, 
+								float distance, 
+								Detection::ThreatLevel threatLevel, 
 								float intensity,
-								float velocity)
+								float velocity,
+								float acceleration, 
+								float timeToCollision,
+								float decelerationToStop,
+								float probability
+								)
 
 {
 	QString distanceStr;
@@ -1578,15 +1583,19 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 	QString velocityStr;
 	QString intensityStr;
 	QString threatStr;
+	QColor  threatBackgroundColor;
+	QColor  threatTextColor(Qt::white);
 
+	if (detectionID >= pTable->rowCount()) return;
 
-	if (distance <= 0.0)
+	if ((distance <= 0.0) || isNAN(distance) || trackID == 0)
 	{
 		distanceStr.sprintf("");
 		trackStr.sprintf("");
 		velocityStr.sprintf("");
 		intensityStr.sprintf("");
 		threatStr.sprintf("");
+		threatBackgroundColor = Qt::darkGray;
 	}
 	else
 	{
@@ -1602,7 +1611,7 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 		}
 
 
-		if (velocity != AWL_FNAN) 
+		if (!isNAN(velocity)) 
 		{
 			velocityStr.sprintf("%.1f", velocity);
 		}
@@ -1611,7 +1620,7 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 			velocityStr.sprintf("");
 		}
 
-		if (intensity != AWL_FNAN)
+		if (!isNAN(intensity))
 		{
 			intensityStr.sprintf("%.0f", intensity * 100);
 		}
@@ -1620,37 +1629,46 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 			intensityStr.sprintf("");
 		}
 
+		if (!isNAN(decelerationToStop))
+		{
+			threatStr.sprintf("%.1f", decelerationToStop);
+		}
+		else
+		{
+			threatStr.sprintf("");
+		}
+
 
 		switch(threatLevel)
 		{
 		case Detection::eThreatNone:
 			{
-				threatStr.sprintf("");
+				threatBackgroundColor = Qt::blue;
 			}
 			break;
 
 		case Detection::eThreatLow:
 			{
-				threatStr.sprintf("Low");
+				threatBackgroundColor = Qt::green;
 			}
 			break;
 
 		case Detection::eThreatWarn:
 			{
-				threatStr.sprintf("Warn");
+				threatBackgroundColor = Qt::yellow;
+				threatTextColor = Qt::black;
 			}
 			break;
 
 		case Detection::eThreatCritical:
 			{
-				threatStr.sprintf("Critical");
+				threatBackgroundColor = Qt::red;
 			}
 			break;
 
 		default:
 			{
 			}
-
 		}
 	}
 
@@ -1658,8 +1676,11 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, float d
 	{
 		pTable->item(detectionID, eRealTimeDistanceColumn)->setText(distanceStr);
 		pTable->item(detectionID, eRealTimeVelocityColumn)->setText(velocityStr);
-		pTable->item(detectionID, eRealTimeLevelColumn)->setText(intensityStr);
 		pTable->item(detectionID, eRealTimeTrackColumn)->setText(trackStr);
+		pTable->item(detectionID, eRealTimeLevelColumn)->setText(threatStr);
+	
+		pTable->item(detectionID, eRealTimeLevelColumn)->setBackgroundColor(threatBackgroundColor);
+		pTable->item(detectionID, eRealTimeLevelColumn)->setTextColor(threatTextColor);
 	}
 }
 

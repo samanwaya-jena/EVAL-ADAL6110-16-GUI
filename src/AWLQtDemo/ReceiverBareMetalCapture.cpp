@@ -424,13 +424,12 @@ void ReceiverBareMetalCapture::ParseChannelDistance(AWLBareMessage &inMsg)
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 
-        int detectionIndex = 0;
-		
-        currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->firstTimeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->timeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
+	    detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
 
 		rawLock.unlock();
 	}
@@ -457,11 +456,12 @@ void ReceiverBareMetalCapture::ParseChannelIntensity(AWLBareMessage &inMsg)
         currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
         int detectionIndex = 0;
 
-        currentFrame->channelFrames[channel]->detections[detectionIndex]->intensity = intensity;
-        currentFrame->channelFrames[channel]->detections[detectionIndex]->firstTimeStamp = currentFrame->GetFrameID();
-        currentFrame->channelFrames[channel]->detections[detectionIndex]->timeStamp = currentFrame->GetFrameID();
-        currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-        currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+    	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
+	    detection->intensity = intensity;
+        detection->firstTimeStamp = currentFrame->GetFrameID();
+        detection->timeStamp = currentFrame->GetFrameID();
+        detection->trackID = 0;
+        detection->velocity = 0;
 
         rawLock.unlock();
     }

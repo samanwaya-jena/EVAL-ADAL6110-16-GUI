@@ -27,7 +27,8 @@ public:
 	{
 		eNoMergeDisplay=0, //NONE
 		eIndividualDistanceDisplay=1, // Rectangle under detection (Still display distance individually)
-		eMergeDistanceDisplay=2 // Rectangle without detection, display only one distance
+		eMergeDistanceDisplay=2, // Rectangle without detection, display only one distance
+		eClusteredDistanceDisplay= 3 // Rectangle with detections, but only one distance
 	} MergeDisplayMode;
 
 	typedef enum MeasureMode
@@ -75,6 +76,7 @@ private:
 	QAction* noMergeDisplayAction;
 	QAction* individualDistanceDisplayAction;
 	QAction* mergeDistanceDisplayAction;
+	QAction* clusteredDistanceDisplayAction;
 
 	QActionGroup* groupMeasureMode;
 	QAction* measureRadialAction;

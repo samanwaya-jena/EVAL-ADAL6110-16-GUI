@@ -215,9 +215,17 @@ void VideoViewer::DoThreadIteration()
 	} // if (!WasStoppped)
 }
 
+
+static uint16_t detectedCount[7] = {0, 0, 0, 0, 0, 0, 0};
+const int flashFrequency = 2;
+
 void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 
 {
+		// Use the frame snapped by the main display timer as the current frame
+	// display will «
+	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
+
 	for (int channelID = 0; channelID < 7; channelID++) 
 	{
 		if (channelID < receiverCapture->GetChannelQty())
@@ -228,30 +236,47 @@ void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 				ChannelFrame::Ptr channelFrame(new ChannelFrame(channelID));
 
 				// Thread safe
-				uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
 				if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, currentReceiverSubscriberID)) 
 				{
 					float minDistance = receiverCapture->GetMinDistance();
 					float maxDistance = receiverCapture->GetMaxDistance();
 
-					int detectionQty = channelFrame->detections.size();
-					if (detectionQty > 4) detectionQty = 4;
+					Detection::ThreatLevel maxThreatLevel = Detection::eThreatNone;
+					Detection::Ptr selectedDetection;
+					bool bDetected = false;
 
+					int detectionQty = channelFrame->detections.size();
 					for (int i = 0; i < detectionQty; i++)
 					{	
 						Detection::Ptr detection = channelFrame->detections.at(i);
 						float distance = detection->distance;
 						if ((distance >= minDistance) && (distance <= maxDistance))
-						{
-							DisplayTarget(targetFrame, channelID, detection);
-							break;  // We display only the first target in the list
+						{  
+							if (detection->threatLevel >= maxThreatLevel) 
+							{
+								selectedDetection = detection;
+								maxThreatLevel = detection->threatLevel;
+								bDetected = true;
+							}
 						}
+					} // for detections
+
+					if (bDetected) 
+					{
+						detectedCount[channelID]++;
+						DisplayTarget(targetFrame, channelID, selectedDetection);
 					}
+					else 
+					{
+						detectedCount[channelID] = 0;
+					}
+
 				}
 			}
 		}
 	}
 }
+
 
 void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection)
 {
@@ -264,30 +289,47 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 
 	cv::Vec3b color;
 	cv::Vec3b colorEnhance;
+	cv::Vec3b colorDehance;
+	bool bFlash = false;
+
+	int width = -1;
+	colorEnhance = cv::Vec3b(0, 0, 0);
+	colorDehance = cv::Vec3b(0, 0, 0);
 
 	Detection::ThreatLevel threatLevel = detection->threatLevel;
 	switch (threatLevel) 
 	{
 	case Detection::eThreatNone: 
 		{
-			colorEnhance = cv::Vec3b(0, 128, 0);
+			colorEnhance = cv::Vec3b(128, 0, 0);  // Blue
+			colorDehance = cv::Vec3b(0, 64, 64);
+			width = 4;
 		}
 		break;
 	case Detection::eThreatLow:
 		{
-			colorEnhance = cv::Vec3b(0, 128, 0);
+			colorEnhance = cv::Vec3b(0, 128, 0); // Green
+			colorDehance = cv::Vec3b(64, 0,64);
+			width = 4;
 		}
 		break;
 
 	case Detection::eThreatWarn:
 		{
-			colorEnhance = cv::Vec3b(0, 128, 128);
+			colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
+			colorDehance = cv::Vec3b(32, 0, 0);
+			width = 15;
+			bFlash = true;
 		}
 		break;
 
 	case Detection::eThreatCritical:
 		{
-			colorEnhance = cv::Vec3b(128, 0, 0);
+	 		colorEnhance = cv::Vec3b(0, 0, 128);  // Red
+//			colorEnhance = cv::Vec3b(0, 0, 196);  // Red
+			colorDehance = cv::Vec3b(32, 32, 0);
+			width = 15;
+			bFlash = true;
 		}
 		break;
 
@@ -299,28 +341,45 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	} // case
 
 
+	// If we are flashing, chjeck the flash counter for a fit, if no fit, leave.
+
+	if (bFlash && !(detectedCount[channelID] % flashFrequency))  return;
+
 	// Paint a square that corresponds to the receiver FOV
+	// If width argument is positive, will draw an empty square with
+	// using the width argument as a line width.
+	// If width argument is negative or zero, the square is filled.
 	projector->GetChannelRect(channelID, top, left, bottom, right);
 
 	for (int row = top; row <= bottom; row++) 
 	{
 		for (int column = left; column <= right; column++) 
 		{
-			color = targetFrame->at<cv::Vec3b>(row, column);
-			int r = color[0]+ colorEnhance[0];
-			int g = color[1] + colorEnhance[1];
-			int b = color[2] + colorEnhance[2];
-
-			if (r > 255) color[0] = 255;
-			else		 color[0] = r;
+			bool overlay = false;
+			if ((row < (top + width)) || (row > (bottom - width))) overlay = true;
+			else if ((column < (left + width)) || (column > (right - width))) overlay = true;
+			else if (width <= 0) overlay = true;
 			
-			if (g > 255) color[1] = 255;
-			else		 color[1] = g;
-			
-			if (b > 255) color[2] = 255;
-			else		 color[2] = b;
+			if (overlay) 
+			{
+				color = targetFrame->at<cv::Vec3b>(row, column);
+				int r = (int)color[0]+ (int)colorEnhance[0] - (int)colorDehance[0];
+				int g = (int)color[1] + (int)colorEnhance[1] - (int)colorDehance[1];
+				int b = (int)color[2] + (int)colorEnhance[2] - (int)colorDehance[2];
 
-			targetFrame->at<cv::Vec3b>(row, column) = color;
+				if (r > 255) color[0] = 255;
+				else if (r < 0) color[0] = 0;
+				else		 color[0] = r;
+			
+				if (g > 255) color[1] = 255;
+				else if (g < 0) color[1] = 0;
+				else		 color[1] = g;
+			
+				if (b > 255) color[2] = 255;
+				else if (b < 0) color[2] = 0;
+				else		 color[2] = b;
+				targetFrame->at<cv::Vec3b>(row, column) = color;
+			}
 		}
 	}
 }

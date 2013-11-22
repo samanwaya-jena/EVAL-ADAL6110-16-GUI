@@ -26,27 +26,7 @@ const int maxReceiverFrames = 100;
 namespace awl
 {
 
-/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
-  *        and communications
-  * \author Jean-Yves Deschênes
-  */
-
-typedef union 
-{
-	uint8_t byteData;
-	struct  {
-		bool channel0	: 1;
-		bool channel1	: 1;
-		bool channel2	: 1;
-		bool channel3	: 1;
-		bool channel4	: 1;
-		bool channel5	: 1;
-		bool channel6	: 1;
-		bool unused		: 1;
-	} bitFieldData;
-} ChannelMask;
-
-/** \brief MessageMask struct describes receiver message groups that can be toggled on/off 
+ /** \brief MessageMask struct describes receiver message groups that can be toggled on/off 
   *        for customized operations or to preserve bandwidth  
   *        and communications
   * \author Jean-Yves Deschênes
@@ -317,7 +297,7 @@ public:
 	/** \brief Return the number of receiver channels used for video projection
       * \return int indicating the number of channels.
       */
-	virtual int GetDetectionQtyPerChannel() {return detectionsPerChannel;};
+	virtual int GetDetectionQtyInChannel(int channelID) {return currentFrame->channelFrames[channelID]->detections.size();};
 
 	/** \brief copy the current channel data to to a local copy (thread-safe)
      * \param[in] inChannelID index of the required channel
@@ -336,15 +316,6 @@ public:
      */
 	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID);
 
-	/** \brief Return a copy of the detection identified by its indexes
-     * \param[in] inFrameIndex index of the requiested frame
-     * \param[in] inChannelID index of the required channel
-     * \param[in] inDetectionIndex index of the detection
-	 * \param[out] outChannelFrame ChannelFrame structure to which the data is copied.
-	 * \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
-     * \return True if detection is copied successfully. False if frame corresponding to inFrameIndex or channel data not found
-     */
-	bool ReceiverCapture::GetDetection(uint32_t inFrameIndex, int inChannelID, int inDetectionIndex, Detection::Ptr &outDetection, Subscription::SubscriberID inSubscriberID);
 
 	/** \brief Return the current frame identification number for informational purposes 
      * \return Current frame identification number.
@@ -681,6 +652,12 @@ protected:
  	    * \param[in] channel   channel in which data is injected
       */
 	void FakeChannelDistanceConstant(int channel);
+
+	/** \brief Inject distance and velocity information in the trackList, for the channel,
+	   *        usingslow move simulation
+ 	    * \param[in] channel   channel for which data is injected
+      */
+	void FakeChannelTrackSlowMove(int channel);
 
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.

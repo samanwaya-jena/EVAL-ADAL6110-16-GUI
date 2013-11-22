@@ -169,6 +169,14 @@ public:
 	// Scope
 	int scopeTimerInterval;
 
+	// Dynamic testing
+	float threatLevelCriticalThreshold;
+	float threatLevelWarnThreshold;
+	float threatLevelLowThreshold;
+
+	float brakingDeceleration;
+	float travelSpeed;
+
 	// Camera
 	float cameraFovXDegrees;
 	float cameraFovYDegrees;

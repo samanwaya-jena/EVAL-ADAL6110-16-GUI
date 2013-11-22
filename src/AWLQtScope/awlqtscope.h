@@ -24,14 +24,6 @@ class WheelBox;
 class AWLQtScope : public QWidget
 {
 	Q_OBJECT
-public: 
-	typedef enum 
-	{
-		eScopeRaw = 0,
-		eScopeTrackDistance = 1,
-		eScopeTrackSingleChannel = 2
-	}
-	ScopeMode;
 
 public:
 	AWLQtScope(QWidget *parent = 0);
@@ -46,17 +38,12 @@ public:
 
 
 	AWLScopePlot *getPlot(int inChannel) {return(d_plot[inChannel]);};
-	AWLQtScope::ScopeMode GetScopeMode() {return(scopeMode);};
-	AWLQtScope::ScopeMode SetScopeMode(AWLQtScope::ScopeMode inMode) {return(scopeMode=inMode);};
 	
 Q_SIGNALS:
 	// No signals yet.
    void closed();
 
 private slots:
-	void on_scopeModeRaw_setChecked(bool bChecked);
-	void on_scopeModeTrackDistance_setChecked(bool bChecked);
-	void on_scopeModeTrackSingleChannel_setChecked(bool bChecked);
 	void on_scopeCurveStyleDots_setChecked(bool bChecked);
 	void on_scopeCurveStyleLines_setChecked(bool bChecked);
 
@@ -67,10 +54,8 @@ protected:
 	void	closeEvent(QCloseEvent * event);
 
 	void updateCurveDataRaw();
-	void updateCurveDataTrackDistance();
 
 private:
-	ScopeMode	scopeMode;
 	QwtPlotCurve::CurveStyle curveStyle;
 	AcquisitionSequence::TrackingMode trackingMode;
 
@@ -84,6 +69,8 @@ private:
 	int d_timerId;
 
 	ReceiverCapture::Ptr d_receiverCapture;
+	/** \brief Our subscription identifier to access to lidar data. */
+	Subscription::SubscriberID d_receiverCaptureSubscriberID;
 	uint32_t d_lastFrameID;
 };
 

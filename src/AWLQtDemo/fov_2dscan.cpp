@@ -44,7 +44,7 @@ void FOV_2DScan::createAction()
 	noMergeDisplayAction = new QAction("Don't merge", this);
 	individualDistanceDisplayAction = new QAction("Show individual distances", this);
 	mergeDistanceDisplayAction = new QAction("Show merged distances only", this);
-
+	clusteredDistanceDisplayAction = new QAction("Show cluster, singleDistance", this);
 
 	noMergeDisplayAction->setCheckable(true);
 	noMergeDisplayAction->setActionGroup(groupMergeDisplayMode);
@@ -68,7 +68,7 @@ void FOV_2DScan::createAction()
 		else
 			mergeDetectionMode = eLongitudinal;
 	}
-	else
+	else if (mergeDisplayMode == eMergeDistanceDisplay)
 	{
 		mergeDistanceDisplayAction->setChecked(true);
 		if (measureMode == eMeasureRadial)
@@ -76,7 +76,14 @@ void FOV_2DScan::createAction()
 		else
 			mergeDetectionMode = eLongitudinal;
 	}
-
+	else // eClusteredDistanceDisplay
+	{
+		clusteredDistanceDisplayAction->setChecked(true);
+		if (measureMode == eMeasureRadial)
+			mergeDetectionMode = eRadial;
+		else
+			mergeDetectionMode = eLongitudinal;
+	}
 
 	connect(groupMergeDisplayMode, SIGNAL(triggered(QAction*)), this, SLOT(slotMergeDisplayAction()));
 
@@ -230,7 +237,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			}
 			else
 			{
-				if (mergeDisplayMode == eMergeDistanceDisplay)
+				if (mergeDisplayMode == eMergeDistanceDisplay || mergeDisplayMode == eClusteredDistanceDisplay)
 				{
 					drawDetection(&painter, mergedData[index][0].angle, mergedData[index][0].angleWidth, 
 									mergedData[index][0].distanceRadial, mergedData[index][0].distanceLongitudinal, mergedData[index][0].fromChannel, mergedData[index][0].id);
@@ -239,7 +246,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 		}
 	}
 
-	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
+	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay || mergeDisplayMode == eClusteredDistanceDisplay)
 	{
 		DetectionDataVect::iterator i;
 		for (i = copyData.begin(); i != copyData.end(); ++i)
@@ -712,6 +719,7 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	menuMergeDisplay->addAction(noMergeDisplayAction);
 	menuMergeDisplay->addAction(individualDistanceDisplayAction);
 	menuMergeDisplay->addAction(mergeDistanceDisplayAction);
+	menuMergeDisplay->addAction(clusteredDistanceDisplayAction);
 
 	menuMeasureMode->addAction(measureRadialAction);
 	menuMeasureMode->addAction(measureLongitudinalAction);

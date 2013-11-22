@@ -317,7 +317,16 @@ protected:
      */
 	void ParseChannelIntensity(AWLCANMessage &inMsg);
 
-	
+	/** \brief Read the obstacle track description message (10). If required, creste the corresponding Track object
+ 	    * \param[in] inMsg   CAN message contents
+     */
+	void ParseObstacleTrack(AWLCANMessage &inMsg);
+
+	/** \brief Read the obstacle speed/velocity  message (11). If required, creste the corresponding Track object
+ 	    * \param[in] inMsg   CAN message contents
+     */
+	void ParseObstacleVelocity(AWLCANMessage &inMsg);
+
 	/** \brief Parse control messages (80) and dispatch to appropriate handling method 
  	    * \param[in] inMsg   CAN message contents
      */	
