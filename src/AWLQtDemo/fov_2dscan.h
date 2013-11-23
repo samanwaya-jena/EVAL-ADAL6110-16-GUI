@@ -90,15 +90,19 @@ private:
     void drawLine(QPainter* p,float angle, float startLength,float length);
     void drawText(QPainter* p,float angle, float pos, QString text);
     void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
-    void drawTextDetection(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
+    void drawTextDetection(QPainter* p, DetectionData *detection, float angle, float pos, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
     float degree_to_rad (float degrees);
     void drawAngularRuler(QPainter* p);
-    void drawDetection(QPainter* p, float angle, float width, float distanceRadial, float distanceLongitudinal, int channel, int id);
 	void mergeDetection();
 	bool isInRange(DetectionData* detection1, DetectionData* detection2 );
     QColor getColorFromDistance(float distance);
+	QColor FOV_2DScan::getColorFromVelocity(float velocity);
+
     void drawPalette(QPainter* p);
-	void drawMergedData(QPainter* p, DetectionDataVect* data);
+
+    void drawDetection(QPainter* p, DetectionData *detection, float angle, float width, float distanceRadial, float distanceLongitudinal, int channel, int id,  bool drawTarget = true, bool drawLegend = true);
+	void drawMergedData(QPainter* p, DetectionDataVect* data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
+
 	void createAction();
 	
 };
