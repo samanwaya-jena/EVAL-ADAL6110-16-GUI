@@ -320,6 +320,7 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 			colorDehance = cv::Vec3b(32, 0, 0);
 			width = 15;
 			bFlash = true;
+			if (bFlash && !(detectedCount[channelID] % flashFrequency)) width = 5;
 		}
 		break;
 
@@ -330,6 +331,7 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 			colorDehance = cv::Vec3b(32, 32, 0);
 			width = 15;
 			bFlash = true;
+			if (bFlash && !(detectedCount[channelID] % flashFrequency)) width = 5;
 		}
 		break;
 
@@ -340,10 +342,6 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 
 	} // case
 
-
-	// If we are flashing, chjeck the flash counter for a fit, if no fit, leave.
-
-	if (bFlash && !(detectedCount[channelID] % flashFrequency))  return;
 
 	// Paint a square that corresponds to the receiver FOV
 	// If width argument is positive, will draw an empty square with
