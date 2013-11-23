@@ -143,6 +143,9 @@ public:
 	int mergeDisplayMode;
 	int measureMode;
 	float mergeAcceptance;
+	int colorCode2D;
+	float maxVelocity2D;
+	float zeroVelocity;
 
 	// Receiver
 	QString sReceiverType;

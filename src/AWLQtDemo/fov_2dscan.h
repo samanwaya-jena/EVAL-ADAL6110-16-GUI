@@ -37,6 +37,12 @@ public:
 		eMeasureLongitudinal=1 // Distance from bumper
 	} MeasureMode;
 	
+	typedef enum DisplayColorCode
+	{	
+		eColorCodeDistance= 0, // ColorCode distances
+		eColorCodeVelocity = 1  // Color code speeds
+	} DisplayColorCode;
+
 signals:
     void closed();
 
@@ -68,7 +74,10 @@ private:
 	MergeDetectionMode mergeDetectionMode;
 	MergeDisplayMode mergeDisplayMode;
 	MeasureMode measureMode;
+	DisplayColorCode colorCode;
 	float mergeAcceptance;
+	float maxAbsVelocity;
+	float zeroVelocity;
 
 	//Action Item
 

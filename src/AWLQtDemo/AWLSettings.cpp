@@ -201,6 +201,9 @@ bool AWLSettings::ReadSettings()
 	mergeDisplayMode = settings.value("mergeDisplayMode").toInt();
 	measureMode = settings.value("measureMode").toInt();
 	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
+	colorCode2D = settings.value("colorCode").toInt();
+	maxVelocity2D = settings.value("maxVelocity").toFloat();
+	zeroVelocity = settings.value("zeroVelocity").toFloat();
 	settings.endGroup();
 
 	
