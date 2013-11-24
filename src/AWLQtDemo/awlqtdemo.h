@@ -21,7 +21,6 @@ using namespace pcl;
 
 
 // Not a number
-#define AWL_FNAN  (std::numeric_limits<float>::quiet_NaN ())
 
 namespace awl
 {
@@ -126,11 +125,15 @@ protected:
 
 	void DisplayReceiverValues();
 	void AddDistanceToText(int detectionID,  QTableWidget *pTable , Detection::Ptr &detection);
-	void AddDistanceToText(int detectionID, QTableWidget *pTable, float distance, 
-					       TrackID trackID = 0, 
+	void AddDistanceToText(int detectionID, QTableWidget *pTable, TrackID trackID = 0, 
+						   float distance = NAN, 
 						   Detection::ThreatLevel level = Detection::eThreatNone, 
-						   float intensity = AWL_FNAN,
-						   float velocity = AWL_FNAN);
+						   float intensity = NAN,
+						   float velocity = NAN,
+						   float acceleration = NAN, 
+						   float timeToCollision = NAN,
+						   float decelerationToStop = NAN,
+						   float probability = 0);
 
 	void DisplayReceiverStatus();
 	void DisplayReceiverValuesTo2DScanView();

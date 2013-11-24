@@ -260,7 +260,10 @@ void ReceiverCANCapture::DoOneThreadIteration()
 		// inject distance information by simulating receiver data.
 		if (bSimulatedDataEnabled && ((GetElapsed() - lastElapsed) >= 10)) 
 		{
-			if (injectType == eInjectRamp)
+			AWLSettings *settings = AWLSettings::GetGlobalSettings();
+			bool bUseTrack = settings->msgEnableObstacle;
+
+			if ((injectType == eInjectRamp)  && !bUseTrack)
 			{
 				FakeChannelDistanceRamp(20);
 				FakeChannelDistanceRamp(21);
@@ -269,7 +272,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceRamp(24);
 				FakeChannelDistanceRamp(36);
 			}
-			else if (injectType == eInjectNoisy)
+			else if ((injectType == eInjectNoisy)  && !bUseTrack)
 			{
 				FakeChannelDistanceNoisy(20);
 				FakeChannelDistanceNoisy(21);
@@ -278,7 +281,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceNoisy(24);
 				FakeChannelDistanceNoisy(36);
 			}
-			else if (injectType == eInjectSlowMove)
+			else if ((injectType == eInjectSlowMove) && !bUseTrack)
 			{
 				FakeChannelDistanceSlowMove(20);
 				FakeChannelDistanceSlowMove(21);
@@ -288,7 +291,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceSlowMove(25);
 				FakeChannelDistanceSlowMove(36);
 			}
-			else // (injectType == eInjectConstant)
+			else if ((injectType == eInjectConstant) && !bUseTrack)
 			{
 				FakeChannelDistanceConstant(20);
 				FakeChannelDistanceConstant(21);
@@ -298,6 +301,11 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				FakeChannelDistanceConstant(25);
 				FakeChannelDistanceConstant(36);
 			}
+			else if (bUseTrack)
+			{
+				FakeChannelTrackSlowMove(36);
+			}
+
 
 			lastElapsed = GetElapsed();
 		}
@@ -491,6 +499,16 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ProcessCompletedFrame();
 	}
+	else if (msgID == 10) 
+	{
+		ParseObstacleTrack(inMsg);
+		lastMessageID = msgID;
+	}
+	else if (msgID == 11) 
+	{
+		ParseObstacleVelocity(inMsg);
+		lastMessageID = msgID;
+	}
 	else if (msgID >= 20 && msgID <= 26) 
 	{
 		ParseChannelDistance(inMsg);
@@ -621,12 +639,13 @@ if (channel >= 0)
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 
 		int detectionIndex = 0+detectOffset;
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->firstTimeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->timeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
 
 		distance = (float)(distancePtr[1]);
 		distance *= distanceScale;
@@ -637,12 +656,15 @@ if (channel >= 0)
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 1+detectOffset;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->firstTimeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->timeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
-
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
+	
+		
 		distance = (float)(distancePtr[2]);
 		distance *= distanceScale;
 		distance /= 100;
@@ -651,11 +673,14 @@ if (channel >= 0)
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 2+detectOffset;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->firstTimeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->timeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
+	
 
 		distance = (float)(distancePtr[3]);
 		distance *= distanceScale;
@@ -665,11 +690,14 @@ if (channel >= 0)
 
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 3+detectOffset;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->firstTimeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->timeStamp = currentFrame->GetFrameID();
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
+	
 		rawLock.unlock();
 	}
 
@@ -726,29 +754,98 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 	float intensity = ((float) intensityPtr[0]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->velocity = 0;
+	int detectionIndex = 0+detectOffset;
+	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[1]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->velocity = 0;
+	detectionIndex = 1+detectOffset;
+	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[2]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->velocity = 0;
+	detectionIndex = 2+detectOffset;
+	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[3]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->velocity = 0;
+	detectionIndex = 3+detectOffset;
+	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 	rawLock.unlock();
 
 	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
 }
 
+
+
+void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
+
+{
+	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
+	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
+	track->channels = *(uint8_t *) &inMsg.data[2];
+	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
+	track->probability = *(uint8_t *) &inMsg.data[5];
+	track->timeToCollision = (*(uint8_t *) &inMsg.data[6]) / 1000.0;  // Convert from ms to seconds.  Currently empty
+
+	track->part1Entered = true;
+
+	rawLock.unlock();
+	// Debug and Log messages
+	DebugFilePrintf(debugFile, "Msg %d - Val %d %x %d %d", inMsg.id, track->channels, track->probability, track->timeToCollision);
+	//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
+	LogFilePrintf(logFile, " ;Track;%d;Channel; ;Expected;%.2f;%.1f;Val; ; ; ;%.2f;%.2f",
+			track->trackID,
+			AWLSettings::GetGlobalSettings()->targetHintDistance,
+			AWLSettings::GetGlobalSettings()->targetHintAngle,
+			track->probability,
+			track->timeToCollision);
+
+}
+
+
+void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
+
+{
+	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
+	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
+
+	track->distance = (*(uint16_t *) &inMsg.data[2]) / 100.0;  // Convert the distance from CM to meters.
+	int16_t velocity = (*(int16_t *) &inMsg.data[4]);
+	track->velocity = velocity / 100.0; // Convert the velocity from cm/s to m/s
+
+	int16_t acceleration = (*(int16_t *) &inMsg.data[6]);
+	track->acceleration = acceleration / 100.0; // Convert the velocity from cm/s to m/s
+
+	track->part2Entered = true;
+
+	rawLock.unlock();
+
+	// Debug and Log messages
+	DebugFilePrintf(debugFile, "Msg %d - Val %f %f %f %f", inMsg.id, track->distance, track->velocity, track->acceleration);
+	//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
+	LogFilePrintf(logFile, " ;Track;%d;Channel; ;Expected;%.2f;%.1f;Val;%.2f;%.2f;%.2f;;",
+			track->trackID,
+			AWLSettings::GetGlobalSettings()->targetHintDistance,
+			AWLSettings::GetGlobalSettings()->targetHintAngle,
+			track->distance,
+			track->velocity,
+			track->acceleration,
+			track->timeToCollision);
+}
 
 void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
 {

@@ -20,8 +20,6 @@
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
 
-#define PROGRAMMABLE_RANGE 1
-
 using namespace std;
 using namespace pcl;
 using namespace awl;
@@ -256,22 +254,6 @@ bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelI
 	return(bFound);
 };
 
-bool ReceiverCapture::GetDetection(uint32_t inFrameIndex, int inChannelID, int inDetectionIndex, Detection::Ptr &outDetection, Subscription::SubscriberID inSubscriberID)
-{
-	if (inSubscriberID >= 0) 
-	{
-		boost::mutex::scoped_lock updateLock(currentReceiverCaptureSubscriptions->GetMutex());
-		outDetection = acquisitionSequence->GetDetectionAtIndex(inFrameIndex, inChannelID, inDetectionIndex);
-		currentReceiverCaptureSubscriptions->GetNews(inSubscriberID);
-		updateLock.unlock();
-	}
-	else 
-	{
-		outDetection = acquisitionSequence->GetDetectionAtIndex(inFrameIndex, inChannelID, inDetectionIndex);
-	}
-
-	return(true);
-};
 
 double ReceiverCapture::GetFrameTime(uint32_t inFrameID)
 {
@@ -516,7 +498,6 @@ double ReceiverCapture::GetElapsed()
 }
 
 
-
 void ReceiverCapture::ProcessCompletedFrame()
 
 {
@@ -525,11 +506,16 @@ void ReceiverCapture::ProcessCompletedFrame()
 	// timestamp the currentFrame
 	double elapsed = GetElapsed();
 
-#if 1
+#if 0
 	currentFrame->timeStamp = GetElapsed();
 #else
-	currentFrame->timeStamp = (currentFrame->frameID * 10.0);  // 10ms per frame
+	float frameDelay  =  1.0/AWLSettings::GetGlobalSettings()->receiverFrameRate;
+	currentFrame->timeStamp = (currentFrame->frameID  *  frameDelay);  // How many frames since start of unit
 #endif
+
+	// Build distances from the tracks that were accumulated during the frame
+	acquisitionSequence->BuildDetectionsFromTracks(currentFrame);
+
 
 	// And timestamp all the distances
 	int channelQty = currentFrame->channelFrames.size();
@@ -558,21 +544,12 @@ void ReceiverCapture::ProcessCompletedFrame()
 	{
 		acquisitionSequence->sensorFrames.pop();
 	}
-
-#if 0	
-	// Recalculate the tracks
-	acquisitionSequence->BuildTracks(currentFrame->timeStamp);
-#endif
-
-DebugFilePrintf(debugFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeStamp, GetElapsed());
-
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
 	int channelsRequired = acquisitionSequence->channelQty;
 	int detectionsRequired = acquisitionSequence->detectionQty;
 	
 	currentFrame = SensorFrame::Ptr(new SensorFrame(frameID, channelsRequired, detectionsRequired));
-
 
 	rawLock.unlock();
 
@@ -615,35 +592,38 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 		lastDistance = distance;
 
 		int detectionIndex = 0+detectOffset;
-		
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection->distance = distance;
+		detection->trackID = 0;
+		detection->velocity = 0;
 
 		// Only the first channel displays a distance
 		distance += 5;
 		if (distance < minDistance  || distance  > maxDistance) distance = 0.0;
 		detectionIndex = 1+detectOffset;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection->distance = distance;
+		detection->trackID = 0;
+		detection->velocity = 0;
 
 		
 		distance += 5;
 
 		if (distance < minDistance  || distance  > maxDistance) distance = 0.0;
 		detectionIndex = 2+detectOffset;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection->distance = distance;
+		detection->trackID = 0;
+		detection->velocity = 0;
 
 		distance += 5;
 	
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 		detectionIndex = 3+detectOffset;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection->distance = distance;
+		detection->trackID = 0;
+		detection->velocity = 0;
 		rawLock.unlock();
 	}
 
@@ -699,9 +679,10 @@ void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
 		int detectionIndex = 0+detectOffset;
 		if (bIsPresent) 
 		{
-			currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-			currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-			currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+			detection->distance = distance;
+			detection->trackID = 0;
+			detection->velocity = 0;
 			detectionIndex++;
 		}
 
@@ -710,9 +691,10 @@ void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
 		{
 			// Simulate the distance between minDistance maxDistance
 			distance = minDistance + ((maxDistance - minDistance) * rand() / RAND_MAX);
-			currentFrame->channelFrames[channel]->detections[detectionIndex]->distance = distance;
-			currentFrame->channelFrames[channel]->detections[detectionIndex]->trackID = 0;
-			currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
+			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+			detection->distance = distance;
+			detection->trackID = 0;
+			detection->velocity = 0;
 
 			detectionIndex++;
 		}
@@ -807,13 +789,8 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 			}
 		}
 
-#ifdef PROGRAMMABLE_RANGE
 		float distanceMin = minDistance;
 		float distanceMax = maxDistance;
-#else
-		float distanceMin = AWLSettings::GetGlobalSettings()->displayedRangeMin;
-		float distanceMax = AWLSettings::GetGlobalSettings()->displayedRangeMax;
-#endif
 		float shortRangeMax = AWLSettings::GetGlobalSettings()->shortRangeDistance;
 
 		// Every "distancePacing" milliseconds, we move backwards or forward;
@@ -848,9 +825,10 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 		// Short range channels don't display at more than shortRangeMax.
 		if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
 		{
-			currentFrame->channelFrames[channelA]->detections[0]->distance =lastDistance;
-			currentFrame->channelFrames[channelA]->detections[0]->trackID = 0;
-			currentFrame->channelFrames[channelA]->detections[0]->velocity = 0;
+			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelA, 0);
+			detection->distance = lastDistance;
+			detection->trackID = 0;
+			detection->velocity = 0;
 			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
 		}
 
@@ -859,9 +837,10 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 		{
 			if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
 			{
-				currentFrame->channelFrames[channelB]->detections[0]->distance =lastDistance;
-				currentFrame->channelFrames[channelB]->detections[0]->trackID = 0;
-				currentFrame->channelFrames[channelB]->detections[0]->velocity = 0;
+				Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelB, 0);
+				detection->distance = lastDistance;
+				detection->trackID = 0;
+				detection->velocity = 0;
 				currentFrame->channelFrames[channel]->timeStamp = elapsed;
 			}
 		}
@@ -918,9 +897,10 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 		// Short range channels don't display at more than shortRangeMax.
 		for (int channel = 0; channel < receiverChannelQty; channel++) 
 		{
-			currentFrame->channelFrames[channel]->detections[0]->distance =distance;
-			currentFrame->channelFrames[channel]->detections[0]->trackID = 0;
-			currentFrame->channelFrames[channel]->detections[0]->velocity = 0;
+			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
+			detection->distance = distance;
+			detection->trackID = 0;
+			detection->velocity = 0;
 			currentFrame->channelFrames[channel]->timeStamp = elapsed;
 		}
 
@@ -936,6 +916,137 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 	}
 
 }
+
+static TrackID trackIDGenerator = 1;
+
+void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
+
+{
+
+	int detectOffset = 0;
+
+	if (channel >= 30) 
+	{
+		channel = channel - 30;
+		detectOffset = 4;
+	}
+	else 
+	{
+		channel = channel - 20;
+	}
+
+
+	if (channel >= 0) 
+	{
+		int elapsed = (int) GetElapsed();
+		
+		// Every "directionPacing" milliseconds, we move from left to right;
+		if (elapsed > nextElapsedDirection) 
+		{
+			// We update ournext time stamp, and make sure it exceeds current time.
+			while (nextElapsedDirection < elapsed) nextElapsedDirection += directionPacing;
+
+			lastTransition += transitionDirection;
+			
+			// Going too far right, we change direction
+			if (lastTransition >= channelTransitionQty) 
+			{
+				lastTransition = channelTransitionQty - 1;
+				transitionDirection = -1;
+			}
+
+			// Going too far left, we change direction
+			if (lastTransition < 0) 
+			{
+				lastTransition = 0;
+				transitionDirection = +1;
+			}
+		}
+
+		float distanceMin = minDistance;
+		float distanceMax = maxDistance;
+
+		float shortRangeMax = AWLSettings::GetGlobalSettings()->shortRangeDistance;
+
+		// Every "distancePacing" milliseconds, we move backwards or forward;
+		if (elapsed > nextElapsedDistance) 
+		{
+				// We update ournext time stamp, and make sure it exceeds current time.
+			while (nextElapsedDistance < elapsed) nextElapsedDistance += distancePacing;
+
+			lastDistance += distanceIncrement;
+			
+			// Going too far , we change direction
+			if (lastDistance >= distanceMax) 
+			{
+				lastDistance = distanceMax;
+				distanceIncrement = -distanceIncrement;
+			}
+
+			// Going too far left, we change direction
+			if (lastDistance < distanceMin) 
+			{
+				lastDistance = distanceMin;
+				distanceIncrement = -distanceIncrement;
+			}
+		}
+
+		currentFrame->channelFrames[channel]->timeStamp = elapsed;
+		int channelA = channelTransitions[lastTransition][0];
+		int channelB = channelTransitions[lastTransition][1];
+
+		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+		// Short range channels don't display at more than shortRangeMax.
+		if (true /*(lastDistance < shortRangeMax) || (channelA >=4)*/) 
+		{
+			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackIDGenerator++);
+			track->distance = lastDistance;
+			uint8_t test = 0x001 << channelA;
+			track->channels = test;
+
+			track->velocity = (maxDistance- (track->distance)) / 2;
+			if (distanceIncrement <= 0) track->velocity = -track->velocity;
+
+			track->acceleration = 0;
+			track->part1Entered = true;
+			track->part2Entered = true;
+			track->probability = 99;
+			track->timeStamp = frameID;
+			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
+		}
+
+		// There may be detection in a single channel
+		if (channelB >= 0) 
+		{
+			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackIDGenerator++);
+			track->distance = lastDistance;
+			track->channels = (0x01 << channelB);
+			track->velocity = (maxDistance- (track->distance)) / 2;
+			if (distanceIncrement <= 0) track->velocity = -track->velocity;
+			track->acceleration = 0;
+			track->part1Entered = true;
+			track->part2Entered = true;
+			track->probability = 99;
+			track->timeStamp = frameID;
+			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
+		}
+
+
+
+		rawLock.unlock();
+		lastElapsed = elapsed;
+	
+	}
+
+	if (channel == 6 && detectOffset == 4)
+	{
+		ProcessCompletedFrame();
+		DebugFilePrintf(debugFile, "Fake");
+	}
+
+}
+
 
 float ReceiverCapture::SetMinDistance(float inMinDistance)
 {

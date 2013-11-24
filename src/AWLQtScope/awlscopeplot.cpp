@@ -284,48 +284,60 @@ bool AWLScopePlot::eventFilter( QObject *object, QEvent *event )
 void AWLScopePlot::updateCurveDataRaw()
 
 {
-	if (d_channelID < 0) return;  // Receiver not assigned correctly yet
 	if (!d_receiverCapture->GetFrameQty()) return;   // No frame yet produced
 
 	boost::mutex::scoped_lock updateLock( d_receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
+	
+	// Get the pointer to the acquisitionSequence
+	AcquisitionSequence::Ptr acquisitionSequence = d_receiverCapture->acquisitionSequence;
 
 	// Determine which frames need to be updated
-	int startFrame = d_receiverCapture->acquisitionSequence->FindFrameIndex(d_lastFrameID)+1;
+	int startFrame = acquisitionSequence->FindFrameIndex(d_lastFrameID)+1;
+	// If the first frame was flushed, use the first in the row.
+	if (startFrame == -1) startFrame = 0;
 	int lastFrame = d_receiverCapture->GetFrameQty()-1;
 	d_lastFrameID = d_receiverCapture->GetLastFrameID();  // Mark the last frame for posterity
 
 	// Add the data from all the new frames to the scope
 	for (int frameIndex = startFrame; frameIndex <= lastFrame; frameIndex++) 
 	{
-		double elapsed = d_receiverCapture->GetFrameTimeAtIndex(frameIndex);
-		// Note that elpased in in millisec and our curves expect seconds.
+		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(frameIndex);
+
+		// Get the frame time
+		// Note that elapsed in in millisec and our curves expect seconds.
+		double elapsed = sensorFrame->timeStamp;
 		elapsed /= 1000;
 
-		// Thread safe
-		int detectionQty = d_receiverCapture->GetDetectionQtyPerChannel();
-		int detectionIndex = 0;
-		int maxDetections = d_curveData.size();
-		for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
+		int channelID = d_channelID;
+		if (channelID < sensorFrame->channelFrames.size())
 		{
-			Detection::Ptr detection = Detection::Ptr(new Detection(d_channelID, i));
+			ChannelFrame::Ptr channelFrame = sensorFrame->channelFrames.at(channelID);
 
-			d_receiverCapture->GetDetection(frameIndex, d_channelID, i, detection, -1);
+			// Thread safe
+			int detectionQty = channelFrame->detections.size();
+			int detectionIndex = 0;
+			int maxDetections = d_curveData[channelID]->size();
 
-			if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
-				(detection->distance <= d_receiverCapture->GetMaxDistance())) 
+			for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
 			{
-				// Replace the new point to the end, with detected value
-				const QPointF s(elapsed,  detection->distance);
-				d_curveData[detectionIndex++]->addValue(s);
-			} 
-		} // For i;
+				Detection::Ptr detection = channelFrame->detections.at(i);
+				if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
+					(detection->distance <= d_receiverCapture->GetMaxDistance())) 
+				{
+					// Replace the new point to the end, with detected value
+					const QPointF s(elapsed,  detection->distance);
+					d_curveData[detectionIndex++]->addValue(s);
+				} 
+			} // For i;
 
-		// Add empty values to the remaining empty tracks
-		for  (int i = detectionIndex; i < maxDetections; i++) 
-		{
-			const QPointF s(elapsed, 0.0);
-			d_curveData[i]->addValue(s);
-		} // For i;
+			// Add empty values to the remaining empty tracks
+			for  (int i = detectionIndex; i < maxDetections; i++) 
+			{
+				const QPointF s(elapsed, 0.0);
+				d_curveData[i]->addValue(s);
+			} // For i;
+		
+		} // if channelID
 	} // For frameIndex
 
 	updateLock.unlock();

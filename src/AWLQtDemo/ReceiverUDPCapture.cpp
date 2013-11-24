@@ -328,37 +328,75 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		channel = inMsg.id - 20;
 	}
 
-	float distance = (float)(distancePtr[0]);
-	distance /= 100;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->distance = distance;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->velocity = 0;
+		float distance = (float)(distancePtr[0]);
+		distance *= distanceScale;
+		distance /= 100;
+		distance += measurementOffset;
+		distance += sensorDepth;
 
-	float distance = (float)(distancePtr[1]);
-	distance /= 100;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->distance = distance;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->velocity = 0;
 
-	float distance = (float)(distancePtr[2]);
-	distance /= 100;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->distance = distance;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->velocity = 0;
+		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
+		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 
-	float distance = (float)(distancePtr[3]);
-	distance /= 100;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->distance = distance;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->velocity = 0;
+		int detectionIndex = 0+detectOffset;
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
+
+		distance = (float)(distancePtr[1]);
+		distance *= distanceScale;
+		distance /= 100;
+		distance += measurementOffset;
+		distance += sensorDepth;
+
+
+		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		detectionIndex = 1+detectOffset;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
+	
+		
+		distance = (float)(distancePtr[2]);
+		distance *= distanceScale;
+		distance /= 100;
+		distance += measurementOffset;
+		distance += sensorDepth;
+
+		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		detectionIndex = 2+detectOffset;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
+	
+
+		distance = (float)(distancePtr[3]);
+		distance *= distanceScale;
+		distance /= 100;
+		distance += measurementOffset;
+		distance += sensorDepth;
+
+		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		detectionIndex = 3+detectOffset;
+		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		
+		detection->distance = distance;
+		detection->firstTimeStamp = currentFrame->GetFrameID();
+		detection->timeStamp = currentFrame->GetFrameID();
+		detection->trackID = 0;
+		detection->velocity = 0;
 
 	rawLock.unlock();
 
@@ -375,8 +413,6 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ProcessChannelIntensity(AWLCANMessage &inMsg)
 
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
-
 	int channel;
 	int detectOffset = 0;
 	uint16_t *intensityPtr = (uint16_t *) inMsg.data;
@@ -391,35 +427,36 @@ void ReceiverCANCapture::ProcessChannelIntensity(AWLCANMessage &inMsg)
 		channel = inMsg.id - 40;
 	}
 
+	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 	float intensity = ((float) intensityPtr[0]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[0+detectOffset]->velocity = 0;
+	int detectionIndex = 0+detectOffset;
+	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 
-	float intensity = ((float) intensityPtr[1]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[1+detectOffset]->velocity = 0;
+	intensity = ((float) intensityPtr[1]) / maxIntensity;
+	detectionIndex = 1+detectOffset;
+	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 
-	float intensity = ((float) intensityPtr[2]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[2+detectOffset]->velocity = 0;
+	intensity = ((float) intensityPtr[2]) / maxIntensity;
+	detectionIndex = 2+detectOffset;
+	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 
-	float intensity = ((float) intensityPtr[3]) / maxIntensity;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->intensity = intensity;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->firstTimeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->timeStamp = currentFrame->GetFrameID();
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->trackID = 0;
-	currentFrame->channelFrames[channel]->detections[3+detectOffset]->velocity = 0;
-
+	intensity = ((float) intensityPtr[3]) / maxIntensity;
+	detectionIndex = 3+detectOffset;
+	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection->intensity = intensity;
+	detection->trackID = 0;
+	detection->velocity = 0;
 	rawLock.unlock();
+
 
 	char str[255];
 

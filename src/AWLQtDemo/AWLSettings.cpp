@@ -201,6 +201,9 @@ bool AWLSettings::ReadSettings()
 	mergeDisplayMode = settings.value("mergeDisplayMode").toInt();
 	measureMode = settings.value("measureMode").toInt();
 	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
+	colorCode2D = settings.value("colorCode").toInt();
+	maxVelocity2D = settings.value("maxVelocity").toFloat();
+	zeroVelocity = settings.value("zeroVelocity").toFloat();
 	settings.endGroup();
 
 	
@@ -235,6 +238,15 @@ bool AWLSettings::ReadSettings()
 	scopeTimerInterval = settings.value("timerInterval").toInt();
 	settings.endGroup();
 
+	settings.beginGroup("dynamicTesting");
+	threatLevelCriticalThreshold = settings.value("threatLevelCriticalThreshold").toFloat();
+	threatLevelWarnThreshold = settings.value("threatLevelWarnThreshold").toFloat();
+	threatLevelLowThreshold = settings.value("threatLevelLowThreshold").toFloat();
+
+	brakingDeceleration = settings.value("brakingDeceleration").toFloat();
+	travelSpeed = settings.value("travelSpeed").toFloat();
+	settings.endGroup();
+	
 	settings.beginGroup("camera");
 	cameraFovXDegrees = settings.value("cameraFovX").toFloat();
 	cameraFovYDegrees = settings.value("cameraFovY").toFloat();

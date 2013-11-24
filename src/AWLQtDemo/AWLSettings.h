@@ -143,6 +143,9 @@ public:
 	int mergeDisplayMode;
 	int measureMode;
 	float mergeAcceptance;
+	int colorCode2D;
+	float maxVelocity2D;
+	float zeroVelocity;
 
 	// Receiver
 	QString sReceiverType;
@@ -168,6 +171,14 @@ public:
 
 	// Scope
 	int scopeTimerInterval;
+
+	// Dynamic testing
+	float threatLevelCriticalThreshold;
+	float threatLevelWarnThreshold;
+	float threatLevelLowThreshold;
+
+	float brakingDeceleration;
+	float travelSpeed;
 
 	// Camera
 	float cameraFovXDegrees;
