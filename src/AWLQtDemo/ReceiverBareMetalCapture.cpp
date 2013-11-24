@@ -52,9 +52,9 @@ responseString("")
 	sCommPort = globalSettings->sBareMetalCommPort.toStdString();
 	serialPortRate = globalSettings->serialBareMetalPortRate;
 
-    OpenDebugFile(outFile, "BareBusLog.dat");
+    OpenDebugFile(debugFile, "BareBusLog.dat");
 
-	DebugFilePrintf(outFile, "StartProgram %d", 22);
+	DebugFilePrintf(debugFile, "StartProgram %d", 22);
 
     if (OpenBareMetalPort())
 	{
@@ -68,7 +68,7 @@ ReceiverBareMetalCapture::~ReceiverBareMetalCapture()
 {
 
     CloseBareMetalPort();
-	CloseDebugFile(outFile);
+	CloseDebugFile(debugFile);
 	Stop(); // Stop the thread
 }
 
@@ -263,7 +263,7 @@ void ReceiverBareMetalCapture::DoOneThreadIteration()
 			// Try to repoen the port
 			else 
 			{
-                DebugFilePrintf(outFile,  "Time Outon read_char.  Resetting Bare Port");
+                DebugFilePrintf(debugFile,  "Time Outon read_char.  Resetting Bare Port");
                 CloseBareMetalPort();
 				if (OpenBareMetalPort())
 				{
@@ -278,7 +278,7 @@ void ReceiverBareMetalCapture::DoOneThreadIteration()
 
 			if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
 			{
-                DebugFilePrintf(outFile,  "Reconmnecting Bare Port");
+                DebugFilePrintf(debugFile,  "Reconmnecting Bare Port");
 				if (OpenBareMetalPort())
 				{
 					WriteCurrentDateTime();
@@ -316,7 +316,7 @@ bool ReceiverBareMetalCapture::GetDataByte(std::string &inResponse, uint8_t &out
 		}
 		else 
 		{
-			DebugFilePrintf(outFile, "CanLine error1: %s", inResponse.c_str());
+			DebugFilePrintf(debugFile, "CanLine error1: %s", inResponse.c_str());
 			return(false);
 		}
 	}
@@ -350,12 +350,12 @@ bool ReceiverBareMetalCapture::ParseLine(std::string inResponse, AWLBareMessage 
 	bool bResult = false;
 	if (inResponse.length() < 2) 
 	{
-        DebugFilePrintf(outFile, "BareLine empty");
+        DebugFilePrintf(debugFile, "BareLine empty");
 		return bResult;
 	}
     if (inResponse[0] != 'R')
     {
-        DebugFilePrintf(outFile, "BareLine bad: %s\n", inResponse.c_str());
+        DebugFilePrintf(debugFile, "BareLine bad: %s\n", inResponse.c_str());
         return bResult;
    }
 
@@ -434,7 +434,7 @@ void ReceiverBareMetalCapture::ParseChannelDistance(AWLBareMessage &inMsg)
 
 		rawLock.unlock();
 	}
-    DebugFilePrintf(outFile, "Msg distance - Val %d %f",inMsg.peakIndex, distance);
+    DebugFilePrintf(debugFile, "Msg distance - Val %d %f",inMsg.peakIndex, distance);
 }
 
 
@@ -466,7 +466,7 @@ void ReceiverBareMetalCapture::ParseChannelIntensity(AWLBareMessage &inMsg)
         rawLock.unlock();
     }
 
-    DebugFilePrintf(outFile, "Msg Intensity - Val %d %d",inMsg.intensity, intensity);
+    DebugFilePrintf(debugFile, "Msg Intensity - Val %d %d",inMsg.intensity, intensity);
 }
 
 void ReceiverBareMetalCapture::ParseControlMessage(AWLBareMessage &inMsg)
@@ -489,7 +489,7 @@ void ReceiverBareMetalCapture::ParseControlMessage(AWLBareMessage &inMsg)
 		ParseParameterError(inMsg);
 		break;
 	default:
-		DebugFilePrintf(outFile, "Error: Unhandled control message (%x).  Message skipped", inMsg.data[0]);
+		DebugFilePrintf(debugFile, "Error: Unhandled control message (%x).  Message skipped", inMsg.data[0]);
 		break;
 	}
 #endif
@@ -497,13 +497,13 @@ void ReceiverBareMetalCapture::ParseControlMessage(AWLBareMessage &inMsg)
 
 void ReceiverBareMetalCapture::ParseParameterSet(AWLBareMessage &inMsg)
 {
-	DebugFilePrintf(outFile, "Error: Command - Parameter - Set received (%x).  Message skipped. ");
+	DebugFilePrintf(debugFile, "Error: Command - Parameter - Set received (%x).  Message skipped. ");
 }
 
 
 void ReceiverBareMetalCapture::ParseParameterQuery(AWLBareMessage &inMsg)
 {
-	DebugFilePrintf(outFile, "Error: Command - Parameter - Set received (%x).  Message skipped. ");
+	DebugFilePrintf(debugFile, "Error: Command - Parameter - Set received (%x).  Message skipped. ");
 }
 
 void ReceiverBareMetalCapture::ParseParameterResponse(AWLBareMessage &inMsg)
@@ -1029,7 +1029,7 @@ bool ReceiverBareMetalCapture::SetRecordFileName(std::string inRecordFileName)
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverBareMetalCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
 {
 #if 0
     AWLBareMessage message;
@@ -1057,7 +1057,7 @@ bool ReceiverBareMetalCapture::StartPlayback(uint8_t frameRate, ReceiverCapture:
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverBareMetalCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 {
  #if 0
     AWLBareMessage message;
@@ -1149,7 +1149,7 @@ bool ReceiverBareMetalCapture::StopRecord()
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverBareMetalCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
 {
 #if 0
     AWLBareMessage message;

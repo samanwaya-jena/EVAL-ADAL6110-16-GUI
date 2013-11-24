@@ -53,14 +53,16 @@ responseString("")
 	yearOffset = globalSettings->yearOffsetCAN;
 	monthOffset = globalSettings->monthOffsetCAN;
 
-	OpenDebugFile(outFile, "CanBusLog.dat");
+	OpenDebugFile(debugFile, "CanBusLog.dat");
+
 	ProcessCommandLineArguments(argc, argv);
 
-	DebugFilePrintf(outFile, "StartProgram %d", 22);
+	DebugFilePrintf(debugFile, "StartProgram %d", 22);
 
 	if (OpenCANPort())
 	{
 		WriteCurrentDateTime();
+		ReceiverCapture::SetMessageFilters();
 	}
 
 	acquisitionSequence->Clear();
@@ -70,7 +72,9 @@ ReceiverCANCapture::~ReceiverCANCapture()
 {
 
 	CloseCANPort();
-	CloseDebugFile(outFile);
+	CloseDebugFile(debugFile);
+	EndDistanceLog();
+	CloseLogFile(logFile);
 	Stop(); // Stop the thread
 }
 
@@ -111,7 +115,6 @@ bool  ReceiverCANCapture::OpenCANPort()
 	try
 	{
 	port = new boost::asio::serial_port(io, sCommPort);
-
     port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
 	}
 	catch (...)
@@ -130,11 +133,18 @@ bool  ReceiverCANCapture::OpenCANPort()
     // A blocking reader for this port that 
     // will time out a read after 500 milliseconds.
 	reader = new blocking_reader(*port, receiveTimeOutInMillisec);
+#if 1
+	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
+#endif
 
 	// Send the initialization strings
 	WriteString(sBitRate+"\r"); // Set CAN Rate ("S2"->50Kbps, "S3"->100Kbps, "S8"->1Gbps)
 	WriteString("O\r");  // Open
+	WriteString("Z0\r");  // Make sure no timestamps are attached
 	WriteString("E\r");  // Flush/ Resync
+#if 1
+	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
+#endif
 
 	if (reader) 
 		return(true);
@@ -161,7 +171,7 @@ bool  ReceiverCANCapture::CloseCANPort()
 		}
 		catch (...)
 		{
-			DebugFilePrintf(outFile, "Error during Write On Close");
+			DebugFilePrintf(debugFile, "Error during Write On Close");
 		}
 
 
@@ -185,6 +195,16 @@ void  ReceiverCANCapture::Go(bool inIsThreaded)
 	if (bIsThreaded) 
 	{
 		mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverCANCapture::DoThreadLoop, this)));
+#if 1
+		// Set the priority under windows.  This is the most critical display thread 
+		// for user interaction
+	
+
+		 HANDLE th = mThread->native_handle();
+		 SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
+		//   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+#endif
+
 	}
 }
  
@@ -287,10 +307,10 @@ void ReceiverCANCapture::DoOneThreadIteration()
 			char c;
 			// read from the serial port until we get a
 			// carriage return or until a read times-out (500ms)
-			if (reader->read_char(c)) 
+
+		if (reader->read_char(c)) 
 			{
 				responseString.push_back(c);
-	
 				if (c == '\r') 
 				{
 					if (ParseLine(responseString, msg))
@@ -301,7 +321,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				}
 				else if (c == 0x07) // BELL 
 				{
-					DebugFilePrintf(outFile, "CanLine error: %s\n", responseString.c_str());
+					DebugFilePrintf(debugFile, "CanLine error: %s\n", responseString.c_str());
 					responseString.clear();
 				}
 
@@ -311,11 +331,12 @@ void ReceiverCANCapture::DoOneThreadIteration()
 			// Try to repoen the port
 			else 
 			{
-				DebugFilePrintf(outFile,  "Time Outon read_char.  Resetting CAN Port"); 
+				DebugFilePrintf(debugFile,  "Time Outon read_char.  Resetting CAN Port"); 
 				CloseCANPort();
 				if (OpenCANPort())
 				{
 					WriteCurrentDateTime();
+					ReceiverCapture::SetMessageFilters();
 				}
 			}
 
@@ -323,13 +344,13 @@ void ReceiverCANCapture::DoOneThreadIteration()
 		else 
 		{
 			// Port is not opened.  Try to repoen after a certain delay.
-
 			if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
 			{
-				DebugFilePrintf(outFile,  "Reconnecting CAN Port"); 
+				DebugFilePrintf(debugFile,  "Reconnecting CAN Port"); 
 				if (OpenCANPort())
 				{
 					WriteCurrentDateTime();
+					ReceiverCapture::SetMessageFilters();
 				}
 			}
 
@@ -364,7 +385,7 @@ bool ReceiverCANCapture::GetDataByte(std::string &inResponse, uint8_t &outByte, 
 		}
 		else 
 		{
-			DebugFilePrintf(outFile, "CanLine error1: %s", inResponse.c_str());
+			DebugFilePrintf(debugFile, "CanLine error - Invalid char: %s-%c", inResponse.c_str(), theChar);
 			return(false);
 		}
 	}
@@ -398,25 +419,25 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 	bool bResult = false;
 	if (inResponse.length() < 2) 
 	{
-		DebugFilePrintf(outFile, "CanLine empty");
+		DebugFilePrintf(debugFile, "CanLine empty %s", inResponse.c_str());
 		return bResult;
 	}
 
 	if (inResponse[0] == 'z')
 	{
-		DebugFilePrintf(outFile, "CanLine ack: %s\n", inResponse.c_str());
+		DebugFilePrintf(debugFile, "CanLine ack: %s\n", inResponse.c_str());
 		return (bResult);
 	}
 	else if (inResponse[0] != 't') 
 	{
-		DebugFilePrintf(outFile, "CanLine bad: %s\n", inResponse.c_str());
+		DebugFilePrintf(debugFile, "CanLine bad: %s\n", inResponse.c_str());
 		return (bResult);
 	}
 
 	
 	if (inResponse.length() < 6) 
 	{
-		DebugFilePrintf(outFile, "CanFrame incomplete %s",  inResponse.c_str());
+		DebugFilePrintf(debugFile, "CanFrame incomplete %s",  inResponse.c_str());
 		return (bResult);
 	}
 
@@ -479,8 +500,6 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelDistance(inMsg);
 		lastMessageID = msgID;
-		// On the last distance message, notify send the sensor frame to the application.
-		if (msgID == 36) ProcessCompletedFrame();
 	}
 	else if (msgID >= 40 && msgID <= 46) 
 	{
@@ -491,6 +510,8 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelIntensity(inMsg);
 		lastMessageID = msgID;
+		// On the last distance message, notify send the sensor frame to the application.
+		if (msgID == 56) ProcessCompletedFrame();	
 	}
 	else if (msgID == 80) /* Command */
 	{
@@ -498,7 +519,7 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	}
 	else
 	{
-		DebugFilePrintf(outFile, "UnknownMessage %d", msgID);
+		DebugFilePrintf(debugFile, "UnknownMessage %d", msgID);
 		lastMessageID = msgID;
 	}
 }
@@ -529,7 +550,7 @@ void ReceiverCANCapture::ParseSensorStatus(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	rawLock.unlock();
 
-	DebugFilePrintf(outFile, "Msg %d - Val %u %d %u %u %u %u", inMsg.id, 
+	DebugFilePrintf(debugFile, "Msg %d - Val %u %d %u %u %u %u", inMsg.id, 
 			iTemperature, uiVoltage, 
 			receiverStatus.frameRate, 
 			receiverStatus.hardwareError.byteData,
@@ -558,7 +579,7 @@ void ReceiverCANCapture::ParseSensorBoot(AWLCANMessage &inMsg)
 
 	rawLock.unlock();
 
-	DebugFilePrintf(outFile, "Msg %d - Val %u %u %u %u", inMsg.id, 
+	DebugFilePrintf(debugFile, "Msg %d - Val %u %u %u %u", inMsg.id, 
 			receiverStatus.version.major,
 			receiverStatus.version.minor,
 			receiverStatus.bootChecksumError.byteData,
@@ -566,15 +587,11 @@ void ReceiverCANCapture::ParseSensorBoot(AWLCANMessage &inMsg)
 			receiverStatus.bootSelfTest.byteData);
 }
 
-#if 0
-static int channelReorder[] = {0, 1, 2, 3, 4, 5, 6};
-//static int channelReorder[] = {0, 1, 2, 3, -1, -1, -1};
-#endif
-
 void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 
 {
 	int channel;
+	int block = 0;
 	int detectOffset = 0;
 	uint16_t *distancePtr = (uint16_t *) inMsg.data;
 
@@ -582,17 +599,15 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 	{
 		channel = inMsg.id - 30;
 		detectOffset = 4;
+		block = 1;
 	}
 	else 
 	{
 		channel = inMsg.id - 20;
+		block = 0;
 	}
 
-#if 0
-	// JYD:  Watch out ---- Channel order is patched here, because of CAN bug
-	channel = channelReorder[channel];
-#endif
-	if (channel >= 0) 
+if (channel >= 0) 
 	{
 		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 		float distance = (float)(distancePtr[0]);
@@ -657,7 +672,38 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		currentFrame->channelFrames[channel]->detections[detectionIndex]->velocity = 0;
 		rawLock.unlock();
 	}
-	DebugFilePrintf(outFile, "Msg %d - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
+
+	// Debug and Log messages
+	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
+	if (block == 0) 
+	{
+#if 0 // If set to 1, we only long the first distance
+	if (inMsg.id == 20)
+#endif
+		//Date;Comment (empty);"Track"/"Dist";TrackID;"Channel";....
+		LogFilePrintf(logFile, " ;Dist;;Channel;%d;Expected;%.2f;%.1f;Val;%.2f;%.2f;%.2f;%.2f; ; ; ; ", channel,
+			AWLSettings::GetGlobalSettings()->targetHintDistance,
+			AWLSettings::GetGlobalSettings()->targetHintAngle,
+			currentFrame->channelFrames[channel]->detections[0]->distance,
+			currentFrame->channelFrames[channel]->detections[1]->distance,
+			currentFrame->channelFrames[channel]->detections[2]->distance,
+			currentFrame->channelFrames[channel]->detections[3]->distance);
+	}
+	else if (block == 1) 
+	{
+#if 0 // if set to 1, wwe only log the last distance
+		if (inMsg.id == 36)
+
+		//Date;Comment (empty);"Track"/"Dist";TrackID;"Channel";....
+		LogFilePrintf(logFile, " ;Dist;;Channel;%d;Expected;%f;%f;Val; ; ; ; ;%f;%f;%f;%f", channel,
+			AWLSettings::GetGlobalSettings()->targetHintDistance,
+			AWLSettings::GetGlobalSettings()->targetHintAngle,
+			currentFrame->channelFrames[channel]->detections[4]->distance,
+			currentFrame->channelFrames[channel]->detections[5]->distance,
+			currentFrame->channelFrames[channel]->detections[6]->distance,
+			currentFrame->channelFrames[channel]->detections[7]->distance);
+#endif
+	}
 }
 
 
@@ -700,7 +746,7 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	currentFrame->channelFrames[channel]->detections[3+detectOffset]->velocity = 0;
 	rawLock.unlock();
 
-	DebugFilePrintf(outFile, "Msg %d - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
+	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
 }
 
 
@@ -723,7 +769,7 @@ void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
 		ParseParameterError(inMsg);
 		break;
 	default:
-		DebugFilePrintf(outFile, "Error: Unhandled control message (%x).  Message skipped", inMsg.data[0]);
+		DebugFilePrintf(debugFile, "Error: Unhandled control message (%x).  Message skipped", inMsg.data[0]);
 		break;
 	}
 
@@ -731,13 +777,13 @@ void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterSet(AWLCANMessage &inMsg)
 {
-	DebugFilePrintf(outFile, "Error: Command - Parameter - Set received (%x).  Message skipped. Type: %d", inMsg.data[0], inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Error: Command - Parameter - Set received (%x).  Message skipped. Type: %d", inMsg.data[0], inMsg.data[1]);
 }
 
 
 void ReceiverCANCapture::ParseParameterQuery(AWLCANMessage &inMsg)
 {
-	DebugFilePrintf(outFile, "Error: Command - Parameter - Set received (%x).  Message skipped. Type: %d", inMsg.data[0], inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Error: Command - Parameter - Set received (%x).  Message skipped. Type: %d", inMsg.data[0], inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterResponse(AWLCANMessage &inMsg)
@@ -989,11 +1035,17 @@ void ReceiverCANCapture::ParseParameterDateTimeResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterRecordResponse(AWLCANMessage &inMsg)
 {
+	// Message should be sent as a response when we set record filename.
+	// Otherwise it is not used. We ignore the message for the moment.
 }
+
 
 void ReceiverCANCapture::ParseParameterPlaybackResponse(AWLCANMessage &inMsg)
 {
+	// Message should be sent as a response when we set playbackfilename.
+	// Otherwise it is not used. We ignore the message for the moment.
 }
+
 
 void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 {
@@ -1002,7 +1054,7 @@ void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterAlgoParameterError(AWLCANMessage &inMsg)
@@ -1011,7 +1063,8 @@ void ReceiverCANCapture::ParseParameterAlgoParameterError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);}
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
+}
 
 void ReceiverCANCapture::ParseParameterFPGARegisterError(AWLCANMessage &inMsg)
 {
@@ -1019,7 +1072,7 @@ void ReceiverCANCapture::ParseParameterFPGARegisterError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterBiasError(AWLCANMessage &inMsg)
@@ -1028,7 +1081,7 @@ void ReceiverCANCapture::ParseParameterBiasError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterADCRegisterError(AWLCANMessage &inMsg)
@@ -1037,7 +1090,7 @@ void ReceiverCANCapture::ParseParameterADCRegisterError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterPresetError(AWLCANMessage &inMsg)
@@ -1046,7 +1099,7 @@ void ReceiverCANCapture::ParseParameterPresetError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterGlobalParameterError(AWLCANMessage &inMsg)
@@ -1055,7 +1108,7 @@ void ReceiverCANCapture::ParseParameterGlobalParameterError(AWLCANMessage &inMsg
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterGPIORegisterError(AWLCANMessage &inMsg)
@@ -1064,7 +1117,7 @@ void ReceiverCANCapture::ParseParameterGPIORegisterError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterDateTimeError(AWLCANMessage &inMsg)
@@ -1073,7 +1126,7 @@ void ReceiverCANCapture::ParseParameterDateTimeError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterRecordError(AWLCANMessage &inMsg)
@@ -1082,7 +1135,7 @@ void ReceiverCANCapture::ParseParameterRecordError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::ParseParameterPlaybackError(AWLCANMessage &inMsg)
@@ -1091,7 +1144,7 @@ void ReceiverCANCapture::ParseParameterPlaybackError(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
-	DebugFilePrintf(outFile, "Control command error.  Type %x", inMsg.data[1]);
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
 void ReceiverCANCapture::WriteString(std::string inString)
@@ -1100,10 +1153,10 @@ void ReceiverCANCapture::WriteString(std::string inString)
 
 	int stringSize = inString.size();
 
-DebugFilePrintf(outFile, "Out %d bytes - %s", stringSize, inString.c_str());
+DebugFilePrintf(debugFile, "Out %d bytes - %s", stringSize, inString.c_str());
 
 	std::size_t written = boost::asio::write(*port,boost::asio::buffer(inString.c_str(),stringSize));
-DebugFilePrintf(outFile, "Out %d bytes confirmed", written);
+DebugFilePrintf(debugFile, "Out %d bytes confirmed", written);
 	// Messages must be at leat 1ms apart.
 	boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 }
@@ -1149,9 +1202,7 @@ bool ReceiverCANCapture::WriteMessage(const AWLCANMessage &inMsg)
           0x06 = PRESET
 		  0x07 = GLOBAL_PARAMETER (Histogram)
 		  0x08 = GPIO_CONTROL
-          0x20 = DATE
-          0x21 = TIME
-          0x22 = reserved for TIMEZONE
+          0x20 = DATE_TIME
           0xD0 = RECORD_FILENAME (zero-terminated)
           0xD1 = PLAYBACK_FILENAME (zero-terminated)
 02-03: Address (U16_LE)
@@ -1192,10 +1243,9 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xC0;   // SET_PARAMETER
-	message.data[1] = 0x20;    // SET_DATE
+	message.data[1] = 0x20;    // SET_DATE_TIME
 
-	message.data[2] = 0x00; // Address[0] : Not used
-	message.data[3] = 0x00; // Address[1] : Not used
+	*((uint16_t*)&message.data[2]) = 0x0001; // SET_DATE
 	*((uint16_t*)&message.data[4]) = year-yearOffset;
 	message.data[6] = (unsigned char) month-monthOffset;
 	message.data[7] = (unsigned char) day;
@@ -1207,10 +1257,9 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xC0;   // SET_PARAMETER
-	message.data[1] = 0x21;    // SET_TIME
+	message.data[1] = 0x20;    // SET_DATE_TIME
 
-	message.data[2] = 0x00; // Address[0] : Not used
-	message.data[3] = 0x00; // Address[1] : Not used
+	*((uint16_t*)&message.data[2]) = 0x0002; // SET_TIME
 	message.data[4] = (unsigned char) hours;
 	message.data[5] = (unsigned char) minutes;
 	message.data[6] = (unsigned char) seconds;
@@ -1298,7 +1347,7 @@ bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
 {
 	AWLCANMessage message;
 	
@@ -1307,10 +1356,10 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::Chann
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xD1;   // PLAYBACK_RAW
-	message.data[1] = channelMask.byteData;   
+	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops playback
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = frameRate; // Address[1] : Not used
+	message.data[3] = frameRate; // Frame rate in HZ. 00: Use actual
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1323,7 +1372,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::Chann
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 {
 	AWLCANMessage message;
 	
@@ -1332,10 +1381,10 @@ bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ReceiverCapture::Channel
 
     message.len = 8;       // Frame size (0.8)
     message.data[0] = 0xD0;   // Record_RAW
-	message.data[1] = channelMask.byteData;   
+	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops record
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = frameRate; // Address[1] : Not used
+	message.data[3] = frameRate; 
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1406,7 +1455,7 @@ bool ReceiverCANCapture::StopRecord()
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
 {
 	AWLCANMessage message;
 	
@@ -1620,7 +1669,7 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &para
 
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings-> FindAlgoParamByAddress(parametersList, registerAddress);
+	int index = globalSettings->FindAlgoParamByAddress(parametersList, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
@@ -1637,6 +1686,35 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &para
    }
 
 	return(bMessageOk);
+}
+
+
+bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+
+{
+	// Signal that we are waiting for an update of thet register settings.
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	AWLCANMessage message;
+	
+	message.id = 80;       // Message id: 80- Command message
+
+    message.len = 8;       // Frame size (0.8)
+    message.data[0] = 0xE1;   // Transmit_cooked enable flags
+
+	message.data[1] = channelMask.byteData; // Channel mask
+	message.data[2] = 0;  // Reserved
+	message.data[3] = frameRate; // New frame rate. oo= use actual.
+	message.data[4] = messageMask.byteData;
+	message.data[5] = 0;  // Reserved
+	message.data[6] = 0;  // Reserved
+	message.data[7] = 0;  // Reserved
+
+	bool bMessageOk = WriteMessage(message);
+
+	// The message has no confirmation built in
+
+   return(bMessageOk);
 }
 
 bool ReceiverCANCapture::QueryAlgorithm()
@@ -1853,4 +1931,20 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameters> &pa
 	return(bMessageOk);
 }
 
+bool ReceiverCANCapture::BeginDistanceLog()
 
+{
+	if (!logFile.is_open())
+	{
+		OpenLogFile(logFile, "DistanceLog.dat", true);
+	}
+
+	LogFilePrintf(logFile, "Start distance log");
+	return(true);
+}
+
+bool ReceiverCANCapture::EndDistanceLog()
+
+{
+	return(false);
+}

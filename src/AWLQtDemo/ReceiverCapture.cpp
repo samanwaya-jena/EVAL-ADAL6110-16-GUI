@@ -57,6 +57,8 @@ lastElapsed(0)
 	receiverStatus.currentAlgoPendingUpdates = 0;
 	
 	startTime = boost::posix_time::microsec_clock::local_time();
+	
+	SetMessageFilters();
 	InitStatus();
 }
 
@@ -80,9 +82,11 @@ bSimulatedDataEnabled(false)
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
 
+	// Update settings from configuration file
 	receiverStatus.currentAlgo = globalSettings->defaultAlgo;
 	receiverStatus.currentAlgoPendingUpdates = 0;
 
+	SetMessageFilters();
 	InitStatus();
 }
 
@@ -118,10 +122,12 @@ void ReceiverCapture::ProcessCommandLineArguments(int argc, char** argv)
 
 void ReceiverCapture::InitStatus()
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
 	receiverStatus.bUpdated = false;
 	receiverStatus.temperature = 0.0;
 	receiverStatus.voltage = 0;
-	receiverStatus.frameRate = 100;	// Default frame rate is 100Hz
+	receiverStatus.frameRate = globalSettings->receiverFrameRate;	// Default frame rate is 100Hz
 	receiverStatus.hardwareError.byteData = 0;
 	receiverStatus.receiverError.byteData = 0;
 	receiverStatus.status.byteData = 0;
@@ -343,13 +349,13 @@ bool ReceiverCapture::SetRecordFileName(std::string inRecordFileName)
 	return(true);
 }
 
-bool ReceiverCapture::StartPlayback(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
 {
 	receiverStatus.bInPlayback = true;
 	return(true);
 }
 
-bool ReceiverCapture::StartRecord(uint8_t frameRate, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 {
 	receiverStatus.bInRecord = true;
 	return(true);
@@ -367,7 +373,7 @@ bool ReceiverCapture::StopRecord()
 	return(true);
 }
 
-bool ReceiverCapture::StartCalibration(uint8_t frameQty, float beta, ReceiverCapture::ChannelMask channelMask)
+bool ReceiverCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
 {
 	return(true);
 }
@@ -402,6 +408,38 @@ bool ReceiverCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &paramet
 {
 	return(true);
 }
+
+bool ReceiverCapture::SetMessageFilters()
+
+{
+	uint8_t frameRate;
+	ChannelMask channelMask;
+	MessageMask messageMask;
+
+	// Update settings from application
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	receiverStatus.frameRate = globalSettings->receiverFrameRate;
+	receiverStatus.channelMask.byteData = globalSettings->receiverChannelMask;
+	receiverStatus.messageMask.byteData = 0;
+	if (globalSettings->msgEnableObstacle) receiverStatus.messageMask.bitFieldData.obstacle = 1;
+	if (globalSettings->msgEnableDistance_1_4) receiverStatus.messageMask.bitFieldData.distance_1_4 = 1;
+	if (globalSettings->msgEnableDistance_5_8) receiverStatus.messageMask.bitFieldData.distance_5_8 = 1;
+	if (globalSettings->msgEnableIntensity_1_4) receiverStatus.messageMask.bitFieldData.intensity_1_4 = 1;
+	if (globalSettings->msgEnableIntensity_5_8) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
+
+	return(SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask));
+
+}
+
+
+bool ReceiverCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+
+{
+	return(true);
+}
+
+
 
 bool ReceiverCapture::QueryAlgorithm()
 {
@@ -521,11 +559,12 @@ void ReceiverCapture::ProcessCompletedFrame()
 		acquisitionSequence->sensorFrames.pop();
 	}
 
-	
+#if 0	
 	// Recalculate the tracks
 	acquisitionSequence->BuildTracks(currentFrame->timeStamp);
-	
-DebugFilePrintf(outFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeStamp, GetElapsed());
+#endif
+
+DebugFilePrintf(debugFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeStamp, GetElapsed());
 
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
@@ -537,7 +576,7 @@ DebugFilePrintf(outFile, "BuildTracks at %lf - Elapsed %lf", currentFrame->timeS
 
 	rawLock.unlock();
 
-	DebugFilePrintf(outFile, "FrameID- %lu", frameID);
+	DebugFilePrintf(debugFile, "FrameID- %lu", frameID);
 }
 
 
@@ -611,7 +650,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -684,7 +723,7 @@ void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
 
 	if (channel == 6 && detectOffset == 4)
 	{
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 		ProcessCompletedFrame();
 	}
 
@@ -837,7 +876,7 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -893,7 +932,7 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(outFile, "Fake");
+		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }

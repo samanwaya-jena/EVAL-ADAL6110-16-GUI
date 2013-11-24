@@ -119,6 +119,8 @@ public:
 	float displayedRangeMax;
 	float rangeOffset;
 	float distanceScale;
+	float targetHintDistance;
+	float targetHintAngle;
 
 	// 3D display options
 	int decimation;
@@ -144,14 +146,22 @@ public:
 
 	// Receiver
 	QString sReceiverType;
+	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
+	uint8_t receiverFrameRate;			// Frame rate, in hertz
 
 	// CAN Receiver config
 	QString sCANCommPort;       // Default is "COM16"
 	QString sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
-	long serialCANPortRate;		// In bps
+	long serialCANPortRate;		// In bpschannelMask
 	uint16_t yearOffsetCAN;		   // All CAN Dates are offset from 1900
 	uint16_t monthOffsetCAN;		// All CAN months start at 0.  Posix starts aty 1.
 	
+	bool msgEnableObstacle;
+	bool msgEnableDistance_1_4;
+	bool msgEnableDistance_5_8;
+	bool msgEnableIntensity_1_4;
+	bool msgEnableIntensity_5_8;
+		
 	// BareMetal receiverConfig
 	QString sBareMetalCommPort;       // Default is "COM16"
 	long serialBareMetalPortRate;	 // In bps
@@ -162,6 +172,10 @@ public:
 	// Camera
 	float cameraFovXDegrees;
 	float cameraFovYDegrees;
+
+	// Debug
+	bool bWriteDebugFile;
+	bool bWriteLogFile;
 
 
 protected:

@@ -16,14 +16,20 @@ sensorDepth(0.0),
 displayedRangeMin(0.0),
 displayedRangeMax(0.0),
 rangeOffset(0.0),
-
+targetHintDistance(0.0),
+targetHintAngle(0.0),
 decimation(3),
 pixelSize(1),
 colorStyle(0),
 cameraView(3),
 
 sCANCommPort("COM16"),
-sCANBitRate("S8")
+sCANBitRate("S8"),
+msgEnableObstacle(false),
+msgEnableDistance_1_4(true),
+msgEnableDistance_5_8(true),
+msgEnableIntensity_1_4(true),
+msgEnableIntensity_5_8(true)
 
 {
 	cameraView = 3;
@@ -96,6 +102,12 @@ bool AWLSettings::ReadSettings()
 	settings.endArray();
 	settings.endGroup();
 
+	// Debug and log file control
+	settings.beginGroup("debug");
+	bWriteDebugFile = settings.value("enableDebugFile").toBool();
+	bWriteLogFile = settings.value("enableLogFile").toBool();
+	settings.endGroup();
+
 	// Default algo
 	settings.beginGroup("algos");
 	defaultAlgo = settings.value("defaultAlgo").toInt();
@@ -163,7 +175,8 @@ bool AWLSettings::ReadSettings()
 	displayedRangeMax = settings.value("displayedRangeMax").toFloat();
 	rangeOffset = settings.value("rangeOffset").toFloat();
 	distanceScale = settings.value("distanceScale").toFloat();
-
+	targetHintDistance = settings.value("targetHintDistance").toFloat();
+	targetHintAngle = settings.value("targetHintAngle").toFloat();
 	settings.endGroup();
 
 	settings.beginGroup("display3D");
@@ -193,6 +206,16 @@ bool AWLSettings::ReadSettings()
 	
 	settings.beginGroup("receiver");
 	sReceiverType = settings.value("receiverType").toString();
+	receiverChannelMask = settings.value("channelMask").toUInt();
+	receiverFrameRate = settings.value("frameRate").toUInt();
+
+	msgEnableObstacle = settings.value("msgEnableObstacle").toBool();
+	msgEnableDistance_1_4 = settings.value("msgEnableDistance_1_4").toBool();
+	msgEnableDistance_5_8 = settings.value("msgEnableDistance_5_8").toBool();
+	msgEnableIntensity_1_4 = settings.value("msgEnableIntensity_1_4").toBool();
+	msgEnableIntensity_5_8 = settings.value("msgEnableIntensity_5_8").toBool();
+
+
 	settings.endGroup();
 
 	settings.beginGroup("bareMetalComm");
@@ -216,7 +239,6 @@ bool AWLSettings::ReadSettings()
 	cameraFovXDegrees = settings.value("cameraFovX").toFloat();
 	cameraFovYDegrees = settings.value("cameraFovY").toFloat();
 	settings.endGroup();
-
 
 	return(true);
 }
