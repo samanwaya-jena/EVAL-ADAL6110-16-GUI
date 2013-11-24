@@ -53,6 +53,7 @@ public slots:
 	void slotPaletteAction();
 	void slotMergeDisplayAction();
 	void slotMeasureModeAction();
+	void slotColorCodeAction();
 
 protected :
     void paintEvent(QPaintEvent *p);
@@ -93,8 +94,11 @@ private:
 
 	QAction* showPaletteAction;
 
+	QActionGroup* groupColorCode;
+	QAction* colorCodeDistanceAction;
+	QAction* colorCodeVelocityAction;
 
-    void drawArc(QPainter* p, float angle, float angleWidth, float length);
+	void drawArc(QPainter* p, float angle, float angleWidth, float length);
     void drawPie(QPainter* p, float angle, float angleWidth, float length);
     void drawLine(QPainter* p,float angle, float startLength,float length);
     void drawText(QPainter* p,float angle, float pos, QString text);

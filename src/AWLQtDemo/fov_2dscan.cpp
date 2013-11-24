@@ -121,6 +121,29 @@ void FOV_2DScan::createAction()
 	showPaletteAction->setChecked(ShowPalette);
 
 	connect(showPaletteAction, SIGNAL(triggered()), this, SLOT(slotPaletteAction()));
+
+	groupColorCode = new QActionGroup( this );
+	colorCodeDistanceAction = new QAction("Distances", this);
+	colorCodeVelocityAction = new QAction("Velocity", this);
+	
+	
+	colorCodeDistanceAction->setCheckable(true);
+	colorCodeDistanceAction->setActionGroup(groupColorCode);
+
+	colorCodeVelocityAction->setCheckable(true);
+	colorCodeVelocityAction->setActionGroup(groupColorCode);
+
+	if (colorCode == eColorCodeDistance)
+	{
+		colorCodeDistanceAction->setChecked(true);
+	}
+	else
+	{
+		colorCodeVelocityAction->setChecked(true);
+	}
+
+	connect(groupColorCode, SIGNAL(triggered(QAction*)), this, SLOT(slotColorCodeAction()));
+
 }
 
 void FOV_2DScan::slotPaletteAction()
@@ -172,6 +195,20 @@ void FOV_2DScan::slotMeasureModeAction()
 	{
 		measureMode = eMeasureLongitudinal;
 	}
+}
+
+void FOV_2DScan::slotColorCodeAction()
+{
+	if (colorCodeDistanceAction->isChecked())
+	{
+		colorCode = eColorCodeDistance;
+	}
+	else
+	{
+		colorCode = eColorCodeVelocity;
+	}
+
+
 }
 
 void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
@@ -866,6 +903,7 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	//QMenu* menuMergeDetection = mainMenu.addMenu("Merge Detection Mode");
 	QMenu* menuMergeDisplay = mainMenu.addMenu("Merge Channels");
 	QMenu* menuMeasureMode = mainMenu.addMenu("Distance calculation");
+	QMenu* menuColorCode = mainMenu.addMenu("Distance vs velocity");
    
 	//menuMergeDetection->addAction(noMergeAction);
 	//menuMergeDetection->addAction(radialAction);
@@ -881,5 +919,8 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 
 	mainMenu.addAction(showPaletteAction);
 
+	menuColorCode->addAction(colorCodeDistanceAction);
+	menuColorCode->addAction(colorCodeVelocityAction);
+	
     mainMenu.exec(globalPos);
 }
