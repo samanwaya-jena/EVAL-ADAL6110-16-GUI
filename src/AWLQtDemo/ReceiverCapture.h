@@ -463,12 +463,12 @@ public:
 	/** \brief Starts the logging of distance data. 
       * \return true if success.  false on error
      */
-	virtual bool BeginDistanceLog(){return true;}
+	virtual bool BeginDistanceLog();
 
 	/** \brief Starts the logging of distance data. 
       * \return true if success.  false on error
      */
-	virtual bool EndDistanceLog(){return true;}
+	virtual bool EndDistanceLog();
 
 
 	/** \brief Issues the command to set the current algorithm in the FPGA.
@@ -632,6 +632,18 @@ protected:
 	  *         Currently, it is invoked on reception of message 36 (las distance from last channel)
       */
 	virtual void ProcessCompletedFrame();
+
+	/** \brief Write all the tracks in the sourceFrameframe to the log file
+ 	  * \param[in] logFile		file to which the log is injected
+	  * \param[in] sourceFrame  frame that contains the tracks to log
+      */
+	virtual void LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame);
+
+	/** \brief Write all the distances in the sourceFrame to the log file
+ 	  * \param[in] logFile		file to which the log is injected
+	  * \param[in] sourceFrame  frame that contains the tracks to log
+      */
+	virtual void LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFrame);
 
 	/** \brief Inject distance information in the channel,  using ramp simulation
  	    * \param[in] channel   channel in whhich data is injected

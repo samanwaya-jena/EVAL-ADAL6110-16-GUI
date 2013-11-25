@@ -90,6 +90,7 @@ bSimulatedDataEnabled(false)
 
 ReceiverCapture::~ReceiverCapture()
 {
+	EndDistanceLog();
 	Stop();
 }
 
@@ -517,26 +518,23 @@ void ReceiverCapture::ProcessCompletedFrame()
 	acquisitionSequence->BuildDetectionsFromTracks(currentFrame);
 
 
-	// And timestamp all the distances
-	int channelQty = currentFrame->channelFrames.size();
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
-	{
-			ChannelFrame::Ptr channelPtr = currentFrame->channelFrames.at(channelIndex);
-#if 1
-			channelPtr->timeStamp = currentFrame->timeStamp;
-#else
-			channelPtr->timeStamp = currentFrame->timeStamp;
-#endif
+	// og the tracks or distance, depending on options selected
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
-			int detectionQty = channelPtr->detections.size();
-			for (int detectionIndex = 0; detectionIndex < detectionQty; detectionIndex++) 
-			{
-				Detection::Ptr detection = channelPtr->detections.at(detectionIndex);
-				detection->timeStamp = currentFrame->timeStamp;
-				detection->firstTimeStamp = currentFrame->timeStamp;
-			}
+	// Log Tracks?
+	if (globalSettings->msgEnableObstacle)
+	{
+		LogTracks(logFile, currentFrame);
 	}
 
+	// Log Distances?
+	if (globalSettings->msgEnableDistance_1_4 ||
+	    globalSettings->msgEnableDistance_5_8 || 
+		globalSettings->msgEnableIntensity_1_4 ||
+		globalSettings->msgEnableIntensity_5_8)
+	{
+		LogDistances(logFile, currentFrame);
+	}
 
 	// Push the current frame in the frame buffer
 	acquisitionSequence->sensorFrames.push(currentFrame);
@@ -558,6 +556,105 @@ void ReceiverCapture::ProcessCompletedFrame()
 	rawLock.unlock();
 
 	DebugFilePrintf(debugFile, "FrameID- %lu", frameID);
+}
+
+
+bool ReceiverCapture::BeginDistanceLog()
+
+{
+	if (!logFile.is_open())
+	{
+		OpenLogFile(logFile, "DistanceLog.dat", true);
+	}
+
+	LogFilePrintf(logFile, "Start distance log");
+	// Title Line
+	LogFilePrintf(logFile, "Track Description:;Track;trackID;_;__;___;Expected;expectDistance;expectAngle;Val;distance;____;velocity;acceleration;ttc;decelerationToStop;probability;ThreatLevel;Ch.0;Ch.1;Ch.2;Ch.3;Ch.4;Ch.5;Ch.6;");
+	LogFilePrintf(logFile, "Distance Description:;Dist;_;__;Channel;DetectionID;Expected;expectDistance;expectAngle;Val;distance;intensity;velocity;acceletation;ttc;decelerationToStop;probability;ThreatLevel");
+	
+	return(true);
+}
+
+
+bool ReceiverCapture::EndDistanceLog()
+
+{
+	if (logFile.is_open())
+		CloseLogFile(logFile);
+	return(false);
+}
+
+
+void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
+{
+	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+
+	// Update the coaslesced tracks
+   Track::Vector::iterator  trackIterator = sourceFrame->tracks.begin();
+
+	while (trackIterator != sourceFrame->tracks.end()) 
+	{
+		Track::Ptr track = *trackIterator;
+		if (track->IsComplete()) 
+		{
+			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
+			LogFilePrintf(logFile, " ;Track;%d; ; ; ;Expected;%.2f;%.1f;Val;%.2f; ;%.1f;%.1f;%.2f;%.1f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;",
+				track->trackID,
+				AWLSettings::GetGlobalSettings()->targetHintDistance,
+				AWLSettings::GetGlobalSettings()->targetHintAngle,
+				track->distance,
+				track->velocity, 
+				track->acceleration, 
+				track->timeToCollision,
+				track->decelerationToStop,
+				track->probability,
+				track->threatLevel,
+				(track->channels & 0x01)? 0 : 0, 
+				(track->channels & 0x02)? 1 : 0, 
+				(track->channels & 0x04)? 2 : 0, 
+				(track->channels & 0x08)? 3 : 0, 
+				(track->channels & 0x10)? 4 : 0, 
+				(track->channels & 0x20)? 5 : 0, 
+				(track->channels & 0x40)? 6 : 0);
+
+		}  // if (track...
+
+		trackIterator++;
+	} // while (trackIterator...
+} 
+
+void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFrame)
+{
+	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+
+	ChannelFrame::Vector::iterator channelIterator = sourceFrame->channelFrames.begin();
+	while (channelIterator !=sourceFrame->channelFrames.end()) 
+	{
+
+		ChannelFrame::Ptr channelFrame = *channelIterator;
+		Detection::Vector::iterator  detectionIterator = channelFrame->detections.begin();
+		while (detectionIterator != channelFrame->detections.end()) 
+		{
+			Detection::Ptr detection = *detectionIterator;
+			LogFilePrintf(logFile, " ;Dist;;Channel;%d;%d;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.2f;%.1f;%.2f;%.1f;%.0f;%d",
+			detection->channelID, 
+			detection->detectionID,
+			AWLSettings::GetGlobalSettings()->targetHintDistance,
+			AWLSettings::GetGlobalSettings()->targetHintAngle,
+				detection->distance,
+				detection->intensity,
+				detection->velocity, 
+				detection->acceleration, 
+				detection->timeToCollision,
+				detection->decelerationToStop,
+				detection->probability,
+				detection->threatLevel);
+
+			detectionIterator++;
+		}
+
+		channelIterator++;
+	}	
 }
 
 

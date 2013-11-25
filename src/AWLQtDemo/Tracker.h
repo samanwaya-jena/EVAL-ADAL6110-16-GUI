@@ -310,7 +310,6 @@ public:
 
 	// Build detections from the current track set.
 	void BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
-
 protected:
 	void UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 

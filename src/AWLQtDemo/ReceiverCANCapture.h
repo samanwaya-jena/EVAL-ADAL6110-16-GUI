@@ -157,15 +157,6 @@ public:
      */
 	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
 
-	/** \brief Starts the logging of distance data. 
-      * \return true if success.  false on error
-     */
-	virtual bool BeginDistanceLog();
-
-	/** \brief Ends the logging of distance data. 
-      * \return true if success.  false on error
-     */
-	virtual bool EndDistanceLog();
 
 	/** \brief Issues the command to set the current algorithm in the FPGA.
 	  *\param[in] algorigthmID  ID of the selected algorithm.

@@ -74,7 +74,6 @@ ReceiverCANCapture::~ReceiverCANCapture()
 	CloseCANPort();
 	CloseDebugFile(debugFile);
 	EndDistanceLog();
-	CloseLogFile(logFile);
 	Stop(); // Stop the thread
 }
 
@@ -712,35 +711,6 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 
 	// Debug and Log messages
 	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
-	if (block == 0) 
-	{
-#if 0 // If set to 1, we only long the first distance
-	if (inMsg.id == 20)
-#endif
-		//Date;Comment (empty);"Track"/"Dist";TrackID;"Channel";....
-		LogFilePrintf(logFile, " ;Dist;;Channel;%d;Expected;%.2f;%.1f;Val;%.2f;%.2f;%.2f;%.2f; ; ; ; ", channel,
-			AWLSettings::GetGlobalSettings()->targetHintDistance,
-			AWLSettings::GetGlobalSettings()->targetHintAngle,
-			currentFrame->channelFrames[channel]->detections[0]->distance,
-			currentFrame->channelFrames[channel]->detections[1]->distance,
-			currentFrame->channelFrames[channel]->detections[2]->distance,
-			currentFrame->channelFrames[channel]->detections[3]->distance);
-	}
-	else if (block == 1) 
-	{
-#if 0 // if set to 1, wwe only log the last distance
-		if (inMsg.id == 36)
-
-		//Date;Comment (empty);"Track"/"Dist";TrackID;"Channel";....
-		LogFilePrintf(logFile, " ;Dist;;Channel;%d;Expected;%f;%f;Val; ; ; ; ;%f;%f;%f;%f", channel,
-			AWLSettings::GetGlobalSettings()->targetHintDistance,
-			AWLSettings::GetGlobalSettings()->targetHintAngle,
-			currentFrame->channelFrames[channel]->detections[4]->distance,
-			currentFrame->channelFrames[channel]->detections[5]->distance,
-			currentFrame->channelFrames[channel]->detections[6]->distance,
-			currentFrame->channelFrames[channel]->detections[7]->distance);
-#endif
-	}
 }
 
 
@@ -813,14 +783,6 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	rawLock.unlock();
 	// Debug and Log messages
 	DebugFilePrintf(debugFile, "Msg %d - Val %d %x %d %d", inMsg.id, track->channels, track->probability, track->timeToCollision);
-	//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
-	LogFilePrintf(logFile, " ;Track;%d;Channel; ;Expected;%.2f;%.1f;Val; ; ; ;%.2f;%.2f",
-			track->trackID,
-			AWLSettings::GetGlobalSettings()->targetHintDistance,
-			AWLSettings::GetGlobalSettings()->targetHintAngle,
-			track->probability,
-			track->timeToCollision);
-
 }
 
 
@@ -845,15 +807,6 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 
 	// Debug and Log messages
 	DebugFilePrintf(debugFile, "Msg %d - Val %f %f %f %f", inMsg.id, track->distance, track->velocity, track->acceleration);
-	//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
-	LogFilePrintf(logFile, " ;Track;%d;Channel; ;Expected;%.2f;%.1f;Val;%.2f;%.2f;%.2f;;",
-			track->trackID,
-			AWLSettings::GetGlobalSettings()->targetHintDistance,
-			AWLSettings::GetGlobalSettings()->targetHintAngle,
-			track->distance,
-			track->velocity,
-			track->acceleration,
-			track->timeToCollision);
 }
 
 void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
@@ -2037,20 +1990,3 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameters> &pa
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::BeginDistanceLog()
-
-{
-	if (!logFile.is_open())
-	{
-		OpenLogFile(logFile, "DistanceLog.dat", true);
-	}
-
-	LogFilePrintf(logFile, "Start distance log");
-	return(true);
-}
-
-bool ReceiverCANCapture::EndDistanceLog()
-
-{
-	return(false);
-}

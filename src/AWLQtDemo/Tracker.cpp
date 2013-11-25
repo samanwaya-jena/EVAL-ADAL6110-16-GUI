@@ -216,6 +216,7 @@ void AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
 	} // while (trackIterator...
 } 
 
+
 void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame)
 {
 	UpdateTrackInfo(currentFrame);
@@ -398,7 +399,7 @@ Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 	bool bExists = channelFrames[channelID]->FindDetection(detectionID, detection);
 	if (!bExists) 
 	{
-		detection = Detection::Ptr(new Detection(channelID, channelFrames[channelID]->detections.size()));
+		detection = Detection::Ptr(new Detection(channelID, detectionID));
 		channelFrames[channelID]->detections.push_back(detection);
 	}
 
