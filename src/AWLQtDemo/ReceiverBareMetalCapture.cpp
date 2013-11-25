@@ -426,8 +426,8 @@ void ReceiverBareMetalCapture::ParseChannelDistance(AWLBareMessage &inMsg)
 
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
 	    detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->timeStamp;
+		detection->timeStamp = currentFrame->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 
@@ -458,8 +458,8 @@ void ReceiverBareMetalCapture::ParseChannelIntensity(AWLBareMessage &inMsg)
 
     	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
 	    detection->intensity = intensity;
-        detection->firstTimeStamp = currentFrame->GetFrameID();
-        detection->timeStamp = currentFrame->GetFrameID();
+        detection->firstTimeStamp = currentFrame->timeStamp;
+        detection->timeStamp = currentFrame->timeStamp;
         detection->trackID = 0;
         detection->velocity = 0;
 

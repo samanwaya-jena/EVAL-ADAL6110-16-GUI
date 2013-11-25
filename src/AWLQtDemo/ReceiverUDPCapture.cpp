@@ -342,8 +342,8 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->channelFrames[channel]->timeStamp;
+		detection->timeStamp = currentFrame->channelFrames[channel]->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 
@@ -359,8 +359,8 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->channelFrames[channel]->timeStamp;
+		detection->timeStamp = currentFrame->channelFrames[channel]->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 	
@@ -376,8 +376,8 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->channelFrames[channel]->timeStamp;
+		detection->timeStamp = currentFrame->channelFrames[channel]->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 	
@@ -393,8 +393,8 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->channelFrames[channel]->timeStamp;
+		detection->timeStamp = currentFrame->channelFrames[channel]->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 

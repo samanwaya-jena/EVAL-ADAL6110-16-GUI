@@ -506,7 +506,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 	// timestamp the currentFrame
 	double elapsed = GetElapsed();
 
-#if 0
+#if 1
 	currentFrame->timeStamp = GetElapsed();
 #else
 	float frameDelay  =  1.0/AWLSettings::GetGlobalSettings()->receiverFrameRate;
@@ -522,7 +522,11 @@ void ReceiverCapture::ProcessCompletedFrame()
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
 	{
 			ChannelFrame::Ptr channelPtr = currentFrame->channelFrames.at(channelIndex);
+#if 1
 			channelPtr->timeStamp = currentFrame->timeStamp;
+#else
+			channelPtr->timeStamp = currentFrame->timeStamp;
+#endif
 
 			int detectionQty = channelPtr->detections.size();
 			for (int detectionIndex = 0; detectionIndex < detectionQty; detectionIndex++) 
@@ -585,8 +589,12 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 		int elapsed = (int) GetElapsed();
 		float distance = elapsed % 4000 ;
 		distance /= 100;
-
+#if 1
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
+#else
+		float frameDelay  =  1.0/AWLSettings::GetGlobalSettings()->receiverFrameRate;
+		currentFrame->channelFrames[channel]->timeStamp = (currentFrame->frameID  *  frameDelay);  // How many frames since start of unit
+#endif
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 
 		lastDistance = distance;
@@ -830,6 +838,8 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 			detection->trackID = 0;
 			detection->velocity = 0;
 			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
+			detection->firstTimeStamp = elapsed;
+			detection->timeStamp = elapsed;
 		}
 
 		// There may be detection in a single channel
@@ -842,6 +852,8 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 				detection->trackID = 0;
 				detection->velocity = 0;
 				currentFrame->channelFrames[channel]->timeStamp = elapsed;
+				detection->firstTimeStamp = currentFrame->timeStamp;
+				detection->timeStamp = currentFrame->timeStamp;
 			}
 		}
 
@@ -902,6 +914,8 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 			detection->trackID = 0;
 			detection->velocity = 0;
 			currentFrame->channelFrames[channel]->timeStamp = elapsed;
+			detection->timeStamp = elapsed;
+			detection->firstTimeStamp = elapsed;
 		}
 
 		rawLock.unlock();
@@ -1012,7 +1026,8 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 			track->part1Entered = true;
 			track->part2Entered = true;
 			track->probability = 99;
-			track->timeStamp = frameID;
+			track->timeStamp = elapsed;
+			track->firstTimeStamp = elapsed;
 			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
 		}
 
@@ -1028,7 +1043,8 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 			track->part1Entered = true;
 			track->part2Entered = true;
 			track->probability = 99;
-			track->timeStamp = frameID;
+			track->timeStamp = elapsed;
+			track->firstTimeStamp = elapsed;
 			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
 		}
 

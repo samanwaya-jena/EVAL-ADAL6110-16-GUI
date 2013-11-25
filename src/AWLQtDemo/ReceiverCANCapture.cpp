@@ -625,7 +625,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		block = 0;
 	}
 
-if (channel >= 0) 
+	if (channel >= 0) 
 	{
 		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 		float distance = (float)(distancePtr[0]);
@@ -634,16 +634,25 @@ if (channel >= 0)
 		distance += measurementOffset;
 		distance += sensorDepth;
 
-
+#if 1
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
+#else
+		float frameDelay  =  1.0/AWLSettings::GetGlobalSettings()->receiverFrameRate;
+		currentFrame->channelFrames[channel]->timeStamp = (currentFrame->frameID  *  frameDelay);  // How many frames since start of unit
+#endif
 		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
 
 		int detectionIndex = 0+detectOffset;
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
+#if 1
+		detection->firstTimeStamp = currentFrame->timeStamp;
+		detection->timeStamp = currentFrame->timeStamp;
+#else
 		detection->firstTimeStamp = currentFrame->GetFrameID();
 		detection->timeStamp = currentFrame->GetFrameID();
+#endif
 		detection->trackID = 0;
 		detection->velocity = 0;
 
@@ -659,8 +668,8 @@ if (channel >= 0)
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->timeStamp;
+		detection->timeStamp = currentFrame->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 	
@@ -676,8 +685,8 @@ if (channel >= 0)
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->timeStamp;
+		detection->timeStamp = currentFrame->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 	
@@ -693,8 +702,8 @@ if (channel >= 0)
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
 		detection->distance = distance;
-		detection->firstTimeStamp = currentFrame->GetFrameID();
-		detection->timeStamp = currentFrame->GetFrameID();
+		detection->firstTimeStamp = currentFrame->timeStamp;
+		detection->timeStamp = currentFrame->timeStamp;
 		detection->trackID = 0;
 		detection->velocity = 0;
 	
