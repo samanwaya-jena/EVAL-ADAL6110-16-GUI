@@ -735,7 +735,6 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -810,7 +809,6 @@ void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
 
 	if (channel == 6 && detectOffset == 4)
 	{
-		DebugFilePrintf(debugFile, "Fake");
 		ProcessCompletedFrame();
 	}
 
@@ -964,7 +962,6 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -1023,7 +1020,6 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
@@ -1155,7 +1151,6 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 	if (channel == 6 && detectOffset == 4)
 	{
 		ProcessCompletedFrame();
-		DebugFilePrintf(debugFile, "Fake");
 	}
 
 }
