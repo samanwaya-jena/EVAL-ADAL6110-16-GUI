@@ -794,7 +794,12 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
 
-	track->distance = (*(uint16_t *) &inMsg.data[2]) / 100.0;  // Convert the distance from CM to meters.
+	track->distance = (*(uint16_t *) &inMsg.data[2]);
+	track->distance *= distanceScale;
+	track->distance /= 100; // Convert the distance from CM to meters.
+	track->distance += measurementOffset;
+	track->distance += sensorDepth;
+
 	int16_t velocity = (*(int16_t *) &inMsg.data[4]);
 	track->velocity = velocity / 100.0; // Convert the velocity from cm/s to m/s
 
