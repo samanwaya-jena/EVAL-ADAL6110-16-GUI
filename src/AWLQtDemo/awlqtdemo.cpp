@@ -1613,7 +1613,14 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable,  TrackI
 
 		if (!isNAN(velocity)) 
 		{
-			velocityStr.sprintf("%.1f", velocity);
+			if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS)
+			{
+			velocityStr.sprintf("%.1f", velocity);  // Display velocity in m/s
+			}
+			else
+			{
+			velocityStr.sprintf("%.1f", VelocityToKmH(velocity));  // Display velocity in km/h
+			}
 		}
 		else 
 		{
