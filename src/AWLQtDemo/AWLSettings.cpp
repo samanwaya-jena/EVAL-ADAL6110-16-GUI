@@ -102,6 +102,29 @@ bool AWLSettings::ReadSettings()
 	settings.endArray();
 	settings.endGroup();
 
+	settings.beginGroup("channelConfig");
+	size = settings.beginReadArray("channelConfig");
+	for (int i = 0; i < size; ++i) 
+	{
+		settings.setArrayIndex(i);
+		ChannelConfig channelConfig;
+		channelConfig.channelIndex = settings.value("index").toInt();
+		channelConfig.fovX = settings.value("fovX").toFloat();
+		channelConfig.fovY = settings.value("fovY").toFloat();
+		channelConfig.centerX = settings.value("centerX").toFloat();
+		channelConfig.centerY = settings.value("centerY").toFloat();
+		channelConfig.maxRange = settings.value("maxRange").toFloat();
+		channelConfig.sMaskName = settings.value("maskName").toString();
+		channelConfig.sFrameName = settings.value("frameName").toString();
+		channelConfig.displayColorRed = (uint8_t) settings.value("displayColorRed").toUInt();
+		channelConfig.displayColorGreen = (uint8_t) settings.value("displayColorGreen").toUInt();
+		channelConfig.displayColorBlue = (uint8_t) settings.value("displayColorBlue").toUInt();
+		channelsConfig.append(channelConfig);
+	}
+	settings.endArray();
+	settings.endGroup();
+
+
 	// Debug and log file control
 	settings.beginGroup("debug");
 	bWriteDebugFile = settings.value("enableDebugFile").toBool();

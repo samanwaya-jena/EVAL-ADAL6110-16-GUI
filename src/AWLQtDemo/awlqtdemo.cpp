@@ -606,7 +606,12 @@ void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 
 	if (receiverCapture) 
 	{
-		receiverCapture->SetMaxDistance(range);
+		int channelQty = AWLSettings::GetGlobalSettings()->channelsConfig.size();
+		for (int channelID = 0; channelID < channelQty; channelID++)
+		{
+			receiverCapture->SetMaxDistance(channelID, range);
+			AWLSettings::GetGlobalSettings()->channelsConfig[channelID].maxRange = range;
+		}
 	}
 
 	if (fusedCloudViewer) 
@@ -828,7 +833,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 					{
 						Detection::Ptr detection = channelFrame->detections.at(i);
 						if ((detection->distance >= receiverCapture->GetMinDistance()) && 
-							(detection->distance <= receiverCapture->GetMaxDistance())) 
+							(detection->distance <= receiverCapture->GetMaxDistance(channelID))) 
 						{
 							detect.distanceRadial = detection->distance;
 							detect.id = detection->detectionID;
@@ -1553,7 +1558,7 @@ void AWLQtDemo::DisplayReceiverValues()
 					{
 						Detection::Ptr detection = channelFrame->detections.at(i);
 						if ((detection->distance >= receiverCapture->GetMinDistance()) && 
-							(detection->distance <= receiverCapture->GetMaxDistance())) 
+							(detection->distance <= receiverCapture->GetMaxDistance(channelID))) 
 						{
 							AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);
 						}

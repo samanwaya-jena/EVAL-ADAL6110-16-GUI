@@ -241,13 +241,6 @@ public:
       */
 	virtual ~ReceiverCapture();
 
-	/** \brief Process the command line arguments related to the capture.
-	  *        Arguments are :  --minRange%f  the minimum detection range.
-	  *                         --maxRange%f the maximumDetection range.
-	  */
-	virtual void ProcessCommandLineArguments(int argc, char** argv);
-
-
 	/** \brief Start the lidar Data Projection  thread
       */
 	virtual void  Go(bool inIsThreaded = false); 
@@ -275,23 +268,37 @@ public:
       * \return float indicating the minimum distance.
       */
 	virtual float GetMinDistance() {return minDistance;};
-
+#if 0
 	/** \brief Return the maxiimum distance for detection
       * \return float indicating the maximimum distance.
       */
 	virtual float GetMaxDistance() {return maxDistance;};
+#endif
+	/** \brief Return the maxiimum distance for detection
+      * \param[in] channelIndex index of the channel for which we want the maximum distance
+      * \return float indicating the maximimum distance.
+      */
+	virtual float GetMaxDistance(int channelIndex);
 
 	/** \brief Return the minimum distance for detection
       * \param[in] inMinDistance the new minimum distance
       * \return float indicating the minimum distance.
       */
 	virtual float SetMinDistance(float inMinDistance);
-
+#if 0
 	/** \brief Return the maxiimum distance for detection
       * \param[in] inMaxDistance the new maximum distance
       * \return float indicating the maximimum distance.
       */
 	virtual float SetMaxDistance(float inMinDistance);
+#endif
+	/** \brief Set the maxiimum distance for detection
+      * \param[in] channelIndex index of the channel for which we want the maximum distance
+      * \param[in] inMaxDistance the new maximum distance
+      * \return float indicating the maximimum distance.
+	  * \note  This affects the AWLSettings::channelsConfig[channelIndex].maxDistance
+      */
+	virtual float SetMaxDistance(int channelIndex, float inMaxDistance);
 
 
 	/** \brief Return the number of receiver channels used for video projection
@@ -703,18 +710,21 @@ protected:
 	  *        This is determined at run-time on the Go() call.
 	*/
 	bool bIsThreaded;
-
 	/** \brief Minimum distance for objects.  All messages with distance < minDistance are eliminated.
 		\default 3.0;
 	*/
 
 	float minDistance;
+#if 0
 
 	/** \brief Maximum distance for objects.  All messages with distance > maxDistance are eliminated.
 		\default 50.0
 	*/
 
 	float maxDistance;
+#else
+	QList<float> maxDistances;
+#endif
 
 	/** \brief Time at the start of thread
 	 * \remark Initialized on object creation and evertytime the Go() method is called.

@@ -39,6 +39,22 @@ namespace awl
 	}
 	AlgorithmParameters;
 
+	typedef struct ChannelConfig 
+	{
+		int channelIndex;
+		float fovX;
+		float fovY;
+		float centerX;
+		float centerY;
+		float maxRange;
+		QString sMaskName;
+		QString sFrameName;
+		uint8_t displayColorRed;
+		uint8_t displayColorGreen;
+		uint8_t displayColorBlue;
+	}
+	ChannelConfig;
+
 
 	typedef enum {
 		eVelocityUnitsMS = 0,
@@ -107,7 +123,9 @@ public:
 
 	QString sAlgoNames[ALGO_QTY+1];
 
-
+	// Channel Configurations
+	QList<ChannelConfig> channelsConfig;
+	
 	// Default displayedAlgo
 	int defaultAlgo;
 

@@ -75,14 +75,14 @@ ReceiverChannel::ReceiverChannel(	const int inChannelID, const float inFovX, con
 void ReceiverChannel::AddDistancesToCloud()
 {
 	float minDistance = receiverCapture->GetMinDistance();
-	float maxDistance = receiverCapture->GetMaxDistance();
+	float maxDistance = receiverCapture->GetMaxDistance(channelID);
 
 	if (channelID < receiverCapture->GetChannelQty())
 	{
 		if (receiverCapture->GetFrameQty()) 
 		{
 	
-			ChannelFrame::Ptr channelFrame(new ChannelFrame(this->channelID));
+			ChannelFrame::Ptr channelFrame(new ChannelFrame(channelID));
 
 			// Thread safe
 

@@ -422,7 +422,7 @@ void ReceiverBareMetalCapture::ParseChannelDistance(AWLBareMessage &inMsg)
 		distance += sensorDepth;
 
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
 	    detection->distance = distance;

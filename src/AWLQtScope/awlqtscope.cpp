@@ -214,7 +214,7 @@ void AWLQtScope::updateCurveDataRaw()
 			{
 				Detection::Ptr detection = channelFrame->detections.at(i);
 				if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
-					(detection->distance <= d_receiverCapture->GetMaxDistance())) 
+					(detection->distance <= d_receiverCapture->GetMaxDistance(channelID))) 
 				{
 					// Replace the new point to the end, with detected value
 					const QPointF distancePoint(elapsed,  detection->distance);

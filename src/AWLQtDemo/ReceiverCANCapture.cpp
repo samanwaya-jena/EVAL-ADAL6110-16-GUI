@@ -95,8 +95,6 @@ void ReceiverCANCapture::ProcessCommandLineArguments(int argc, char** argv)
             sCommPort = argv[i] + commPortOpt.length();
         }
     }
-
-	ReceiverCapture::ProcessCommandLineArguments(argc, argv);
 }
 
 
@@ -639,7 +637,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		float frameDelay  =  1.0/AWLSettings::GetGlobalSettings()->receiverFrameRate;
 		currentFrame->channelFrames[channel]->timeStamp = (currentFrame->frameID  *  frameDelay);  // How many frames since start of unit
 #endif
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 
 		int detectionIndex = 0+detectOffset;
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
@@ -662,7 +660,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance += sensorDepth;
 
 
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 		detectionIndex = 1+detectOffset;
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
@@ -679,7 +677,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 		distance += sensorDepth;
 
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 		detectionIndex = 2+detectOffset;
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
@@ -696,7 +694,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 		distance += sensorDepth;
 
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 		detectionIndex = 3+detectOffset;
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		

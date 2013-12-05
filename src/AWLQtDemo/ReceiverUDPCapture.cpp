@@ -336,7 +336,7 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 
 
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 
 		int detectionIndex = 0+detectOffset;
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
@@ -354,7 +354,7 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		distance += sensorDepth;
 
 
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 		detectionIndex = 1+detectOffset;
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
@@ -371,7 +371,7 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 		distance += sensorDepth;
 
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 		detectionIndex = 2+detectOffset;
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		
@@ -388,7 +388,7 @@ void ReceiverCANCapture::ProcessChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 		distance += sensorDepth;
 
-		if (distance < minDistance  || distance > maxDistance) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
 		detectionIndex = 3+detectOffset;
 		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
 		

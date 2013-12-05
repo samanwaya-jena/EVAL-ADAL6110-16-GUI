@@ -239,7 +239,7 @@ void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 				if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, currentReceiverSubscriberID)) 
 				{
 					float minDistance = receiverCapture->GetMinDistance();
-					float maxDistance = receiverCapture->GetMaxDistance();
+					float maxDistance = receiverCapture->GetMaxDistance(channelID);
 
 					Detection::ThreatLevel maxThreatLevel = Detection::eThreatNone;
 					Detection::Ptr selectedDetection;
