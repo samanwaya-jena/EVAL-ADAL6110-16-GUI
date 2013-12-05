@@ -166,6 +166,11 @@ bool AWLSettings::ReadSettings()
 	bDisplay2DWindow = settings.value("display2DWindow").toBool();
 	bDisplayScopeWindow = settings.value("displayScopeWindow").toBool();
 	bDisplayCameraWindow = settings.value("displayCameraWindow").toBool();
+
+	bDisplayScopeDistance = settings.value("displayScopeDistance").toBool();
+	bDisplayScopeVelocity = settings.value("displayScopeVelocity").toBool();
+
+	velocityUnits = (VelocityUnits) settings.value("velocityUnits").toInt();
 	settings.endGroup();
 
 	settings.beginGroup("calibration");

@@ -995,6 +995,8 @@ void AWLQtDemo::DisplayReceiverStatus()
 void AWLQtDemo::PrepareTableViews()
 
 {
+	bool bDisplayVelocityKmh = AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsKMH;
+
 	QTableWidget *tableWidgets[channelQty];
 
 	tableWidgets[0] = ui.distanceTable1;
@@ -1007,6 +1009,17 @@ void AWLQtDemo::PrepareTableViews()
 
 	for (int sensor = 0; sensor < channelQty; sensor++) 
 	{
+		// Adjust the velocity title to display units
+		if (bDisplayVelocityKmh) 
+		{
+		tableWidgets[sensor]->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("Vel km/h");
+		}
+		else
+		{
+		tableWidgets[sensor]->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("Vel m/s");
+		}
+
+		// Create the table items
 		for (int row = 0; row < tableWidgets[sensor]->rowCount(); row++) 
 		{
 			for (int column = 0; column < tableWidgets[sensor]->columnCount(); column++)
@@ -1585,6 +1598,7 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable,  TrackI
 	QString threatStr;
 	QColor  threatBackgroundColor;
 	QColor  threatTextColor(Qt::white);
+	QColor  threatEmptyColor(0x60, 0x60, 0x60);
 
 	if (detectionID >= pTable->rowCount()) return;
 
@@ -1595,7 +1609,7 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable,  TrackI
 		velocityStr.sprintf("");
 		intensityStr.sprintf("");
 		threatStr.sprintf("");
-		threatBackgroundColor = Qt::darkGray;
+		threatBackgroundColor = threatEmptyColor;
 	}
 	else
 	{
@@ -1613,7 +1627,14 @@ void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable,  TrackI
 
 		if (!isNAN(velocity)) 
 		{
-			velocityStr.sprintf("%.1f", velocity);
+			if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS)
+			{
+			velocityStr.sprintf("%.1f", velocity);  // Display velocity in m/s
+			}
+			else
+			{
+			velocityStr.sprintf("%.1f", VelocityToKmH(velocity));  // Display velocity in km/h
+			}
 		}
 		else 
 		{

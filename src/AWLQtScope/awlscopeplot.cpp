@@ -18,6 +18,9 @@ using namespace std;
 using namespace awl;
 
 const int detectionQty = 8;
+QColor speedColor( QColor(0xFF, 0x00, 0xFF)); // Light pink
+//QColor speedColor( QColor(0x30, 0xFF, 0x30)); // Semi light green
+QColor distanceColor( QColor(255, 170, 0));  // Orange
 
 class Canvas: public QwtPlotCanvas
 {
@@ -46,9 +49,8 @@ private:
         pal.setBrush( QPalette::Window, QBrush( color ) );
 #endif
 
-        // QPalette::WindowText is used for the curve color
- //       pal.setColor( QPalette::WindowText, Qt::green );
-		pal.setColor(QPalette::WindowText, QColor(255, 173, 0));
+        // QPalette::WindowText was used for the distance curve color
+		pal.setColor(QPalette::WindowText, distanceColor);
 
         setPalette( pal );
 
@@ -89,8 +91,7 @@ void AWLScopePlot::setupInterface()
 	enableAxis(QwtPlot::xBottom, true);
 	enableAxis(QwtPlot::yLeft, true);
 	enableAxis(QwtPlot::xTop, false);
-	enableAxis(QwtPlot::yRight, false);
-
+	enableAxis(QwtPlot::yRight, true);
 
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->setPen( Qt::gray, 0.0, Qt::DotLine );
@@ -108,24 +109,107 @@ void AWLScopePlot::setupInterface()
 
     for (int i = 0; i < detectionQty; i++) 
 	{
-		QwtPlotCurve * pCurve = new QwtPlotCurve();
-		CurveData::Ptr pCurveData = new CurveData();
-#if 0
-		pCurve->setStyle( QwtPlotCurve::Lines );
-#else
-		pCurve->setStyle( QwtPlotCurve::Dots );
-#endif
-		pCurve->setPen( canvas()->palette().color( QPalette::WindowText ), 2 );
-		pCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-		pCurve->setPaintAttribute( QwtPlotCurve::ClipPolygons, false );
-//		pCurve->setPaintAttribute( QwtPlotCurve::ClipPolygons || QwtPlotCurve::FilterPoints, false );
-		pCurve->setData( pCurveData );
-		pCurve->attach( this );
+		// Distance curve
+		QwtPlotCurve * pDistanceCurve = new QwtPlotCurve();
+		CurveData::Ptr pDistanceCurveData = new CurveData();
 
-		d_curve.append(pCurve);
-		d_curveData.append(pCurveData);
+		pDistanceCurve->setStyle( QwtPlotCurve::Dots );
+
+		pDistanceCurve->setPen(distanceColor, 2 );
+		pDistanceCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+		pDistanceCurve->setPaintAttribute( QwtPlotCurve::ClipPolygons, false );
+		pDistanceCurve->setAxes(QwtPlot::xBottom, QwtPlot::yLeft);
+		pDistanceCurve->setData( pDistanceCurveData );
+		pDistanceCurve->attach( this );
+
+		d_distanceCurve.append(pDistanceCurve);
+		d_distanceCurveData.append(pDistanceCurveData);
+
+		// Velocity curve
+		QwtPlotCurve * pVelocityCurve = new QwtPlotCurve();
+		CurveData::Ptr pVelocityCurveData = new CurveData();
+
+		pVelocityCurve->setStyle( QwtPlotCurve::Dots );
+
+		pVelocityCurve->setPen( speedColor, 2 );
+		pVelocityCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+		pVelocityCurve->setPaintAttribute( QwtPlotCurve::ClipPolygons, false );
+
+		pVelocityCurve->setAxes(QwtPlot::xBottom, QwtPlot::yRight);
+		pVelocityCurve->setData( pVelocityCurveData );
+		pVelocityCurve->attach( this );
+
+		d_velocityCurve.append(pVelocityCurve);
+		d_velocityCurveData.append(pVelocityCurveData);
 		d_paintedPoints.append(0);
 	}
+
+	adjustDisplayedCurves();
+}
+
+void AWLScopePlot::adjustDisplayedCurves()
+
+{
+	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+	// y Scale for velocities
+	float maxVelocity =  settings->maxVelocity2D;
+	if (settings->velocityUnits != eVelocityUnitsMS)
+		maxVelocity = VelocityToKmH(maxVelocity);
+
+	QwtPlot::Axis distanceAxis = QwtPlot::yLeft;
+	QwtPlot::Axis velocityAxis = QwtPlot::yRight;
+	bool leftAxisVisible = true;
+	bool rightAxisVisible = true;
+
+	if (settings->bDisplayScopeDistance && settings->bDisplayScopeVelocity)
+	{
+		leftAxisVisible = true;
+		rightAxisVisible = true;
+		distanceAxis = QwtPlot::yLeft;
+		velocityAxis = QwtPlot::yRight;
+	}
+	else if (settings->bDisplayScopeDistance)
+	{
+		leftAxisVisible = true;
+		rightAxisVisible = false;
+		distanceAxis = QwtPlot::yLeft;
+		velocityAxis = QwtPlot::yRight;
+	}
+	else if (settings->bDisplayScopeVelocity)
+	{
+		leftAxisVisible = true;
+		rightAxisVisible = false;
+		distanceAxis = QwtPlot::yRight;
+		velocityAxis = QwtPlot::yLeft;
+	}
+	else
+	{
+		leftAxisVisible = false;
+		rightAxisVisible = false;
+		distanceAxis = QwtPlot::yLeft;
+		velocityAxis = QwtPlot::yRight;
+	}
+
+	for (int curveIndex = 0; curveIndex < d_distanceCurve.size(); curveIndex++)
+	{
+		d_distanceCurve.at(curveIndex)->setVisible(settings->bDisplayScopeDistance);
+		d_distanceCurve.at(curveIndex)->setAxes(QwtPlot::xBottom, distanceAxis);
+	}
+		
+	// Y Scale for distances
+	setAxisScale(distanceAxis, 0, settings->displayedRangeMax);
+	
+	for (int curveIndex = 0; curveIndex < d_velocityCurve.size(); curveIndex++)
+	{
+		d_velocityCurve.at(curveIndex)->setVisible(settings->bDisplayScopeVelocity);
+		d_velocityCurve.at(curveIndex)->setAxes(QwtPlot::xBottom, velocityAxis);
+	}
+		
+	// Y Scale for velocities
+	setAxisScale(velocityAxis, -maxVelocity, maxVelocity);
+
+	enableAxis(QwtPlot::yLeft, leftAxisVisible);
+	enableAxis(QwtPlot::yRight,rightAxisVisible);
 }
 
 
@@ -141,19 +225,31 @@ void AWLScopePlot::start(ReceiverCapture::Ptr inReceiverCapture, int inChannelID
 
 void AWLScopePlot::replot()
 {
-	for (int i = 0; i < d_curve.size(); i++) 
+	for (int i = 0; i < d_distanceCurve.size(); i++) 
 	{
-		getCurveData(i)->values().lock();
+		getDistanceCurveData(i)->values().lock();
 	}
 
-    QwtPlot::replot();
-
-
-	for (int i = 0; i < d_curve.size(); i++) 
+	for (int i = 0; i < d_velocityCurve.size(); i++) 
 	{
-		d_paintedPoints[i] = getCurveData(i)->size();
-		getCurveData(i)->values().unlock();
+		getVelocityCurveData(i)->values().lock();
 	}
+
+
+	QwtPlot::replot();
+
+
+	for (int i = 0; i < d_distanceCurve.size(); i++) 
+	{
+		d_paintedPoints[i] = getDistanceCurveData(i)->size();
+		getDistanceCurveData(i)->values().unlock();
+	}
+
+	for (int i = 0; i < d_velocityCurve.size(); i++) 
+	{
+		getVelocityCurveData(i)->values().unlock();
+	}
+
 }
 
 void AWLScopePlot::setIntervalLength( double interval )
@@ -189,9 +285,9 @@ bool AWLScopePlot::doTimeUpdate()
 
 void AWLScopePlot::updateCurve()
 {
-	for (int i = 0; i < d_curve.size(); i++)
+	for (int i = 0; i < d_distanceCurve.size(); i++)
 	{
-		CurveData *data = getCurveData(i);
+		CurveData *data = getDistanceCurveData(i);
 		data->values().lock();
 
 		const int numPoints = data->size();
@@ -207,8 +303,8 @@ void AWLScopePlot::updateCurve()
 				to an unaccelerated frame buffer device.
 				*/
 
-				const QwtScaleMap xMap = canvasMap( d_curve[i]->xAxis() );
-				const QwtScaleMap yMap = canvasMap( d_curve[i]->yAxis() );
+				const QwtScaleMap xMap = canvasMap( d_distanceCurve[i]->xAxis() );
+				const QwtScaleMap yMap = canvasMap( d_distanceCurve[i]->yAxis() );
 
 				QRectF br = qwtBoundingRect( *data,
 					d_paintedPoints[i]  - 1, numPoints - 1 );
@@ -217,8 +313,13 @@ void AWLScopePlot::updateCurve()
 				d_directPainter->setClipRegion( clipRect );
 			}
 
-			d_directPainter->drawSeries( d_curve[i],
+			d_directPainter->drawSeries( d_distanceCurve[i],
 				d_paintedPoints[i] - 1, numPoints - 1 );
+
+			d_directPainter->drawSeries( d_velocityCurve[i],
+				d_paintedPoints[i] - 1, numPoints - 1 );
+
+
 			d_paintedPoints[i] = numPoints;
 		}
 
@@ -238,22 +339,20 @@ void AWLScopePlot::incrementInterval()
     d_interval = QwtInterval( minValue, maxValue);
 
 
-    for (int i = 0; i < d_curveData.size(); i++) 
+    for (int i = 0; i < d_distanceCurveData.size(); i++) 
 	{
-		CurveData *data = getCurveData(i);
+		CurveData *data = getDistanceCurveData(i);
 		data->values().clearStaleValues( d_interval.minValue() );
 	}
 
-
+    for (int i = 0; i < d_velocityCurveData.size(); i++) 
+	{
+		CurveData *data = getVelocityCurveData(i);
+		data->values().clearStaleValues( d_interval.minValue() );
+	}
 
     setAxisScale( QwtPlot::xBottom, d_interval.minValue(), d_interval.maxValue());
-
-#if 0
-    d_origin->setValue( d_interval.minValue() + d_interval.width() / 2.0, 0.0 );
-#endif
-
     replot();
-
 }
 
 void AWLScopePlot::resizeEvent( QResizeEvent *event )
@@ -272,100 +371,75 @@ bool AWLScopePlot::eventFilter( QObject *object, QEvent *event )
     if ( object == canvas() && 
         event->type() == QEvent::PaletteChange )
     {
-		for (int i = 0; i < d_curve.size(); i++) 
+		for (int i = 0; i < d_distanceCurve.size(); i++) 
 		{
-			d_curve[i]->setPen( canvas()->palette().color( QPalette::WindowText ) );
+			d_distanceCurve[i]->setPen( distanceColor );
+		}
+
+		for (int i = 0; i < d_velocityCurve.size(); i++) 
+		{
+			d_velocityCurve[i]->setPen( speedColor );
 		}
     }
 
     return QwtPlot::eventFilter( object, event );
 }
 
-void AWLScopePlot::updateCurveDataRaw()
+
+QwtPlotCurve::CurveStyle AWLScopePlot::getDistanceCurveStyle()
 
 {
-	if (!d_receiverCapture->GetFrameQty()) return;   // No frame yet produced
-
-	boost::mutex::scoped_lock updateLock( d_receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
-	
-	// Get the pointer to the acquisitionSequence
-	AcquisitionSequence::Ptr acquisitionSequence = d_receiverCapture->acquisitionSequence;
-
-	// Determine which frames need to be updated
-	int startFrame = acquisitionSequence->FindFrameIndex(d_lastFrameID)+1;
-	// If the first frame was flushed, use the first in the row.
-	if (startFrame == -1) startFrame = 0;
-	int lastFrame = d_receiverCapture->GetFrameQty()-1;
-	d_lastFrameID = d_receiverCapture->GetLastFrameID();  // Mark the last frame for posterity
-
-	// Add the data from all the new frames to the scope
-	for (int frameIndex = startFrame; frameIndex <= lastFrame; frameIndex++) 
+	if (d_distanceCurve.size())
 	{
-		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(frameIndex);
-
-		// Get the frame time
-		// Note that elapsed in in millisec and our curves expect seconds.
-		double elapsed = sensorFrame->timeStamp;
-		elapsed /= 1000;
-
-		int channelID = d_channelID;
-		if (channelID < sensorFrame->channelFrames.size())
-		{
-			ChannelFrame::Ptr channelFrame = sensorFrame->channelFrames.at(channelID);
-
-			// Thread safe
-			int detectionQty = channelFrame->detections.size();
-			int detectionIndex = 0;
-			int maxDetections = d_curveData[channelID]->size();
-
-			for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
-			{
-				Detection::Ptr detection = channelFrame->detections.at(i);
-				if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
-					(detection->distance <= d_receiverCapture->GetMaxDistance())) 
-				{
-					// Replace the new point to the end, with detected value
-					const QPointF s(elapsed,  detection->distance);
-					d_curveData[detectionIndex++]->addValue(s);
-				} 
-			} // For i;
-
-			// Add empty values to the remaining empty tracks
-			for  (int i = detectionIndex; i < maxDetections; i++) 
-			{
-				const QPointF s(elapsed, 0.0);
-				d_curveData[i]->addValue(s);
-			} // For i;
-		
-		} // if channelID
-	} // For frameIndex
-
-	updateLock.unlock();
-}
-
-QwtPlotCurve::CurveStyle AWLScopePlot::getCurveStyle()
-
-{
-	if (d_curve.size())
-	{
-		return(d_curve[0]->style());
+		return(d_distanceCurve[0]->style());
 	}
 	else
 	{
 		return( QwtPlotCurve::Lines);
 	}
-
 }
 
-QwtPlotCurve::CurveStyle AWLScopePlot::setCurveStyle(QwtPlotCurve::CurveStyle inCurveStyle)
+QwtPlotCurve::CurveStyle AWLScopePlot::setDistanceCurveStyle(QwtPlotCurve::CurveStyle inCurveStyle)
 {
 	for (int i = 0; i < detectionQty; i++) 
 	{
-		QwtPlotCurve * pCurve = d_curve[i];
-		pCurve->setStyle( inCurveStyle );
+		 d_distanceCurve[i]->setStyle( inCurveStyle );
 	}
 
 	return(inCurveStyle);
 }
 
-	
+
+QwtPlotCurve::CurveStyle AWLScopePlot::getVelocityCurveStyle()
+
+{
+	if (d_velocityCurve.size())
+	{
+		return(d_velocityCurve[0]->style());
+	}
+	else
+	{
+		return( QwtPlotCurve::Lines);
+	}
+}
+
+QwtPlotCurve::CurveStyle AWLScopePlot::setVelocityCurveStyle(QwtPlotCurve::CurveStyle inCurveStyle)
+{
+	for (int i = 0; i < detectionQty; i++) 
+	{
+		 d_velocityCurve[i]->setStyle( inCurveStyle );
+	}
+
+	return(inCurveStyle);
+}
+
+#if 0
+QwtPlotCurve::SetDistanceVisible(bool bVisible)
+
+{
+}
+
+QwtPlotCurve::SetVelocityVisible(bool bVisible)
+{
+}
+#endif

@@ -241,6 +241,7 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelIndex, detectionIndex);
 				detection->channelID = channelIndex;
 				detection->distance = track->distance;
+
 				detection->intensity = 0; //TBD
 				detection->velocity = track->velocity;
 				detection->acceleration = track->acceleration;

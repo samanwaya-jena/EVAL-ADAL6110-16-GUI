@@ -379,26 +379,37 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 	}
 
 
-	QColor backColor;
-	
+
+	QString velocityLabel = " m/s";
+	float distanceDisplayed = 0;0;
+	float velocityDisplayed = velocityMin;
+
 	if (measureMode == eMeasureRadial)
+		distanceDisplayed = distanceMin;
+	else
+		distanceDisplayed = distanceLongitudinalMin;
+
+	if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS) 
 	{
-		if (colorCode == eColorCodeVelocity)
-			backColor = getColorFromVelocity(velocityMin);
-		else
-			backColor = getColorFromDistance((distanceMin +  distanceMax)/2);
+		velocityLabel = " m/s";
+		velocityDisplayed = velocityMin;
 	}
 	else
 	{
-		if (colorCode == eColorCodeVelocity)
-			backColor = getColorFromVelocity(velocityMin);
-		else		
-			backColor = getColorFromDistance((distanceLongitudinalMin +  distanceLongitudinalMax)/2);
+		velocityLabel = " km/h";
+		velocityDisplayed = VelocityToKmH(velocityMin);
 	}
+
+
+	QColor backColor;
+	
+	if (colorCode == eColorCodeVelocity)
+		backColor = getColorFromVelocity(velocityMin);
+	else
+		backColor = getColorFromDistance(distanceDisplayed);
 
 	QColor pencolor = backColor.darker(180);
     p->setPen(pencolor);
-
 
 	// Draw the legend and target, according to the flags
 	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
@@ -408,15 +419,8 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 	{
 		QString textToDisplay;
 
+		textToDisplay = "Dist: " + QString::number(distanceDisplayed, 'f', 1)+" m | Vel: "+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
 
-		if (measureMode == eMeasureRadial)
-		{
-			textToDisplay = QString("Dist: " + QString::number(distanceMin, 'f', 1)+" m | Vel: "+ QString::number(velocityMin, 'f', 1)+ "m/s");
-		}
-		else
-		{
-			textToDisplay = QString("Dist: "  + QString::number(distanceLongitudinalMin, 'f', 1)+" m | Vel: "+ QString::number(velocityMin, 'f', 1)+ "m/s");
-		}
 
 		if (backColor.lightness() < 128) 
 			pencolor = Qt::white;
@@ -490,31 +494,32 @@ void FOV_2DScan::drawDetection(QPainter* p, DetectionData *detection, float angl
 	QColor penColor = Qt::black;
 	QString textToDisplay;
 
+	float distanceToDisplay;
+	float velocityToDisplay;
+	QString velocityLabel;
+
 	if (measureMode == eMeasureRadial)
-	{	
-#if 0
-		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceRadial, 'f', 1)+" m";
-#else
-		textToDisplay = "Dist: " + QString::number(distanceRadial, 'f', 1)+" m | Vel: "+ QString::number(detection->velocity, 'f', 1)+ "m/s";;
-#endif
-		if (colorCode == eColorCodeVelocity)
-			backColor = getColorFromVelocity(detection->velocity);
-		else
-			backColor = getColorFromDistance(distanceRadial);
+		distanceToDisplay = distanceRadial;
+	else
+		distanceToDisplay = distanceFromBumper;
+
+	if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS)
+	{
+		velocityToDisplay = detection->velocity;
+		velocityLabel = " m/s";
 	}
 	else
 	{
-#if 0
-		textToDisplay = QString("Ch.") + QString::number(channel) + " : " + QString::number(distanceFromBumper, 'f', 1)+" m";
-#else
-		textToDisplay = "Dist: " + QString::number(distanceFromBumper, 'f', 1)+" m | Vel: "+ QString::number(detection->velocity, 'f', 1)+ "m/s";
-#endif
-		if (colorCode == eColorCodeVelocity)
-			backColor = getColorFromVelocity(detection->velocity);
-		else
-			backColor = getColorFromDistance(distanceFromBumper);
+		velocityToDisplay = VelocityToKmH(detection->velocity);
+		velocityLabel = " km/h";
 	}
-	
+
+	textToDisplay = "Dist: " + QString::number(distanceToDisplay, 'f', 1)+" m | Vel: "+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
+
+	if (colorCode == eColorCodeVelocity)
+		backColor = getColorFromVelocity(detection->velocity);
+	else
+		backColor = getColorFromDistance(distanceToDisplay);
 	if (backColor.lightness() < 128) penColor = Qt::white;
 
 	// JYD; Real distance  is the radial distance, plus bumper offset.
@@ -758,10 +763,10 @@ void FOV_2DScan::drawPalette(QPainter* p)
 	}
 	else
 	{
-		text = QString::number(maxAbsVelocity, 'f',  1)+ " m/s";
+		text = QString::number(VelocityToKmH(maxAbsVelocity), 'f',  1)+ " km/h";
 		QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
  
-		p->drawText(QPoint(5, height()*0.1 + rect.height()), "0 m/s");
+		p->drawText(QPoint(5, height()*0.1 + rect.height()), "0 km/h");
 		p->drawText(QPoint(5, height()-5), text);
 	}
 }
