@@ -40,6 +40,15 @@ namespace awl
 	AlgorithmParameters;
 
 
+	typedef enum {
+		eVelocityUnitsMS = 0,
+		eVelocityUnitsKMH = 1
+	}
+	VelocityUnits;
+
+	
+#define VelocityToKmH(velocity) (velocity * 3.6)
+
 #define ALGO_QTY 3
 #define GLOBAL_PARAMETERS_INDEX 0
 
@@ -107,6 +116,11 @@ public:
 	bool bDisplay2DWindow;
 	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
+
+	bool bDisplayScopeDistance;
+	bool bDisplayScopeVelocity;
+
+	VelocityUnits velocityUnits; 
 
 	// Demo mode
 	bool bEnableDemo;

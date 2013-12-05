@@ -35,12 +35,20 @@ public:
 
     virtual bool eventFilter( QObject *, QEvent * );
 
-	CurveData::Vector * getCurveData() {return(&d_curveData);};
-	CurveData::Ptr getCurveData(int i) {return(d_curveData[i]);};
+	// Adjust display of curves depending on settings
+	void adjustDisplayedCurves();
 
-	QwtPlotCurve::CurveStyle getCurveStyle();
-	QwtPlotCurve::CurveStyle setCurveStyle(QwtPlotCurve::CurveStyle inCurveStyle);
+	CurveData::Vector * getDistanceCurveData() {return(&d_distanceCurveData);};
+	CurveData::Ptr getDistanceCurveData(int i) {return(d_distanceCurveData[i]);};
 
+	CurveData::Vector * getVelocityCurveData() {return(&d_velocityCurveData);};
+	CurveData::Ptr getVelocityCurveData(int i) {return(d_velocityCurveData[i]);};
+
+	QwtPlotCurve::CurveStyle getDistanceCurveStyle();
+	QwtPlotCurve::CurveStyle setDistanceCurveStyle(QwtPlotCurve::CurveStyle inCurveStyle);
+
+	QwtPlotCurve::CurveStyle getVelocityCurveStyle();
+	QwtPlotCurve::CurveStyle setVelocityCurveStyle(QwtPlotCurve::CurveStyle inCurveStyle);
 
 	bool doTimeUpdate();
 
@@ -58,11 +66,14 @@ private:
 
 	void updateCurve();
     void incrementInterval();
-	void updateCurveDataRaw();
 
     QwtPlotMarker *d_origin;
-    CurveVector d_curve;
-	CurveData::Vector d_curveData;
+    CurveVector d_distanceCurve;
+	CurveData::Vector d_distanceCurveData;
+
+    CurveVector d_velocityCurve;
+	CurveData::Vector d_velocityCurveData;
+
     QVector<int> d_paintedPoints;
 
     QwtPlotDirectPainter *d_directPainter;
@@ -75,7 +86,6 @@ private:
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	Subscription::SubscriberID d_currentReceiverCaptureSubscriberID;
-
 };
 
 #endif
