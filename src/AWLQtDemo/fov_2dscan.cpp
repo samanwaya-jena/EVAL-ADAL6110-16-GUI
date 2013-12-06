@@ -10,9 +10,12 @@ using namespace awl;
 #define PI 3.1416
 
 const int transitionLightness= 160;  // Lightness at which we start to write in ligther shade
-const QColor rgbRuler(63, 63, 63, 127); // Transparent black
-const QColor rgbBumper(63, 63, 63, 196); // Transparent black
+const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
+const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
+const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
 
+const float carWidth = 1.78;	// Car width in meters
+const float laneWidth = 3.7;	// Lane width
 
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
@@ -302,15 +305,24 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
 	// Draw rect at center with width of car and depth equal to sensorDepth
 	// Sensor depth is a negative offset from bumper!
-	float carWidth = 1.78;	// Car width in meters
 	int carWidthScreen = (int) (carWidth * Ratio); // Car width in displayUnits. 
 												   // Always should be an odd number to be spread equally across center
 	if (!carWidthScreen & 0x01) carWidthScreen++;
 
 	int centerX = width() / 2;
 
-	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+config.sensorDepth*Ratio, carWidthScreen, -config.sensorDepth*Ratio));
+	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+(config.sensorDepth*Ratio), carWidthScreen, -config.sensorDepth*Ratio));
 
+	// Draw lane markings
+
+	QPen lanePen(rgbLaneMarkings);
+	lanePen.setStyle(Qt::DashLine);
+	lanePen.setWidth(2);
+	painter.setPen(lanePen);
+	int laneWidthScreen = (int) (laneWidth * Ratio); // Car width in displayUnits. 
+
+	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), height()-((config.longRangeDistance-config.sensorDepth)*Ratio));
+	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), height()-((config.longRangeDistance-config.sensorDepth)*Ratio));
 
     if (ShowPalette)
         drawPalette(&painter);

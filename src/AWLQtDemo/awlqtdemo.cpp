@@ -883,15 +883,18 @@ void AWLQtDemo::on_timerTimeout()
 
 void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 {
+	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 
 	// Use the frame snapped by the main display timer as the current frame
 	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
 	DetectionDataVect vect;
 	DetectionData detect;
+
 	float currentAngle = 0;
 
 	for (int channelID = 0; channelID < channelQty; channelID++) 
 	{
+#if 0
 		switch(channelID)
 		{
 		case 0: currentAngle = -15; break;
@@ -903,7 +906,9 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 		case 6: currentAngle = 4.6; break;
 		default: currentAngle = 0.0; break;
 		}
-
+#else
+		currentAngle = settings->channelsConfig[channelID].centerX;
+#endif
 		if (channelID < receiverCapture->GetChannelQty())
 		{
 			if (receiverCapture->GetFrameQty()) 

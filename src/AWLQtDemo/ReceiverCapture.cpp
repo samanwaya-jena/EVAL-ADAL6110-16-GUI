@@ -597,7 +597,7 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 		if (track->IsComplete()) 
 		{
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
-			LogFilePrintf(logFile, " ;Track;%d; ; ; ;Expected;%.2f;%.1f;Val;%.2f; ;%.1f;%.1f;%.2f;%.1f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;",
+			LogFilePrintf(logFile, " ;Track;%d; ; ; ;Expected;%.2f;%.1f;Val;%.2f; ;%.1f;%.1f;%.3f;%.1f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;",
 				track->trackID,
 				AWLSettings::GetGlobalSettings()->targetHintDistance,
 				AWLSettings::GetGlobalSettings()->targetHintAngle,
@@ -635,7 +635,7 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 		while (detectionIterator != channelFrame->detections.end()) 
 		{
 			Detection::Ptr detection = *detectionIterator;
-			LogFilePrintf(logFile, " ;Dist;;Channel;%d;%d;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.2f;%.1f;%.2f;%.1f;%.0f;%d",
+			LogFilePrintf(logFile, " ;Dist;;Channel;%d;%d;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.2f;%.1f;%.3f;%.1f;%.0f;%d",
 			detection->channelID, 
 			detection->detectionID,
 			AWLSettings::GetGlobalSettings()->targetHintDistance,
