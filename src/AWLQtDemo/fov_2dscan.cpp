@@ -10,7 +10,8 @@ using namespace awl;
 #define PI 3.1416
 
 const int transitionLightness= 160;  // Lightness at which we start to write in ligther shade
-const QRgb rgbRuler(qRgba(63, 63, 63, 127)); // Transparent black
+const QColor rgbRuler(63, 63, 63, 127); // Transparent black
+const QColor rgbBumper(63, 63, 63, 196); // Transparent black
 
 
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
@@ -220,11 +221,14 @@ void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
     config = *pConfig;
     Ratio = 1;
 
-    Ratio = (height()-(height()*0.1)) / config.longRangeDistance;
+	// All distances reported are relative to bumper
+	double totalDistance = config.longRangeDistance-config.sensorDepth;
+
+    Ratio = (height()-(height()*0.1)) / totalDistance;
 
     float angleInRad = degree_to_rad((pConfig->shortRangeAngle/2)+180);
 
-    QPoint start(0, (pConfig->longRangeDistance*Ratio));
+    QPoint start(0, (totalDistance*Ratio));
     QPoint temp;
 
     temp = start;
@@ -237,7 +241,8 @@ void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
 
 void FOV_2DScan::resizeEvent(QResizeEvent * event)
 {
-	Ratio = (height()-(height()*0.1)) / config.longRangeDistance;
+	double totalDistance = config.longRangeDistance-config.sensorDepth;
+	Ratio = (height()-(height()*0.1)) / totalDistance;
 }
 
 void FOV_2DScan::paintEvent(QPaintEvent *)
@@ -245,20 +250,6 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
     QPainter painter(this);
     painter.fillRect(0,0,width(),height(),QBrush(Qt::white));
-
-	//Draw bumper line
-	painter.setBrush(QBrush(Qt::darkGray));
-
-	// Draw rect at center with width of car and depth equal to sensorDepth
-	// Sensor depth is a negative offset from bumper!
-	float carWidth = 1.78;	// Car width in meters
-	int carWidthScreen = (int) (carWidth * Ratio); // Car width in displayUnits. 
-												   // Always should be an odd number to be spread equally across center
-	if (!carWidthScreen & 0x01) carWidthScreen++;
-
-	int centerX = width() / 2;
-
-	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+config.sensorDepth*Ratio, carWidthScreen, -config.sensorDepth*Ratio));
 
 	// Draw sensor FOVs
 	painter.setPen(Qt::NoPen);
@@ -283,21 +274,43 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 		QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
 		painter.setBrush(QBrush(channelColor));
 		float startAngle = channelConfig.centerX - (channelConfig.fovX/2);
-		// Angles in drawPie are counter clockwise, our config is clockwise 
-		drawPie(&painter, -startAngle, -channelConfig.fovX, channelConfig.maxRange);
+		// Angles in drawPie are counter clockwise, our config is clockwise. 
+		// All distances are relative to bumper, subtract the sensor depth  
+		drawPie(&painter, -startAngle, -channelConfig.fovX, channelConfig.maxRange-config.sensorDepth);
 	}
 #endif
     //Angular Ruler
     painter.setPen(QPen(rgbRuler));
 
     for (int i = config.longRangeDistance; i > 0; i-=5)
-        drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
+	{
+		// All distances are relative to bumper, subtract the sensor depth  
+        drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i-config.sensorDepth);
+	}
 
     painter.setPen(QPen(rgbRuler));
     for (int i = config.shortRangeAngle; i >= 0; i-=5)
-        drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
+	{
+        drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance-config.sensorDepth);
+	}
 
     drawAngularRuler(&painter);
+
+	//Paint Draw bumper area
+	painter.setBrush(QBrush(rgbBumper));
+	painter.setPen(Qt::NoPen);
+
+	// Draw rect at center with width of car and depth equal to sensorDepth
+	// Sensor depth is a negative offset from bumper!
+	float carWidth = 1.78;	// Car width in meters
+	int carWidthScreen = (int) (carWidth * Ratio); // Car width in displayUnits. 
+												   // Always should be an odd number to be spread equally across center
+	if (!carWidthScreen & 0x01) carWidthScreen++;
+
+	int centerX = width() / 2;
+
+	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+config.sensorDepth*Ratio, carWidthScreen, -config.sensorDepth*Ratio));
+
 
     if (ShowPalette)
         drawPalette(&painter);
@@ -467,8 +480,8 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 		float angleMinInRad = degree_to_rad(angleMin+180);
 		float angleMaxInRad = degree_to_rad(angleMax+180);
 
-		QPoint bottomLeft(0, (distanceMin*Ratio));
-		QPoint topRight(0, (distanceMax*Ratio));
+		QPoint bottomLeft(0, (distanceLongitudinalMin*Ratio));
+		QPoint topRight(0, (distanceLongitudinalMax*Ratio));
 		QPoint temp;
 
 		temp = bottomLeft;
@@ -505,10 +518,14 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
     p->setPen(QPen(Qt::red));
-    drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, config.longRangeDistance+(5.0/Ratio));
+	double pos = config.longRangeDistance-config.sensorDepth;
+
+    drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
     for (int i = config.shortRangeAngle; i >= 0; i-=5)
     {
-        drawLine(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(5.0/Ratio), (10.0/Ratio));
+        drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
+
+		// drawText removes the sensorDepthAlready. 
         drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", Qt::red);
     }
 }
@@ -650,7 +667,10 @@ void FOV_2DScan::drawTextDetection(QPainter* p, DetectionData *detection, float 
 
 void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
 {
-    float angleInRad = degree_to_rad(angle+180);
+	float angleInRad = degree_to_rad(angle+180);
+	// Real position of object, from sensor on  the grid is postion + bumperOffset.
+	// the sensorDepth was added at the moment of capture, so we have to remove it here.
+	pos -= config.sensorDepth;
 
     QPoint start(0, (pos*Ratio));
     QPoint temp;

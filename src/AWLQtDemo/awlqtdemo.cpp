@@ -614,7 +614,6 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	}
 #endif
 
-
 }
 
 void AWLQtDemo::ChangeRangeMax(int channelID, double range)
