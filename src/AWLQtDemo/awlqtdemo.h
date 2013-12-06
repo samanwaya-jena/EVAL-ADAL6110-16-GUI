@@ -74,7 +74,13 @@ private slots:
 	void on_sensorHeightSpin_editingFinished();
 	void on_sensorDepthSpin_editingFinished();
 	void on_calibrationRangeMinSpin_editingFinished();
-	void on_calibrationRangeMaxSpin_editingFinished();
+	void on_calibrationRangeMax0Spin_editingFinished();	
+	void on_calibrationRangeMax1Spin_editingFinished();
+	void on_calibrationRangeMax2Spin_editingFinished();
+	void on_calibrationRangeMax3Spin_editingFinished();
+	void on_calibrationRangeMax4Spin_editingFinished();
+	void on_calibrationRangeMax5Spin_editingFinished();
+	void on_calibrationRangeMax6Spin_editingFinished();
 	void on_measurementOffsetSpin_editingFinished();
 	void on_decimationSpin_editingFinished();
 	void on_pixelSizeSpin_editingFinished();
@@ -144,6 +150,8 @@ protected:
 	void FillGPIOList(AWLSettings *settingsPtr);
 
 	void UpdateGPIOList();
+
+	void AWLQtDemo::ChangeRangeMax(int channelID, double range);
 
 private:
 	Ui::AWLQtDemoClass ui;

@@ -57,6 +57,16 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	FillADCList(globalSettings);
 	FillGPIOList(globalSettings);
 
+	int channelQty = globalSettings->channelsConfig.size();
+	long absoluteMaxRange = 0.0;
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	{
+		if (globalSettings->channelsConfig[channelIndex].maxRange > absoluteMaxRange)
+			absoluteMaxRange = globalSettings->channelsConfig[channelIndex].maxRange;
+	}
+	AWLSettings::GetGlobalSettings()->displayedRangeMax = absoluteMaxRange;
+	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
+
 
 	// Position the widget on the bottonm left corner
 	QRect scr = QApplication::desktop()->screenGeometry();
@@ -98,22 +108,23 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Add the channels to the projector
 	ReceiverChannel::Ptr channelPtr;
 
-	// Short-range sensors
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(0, (float) DEG2RAD(9.0), (float) DEG2RAD(9.0), (float) DEG2RAD(-15.0), (float) DEG2RAD(-7.8), (float) 10.0, "ChannelMask1.bmp", "ChannelFrame1.bmp", false, 128.0/255.0, 192.0/255.0, 128.0/255.0)));
+	for (int channelID = 0; channelID < globalSettings->channelsConfig.size(); channelID++)
+	{
+		ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(channelID,
+			DEG2RAD(globalSettings->channelsConfig[channelID].fovX),
+			DEG2RAD(globalSettings->channelsConfig[channelID].fovY),
+			DEG2RAD(globalSettings->channelsConfig[channelID].centerX),
+			DEG2RAD(globalSettings->channelsConfig[channelID].centerY),
+			globalSettings->channelsConfig[channelID].maxRange,
+			globalSettings->channelsConfig[channelID].sMaskName.toStdString().c_str(),
+			globalSettings->channelsConfig[channelID].sFrameName.toStdString().c_str(),
+			false,
+			globalSettings->channelsConfig[channelID].displayColorRed / 255.0,
+			globalSettings->channelsConfig[channelID].displayColorGreen / 255.0,
+			globalSettings->channelsConfig[channelID].displayColorBlue / 255.0));
 
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(1, (float) DEG2RAD(9.0), (float) DEG2RAD(9.0), (float) DEG2RAD(-5.0), (float) DEG2RAD(-7.8), (float) 10.0, "ChannelMask2.bmp", "ChannelFrame2.bmp", false, 128.0/255.0, 192.0/255.0, 128.0/255.0)));
-
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(2, (float) DEG2RAD(9.0), (float) DEG2RAD(9.0), (float) DEG2RAD(5.0), (float) DEG2RAD(-7.8), (float) 10.0, "ChannelMask3.bmp", "ChannelFrame3.bmp", false, 128.0/255.0, 192.0/255.0, 128.0/255.0)));
-
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(3, (float) DEG2RAD(9.0), (float) DEG2RAD(9.0), (float) DEG2RAD(15.0), (float) DEG2RAD(-7.8), (float) 10.0,"ChannelMask4.bmp", "ChannelFrame4.bmp", false, 128.0/255.0, 192.0/255.0, 128.0/255.0)));
-
-		// Long-Range sensors
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(4, (float) DEG2RAD(4.3), (float) DEG2RAD(4.3), (float) DEG2RAD(-4.6), (float) DEG2RAD(-2.15), (float) 30.0,  "ChannelMask5.bmp", "ChannelFrame5.bmp", false, 143.0/255.0, 163.0/255.0, 190.0/255.0)));
-
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(5, (float) DEG2RAD(4.3), (float) DEG2RAD(4.3), (float) DEG2RAD(0.0), (float) DEG2RAD(-2.15), (float) 30.0, "ChannelMask6.bmp", "ChannelFrame6.bmp", false, 143.0/255.0, 163.0/255.0, 190.0/255.0)));
-
-	channelPtr = receiver->AddChannel(ReceiverChannel::Ptr(new ReceiverChannel(6, (float) DEG2RAD(4.3), (float) DEG2RAD(4.3), (float) DEG2RAD(4.6), (float) DEG2RAD(-2.15), (float) 30.0, "ChannelMask7.bmp", "ChannelFrame7.bmp", false, 143.0/255.0, 163.0/255.0, 190.0/255.0)));
-
+		channelPtr = receiver->AddChannel(receiverChannel);
+	}
 
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
@@ -130,10 +141,17 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.sensorDepthSpinBox->setValue(globalSettings->sensorDepth);
 	ui.measurementOffsetSpinBox->setValue(globalSettings->rangeOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->displayedRangeMin);
-	ui.sensorRangeMaxSpinBox->setValue(globalSettings->displayedRangeMax);
+
+	ui.sensorRangeMax0SpinBox->setValue(globalSettings->channelsConfig[0].maxRange);
+	ui.sensorRangeMax1SpinBox->setValue(globalSettings->channelsConfig[1].maxRange);
+	ui.sensorRangeMax2SpinBox->setValue(globalSettings->channelsConfig[2].maxRange);
+	ui.sensorRangeMax3SpinBox->setValue(globalSettings->channelsConfig[3].maxRange);
+	ui.sensorRangeMax4SpinBox->setValue(globalSettings->channelsConfig[4].maxRange);
+	ui.sensorRangeMax5SpinBox->setValue(globalSettings->channelsConfig[5].maxRange);
+	ui.sensorRangeMax6SpinBox->setValue(globalSettings->channelsConfig[6].maxRange);
+
 	ui.targetHintDistanceSpinBox->setValue(globalSettings->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(globalSettings->targetHintAngle);
-
 
 	ui.pixelSizeSpinBox->setValue(globalSettings->pixelSize);	
 	ui.decimationSpinBox->setValue(globalSettings->decimation);
@@ -519,15 +537,22 @@ void AWLQtDemo::on_pixelSizeSpin_editingFinished()
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	double height = ui.sensorHeightSpinBox->value();
+	if (abs(height-AWLSettings::GetGlobalSettings()->sensorHeight) < 0.001) return;
+	AWLSettings::GetGlobalSettings()->sensorHeight = height;
+
+	// Wait Cursor
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+
+	// Process
+	if (receiver) 
+	{	
+		receiver->SetSensorHeight(height);
+	}
 
 	if (fusedCloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1)
-		{
-		
-			fusedCloudViewer->viewers[0]->SetSensorHeight(height);
-
-		}
+		fusedCloudViewer->SetSensorHeight(height);
 	}
 
 	if (m2DScan && !m2DScan->isHidden())
@@ -536,13 +561,27 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
 
-	AWLSettings::GetGlobalSettings()->sensorHeight = height;
+	// Restore the wait cursor
+	setCursor(Qt::ArrowCursor);
 }
 
 
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	double depth = ui.sensorDepthSpinBox->value();
+	if (abs(depth-AWLSettings::GetGlobalSettings()->sensorDepth) < 0.001) return;
+	AWLSettings::GetGlobalSettings()->sensorDepth = depth;
+
+	// Wait Cursor
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+
+	// Process
+
+	if (receiver) 
+	{	
+		receiver->SetSensorDepth(depth);
+	}
 
 	if (receiverCapture) 
 	{
@@ -551,11 +590,7 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 	if (fusedCloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1)
-		{
-		
-			fusedCloudViewer->viewers[0]->SetSensorDepth(depth);
-		}
+		fusedCloudViewer->SetSensorDepth(depth);
 	}
 
 	if (m2DScan && !m2DScan->isHidden())
@@ -564,12 +599,14 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
 
-	AWLSettings::GetGlobalSettings()->sensorDepth = depth;
+	// Restore the wait cursor
+	setCursor(Qt::ArrowCursor);
 }
 
 void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 {
 	double range = ui.sensorRangeMinSpinBox->value();
+	AWLSettings::GetGlobalSettings()->displayedRangeMin = range;
 #if 1
 	if (receiverCapture) 
 	{
@@ -577,61 +614,115 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	}
 #endif
 
-#if 0 // There is no range min in the fusedCloudViewer
-	if (fusedCloudViewer) 
-	{
-		if (fusedCloudViewer->viewers.size() >= 1)
-		{
-		
-			fusedCloudViewer->viewers[0]->SetSensorDepth(range);
-		}
-	}
-#endif
 
-#if 0 // There is no rangeMin used in the 2D window
-	
-	if (m2DScan && !m2DScan->isHidden())
-	{
-	    mCfgSensor.sensorDepth = depth;
-		m2DScan->slotConfigChanged(&mCfgSensor);
-	}
-#endif
-
-	AWLSettings::GetGlobalSettings()->displayedRangeMin = range;
 }
 
-void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
+void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 {
-	double range = ui.sensorRangeMaxSpinBox->value();
+	// Wait Cursor
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+
+
+	// Update the settings
+	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+	settings->channelsConfig[channelID].maxRange = range;
+
+	// Calculate the absolute max distance from the settings
+	int channelQty = settings->channelsConfig.size();
+	long absoluteMaxRange = 0.0;
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	{
+		if (settings->channelsConfig[channelIndex].maxRange > absoluteMaxRange)
+			absoluteMaxRange = settings->channelsConfig[channelIndex].maxRange;
+	}
+
+	AWLSettings::GetGlobalSettings()->displayedRangeMax = absoluteMaxRange;
+	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
+
+	// Update user interface parts
+	if (receiver) 
+	{
+		ReceiverChannel::Ptr receiverChannel = receiver->GetChannel(channelID);
+		receiverChannel->SetRangeMax(range);
+	}
 
 	if (receiverCapture) 
 	{
-		int channelQty = AWLSettings::GetGlobalSettings()->channelsConfig.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
-		{
-			receiverCapture->SetMaxDistance(channelID, range);
-			AWLSettings::GetGlobalSettings()->channelsConfig[channelID].maxRange = range;
-		}
+		receiverCapture->SetMaxDistance(channelID, range);
 	}
 
 	if (fusedCloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1)
-		{
-		
-			fusedCloudViewer->viewers[0]->SetRangeMax(range);
-		}
+		fusedCloudViewer->SetRangeMax(absoluteMaxRange);	
 	}
 
 	
 	if (m2DScan && !m2DScan->isHidden())
 	{
-	    mCfgSensor.longRangeDistance = range;
+
+	    mCfgSensor.longRangeDistance = absoluteMaxRange;
 		m2DScan->slotConfigChanged(&mCfgSensor);
 	}
 
-	AWLSettings::GetGlobalSettings()->displayedRangeMax = range;
-	AWLSettings::GetGlobalSettings()->longRangeDistance = range;
+	// Restore the wait cursor
+	setCursor(Qt::ArrowCursor);
+}
+
+void AWLQtDemo::on_calibrationRangeMax0Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax0SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[0].maxRange) < 0.001) return;
+
+	ChangeRangeMax(0, range);
+}
+
+void AWLQtDemo::on_calibrationRangeMax1Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax1SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[1].maxRange) < 0.001) return;
+
+	ChangeRangeMax(1, range);
+}
+
+void AWLQtDemo::on_calibrationRangeMax2Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax2SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[2].maxRange) < 0.001) return;
+
+	ChangeRangeMax(2, range);
+}
+
+void AWLQtDemo::on_calibrationRangeMax3Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax3SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[3].maxRange) < 0.001) return;
+
+	ChangeRangeMax(3, range);
+}
+
+void AWLQtDemo::on_calibrationRangeMax4Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax4SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[4].maxRange) < 0.001) return;
+
+	ChangeRangeMax(4, range);
+}
+
+void AWLQtDemo::on_calibrationRangeMax5Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax5SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[5].maxRange) < 0.001) return;
+
+	ChangeRangeMax(5, range);
+}
+
+void AWLQtDemo::on_calibrationRangeMax6Spin_editingFinished()
+{
+	double range = ui.sensorRangeMax6SpinBox->value();
+	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[6].maxRange) < 0.001) return;
+
+	ChangeRangeMax(6, range);
 }
 
 
@@ -795,7 +886,6 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 {
 
 	// Use the frame snapped by the main display timer as the current frame
-	// display will «
 	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
 	DetectionDataVect vect;
 	DetectionData detect;

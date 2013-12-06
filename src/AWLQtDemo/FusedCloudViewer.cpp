@@ -612,34 +612,37 @@ void  FusedCloudViewer::SetSensorHeight(double inSensorHeight)
 {
 	if (mStopRequested) return;
 
-    mStopRequested = true;
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
 	{
 		viewers[i]->SetSensorHeight(inSensorHeight);
 	}
+	
+	DrawGrid();
 }
 
 void  FusedCloudViewer::SetSensorDepth(double inSensorDepth) 
 {
 	if (mStopRequested) return;
 
-    mStopRequested = true;
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
 	{
 		viewers[i]->SetSensorDepth(inSensorDepth);
 	}
+	
+	DrawGrid();
 }
 
 void  FusedCloudViewer::SetRangeMax(double inRangeMax) 
 {
 	if (mStopRequested) return;
 
-    mStopRequested = true;
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
 	{
-		viewers[i]->SetSensorHeight(inRangeMax);
+		viewers[i]->SetRangeMax(inRangeMax);
 	}
+
+	DrawGrid();
 }

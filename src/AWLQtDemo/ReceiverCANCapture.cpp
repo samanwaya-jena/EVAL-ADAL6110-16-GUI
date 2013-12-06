@@ -940,7 +940,8 @@ void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 {
 
 	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
-	receiverStatus.currentAlgo = registerAddress;
+	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
+	receiverStatus.currentAlgo = registerValue;
 	receiverStatus.currentAlgoPendingUpdates--;
 }
 
@@ -1545,8 +1546,8 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
     message.data[0] = 0xC0;   // Set Parameter
 	message.data[1] = 0x01; // Algo-select  
 
-	* (int16_t *) &message.data[2] = algorithmID;
-	* (int32_t *) &message.data[4] = 0L;
+	* (int16_t *) &message.data[2] = 0L; // Unused
+	* (int32_t *) &message.data[4] = algorithmID;
 
 	bool bMessageOk = WriteMessage(message);
 

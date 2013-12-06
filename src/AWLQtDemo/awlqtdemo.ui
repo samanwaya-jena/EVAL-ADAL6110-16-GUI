@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>317</height>
+    <height>314</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1233,7 +1233,7 @@ color: rgb(255,255,255);</string>
      <widget class="QGroupBox" name="internalCalibrationGroupBox">
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>600</x>
         <y>10</y>
         <width>201</width>
         <height>211</height>
@@ -1468,7 +1468,7 @@ color: rgb(255,255,255);</string>
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>371</width>
+        <width>571</width>
         <height>211</height>
        </rect>
       </property>
@@ -1480,7 +1480,7 @@ color: rgb(255,255,255);</string>
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>341</width>
+         <width>541</width>
          <height>51</height>
         </rect>
        </property>
@@ -1578,7 +1578,7 @@ color: rgb(255,255,255);</string>
         <rect>
          <x>10</x>
          <y>150</y>
-         <width>341</width>
+         <width>551</width>
          <height>51</height>
         </rect>
        </property>
@@ -1635,7 +1635,7 @@ color: rgb(255,255,255);</string>
         <rect>
          <x>10</x>
          <y>80</y>
-         <width>341</width>
+         <width>541</width>
          <height>51</height>
         </rect>
        </property>
@@ -1696,7 +1696,7 @@ color: rgb(255,255,255);</string>
          <double>0.100000000000000</double>
         </property>
        </widget>
-       <widget class="QDoubleSpinBox" name="sensorRangeMaxSpinBox">
+       <widget class="QDoubleSpinBox" name="sensorRangeMax4SpinBox">
         <property name="geometry">
          <rect>
           <x>260</x>
@@ -1725,6 +1725,174 @@ color: rgb(255,255,255);</string>
         </property>
        </widget>
       </widget>
+      <widget class="QDoubleSpinBox" name="sensorRangeMax5SpinBox">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>100</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string>m.</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="sensorRangeMax6SpinBox">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>100</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string>m.</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="sensorRangeMax0SpinBox">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>130</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string>m.</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="sensorRangeMax2SpinBox">
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>130</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string>m.</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="sensorRangeMax1SpinBox">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>130</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string>m.</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="sensorRangeMax3SpinBox">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>130</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string>m.</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="targetHintGroupBox">
       <property name="enabled">
@@ -1732,7 +1900,7 @@ color: rgb(255,255,255);</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>620</x>
+        <x>820</x>
         <y>10</y>
         <width>181</width>
         <height>111</height>
@@ -4031,9 +4199,9 @@ color: rgb(255,255,255);</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>interfaceTabs</tabstop>
   <tabstop>decimationSpinBox</tabstop>
   <tabstop>pixelSizeSpinBox</tabstop>
+  <tabstop>interfaceTabs</tabstop>
   <tabstop>colorImageRadioButton</tabstop>
   <tabstop>rangeImageRadioButton</tabstop>
   <tabstop>viewSidePushButton</tabstop>
@@ -4042,13 +4210,107 @@ color: rgb(255,255,255);</string>
   <tabstop>viewFrontPushButton</tabstop>
   <tabstop>sensorHeightSpinBox</tabstop>
   <tabstop>sensorDepthSpinBox</tabstop>
+  <tabstop>sensorRangeMinSpinBox</tabstop>
+  <tabstop>sensorRangeMax0SpinBox</tabstop>
+  <tabstop>sensorRangeMax1SpinBox</tabstop>
+  <tabstop>sensorRangeMax2SpinBox</tabstop>
+  <tabstop>sensorRangeMax3SpinBox</tabstop>
+  <tabstop>sensorRangeMax4SpinBox</tabstop>
+  <tabstop>sensorRangeMax5SpinBox</tabstop>
+  <tabstop>sensorRangeMax6SpinBox</tabstop>
+  <tabstop>measurementOffsetSpinBox</tabstop>
+  <tabstop>calibrationFrameQtySpinBox</tabstop>
+  <tabstop>calibrationBetaDoubleSpinBox</tabstop>
+  <tabstop>calibrationChannel1CheckBox</tabstop>
+  <tabstop>calibrationChannel2CheckBox</tabstop>
+  <tabstop>calibrationChannel3CheckBox</tabstop>
+  <tabstop>calibrationChannel4CheckBox</tabstop>
+  <tabstop>calibrationChannel5CheckBox</tabstop>
+  <tabstop>calibrationChannel6CheckBox</tabstop>
+  <tabstop>calibrationChannel7CheckBox</tabstop>
+  <tabstop>calibrateButton</tabstop>
+  <tabstop>targetHintDistanceSpinBox</tabstop>
+  <tabstop>targetHintAngleSpinBox</tabstop>
+  <tabstop>distanceLogFileCheckbox</tabstop>
+  <tabstop>distanceTable3</tabstop>
+  <tabstop>recordButton</tabstop>
+  <tabstop>playbackButton</tabstop>
+  <tabstop>recordChannel7CheckBox</tabstop>
+  <tabstop>recordChannel6CheckBox</tabstop>
+  <tabstop>recordChannel5CheckBox</tabstop>
+  <tabstop>recordChannel2CheckBox</tabstop>
+  <tabstop>recordChannel3CheckBox</tabstop>
+  <tabstop>recordChannel1CheckBox</tabstop>
+  <tabstop>recordChannel4CheckBox</tabstop>
+  <tabstop>frameRateSpinBox</tabstop>
+  <tabstop>stopButton</tabstop>
+  <tabstop>recordFileNameEdit</tabstop>
+  <tabstop>playbackFileNameEdit</tabstop>
+  <tabstop>injectSimulatedCheckbox</tabstop>
+  <tabstop>versionEdit</tabstop>
+  <tabstop>temperatureEdit</tabstop>
+  <tabstop>voltageEdit</tabstop>
+  <tabstop>bootReceiverCheckBox</tabstop>
+  <tabstop>bootEmitter1CheckBox</tabstop>
+  <tabstop>bootAuxChecksumCheckBox</tabstop>
+  <tabstop>bootEmitter2CheckBox</tabstop>
+  <tabstop>bootMainChecksumCheckBox</tabstop>
+  <tabstop>bootMemoryCheckBox</tabstop>
+  <tabstop>bootDSPCheckBox</tabstop>
+  <tabstop>bootChecksumCheckBox</tabstop>
+  <tabstop>statusSelfTestCheckBox</tabstop>
+  <tabstop>statusShutdownCheckBox</tabstop>
+  <tabstop>statusSensorBlockedCheckBox</tabstop>
+  <tabstop>statusReducedPerformanceCheckBox</tabstop>
+  <tabstop>statusSaturationCheckBox</tabstop>
+  <tabstop>statusSaturationCheckBox_2</tabstop>
+  <tabstop>statusSensorBlockedCheckBox_2</tabstop>
+  <tabstop>statusShutdownCheckBox_2</tabstop>
+  <tabstop>statusReducedPerformanceCheckBox_2</tabstop>
+  <tabstop>statusSelfTestCheckBox_2</tabstop>
+  <tabstop>hardwareReceiverCheckBox</tabstop>
+  <tabstop>hardwareEmitter1CheckBox</tabstop>
+  <tabstop>hardwareEmitter2CheckBox</tabstop>
+  <tabstop>hardwareMemoryCheckBox</tabstop>
+  <tabstop>hardwareDSPCheckBox</tabstop>
+  <tabstop>receiverChannel3CheckBox</tabstop>
+  <tabstop>receiverChannel1CheckBox</tabstop>
+  <tabstop>receiverChannel2CheckBox</tabstop>
+  <tabstop>receiverChannel5CheckBox</tabstop>
+  <tabstop>receiverChannel4CheckBox</tabstop>
+  <tabstop>receiverChannel7CheckBox</tabstop>
+  <tabstop>receiverChannel6CheckBox</tabstop>
+  <tabstop>registerFPGASetPushButton</tabstop>
+  <tabstop>registerFPGAGetPushButton</tabstop>
+  <tabstop>registerFPGAAddressSetComboBox</tabstop>
+  <tabstop>registerFPGAValueSetLineEdit</tabstop>
+  <tabstop>registerFPGAAddressGetLineEdit</tabstop>
+  <tabstop>registerFPGAValueGetLineEdit</tabstop>
+  <tabstop>registerADCSetPushButton</tabstop>
+  <tabstop>registerADCGetPushButton</tabstop>
+  <tabstop>registerADCAddressSetComboBox</tabstop>
+  <tabstop>registerADCValueSetLineEdit</tabstop>
+  <tabstop>registerADCAddressGetLineEdit</tabstop>
+  <tabstop>registerADCValueGetLineEdit</tabstop>
+  <tabstop>registerGPIOListWidget</tabstop>
+  <tabstop>registerGPIOGetPushButton</tabstop>
+  <tabstop>registerGPIOSetPushButton</tabstop>
+  <tabstop>algo1RadioButton</tabstop>
+  <tabstop>algo2RadioButton</tabstop>
+  <tabstop>algo3RadioButton</tabstop>
+  <tabstop>parametersTable</tabstop>
+  <tabstop>algoParametersSetPushButton</tabstop>
+  <tabstop>algoParametersGetPushButton</tabstop>
+  <tabstop>globalParametersTable</tabstop>
+  <tabstop>globalParametersSetPushButton</tabstop>
+  <tabstop>globalParametersGetPushButton</tabstop>
+  <tabstop>viewFrontPushButton_2</tabstop>
+  <tabstop>distanceTable4</tabstop>
   <tabstop>distanceTable5</tabstop>
   <tabstop>distanceTable6</tabstop>
-  <tabstop>distanceTable7</tabstop>
   <tabstop>distanceTable1</tabstop>
+  <tabstop>distanceTable7</tabstop>
   <tabstop>distanceTable2</tabstop>
-  <tabstop>distanceTable3</tabstop>
-  <tabstop>distanceTable4</tabstop>
  </tabstops>
  <resources>
   <include location="awlqtdemo.qrc"/>
@@ -4177,8 +4439,8 @@ color: rgb(255,255,255);</string>
      <y>121</y>
     </hint>
     <hint type="destinationlabel">
-     <x>385</x>
-     <y>296</y>
+     <x>193</x>
+     <y>310</y>
     </hint>
    </hints>
   </connection>
@@ -4193,8 +4455,8 @@ color: rgb(255,255,255);</string>
      <y>118</y>
     </hint>
     <hint type="destinationlabel">
-     <x>360</x>
-     <y>296</y>
+     <x>327</x>
+     <y>310</y>
     </hint>
    </hints>
   </connection>
@@ -4241,8 +4503,8 @@ color: rgb(255,255,255);</string>
      <y>250</y>
     </hint>
     <hint type="destinationlabel">
-     <x>358</x>
-     <y>296</y>
+     <x>297</x>
+     <y>310</y>
     </hint>
    </hints>
   </connection>
@@ -4317,12 +4579,12 @@ color: rgb(255,255,255);</string>
    <slot>on_calibratePushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>498</x>
-     <y>257</y>
+     <x>700</x>
+     <y>267</y>
     </hint>
     <hint type="destinationlabel">
-     <x>507</x>
-     <y>296</y>
+     <x>690</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -4466,7 +4728,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>117</x>
-     <y>296</y>
+     <y>298</y>
     </hint>
    </hints>
   </connection>
@@ -4551,18 +4813,18 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>sensorRangeMaxSpinBox</sender>
+   <sender>sensorRangeMax4SpinBox</sender>
    <signal>editingFinished()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
+   <slot>on_calibrationRangeMax4Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>319</x>
      <y>174</y>
     </hint>
     <hint type="destinationlabel">
-     <x>283</x>
-     <y>296</y>
+     <x>340</x>
+     <y>310</y>
     </hint>
    </hints>
   </connection>
@@ -4573,12 +4835,12 @@ color: rgb(255,255,255);</string>
    <slot>on_targetHintDistanceSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>741</x>
-     <y>102</y>
+     <x>943</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
-     <x>720</x>
-     <y>306</y>
+     <x>927</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -4589,12 +4851,12 @@ color: rgb(255,255,255);</string>
    <slot>on_targetHintAngleSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>756</x>
-     <y>134</y>
+     <x>958</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
-     <x>782</x>
-     <y>306</y>
+     <x>943</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -4605,12 +4867,108 @@ color: rgb(255,255,255);</string>
    <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>666</x>
-     <y>155</y>
+     <x>868</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
-     <x>641</x>
-     <y>310</y>
+     <x>867</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMax5SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax5Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>402</x>
+     <y>179</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>460</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMax6SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax6Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>473</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMax0SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax0Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>272</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>298</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMax1SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax1Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>481</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMax2SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax2Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>415</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMax3SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax3Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>507</x>
+     <y>208</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>520</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -4648,9 +5006,15 @@ color: rgb(255,255,255);</string>
   <slot>on_globalParametersSetPushButton_clicked()</slot>
   <slot>on_globalParametersGetPushButton_clicked()</slot>
   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
-  <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
+  <slot>on_calibrationRangeMax0Spin_editingFinished()</slot>
   <slot>on_targetHintDistanceSpin_editingFinished()</slot>
   <slot>on_targetHintAngleSpin_editingFinished()</slot>
   <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
+  <slot>on_calibrationRangeMax1Spin_editingFinished()</slot>
+  <slot>on_calibrationRangeMax2Spin_editingFinished()</slot>
+  <slot>on_calibrationRangeMax3Spin_editingFinished()</slot>
+  <slot>on_calibrationRangeMax4Spin_editingFinished()</slot>
+  <slot>on_calibrationRangeMax5Spin_editingFinished()</slot>
+  <slot>on_calibrationRangeMax6Spin_editingFinished()</slot>
  </slots>
 </ui>

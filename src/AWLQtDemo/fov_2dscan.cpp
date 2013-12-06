@@ -9,6 +9,10 @@ using namespace awl;
 
 #define PI 3.1416
 
+const int transitionLightness= 160;  // Lightness at which we start to write in ligther shade
+const QRgb rgbRuler(qRgba(63, 63, 63, 127)); // Transparent black
+
+
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
 {
@@ -245,11 +249,21 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	//Draw bumper line
 	painter.setBrush(QBrush(Qt::darkGray));
 
+	// Draw rect at center with width of car and depth equal to sensorDepth
 	// Sensor depth is a negative offset from bumper!
-	painter.drawRect(QRect(width()/3, height()+config.sensorDepth*Ratio, width()/3, -config.sensorDepth*Ratio));
+	float carWidth = 1.78;	// Car width in meters
+	int carWidthScreen = (int) (carWidth * Ratio); // Car width in displayUnits. 
+												   // Always should be an odd number to be spread equally across center
+	if (!carWidthScreen & 0x01) carWidthScreen++;
 
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(QBrush(QColor(rgblongRangeLimited)));
+	int centerX = width() / 2;
+
+	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+config.sensorDepth*Ratio, carWidthScreen, -config.sensorDepth*Ratio));
+
+	// Draw sensor FOVs
+	painter.setPen(Qt::NoPen);
+#if 0
+	painter.setBrush(QBrush(QColor(rgblongRangeLimited)));
     drawPie(&painter, -config.longRangeAngle/2, config.longRangeAngle, config.longRangeDistance);
 
     painter.setBrush(QBrush(QColor(rgblongRange)));
@@ -260,14 +274,26 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
     painter.setBrush(QBrush(QColor(rgbshortRange)));
     drawPie(&painter, -config.shortRangeAngleStartLimited/2, config.shortRangeAngleStartLimited, config.shortRangeDistanceStartLimited);
+#else
+	int channelQty = AWLSettings::GetGlobalSettings()->channelsConfig.size();
+	for (int channelID = 0; channelID < channelQty; channelID++)
+	{
+		ChannelConfig channelConfig = AWLSettings::GetGlobalSettings()->channelsConfig[channelID];
 
+		QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
+		painter.setBrush(QBrush(channelColor));
+		float startAngle = channelConfig.centerX - (channelConfig.fovX/2);
+		// Angles in drawPie are counter clockwise, our config is clockwise 
+		drawPie(&painter, -startAngle, -channelConfig.fovX, channelConfig.maxRange);
+	}
+#endif
     //Angular Ruler
-    painter.setPen(QPen(Qt::black));
+    painter.setPen(QPen(rgbRuler));
 
     for (int i = config.longRangeDistance; i > 0; i-=5)
         drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
 
-    painter.setPen(QPen(Qt::black));
+    painter.setPen(QPen(rgbRuler));
     for (int i = config.shortRangeAngle; i >= 0; i-=5)
         drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
 
@@ -422,7 +448,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 		textToDisplay = "Dist: " + QString::number(distanceDisplayed, 'f', 1)+" m | Vel: "+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
 
 
-		if (backColor.lightness() < 128) 
+		if (backColor.lightness() < transitionLightness) 
 			pencolor = Qt::white;
 		else
 			pencolor = Qt::black;
@@ -520,7 +546,7 @@ void FOV_2DScan::drawDetection(QPainter* p, DetectionData *detection, float angl
 		backColor = getColorFromVelocity(detection->velocity);
 	else
 		backColor = getColorFromDistance(distanceToDisplay);
-	if (backColor.lightness() < 128) penColor = Qt::white;
+	if (backColor.lightness() < transitionLightness) penColor = Qt::white;
 
 	// JYD; Real distance  is the radial distance, plus bumper offset.
     drawTextDetection(p, detection, angle, distanceRadial, textToDisplay, penColor,backColor, drawTarget, drawLegend);
@@ -590,7 +616,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, DetectionData *detection, float 
 	if (drawTarget)
 	{
 		// Draw the ellipse that represents the target on the scan
-		if (backgroundcolor.lightness() < 128) pencolor = backgroundcolor.lighter(180);
+		if (backgroundcolor.lightness() < transitionLightness) pencolor = backgroundcolor.lighter(180);
 		else pencolor = backgroundcolor.darker(180);
  		p->setPen(pencolor);
 		p->setBrush(backgroundcolor);
