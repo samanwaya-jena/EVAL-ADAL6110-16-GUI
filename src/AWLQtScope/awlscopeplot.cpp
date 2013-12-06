@@ -225,6 +225,22 @@ void AWLScopePlot::start(ReceiverCapture::Ptr inReceiverCapture, int inChannelID
 
 void AWLScopePlot::replot()
 {
+	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+
+	// On a replot, adjust the scles if they were alterd in the user interface
+	bool bRescale = false;
+
+	// If distance is displayed and the maxRange has changed, redo the axes
+	if (settings->bDisplayScopeDistance)
+	{
+		if (abs(settings->displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
+		{
+			bRescale = true;
+		}
+	}
+
+	if (bRescale) adjustDisplayedCurves();
+
 	for (int i = 0; i < d_distanceCurve.size(); i++) 
 	{
 		getDistanceCurveData(i)->values().lock();
@@ -234,7 +250,6 @@ void AWLScopePlot::replot()
 	{
 		getVelocityCurveData(i)->values().lock();
 	}
-
 
 	QwtPlot::replot();
 
@@ -352,6 +367,7 @@ void AWLScopePlot::incrementInterval()
 	}
 
     setAxisScale( QwtPlot::xBottom, d_interval.minValue(), d_interval.maxValue());
+
     replot();
 }
 
