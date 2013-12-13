@@ -506,6 +506,13 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 		ParseObstacleVelocity(inMsg);
 		lastMessageID = msgID;
 	}
+#if 0
+	else if (msgID == 12) 
+	{
+		ParseObstacleSize(inMsg);
+		lastMessageID = msgID;
+	}
+#endif
 	else if (msgID >= 20 && msgID <= 26) 
 	{
 		ParseChannelDistance(inMsg);
@@ -525,8 +532,10 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelIntensity(inMsg);
 		lastMessageID = msgID;
+#if 0
 		// On the last distance message, notify send the sensor frame to the application.
-		if (msgID == 56) ProcessCompletedFrame();	
+		if (msgID == 56) ProcessCompletedFrame();
+#endif
 	}
 	else if (msgID == 80) /* Command */
 	{
@@ -780,7 +789,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 	rawLock.unlock();
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Val %d %x %d %d", inMsg.id, track->channels, track->probability, track->timeToCollision);
+	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %d %x %d %d", inMsg.id, track->trackID, track->channels, track->probability, track->timeToCollision);
 }
 
 
@@ -809,7 +818,7 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 	rawLock.unlock();
 
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Val %f %f %f %f", inMsg.id, track->distance, track->velocity, track->acceleration);
+	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %f %f %f %f", inMsg.id, track->trackID, track->distance, track->velocity, track->acceleration);
 }
 
 void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
@@ -939,10 +948,19 @@ void ReceiverCANCapture::ParseParameterError(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 {
 
-	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
+	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];  // Unused
 	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
-	receiverStatus.currentAlgo = registerValue;
-	receiverStatus.currentAlgoPendingUpdates--;
+	
+	// Check that the algorithm is valid (just in case communication goes crazy)
+	if (registerValue >= 1 && registerValue <= ALGO_QTY) 
+	{
+		receiverStatus.currentAlgo = registerValue;
+		receiverStatus.currentAlgoPendingUpdates--;
+	}
+	else
+	{
+		DebugFilePrintf(debugFile, "Error: Algo select invalid %lx", registerValue); 
+	}
 }
 
 void ReceiverCANCapture::ParseParameterAlgoParameterResponse(AWLCANMessage &inMsg)
