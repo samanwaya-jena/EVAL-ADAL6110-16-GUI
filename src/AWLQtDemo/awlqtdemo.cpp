@@ -33,11 +33,11 @@ using namespace pcl;
 
 
 // Frame rate, in frame per seconds
-#define FRAME_RATE	33.0
+#define FRAME_RATE	20.0
 
 // Text update rate, in frame per seconds
-#if 0
-#define LOOP_RATE	30
+#if 1
+#define LOOP_RATE	20	
 #else
 #define LOOP_RATE	20
 #endif
@@ -68,10 +68,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 
 
-	// Position the widget on the bottonm left corner
-	QRect scr = QApplication::desktop()->screenGeometry();
-	int bottom = scr.bottom() - (this->frameSize().height())-10;
-	move(scr.left(), bottom); 
+	// Position the main widget on the bottom left corner
+	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
+	show();
+//	int topCornerX = scr.bottom() - (this->frameSize().height());
+	int topCornerX = scr.top();
+	move(scr.left(), topCornerX); 
+
 
 	// In demo mode, put demo mode in window title
 	if (globalSettings->bEnableDemo)
@@ -229,6 +232,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	m2DScan = new FOV_2DScan();
 	m2DScan->setWindowTitle(this->windowTitle());
 
+	// Place the 2D view in the screen
+#if 1
+	int frameWindowWidth = 712;
+	m2DScan->move(scr.right()-frameWindowWidth, scr.top());
+	m2DScan->show();
+	QRect frame = m2DScan->frameGeometry();
+	QRect client = m2DScan->geometry();
+	int verticalDecorationsHeight = frame.height() - client.height();
+	int horizontalDecorationsWidth = frame.width() - client.width();
+	m2DScan->resize(frameWindowWidth-horizontalDecorationsWidth, scr.height() - verticalDecorationsHeight);
+#endif
+
 	mCfgSensor.shortRangeDistance = globalSettings->shortRangeDistance;
     mCfgSensor.shortRangeDistanceStartLimited = globalSettings->shortRangeDistanceStartLimited;
     mCfgSensor.shortRangeAngle = globalSettings->shortRangeAngle;
@@ -290,24 +305,46 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	if (globalSettings->bDisplayCameraWindow)
 	{
 		ui.actionCamera->toggle();
+		// Position the video viewer.
+		// This has to be done agfter the Go(), to make sure the window is created
+//		videoViewer->move(scr.left(), scr.top()); 
+		videoViewer->move(scr.left(), scr.top()+95); 
 	}
 
-	if (globalSettings->defaultAlgo == 1)
+	switch (globalSettings->defaultAlgo)
 	{
+	case 1: 
+		{
 		ui.algo1RadioButton->setChecked(true);
-	}
-	else if (globalSettings->defaultAlgo == 2)
-	{
+		}
+		break;
+
+	case 2: 
+		{
 		ui.algo2RadioButton->setChecked(true);
-	}
-	else if (globalSettings->defaultAlgo == 3)
-	{
+		}
+		break;
+
+	case 3: 
+		{
+		ui.algo3RadioButton->setChecked(true);
+		}
+		break;
+
+	case 4: 
+		{
+		ui.algo4RadioButton->setChecked(true);
+		}
+		break;
+
+	default: 
+		{
 		ui.algo2RadioButton->setChecked(true);
+		}
+		break;
+
 	}
-	else  // Default
-	{
-		ui.algo2RadioButton->setChecked(true);
-	}
+
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
@@ -1157,6 +1194,13 @@ void AWLQtDemo::on_algo3RadioButton_setChecked(bool bChecked)
 }
 
 
+void AWLQtDemo::on_algo4RadioButton_setChecked(bool bChecked)
+{
+	if (!bChecked) return;
+
+	receiverCapture->SetAlgorithm(4);
+	PrepareParametersView();
+}
 
 void AWLQtDemo::PrepareParametersView()
 

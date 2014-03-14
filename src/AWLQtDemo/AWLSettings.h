@@ -65,7 +65,7 @@ namespace awl
 	
 #define VelocityToKmH(velocity) (velocity * 3.6)
 
-#define ALGO_QTY 3
+#define ALGO_QTY 4
 #define GLOBAL_PARAMETERS_INDEX 0
 
 class AWLSettings

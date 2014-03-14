@@ -242,7 +242,7 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->channelID = channelIndex;
 				detection->distance = track->distance;
 
-				detection->intensity = 0; //TBD
+				detection->intensity = track->intensity; 
 				detection->velocity = track->velocity;
 				detection->acceleration = track->acceleration;
 				detection->probability = track->probability;
@@ -543,7 +543,9 @@ firstTimeStamp(0.0),
 trackID(inTrackID),
 threatLevel(Detection::eThreatNone),
 part1Entered(false),
-part2Entered(false)
+part2Entered(false),
+part3Entered(false),
+part4Entered(false)
 
 {
 	channels = 0;
