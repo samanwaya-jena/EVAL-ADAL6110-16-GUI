@@ -105,7 +105,7 @@ public:
 	/** \brief distance, in meters */
 	float distance;
 
-	/** \brief intensity ratio (0-1 on twelve bits) */
+	/** \brief intensity ratio exprtessed as SNR */
 	float intensity;
 
 	/** \brief Velocity, in m/s */
@@ -157,7 +157,7 @@ public:
 	bool Contains(int channelID);
 
 	// A track is built from 2 message sections.  Make sure both parts are entered before a track is completed.
-	bool IsComplete() { return (part1Entered && part2Entered); };
+	bool IsComplete() { return (part1Entered && part2Entered && part3Entered && part4Entered); };
 
 public:
 	/** \brief Track ID. */
@@ -179,8 +179,10 @@ public:
 	float decelerationToStop;
 
 	/** \brief Track Positive detection probability estimate */
-
 	float probability;
+
+	/** \bried Track relative intensity, expressed as SNR */
+	float intensity;
 
 	/** \brief Timestamp, in frames */
 	float timeStamp;
@@ -196,10 +198,12 @@ public:
 
 	Detection::Vector detections; 
 
-	// A track is built from 2 message sections.  Make sure both parts are entered before a track is completed.
+	// A track is built from up to 4 message sections (in CAN).  Make sure both parts are entered before a track is completed.
 
 	bool part1Entered;
 	bool part2Entered;
+	bool part3Entered;
+	bool part4Entered;
 protected:
 };
 

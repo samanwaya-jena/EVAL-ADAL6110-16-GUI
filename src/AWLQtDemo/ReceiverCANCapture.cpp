@@ -35,6 +35,8 @@ const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh ra
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
+#define ConvertIntensityToSNR(v) (((v)/2.0) - 21.0)
+
 ReceiverCANCapture::ReceiverCANCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, int argc, char** argv):
 ReceiverCapture(inSequenceID, inReceiverChannelQty, inDetectionsPerChannel),
 port(NULL),
@@ -506,13 +508,16 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 		ParseObstacleVelocity(inMsg);
 		lastMessageID = msgID;
 	}
-#if 0
 	else if (msgID == 12) 
 	{
 		ParseObstacleSize(inMsg);
 		lastMessageID = msgID;
 	}
-#endif
+	else if (msgID == 13) 
+	{
+		ParseObstacleAngularPosition(inMsg);
+		lastMessageID = msgID;
+	}
 	else if (msgID >= 20 && msgID <= 26) 
 	{
 		ParseChannelDistance(inMsg);
@@ -742,28 +747,28 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	float intensity = ((float) intensityPtr[0]) / maxIntensity;
 	int detectionIndex = 0+detectOffset;
 	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-	detection->intensity = intensity;
+	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[1]) / maxIntensity;
 	detectionIndex = 1+detectOffset;
 	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-	detection->intensity = intensity;
+	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[2]) / maxIntensity;
 	detectionIndex = 2+detectOffset;
 	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-	detection->intensity = intensity;
+	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[3]) / maxIntensity;
 	detectionIndex = 3+detectOffset;
 	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-	detection->intensity = intensity;
+	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 	rawLock.unlock();
@@ -820,6 +825,52 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 	// Debug and Log messages
 	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %f %f %f %f", inMsg.id, track->trackID, track->distance, track->velocity, track->acceleration);
 }
+
+
+void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
+
+{
+	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
+	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
+
+	uint16_t height  = (*(uint16_t *) &inMsg.data[2]);
+	uint16_t width = (*(uint16_t *) &inMsg.data[4]);
+	uint16_t intensity = (*(uint16_t *) &inMsg.data[6]);
+
+	track->intensity = ConvertIntensityToSNR(intensity);
+
+	track->part3Entered = true;
+
+	rawLock.unlock();
+
+	// Debug and Log messages
+	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %u %u %u", inMsg.id, track->trackID, intensity, height, width);
+}
+
+void ReceiverCANCapture::ParseObstacleAngularPosition(AWLCANMessage &inMsg)
+
+{
+	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+
+	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
+	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
+
+	uint16_t startAngle  = (*(uint16_t *) &inMsg.data[2]);
+	uint16_t endAngle = (*(uint16_t *) &inMsg.data[4]);
+	uint16_t angularVelocity = (*(uint16_t *) &inMsg.data[6]);
+
+
+	// Nothing done with this message yet, just log that we have received it.
+	track->part4Entered = true;
+
+	rawLock.unlock();
+
+	// Debug and Log messages
+	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %u %u %u", inMsg.id, track->trackID, startAngle, endAngle, angularVelocity);
+}
+
 
 void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
 {
@@ -1556,6 +1607,7 @@ bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelM
 
 bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 {
+
 	AWLCANMessage message;
 	
 	message.id = 80;       // Message id: 80- Command message
@@ -1566,7 +1618,9 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 
 	* (int16_t *) &message.data[2] = 0L; // Unused
 	* (int32_t *) &message.data[4] = algorithmID;
-
+#if 1
+	bool bMessageOk = false;
+#else
 	bool bMessageOk = WriteMessage(message);
 
 	// Signal that we are waiting for an update of the register settings.
@@ -1583,7 +1637,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 	     message.data[0] = 0xC2; // Parameter Response 
 	     ParseParameterAlgoSelectResponse(message);
    }
-
+#endif
    return(bMessageOk);
 }
 

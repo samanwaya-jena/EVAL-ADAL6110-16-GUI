@@ -1123,6 +1123,9 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 			track->acceleration = 0;
 			track->part1Entered = true;
 			track->part2Entered = true;
+			track->part3Entered = true;
+			track->part4Entered = true;
+
 			track->probability = 99;
 			track->timeStamp = elapsed;
 			track->firstTimeStamp = elapsed;
@@ -1142,6 +1145,8 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 				track->acceleration = 0;
 				track->part1Entered = true;
 				track->part2Entered = true;
+				track->part3Entered = true;
+				track->part4Entered = true;
 				track->probability = 99;
 				track->timeStamp = elapsed;
 				track->firstTimeStamp = elapsed;
