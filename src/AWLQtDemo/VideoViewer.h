@@ -142,6 +142,11 @@ public:
       */
 	void VideoViewer::DoThreadIteration();
 
+	/** \brief Move the window at position left, top.
+	  * \remarks implemented for compatibility  with Qt.
+      */
+	void move(int left, int top); 
+
 protected:
 	/** \brief Perform the video display thread loop
       */

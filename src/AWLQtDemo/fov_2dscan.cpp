@@ -31,10 +31,19 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	maxAbsVelocity = globalSettings->maxVelocity2D;
 	zeroVelocity = globalSettings->zeroVelocity;
 
-	// Position the widget on the top left corner
-	QRect scr = QApplication::desktop()->screenGeometry();
-	move(scr.left(), scr.top()+5); 
-
+	// Position the widget on the top right side
+	setMinimumSize(480,480);
+	
+#if 0
+	int frameWindowWidth = 716;
+	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
+	move(scr.right()-frameWindowWidth, scr.top());
+	QRect frame = frameGeometry();
+	QRect client = geometry();
+	int verticalDecorationsHeight = frame.height() - client.height();
+	int horizontalDecorationsWidth = frame.width() - client.width();
+//	resize(frameWindowWidth-horizontalDecorationsWidth, scr.height() - verticalDecorationsHeight);
+#endif
     rgblongRangeLimited = qRgba(188,205,203,127);
     rgblongRange = qRgba(58,126,209,127);
     rgbshortRangeLimited = qRgba(184,220,175,127);
@@ -44,9 +53,7 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));
 
 	createAction();
-	
 
-    setMinimumSize(480,480);
 }
 
 void FOV_2DScan::createAction()

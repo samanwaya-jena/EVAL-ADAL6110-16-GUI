@@ -569,7 +569,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
@@ -3487,6 +3487,18 @@ color: rgb(255,255,255);</string>
         <height>211</height>
        </rect>
       </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>1</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="title">
        <string>Algorithm parameters</string>
       </property>
@@ -3496,7 +3508,7 @@ color: rgb(255,255,255);</string>
          <x>20</x>
          <y>20</y>
          <width>121</width>
-         <height>91</height>
+         <height>111</height>
         </rect>
        </property>
        <property name="title">
@@ -3542,6 +3554,19 @@ color: rgb(255,255,255);</string>
         </property>
         <property name="text">
          <string>Double D</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="algo4RadioButton">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>70</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>RMS Conv</string>
         </property>
        </widget>
       </widget>

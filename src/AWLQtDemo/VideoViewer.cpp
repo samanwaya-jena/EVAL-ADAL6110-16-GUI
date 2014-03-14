@@ -83,7 +83,7 @@ void VideoViewer::SetReceiverProjector(ReceiverProjector::Ptr inProjector)
 }
 
 void  VideoViewer::Go() 
-{
+{	
 	if (!(mThread && mThread->joinable()))
 	{
 
@@ -93,10 +93,10 @@ void  VideoViewer::Go()
 			cvNamedWindow(cameraName.c_str(), 1 );
 			bWindowCreated = true;
 #if 0
-		// Place the window in the top right corner
+		// Place the window in the top left corner
 		top = 0;
-		left = 
-		cvMoveWindow(cameraName.c_str(),top, left)
+		left = 0;
+		cvMoveWindow(cameraName.c_str(),left, top)
 #endif
 		}
 
@@ -109,6 +109,12 @@ void  VideoViewer::Go()
 	}
 }
  
+
+void VideoViewer::move(int left, int top)
+{
+	cvMoveWindow(cameraName.c_str(), left, top);
+}
+
 
 void  VideoViewer::Stop() 
 {
