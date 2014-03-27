@@ -789,5 +789,14 @@
     <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100d.dll">
       <Filter>Installable DLLs</Filter>
     </None>
+    <None Include="Aerostar-logo.jpg">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="AWLQtDemo-US.ico">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="AerostarIndustry-logo.jpg">
+      <Filter>Installable Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

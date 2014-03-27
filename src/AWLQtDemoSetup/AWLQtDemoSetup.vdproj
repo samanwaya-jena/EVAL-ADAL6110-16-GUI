@@ -31,6 +31,12 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_60CD924D563A4B07A857E78889EEABA6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -58,10 +64,10 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0"
                     {
-                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    "Name" = "8:Microsoft .NET Framework 4 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
                     {
@@ -124,6 +130,14 @@
         {
             "LaunchCondition"
             {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_FBC49CC589044611BD7AC855A4BD3098"
+                {
+                "Name" = "8:.NET Framework"
+                "Message" = "8:[VSDNETMSG]"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.0"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=131000"
+                }
             }
         }
         "File"
@@ -256,7 +270,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Aerostar AWLQtDemo"
         "ProductCode" = "8:{B31B59F4-3C34-4B65-98D3-02828BF04CC1}"
-        "PackageCode" = "8:{A3904188-EA16-47FF-98BA-B5C553A1300F}"
+        "PackageCode" = "8:{11BE2C1B-36B4-43A4-A015-EA2B0B8C9AAD}"
         "UpgradeCode" = "8:{6759E55C-25AE-4E89-8ABF-1AB789FB6717}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

@@ -22,7 +22,8 @@ decimation(3),
 pixelSize(1),
 colorStyle(0),
 cameraView(3),
-
+sLogoFileName(""),
+sIconFileName(""),
 sCANCommPort("COM16"),
 sCANBitRate("S8"),
 msgEnableObstacle(false),
@@ -191,6 +192,9 @@ bool AWLSettings::ReadSettings()
 	bDisplayCameraWindow = settings.value("displayCameraWindow").toBool();
 
 	velocityUnits = (VelocityUnits) settings.value("velocityUnits").toInt();
+
+	sLogoFileName = settings.value("logoFileName").toString();
+	sIconFileName = settings.value("iconFileName").toString();
 	settings.endGroup();
 
 	settings.beginGroup("calibration");

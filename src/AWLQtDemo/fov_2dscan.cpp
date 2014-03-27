@@ -1,5 +1,6 @@
 #include "fov_2dscan.h"
 #include <QPainter>
+#include <QLabel>
 #include <math.h>
 #include <QMenu>
 #include <QApplication>
@@ -17,6 +18,8 @@ const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
 const float carWidth = 1.78;	// Car width in meters
 const float laneWidth = 3.7;	// Lane width
 
+float logoAspectRatio = 1.0;
+
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
 {
@@ -33,6 +36,13 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 
 	// Position the widget on the top right side
 	setMinimumSize(480,480);
+
+	// Change the window icon if there is an override in the INI file
+	if (!globalSettings->sIconFileName.isEmpty())
+	{
+		setWindowIcon(QIcon(globalSettings->sIconFileName));
+	}
+
 	
 #if 0
 	int frameWindowWidth = 716;
@@ -53,6 +63,31 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));
 
 	createAction();
+
+	// Create a label to hold a logo, only if there is one specified in INI file.
+
+	logoLabel = new QLabel(this);
+	QPixmap *myPix = NULL;
+	if (!globalSettings->sLogoFileName.isEmpty()) 
+	{
+		myPix = new QPixmap(globalSettings->sLogoFileName);
+	}
+	
+	if (myPix && !myPix->isNull())
+	{
+		float pixWidth = myPix->width();
+		float pixHeight = myPix->height();
+		logoAspectRatio = pixWidth / pixHeight;
+		logoLabel->setPixmap(*myPix);
+	}
+	else
+	{
+		logoAspectRatio = 3.0/1.0;
+	}
+
+	if (myPix) delete myPix;
+
+	logoLabel->setScaledContents(true);
 
 }
 
@@ -253,6 +288,19 @@ void FOV_2DScan::resizeEvent(QResizeEvent * event)
 {
 	double totalDistance = config.longRangeDistance-config.sensorDepth;
 	Ratio = (height()-(height()*0.1)) / totalDistance;
+
+	int labelWidth = width() * 0.3;
+	int labelHeight = labelWidth / logoAspectRatio;
+#if 0
+	if (labelHeight >= height() *0.1)
+	{
+		labelHeight = height() *0.1;
+		labelWidth = labelHeight *3;
+	}
+#endif
+	logoLabel->resize(labelWidth, labelHeight);
+	logoLabel->move(55, height() - labelHeight);
+
 }
 
 void FOV_2DScan::paintEvent(QPaintEvent *)

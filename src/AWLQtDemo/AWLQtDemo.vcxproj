@@ -751,10 +751,21 @@
     <None Include="..\InstallableDLLs\qwtd.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Aerostar-logo.jpg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Aerostar-logoForIcon128.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="AWLQtDemo.ico" />
+    <None Include="AerostarIndustry-logo.jpg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="AWLQtDemo-US.ico">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="AWLQtDemo.ico">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="awlqtdemo.ini">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <FileType>Document</FileType>

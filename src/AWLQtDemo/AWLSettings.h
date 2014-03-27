@@ -140,6 +140,9 @@ public:
 
 	VelocityUnits velocityUnits; 
 
+	QString sLogoFileName;
+	QString sIconFileName;
+
 	// Demo mode
 	bool bEnableDemo;
 	int  demoInjectType;

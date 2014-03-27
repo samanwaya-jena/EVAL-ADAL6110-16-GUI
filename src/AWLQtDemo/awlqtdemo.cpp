@@ -68,6 +68,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 
 
+
+	// Change the window icon if there is an override in the INI file
+	if (!globalSettings->sIconFileName.isEmpty())
+	{
+		setWindowIcon(QIcon(globalSettings->sIconFileName));
+	}
+
 	// Position the main widget on the bottom left corner
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
 	show();

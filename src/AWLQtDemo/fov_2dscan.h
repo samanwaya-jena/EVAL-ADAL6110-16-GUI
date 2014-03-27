@@ -2,6 +2,7 @@
 #define FOV_2DSCAN_H
 
 #include <QFrame>
+#include <QLabel>
 #include <QPainter>
 #include <QAction>
 #include <QActionGroup>
@@ -79,6 +80,9 @@ private:
 	float mergeAcceptance;
 	float maxAbsVelocity;
 	float zeroVelocity;
+
+	// Logo
+	QLabel	*logoLabel;
 
 	//Action Item
 

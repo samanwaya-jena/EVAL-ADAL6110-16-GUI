@@ -6,6 +6,7 @@
 #include <pcl/common/common_headers.h>
 #endif
 
+#include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
 #include "Sensor.h"
@@ -20,6 +21,10 @@ using namespace std;
 using namespace awl;
 
 #define THREADED_VIEWER
+
+const char *szCameraWindowClassName = "Main HighGUI class";  // Class name for the camera windows created by OpenCV
+															// We could also use NULL, but that would pose a risk.
+
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture, ReceiverProjector::Ptr inProjector):
 workFrame(new (cv::Mat)),
@@ -98,6 +103,23 @@ void  VideoViewer::Go()
 		left = 0;
 		cvMoveWindow(cameraName.c_str(),left, top)
 #endif
+		// Set the icon for the window
+		HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
+		if (window != NULL) 
+		{
+			AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+			if (!globalSettings->sIconFileName.isEmpty())
+			{
+				HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.toStdString().c_str(), IMAGE_ICON,
+											GetSystemMetrics(SM_CXSMICON), 
+											GetSystemMetrics(SM_CYSMICON),
+											LR_LOADFROMFILE);
+
+				::SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+			}
+		}
+
+
 		}
 
 		mStopRequested = false;
@@ -174,7 +196,7 @@ void VideoViewer::DoThreadLoop()
 			// Copy to the display (we are duouble-buffering)
 			workFrame->copyTo(*displayFrame);
 
-			HWND window = ::FindWindowA(NULL, cameraName.c_str());
+			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
 
 			if (bWindowCreated) cv::imshow(cameraName, *displayFrame);
@@ -207,7 +229,7 @@ void VideoViewer::DoThreadIteration()
 
 			// Copy to the display (we are duouble-buffering)
 			workFrame->copyTo(*displayFrame);
-			HWND window = ::FindWindowA(NULL, cameraName.c_str());
+			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
 
 			if (bWindowCreated) cv::imshow(cameraName, *displayFrame);

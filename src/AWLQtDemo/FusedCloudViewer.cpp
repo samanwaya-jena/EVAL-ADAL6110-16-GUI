@@ -425,6 +425,24 @@ void FusedCloudViewer::CreateViewerView()
   vtkSmartPointer<vtkRenderWindow> window = viewerPtr->viewer->getRenderWindow ();
   window->SetPosition(0, 0);
   window->SetSize(600, 300);
+#if 1
+
+  // Set Window Icon if specified in INI file
+  AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+  if (!globalSettings->sIconFileName.isEmpty())
+  {
+	  HWND hWnd = (HWND) window->GetGenericWindowId(); // retrieve vtk window Id
+
+	  HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.toStdString().c_str(), IMAGE_ICON,
+		  GetSystemMetrics(SM_CXSMICON), 
+		  GetSystemMetrics(SM_CYSMICON),
+		  LR_LOADFROMFILE);
+
+	  ::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+  }
+
+#endif
 
 
   window->GetInteractor()->SetStillUpdateRate(interactorStillUpdateRate);
