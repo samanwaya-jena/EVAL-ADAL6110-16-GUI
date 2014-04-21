@@ -33,11 +33,11 @@ using namespace pcl;
 
 
 // Frame rate, in frame per seconds
-#define FRAME_RATE	20.0
+#define FRAME_RATE	30.0
 
 // Text update rate, in frame per seconds
 #if 1
-#define LOOP_RATE	20	
+#define LOOP_RATE	30	
 #else
 #define LOOP_RATE	20
 #endif

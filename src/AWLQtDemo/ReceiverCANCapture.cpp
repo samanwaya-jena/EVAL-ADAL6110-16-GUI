@@ -1618,9 +1618,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 
 	* (int16_t *) &message.data[2] = 0L; // Unused
 	* (int32_t *) &message.data[4] = algorithmID;
-#if 1
-	bool bMessageOk = false;
-#else
+
 	bool bMessageOk = WriteMessage(message);
 
 	// Signal that we are waiting for an update of the register settings.
@@ -1637,7 +1635,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 	     message.data[0] = 0xC2; // Parameter Response 
 	     ParseParameterAlgoSelectResponse(message);
    }
-#endif
+
    return(bMessageOk);
 }
 
