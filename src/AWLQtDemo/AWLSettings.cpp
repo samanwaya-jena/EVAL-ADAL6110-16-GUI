@@ -8,14 +8,6 @@ AWLSettings *AWLSettings::globalSettings=NULL;
 
 AWLSettings::AWLSettings():
 settings("AWLQTDemo.ini", QSettings::IniFormat),
-registersFPGA(),
-registersADC(),
-
-sensorHeight(0.0),
-sensorDepth(0.0),
-displayedRangeMin(0.0),
-displayedRangeMax(0.0),
-rangeOffset(0.0),
 targetHintDistance(0.0),
 targetHintAngle(0.0),
 decimation(3),
@@ -23,14 +15,7 @@ pixelSize(1),
 colorStyle(0),
 cameraView(3),
 sLogoFileName(""),
-sIconFileName(""),
-sCANCommPort("COM16"),
-sCANBitRate("S8"),
-msgEnableObstacle(false),
-msgEnableDistance_1_4(true),
-msgEnableDistance_5_8(true),
-msgEnableIntensity_1_4(true),
-msgEnableIntensity_5_8(true)
+sIconFileName("")
 
 {
 	cameraView = 3;
@@ -63,7 +48,7 @@ bool AWLSettings::ReadSettings()
 		registerFPGA.value = 0L;
 		registerFPGA.pendingUpdates = 0;
 		
-		registersFPGA.append(registerFPGA);
+		defaultRegistersFPGA.append(registerFPGA);
 	}
 
 	settings.endArray();
@@ -80,7 +65,7 @@ bool AWLSettings::ReadSettings()
 		registerADC.sDescription = settings.value("description").toString();
 		registerADC.value = 0L;
 		registerADC.pendingUpdates = 0;
-		registersADC.append(registerADC);
+		defaultRegistersADC.append(registerADC);
 
 	}
 	settings.endArray();
@@ -97,44 +82,10 @@ bool AWLSettings::ReadSettings()
 		registerGPIO.sDescription = settings.value("description").toString();
 		registerGPIO.value = 0L;
 		registerGPIO.pendingUpdates = 0;
-		registersGPIO.append(registerGPIO);
+		defaultRegistersGPIO.append(registerGPIO);
 
 	}
 	settings.endArray();
-	settings.endGroup();
-
-	settings.beginGroup("channelConfig");
-	size = settings.beginReadArray("channelConfig");
-	for (int i = 0; i < size; ++i) 
-	{
-		settings.setArrayIndex(i);
-		ChannelConfig channelConfig;
-		channelConfig.channelIndex = settings.value("index").toInt();
-		channelConfig.fovX = settings.value("fovX").toFloat();
-		channelConfig.fovY = settings.value("fovY").toFloat();
-		channelConfig.centerX = settings.value("centerX").toFloat();
-		channelConfig.centerY = settings.value("centerY").toFloat();
-		channelConfig.maxRange = settings.value("maxRange").toFloat();
-		channelConfig.sMaskName = settings.value("maskName").toString();
-		channelConfig.sFrameName = settings.value("frameName").toString();
-		channelConfig.displayColorRed = (uint8_t) settings.value("displayColorRed").toUInt();
-		channelConfig.displayColorGreen = (uint8_t) settings.value("displayColorGreen").toUInt();
-		channelConfig.displayColorBlue = (uint8_t) settings.value("displayColorBlue").toUInt();
-		channelsConfig.append(channelConfig);
-	}
-	settings.endArray();
-	settings.endGroup();
-
-
-	// Debug and log file control
-	settings.beginGroup("debug");
-	bWriteDebugFile = settings.value("enableDebugFile").toBool();
-	bWriteLogFile = settings.value("enableLogFile").toBool();
-	settings.endGroup();
-
-	// Default algo
-	settings.beginGroup("algos");
-	defaultAlgo = settings.value("defaultAlgo").toInt();
 	settings.endGroup();
 
 	// Load all algorithm parameters for all algorithms and for global parameters
@@ -170,13 +121,115 @@ bool AWLSettings::ReadSettings()
 			}
 
 			parameters.pendingUpdates = 0;
-			parametersAlgos[algoIndex].append(parameters);
+			defaultParametersAlgos[algoIndex].append(parameters);
 
 		}
 
 		settings.endArray();
 		settings.endGroup();
 	}
+
+
+	// Load the receiver configuration
+	settings.beginGroup("receivers");
+	size = settings.beginReadArray("receiver");
+	for (int receiverID = 0; receiverID < size; receiverID++) 
+	{
+		settings.setArrayIndex(receiverID);
+		ReceiverSettings receiver;
+
+		// Type
+		receiver.sReceiverType = settings.value("receiverType").toString();
+		receiver.receiverChannelMask = settings.value("channelMask").toUInt();
+		receiver.receiverFrameRate = settings.value("frameRate").toUInt();
+
+		// Communication parameters
+		receiver.sCommPort = settings.value("commPort").toString();
+		receiver.serialPortRate = settings.value("serialPortRate").toLongLong();
+		receiver.sCANBitRate = settings.value("bitRate").toString();
+		receiver.yearOffset = settings.value("yearOffset").toUInt();
+		receiver.monthOffset = settings.value("monthOffset").toUInt();
+
+		// Messages enabled
+		receiver.msgEnableObstacle = settings.value("msgEnableObstacle").toBool();
+		receiver.msgEnableDistance_1_4 = settings.value("msgEnableDistance_1_4").toBool();
+		receiver.msgEnableDistance_5_8 = settings.value("msgEnableDistance_5_8").toBool();
+		receiver.msgEnableIntensity_1_4 = settings.value("msgEnableIntensity_1_4").toBool();
+		receiver.msgEnableIntensity_5_8 = settings.value("msgEnableIntensity_5_8").toBool();
+
+		// Calibration
+		receiver.sensorX = settings.value("sensorX").toFloat();
+		receiver.sensorY = settings.value("sensorY").toFloat();
+		receiver.sensorZ = settings.value("sensorZ").toFloat();
+		receiver.sensorPitch = settings.value("sensorPitch").toFloat();
+		receiver.sensorRoll = settings.value("sensorRoll").toFloat();
+		receiver.sensorYaw = settings.value("sensorYaw").toFloat();
+		receiver.displayedRangeMin = settings.value("displayedRangeMin").toFloat();
+		receiver.displayedRangeMax = settings.value("displayedRangeMax").toFloat();
+		receiver.rangeOffset = settings.value("rangeOffset").toFloat();
+
+		// Copy default register, adc, GPIO and algo settings
+		receiver.registersFPGA = defaultRegistersFPGA;
+		receiver.registersADC = defaultRegistersADC;
+		receiver.registersGPIO = defaultRegistersGPIO;
+		for (int algo = 0; algo <= ALGO_QTY; algo++) 
+		{
+			receiver.parametersAlgos[algo] = defaultParametersAlgos[algo];
+		}
+
+		// Store
+		receiverSettings.append(receiver);
+		ReceiverSettings *receiverPtr = &(receiverSettings[receiverID]);
+		receiverPtr->channelsConfig.clear();
+	}
+
+	settings.endArray();
+	settings.endGroup();
+
+	// Read receiver channels for each receiver
+	for (int receiverID = 0; receiverID < receiverSettings.count(); receiverID++)
+	{
+		QString sChannelGroupName;
+		sChannelGroupName.sprintf("ReceiverChannels%02d", receiverID+1);
+
+		settings.beginGroup(sChannelGroupName);
+		size = settings.beginReadArray("channelConfig");
+		for (int channelID = 0; channelID < size; channelID++) 
+		{
+			settings.setArrayIndex(channelID);
+			ChannelConfig channelConfig;
+			channelConfig.channelIndex = settings.value("index").toInt();
+			channelConfig.fovX = settings.value("fovX").toFloat();
+			channelConfig.fovY = settings.value("fovY").toFloat();
+			channelConfig.centerX = settings.value("centerX").toFloat();
+			channelConfig.centerY = settings.value("centerY").toFloat();
+			channelConfig.maxRange = settings.value("maxRange").toFloat();
+			channelConfig.sMaskName = settings.value("maskName").toString();
+			channelConfig.sFrameName = settings.value("frameName").toString();
+			channelConfig.displayColorRed = (uint8_t) settings.value("displayColorRed").toUInt();
+			channelConfig.displayColorGreen = (uint8_t) settings.value("displayColorGreen").toUInt();
+			channelConfig.displayColorBlue = (uint8_t) settings.value("displayColorBlue").toUInt();
+		
+			ReceiverSettings settingsCopy = receiverSettings[receiverID];
+			receiverSettings[receiverID].channelsConfig.append(channelConfig);
+		}
+		settings.endArray();
+		settings.endGroup();
+	}
+
+
+	// Debug and log file control
+	settings.beginGroup("debug");
+	bWriteDebugFile = settings.value("enableDebugFile").toBool();
+	bWriteLogFile = settings.value("enableLogFile").toBool();
+	settings.endGroup();
+
+	// Default algo
+	settings.beginGroup("algos");
+	defaultAlgo = settings.value("defaultAlgo").toInt();
+	settings.endGroup();
+
+
 
 	// Other settings
 
@@ -188,6 +241,7 @@ bool AWLSettings::ReadSettings()
 	settings.beginGroup("layout");
 	bDisplay3DWindow = settings.value("display3DWindow").toBool();
 	bDisplay2DWindow = settings.value("display2DWindow").toBool();
+	bDisplayTableViewWindow = settings.value("displayTableViewWindow").toBool();
 	bDisplayScopeWindow = settings.value("displayScopeWindow").toBool();
 	bDisplayCameraWindow = settings.value("displayCameraWindow").toBool();
 
@@ -198,11 +252,6 @@ bool AWLSettings::ReadSettings()
 	settings.endGroup();
 
 	settings.beginGroup("calibration");
-	sensorHeight = settings.value("sensorHeight").toFloat();
-	sensorDepth = settings.value("sensorDepth").toFloat();
-	displayedRangeMin = settings.value("displayedRangeMin").toFloat();
-	displayedRangeMax = settings.value("displayedRangeMax").toFloat();
-	rangeOffset = settings.value("rangeOffset").toFloat();
 	distanceScale = settings.value("distanceScale").toFloat();
 	targetHintDistance = settings.value("targetHintDistance").toFloat();
 	targetHintAngle = settings.value("targetHintAngle").toFloat();
@@ -213,9 +262,20 @@ bool AWLSettings::ReadSettings()
 	pixelSize = settings.value("pixelSize").toInt();
 	colorStyle =settings.value("colorStyle").toInt();
 	cameraView = settings.value("cameraView").toInt();
+	viewerDepth =  settings.value("viewerDepth").toFloat();
+	viewerHeight =  settings.value("viewerHeight").toFloat();
+	viewerMaxRange =  settings.value("viewerMaxRange").toFloat();
+	settings.endGroup();
+
+	settings.beginGroup("displayTableView");
+	displayedDetectionsPerChannelInTableView = settings.value("displayedDetectionsPerChannelInTableView").toInt();
 	settings.endGroup();
 
 	settings.beginGroup("display2D");
+	carWidth = settings.value("carWidth").toFloat();
+	carLength = settings.value("carLength").toFloat();
+	carHeight = settings.value("carHeight").toFloat();
+	laneWidth = settings.value("LaneWidth").toFloat();
 	shortRangeDistance = settings.value("shortRangeDistance").toFloat();
 	shortRangeDistanceStartLimited = settings.value("shortRangeDistanceStartLimited").toFloat();
 	shortRangeAngle = settings.value("shortRangeAngle").toFloat();
@@ -229,40 +289,15 @@ bool AWLSettings::ReadSettings()
 	showPalette = settings.value("showPalette").toInt();
 	mergeDisplayMode = settings.value("mergeDisplayMode").toInt();
 	measureMode = settings.value("measureMode").toInt();
-	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
+	mergeAcceptanceX = settings.value("mergeAcceptanceX").toFloat();
+	mergeAcceptanceY = settings.value("mergeAcceptanceY").toFloat();
 	colorCode2D = settings.value("colorCode").toInt();
 	maxVelocity2D = settings.value("maxVelocity").toFloat();
 	zeroVelocity = settings.value("zeroVelocity").toFloat();
+	displayDistanceMode2D = settings.value("displayDistances").toInt();
 	settings.endGroup();
 
 	
-	settings.beginGroup("receiver");
-	sReceiverType = settings.value("receiverType").toString();
-	receiverChannelMask = settings.value("channelMask").toUInt();
-	receiverFrameRate = settings.value("frameRate").toUInt();
-
-	msgEnableObstacle = settings.value("msgEnableObstacle").toBool();
-	msgEnableDistance_1_4 = settings.value("msgEnableDistance_1_4").toBool();
-	msgEnableDistance_5_8 = settings.value("msgEnableDistance_5_8").toBool();
-	msgEnableIntensity_1_4 = settings.value("msgEnableIntensity_1_4").toBool();
-	msgEnableIntensity_5_8 = settings.value("msgEnableIntensity_5_8").toBool();
-
-
-	settings.endGroup();
-
-	settings.beginGroup("bareMetalComm");
-	sBareMetalCommPort = settings.value("commPort").toString();
-	serialBareMetalPortRate = settings.value("serialPortRate").toLongLong();
-	settings.endGroup();
-
-	settings.beginGroup("CAN");
-	sCANCommPort = settings.value("commPort").toString();
-	sCANBitRate = settings.value("bitRate").toString();
-	serialCANPortRate = settings.value("serialPortRate").toLongLong();
-	yearOffsetCAN = settings.value("yearOffset").toUInt();
-	monthOffsetCAN = settings.value("monthOffset").toUInt();
-	settings.endGroup();
-
 	settings.beginGroup("scope");
 	scopeTimerInterval = settings.value("timerInterval").toInt();
 	bDisplayScopeDistance = settings.value("displayScopeDistance").toBool();
@@ -279,6 +314,12 @@ bool AWLSettings::ReadSettings()
 	settings.endGroup();
 	
 	settings.beginGroup("camera");
+	cameraX = settings.value("cameraX").toFloat();
+	cameraY = settings.value("cameraY").toFloat(); 
+	cameraZ = settings.value("cameraZ").toFloat(); 
+	cameraPitch = settings.value("cameraPitch").toFloat(); 
+	cameraRoll = settings.value("cameraRoll").toFloat(); 
+	cameraYaw = settings.value("cameraYaw").toFloat(); 
 	cameraFovXDegrees = settings.value("cameraFovX").toFloat();
 	cameraFovYDegrees = settings.value("cameraFovY").toFloat();
 	settings.endGroup();
@@ -287,12 +328,15 @@ bool AWLSettings::ReadSettings()
 }
 
 
-int AWLSettings::FindRegisterFPGAByAddress(uint16_t inAddress)
+int AWLSettings::FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress)
 
 {
-	for (int i = 0; i < registersFPGA.count(); i++) 
+	if (receiverID >= receiverSettings.count()) return(-1);
+
+	const QList<RegisterSettings> *registersFPGA  = &(receiverSettings.at(receiverID).registersFPGA);
+	for (int i = 0; i < registersFPGA->count(); i++) 
 	{
-		if (registersFPGA[i].address == inAddress)
+		if (registersFPGA->at(i).address == inAddress)
 		{
 			return(i);
 		}
@@ -301,12 +345,15 @@ int AWLSettings::FindRegisterFPGAByAddress(uint16_t inAddress)
 	return(-1);
 }
 
-int AWLSettings::FindRegisterADCByAddress(uint16_t inAddress)
+int AWLSettings::FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress)
 
 {
-	for (int i = 0; i < registersADC.count(); i++) 
+	if (receiverID >= receiverSettings.count()) return(-1);
+
+	const QList<RegisterSettings> *registersADC  = &(receiverSettings.at(receiverID).registersADC);
+	for (int i = 0; i < registersADC->count(); i++) 
 	{
-		if (registersADC[i].address == inAddress)
+		if (registersADC->at(i).address == inAddress)
 		{
 			return(i);
 		}
@@ -315,12 +362,15 @@ int AWLSettings::FindRegisterADCByAddress(uint16_t inAddress)
 	return(-1);
 }
 
-int AWLSettings::FindRegisterGPIOByAddress(uint16_t inAddress)
+int AWLSettings::FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress)
 
 {
-	for (int i = 0; i < registersGPIO.count(); i++) 
+	if (receiverID >= receiverSettings.count()) return(-1);
+
+	const QList<RegisterSettings> *registersGPIO  = &(receiverSettings.at(receiverID).registersGPIO);
+	for (int i = 0; i < registersGPIO->count(); i++) 
 	{
-		if (registersGPIO[i].address == inAddress)
+		if (registersGPIO->at(i).address == inAddress)
 		{
 			return(i);
 		}

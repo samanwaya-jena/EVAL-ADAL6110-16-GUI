@@ -206,6 +206,8 @@ public:
 	static const int maximumSensorFrames;  // Maximum number of frames kept in frame buffer
 	typedef boost::shared_ptr<ReceiverCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCapture> ConstPtr;
+	typedef QList<ReceiverCapture::Ptr> List;
+	typedef ReceiverCapture::List *ListPtr;
 
 	typedef enum  
 	{
@@ -219,23 +221,14 @@ public:
 	// public Methods
 public:
 
-	ReceiverCapture() {};
+	ReceiverCapture(int inReceiverID) { receiverID = inReceiverID;};
 
 	/** \brief ReceiverCapture constructor.  Builds an empty sequence.
 	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
-      */
+    */
 
-	ReceiverCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel);
-
-	/** \brief ReceiverCapture constructor.  Builds a sequence from file .
-	    * \param[in] inSequenceID  unique sequence ID (for documentation)
-	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
-		* \param[in] inFileName file with the sequence information
-      */
-	ReceiverCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, std::string inFileName);
+	ReceiverCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty);
 
 	/** \brief ReceiverCapture Destructor.  Insures that all threads are stopped before destruction.
       */
@@ -377,18 +370,6 @@ public:
 	    \return time in milliseconds since tthe start of thread.
      */
 	 double GetElapsed();
-
-	 /** \brief Sets the sensor depth from bumper, which will be added to distance measurements,
-	  *       The sensor depth is normally negative (ex: -1.75 m on I30)
-      * \param[in] inSensorDepth sensor depth from bumper, typically a negative value.
-      */
-	void SetSensorDepth(double inSensorDepth);
-
-	/** \brief Gets the sensor depth from bumper, which is added to distance measurements,
-      * \param[out] outSensorDepth sensor depth from bumper, typically a negative value.
-      */
-	void GetSensorDepth(double &outSensorDepth);
-
 
 	/** \brief Add an offet to the distance measurements.  This is different from the sensor depth, which is distance from bumper.
       * \param[in] inMeasurementOffset measurementOffset introduced by detection algorithm
@@ -589,13 +570,14 @@ public:
 
 	// public variables
 public:
+
+	/** \brief Unique receiver ID. Corresponds to the index of receiver in receiverArray
+	*/
+	int receiverID;
+
 	/** \brief Number of receiver channels on the sensor
       */
 	int receiverChannelQty;
-
-	/** \brief Maximum number of detections per channel per frame
-      */
-	int detectionsPerChannel;
 
 	/** \brief Current frame ID being built.
 	    \remark Note that the frameID corresponds to the "incomplete" frame currently being assembled.
@@ -614,7 +596,6 @@ public:
 	  * of the frame data.
       */
 	Subscription::Ptr currentReceiverCaptureSubscriptions;	
-
 		
 	/** \brief Receiver status information 
       */
@@ -694,8 +675,7 @@ protected:
 
 // Protected variables
 protected:
-	protected:
-	
+
     /** \brief Local flag indicating the termination of thread. */
 	volatile bool mStopRequested;
 
@@ -710,29 +690,24 @@ protected:
 	  *        This is determined at run-time on the Go() call.
 	*/
 	bool bIsThreaded;
+
 	/** \brief Minimum distance for objects.  All messages with distance < minDistance are eliminated.
 		\default 3.0;
 	*/
 
 	float minDistance;
-#if 0
 
-	/** \brief Maximum distance for objects.  All messages with distance > maxDistance are eliminated.
-		\default 50.0
+	/** \brief Maximum distance for objects for each channel .  
+	           All messages with distance > maxDistance are eliminated.
+		\default 50.0 meters
 	*/
 
-	float maxDistance;
-#else
 	QList<float> maxDistances;
-#endif
 
 	/** \brief Time at the start of thread
 	 * \remark Initialized on object creation and evertytime the Go() method is called.
 	*/
 	boost::posix_time::ptime startTime;
-
-	/** \brief  sensor depth from bumper, typically a negative value. */
-	double  sensorDepth;
 
 	/** \brief  measurement offset from sensor, introduced by detection algorithm */
 	double  measurementOffset;
@@ -761,6 +736,19 @@ protected:
 
 	/** \brief  Log file. */
 	ofstream logFile;
+
+	
+	/** \brief  distance used in simulations - distance injection code */
+	double lastDistance;
+	TrackID trackIDGenerator;
+	int lastTransition;
+	int transitionDirection;
+	int directionPacing; /* Every 3 seconds, we move from left to right */
+	int nextElapsedDirection;
+
+	float distanceIncrement;
+	int distancePacing; /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
+	int nextElapsedDistance;
 };
 
 

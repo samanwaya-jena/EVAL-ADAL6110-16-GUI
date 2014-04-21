@@ -43,7 +43,7 @@ public:
  	    * \param[in] inDetectionsPerChannel number of detections per channel
       */
 
-	ReceiverFileCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, std::string inFileName);
+	ReceiverFileCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, std::string inFileName);
 
 	/** \brief ReceiverFileCapture Destructor.  Insures that all threads are stopped before destruction.
       */

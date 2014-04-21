@@ -66,12 +66,12 @@ public:
 public:
 
 	/** \brief ReceiverCANCapture constructor.
+ 	    * \param[in] inReceiverID  unique receiverID
  	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
       */
 
-	ReceiverCANCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannels, int argc, char** argv);
+	ReceiverCANCapture(int receiverID, int inSequenceID, int inReceiverChannelQty);
 
 	/** \brief ReceiverCANCapture Destructor.  Insures that all threads are stopped before destruction.
       */
@@ -262,13 +262,6 @@ public:
 // Protected methods
 protected:
 
-	/** \brief Process the command line arguments related to the CAN port.
-	  *        Arguments are :  --bitRate%s  the bitrate command to the canPort, according to EasySync documents.
-	  *                         ("S2" = 50Kbps, "S8" = 1Mbps)
-	  *                         --comPort%s the com port identifier (default is "COM16");.
-	  */
-	virtual void ProcessCommandLineArguments(int argc, char** argv);
-
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
       */
@@ -437,6 +430,8 @@ protected:
 		// will time out a read after 500 milliseconds.
 		blocking_reader *reader; 
 
+		// counter in the closeCanPort call, used to avoid reentry iduring thread close
+		int closeCANReentryCount;
 };
 
 } // namespace AWL

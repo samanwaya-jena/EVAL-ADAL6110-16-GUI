@@ -8,12 +8,11 @@
 
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
-#include "ReceiverFileCapture.h"
 #include "Sensor.h"
 #include "VideoViewer.h"
 #include "FusedCloudViewer.h"
 #include "FOV_2DScan.h"
-
+#include "TableView.h"
 #include "AWLSettings.h"
 #include "..\awlqtscope\awlqtscope.h"
 
@@ -41,15 +40,6 @@ public:
 	eParameterConfirmColumn = 3
 	}
 	ParameterColumn;
-
-	typedef enum RealTimeColumn
-	{
-		eRealTimeDistanceColumn = 0,
-		eRealTimeVelocityColumn = 1,
-		eRealTimeTrackColumn = 2,
-		eRealTimeLevelColumn = 3
-	};
-
 
 public:
 	AWLQtDemo(int argc, char *argv[]);
@@ -111,10 +101,12 @@ private slots:
 
 	void on_view3DActionToggled();
 	void on_view2DActionToggled();
+	void on_viewTableViewActionToggled();
 	void on_viewGraphActionToggled();
 	void on_viewCameraActionToggled();
 
 	void on_view2DClose();
+	void on_viewTableViewClose();
 	void on_viewGraphClose();
 
 
@@ -123,28 +115,15 @@ private slots:
 	void on_timerTimeout();
 
 protected:
-	void PrepareTableViews();
-
 	void PrepareParametersView();
 	void UpdateParametersView();
 
 	void PrepareGlobalParametersView();
 	void UpdateGlobalParametersView();
-
-	void DisplayReceiverValues();
-	void AddDistanceToText(int detectionID,  QTableWidget *pTable , Detection::Ptr &detection);
-	void AddDistanceToText(int detectionID, QTableWidget *pTable, TrackID trackID = 0, 
-						   float distance = NAN, 
-						   Detection::ThreatLevel level = Detection::eThreatNone, 
-						   float intensity = NAN,
-						   float velocity = NAN,
-						   float acceleration = NAN, 
-						   float timeToCollision = NAN,
-						   float decelerationToStop = NAN,
-						   float probability = 0);
-
 	void DisplayReceiverStatus();
+	void DisplayReceiverStatus(int receiverID);
 	void DisplayReceiverValuesTo2DScanView();
+	void DisplayReceiverValuesToTableView();
 	void closeEvent(QCloseEvent * event);
 
 	void FillFPGAList(AWLSettings *settingsPtr);
@@ -160,6 +139,7 @@ private:
 	QTimer *myTimer;
 
 	FOV_2DScan* m2DScan;
+	TableView * mTableView;
 	ConfigSensor mCfgSensor;
 	AWLQtScope* scopeWindow;
 
@@ -167,14 +147,14 @@ private:
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr baseCloud;
 	VideoCapture::Ptr videoCapture;
 
-	ReceiverCapture::Ptr receiverCapture;
+	ReceiverCapture::List receiverCaptures;
 
 	ReceiverProjector::Ptr receiver;
 	VideoViewer::Ptr  videoViewer;
 	FusedCloudViewer::Ptr fusedCloudViewer;
 
 	/** \brief Our subscription identifier to access to lidar data. */
-	Subscription::SubscriberID receiverCaptureSubscriberID;
+	QList<Subscription::SubscriberID> receiverCaptureSubscriberIDs;
 };
 
 } // namespace AWL          

@@ -206,23 +206,23 @@ public:
 	/** \brief Modify the viewer's sensor height parameter.
       * \param[in] inSensorHeight sensor height, in meters
       */
-	void SetSensorHeight(double inSensorHeight);
+	void SetViewerHeight(double inSensorHeight);
 
 	/** \brief Get the viewer's sensor height in meters.
       * \param[out] outSensorHeight sensor height.
       */
-	void GetSensorHeight(double &sensorHeight);
+	void GetViewerHeight(double &sensorHeight);
 
 	/** \brief Modify the viewer's sensor depth parameter.
       * \param[in] inSensorDepth sensor depth, in meters
       */
 
-	void SetSensorDepth(double inSensorDepth);
+	void SetViewerDepth(double inSensorDepth);
 
 	/** \brief Get the viewer's sensor depth in meters.
       * \param[out] outSensorDepth sensor depth.
       */
-	void GetSensorDepth(double &sensorDepth);
+	void GetViewerDepth(double &sensorDepth);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters
@@ -319,26 +319,26 @@ public:
 	void SpinOnce(int time=1, bool forceRedraw = false);
 	void SpinSingleOnce(int viewerIndex, int time, bool forceRedraw=false);
 
-	/** \brief Modify the viewer's sensor height parameter.
-      * \param[in] inSensorHeight sensor height, in meters
+	/** \brief Modify the viewer's height parameter.
+      * \param[in] inViewerHeight sensor height, in meters
       */
-	void SetSensorHeight(double inSensorHeight);
+	void SetViewerHeight(double inViewerHeight);
 
-	/** \brief Get the viewer's sensor height in meters.
+	/** \brief Get the viewer's  height in meters.
       * \param[out] outSensorHeight sensor height.
       */
-	void GetSensorHeight(double &sensorHeight);
+	void GetViewerHeight(double &ViewerHeight);
 
-		/** \brief Modify the viewer's sensor depth parameter.
-      * \param[in] inSensorDepth sensor depth, in meters
+		/** \brief Modify the viewer's  depth parameter.
+      * \param[in] inSensorDepth  depth, in meters
       */
 
-	void SetSensorDepth(double inSensorDepth);
+	void SetViewerDepth(double inViewerDepth);
 
 	/** \brief Get the viewer's sensor depth in meters.
       * \param[out] outSensorDepth sensor depth.
       */
-	void GetSensorDepth(double &sensorDepth);
+	void GetViewerDepth(double &viewerDepth);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters

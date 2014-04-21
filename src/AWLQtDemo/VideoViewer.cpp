@@ -153,7 +153,6 @@ void  VideoViewer::Stop()
 			mThread->join();
 			mThread.reset();
 		}
-
 #endif
 	}
 
@@ -261,7 +260,7 @@ void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 			if (receiverCapture->GetFrameQty()) 
 			{
 
-				ChannelFrame::Ptr channelFrame(new ChannelFrame(channelID));
+				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverCapture->receiverID, channelID));
 
 				// Thread safe
 				if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, currentReceiverSubscriberID)) 

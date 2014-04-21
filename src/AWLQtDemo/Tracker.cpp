@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
@@ -22,66 +23,35 @@
 using namespace std;
 using namespace awl;
 
-
+#ifndef M_PI
+#define M_PI       3.14159265358979323846
+#endif
+#ifndef M_PI_2
+#define M_PI_2     1.57079632679489661923
+#endif
+ 
+#define DEG2RAD(angle) (angle * 3.14159265358979323846 / 180.0)
 
 const AcquisitionSequence::TrackingMode defaultTrackingMode = AcquisitionSequence::eTrackAllChannels;
 
 
-AcquisitionSequence::AcquisitionSequence(int inSequenceID):
+AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID):
+receiverID(inReceiverID),
 sequenceID(inSequenceID),
 frameID(0)
 
 {
 }
 
-AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty):
-sequenceID(inSequenceID),
-channelQty(inChannelQty),
-detectionQty(inDetectionQty),
-frameID(0)
-
-{
-}
-
-AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, ifstream &inTrackFile):
+AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID, int inChannelQty):
+receiverID(inReceiverID),
 sequenceID(inSequenceID),
 channelQty(inChannelQty),
-detectionQty(inDetectionQty),
 frameID(0)
 
 {
-	ReadFile(inTrackFile, inChannelQty, inDetectionQty);
-}
 
-AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, std::string trackFileName):
-sequenceID(inSequenceID),
-channelQty(inChannelQty),
-detectionQty(inDetectionQty),
-frameID(0)
 
-{
-	ReadFile(trackFileName,  inChannelQty, inDetectionQty);
-}
-
-void AcquisitionSequence::ReadFile(std::string inFileName, int inChannelQty, int inDetectionQty)
-
-{
-	ifstream trackFile;
-	trackFile.open(inFileName);
-	ReadFile(trackFile, inChannelQty, inDetectionQty);
-}
-
-void AcquisitionSequence::ReadFile(ifstream &inTrackFile, int inChannelQty, int inDetectionQty)
-{
-	if (!inTrackFile.is_open()) return;
-	// read the first  line for display purposes
-	getline(inTrackFile, infoLine);
-	
-	while (!inTrackFile.eof()) 
-	{
-		SensorFrame::Ptr sensorFrame(new SensorFrame(inChannelQty, inDetectionQty, inTrackFile));
-		sensorFrames.push(sensorFrame);
-	}
 }
 
 uint32_t AcquisitionSequence::AllocateFrameID()
@@ -221,8 +191,13 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 {
 	UpdateTrackInfo(currentFrame);
 
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
 	{
+
+	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelIndex];
+
 		uint8_t channelMask = 0x01 << channelIndex;
 
 		int detectionIndex = 0;
@@ -252,6 +227,28 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->timeToCollision = track->timeToCollision;
 				detection->decelerationToStop = track->decelerationToStop;
 				detection->threatLevel = track->threatLevel;
+				// Convert FOV data in polar coord
+
+				float centerX = globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX;
+				centerX = DEG2RAD(centerX);
+				centerX = -centerX + M_PI_2;
+
+				float centerY = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX);
+				centerY += M_PI_2;
+				detection->relativeToSensorPolar.Set(detection->distance, centerY, centerX);
+				detection->relativeToSensorCart = detection->relativeToSensorPolar;
+
+				// Create vehicle coord
+				ConvertSensorToVehicleCoord(detection->relativeToSensorPolar, 
+					receiverSettings.sensorPitch, receiverSettings.sensorYaw, receiverSettings.sensorRoll, 
+					receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ, 
+					detection->relativeToVehicleCart);
+				detection->relativeToVehiclePolar = detection->relativeToVehicleCart;
+
+
+				// Integrate vehicle coordinates
+				detection->relativeToWorldPolar = detection->relativeToVehiclePolar;
+				detection->relativeToWorldCart = detection->relativeToVehicleCart;
 			}  // if (track...
 
 			trackIterator++;
@@ -356,42 +353,26 @@ ChannelFrame::Ptr & AcquisitionSequence::GetChannelAtIndex(int frameIndex, int c
 }
 
 
-SensorFrame::SensorFrame(uint32_t inFrameID) :
+SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID) :
+receiverID(inReceiverID),
 frameID(inFrameID),
 timeStamp(0)
 {
 }
 
-SensorFrame::SensorFrame(uint32_t inFrameID, int inChannelQty,  int inDetectionQty) :
+SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty) :
+receiverID(inReceiverID),
 frameID(inFrameID),
 timeStamp(0)
 
 {
 	for (int channel = 0; channel < inChannelQty; channel++) 
 	{
-		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(channel));
+		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(receiverID, channel));
 		channelFrames.push_back(myChannelFrame);
 	}
 }
 
-
-SensorFrame::SensorFrame(int inChannelQty,  int inDetectionQty, ifstream &inTrackFile):
-timeStamp(0)
-{
-	if (!inTrackFile.is_open()) return;
-
-	std:string line;
-
-	getline(inTrackFile, line); // Blank line between every frame
-	getline(inTrackFile, line);
-	sscanf(line.c_str(), "T=%d",  &frameID);
-
-	for (int channel = 0; channel < inChannelQty; channel++) 
-	{
-		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(channel, inDetectionQty, inTrackFile));
-		channelFrames.push_back(myChannelFrame);
-	}
-}
 
 Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 
@@ -400,7 +381,7 @@ Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 	bool bExists = channelFrames[channelID]->FindDetection(detectionID, detection);
 	if (!bExists) 
 	{
-		detection = Detection::Ptr(new Detection(channelID, detectionID));
+		detection = Detection::Ptr(new Detection(receiverID, channelID, detectionID));
 		channelFrames[channelID]->detections.push_back(detection);
 	}
 
@@ -408,30 +389,14 @@ Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 }
 
 
-ChannelFrame::ChannelFrame(int inChannelID):
+ChannelFrame::ChannelFrame(int inReceiverID, int inChannelID):
+receiverID(inReceiverID),
 channelID(inChannelID)
 {
 
 }
 
 
-
-ChannelFrame::ChannelFrame(int inChannelID, int inDetectionQty, ifstream &inTrackFile) :
-channelID(inChannelID)
-
-{
-	if (!inTrackFile.is_open()) return;
-	std:string line;
-
-	getline(inTrackFile, line);
-	sscanf(line.c_str(), "sensor %d", &channelID);
-
-	for (int detectionID = 0; detectionID < inDetectionQty; detectionID++) 
-	{
-		Detection::Ptr detection(new Detection(inChannelID, detectionID, inTrackFile));
-		detections.push_back(detection);
-	}
-}
 
 bool ChannelFrame::FindDetection(int inDetectionID, Detection::Ptr &outDetection)
 
@@ -452,10 +417,32 @@ bool ChannelFrame::FindDetection(int inDetectionID, Detection::Ptr &outDetection
 	return(false);
 }
 
+Detection::Detection():
+receiverID(0),
+channelID(0), 
+detectionID(0),
+distance(0.0),
+intensity(0.0),
+velocity(0.0),
+acceleration(0.0),
+timeToCollision(NAN),
+decelerationToStop(NAN),
+probability(0.0),
+timeStamp(0),
+firstTimeStamp(0),
+relativeToSensorCart(),
+relativeToSensorPolar(),
+relativeToVehicleCart(),
+relativeToVehiclePolar(),
+relativeToWorldCart(),
+relativeToWorldPolar()
+{
+}
 
 
 
-Detection::Detection(int inChannelID, int inDetectionID):
+Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID):
+receiverID(inReceiverID),
 channelID(inChannelID), 
 detectionID(inDetectionID),
 distance(0.0),
@@ -467,15 +454,41 @@ decelerationToStop(NAN),
 probability(0.0),
 timeStamp(0),
 firstTimeStamp(0),
-trackID(0),
-threatLevel(eThreatNone) 
-
+relativeToSensorCart(),
+relativeToSensorPolar(),
+relativeToVehicleCart(),
+relativeToVehiclePolar(),
+relativeToWorldCart(),
+relativeToWorldPolar()
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
+	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
 
+	// Convert FOV data in polar coord
+	float centerX = DEG2RAD(channelConfig.centerX);
+	centerX = -centerX + M_PI_2;
+
+	float centerY = DEG2RAD(channelConfig.centerY);
+	centerY += M_PI_2;
+	relativeToSensorPolar.Set(distance, centerY, centerX);
+	relativeToSensorCart = relativeToSensorPolar;
+
+	// Create vehicle coord
+	ConvertSensorToVehicleCoord(relativeToSensorPolar, 
+					receiverSettings.sensorPitch, receiverSettings.sensorYaw, receiverSettings.sensorRoll, 
+					receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ, 
+					relativeToVehicleCart);
+	relativeToVehiclePolar = relativeToVehicleCart;
+ 
+	// Integrate vehicle coordinates
+	relativeToWorldPolar = relativeToVehiclePolar;
+	relativeToWorldCart = relativeToVehicleCart;
 }
 
-Detection::Detection(int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
+Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
 		float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel):
+receiverID(inReceiverID),
 channelID(inChannelID),
 detectionID(inDetectionID),
 distance(inDistance),
@@ -487,40 +500,42 @@ probability(0.0),
 timeStamp(inTimeStamp),
 firstTimeStamp(inFirstTimeStamp),
 trackID(inTrackID),
-threatLevel(inThreatLevel)
+threatLevel(inThreatLevel),
+relativeToSensorCart(),
+relativeToSensorPolar(),
+relativeToVehicleCart(),
+relativeToVehiclePolar(),
+relativeToWorldCart(),
+relativeToWorldPolar()
+
 
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
+	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
 
+	// Convert FOV data in polar coord
+	float centerX = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX);
+	centerX = -centerX + M_PI_2;
+
+	float centerY = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX);
+	centerY += M_PI_2;
+	relativeToSensorPolar.Set(distance, centerY, centerX);
+	relativeToSensorCart = relativeToSensorPolar;
+
+	// Create vehicle coord
+	ConvertSensorToVehicleCoord(relativeToSensorPolar, 
+					receiverSettings.sensorPitch, receiverSettings.sensorYaw, receiverSettings.sensorRoll, 
+				receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ, 
+					relativeToVehicleCart);
+	relativeToVehiclePolar = relativeToVehicleCart;
+
+ 
+	// Integrate vehicle coordinates
+	relativeToWorldPolar = relativeToVehiclePolar;
+	relativeToWorldCart = relativeToVehicleCart; 
 }
 
-Detection::Detection(int inChannelID, int inDetectionID, ifstream &inTrackFile) :
-channelID(inChannelID),
-detectionID(inDetectionID)
-
-{
-	std:string line;
-
-	if (inTrackFile.is_open())
-	{
-		uint32_t tmpTimeStamp;
-		uint32_t tmpFirstTimeStamp;
-		detectionID = inDetectionID;
-
-		getline(inTrackFile, line);
-		sscanf(line.c_str(), "%f, %f, %ld, %ld, %ld", 
-			&distance, &velocity,
-			&tmpTimeStamp,
-			&trackID,
-			&tmpFirstTimeStamp);
-
-		timeStamp = tmpTimeStamp;
-		firstTimeStamp = tmpFirstTimeStamp;
-		threatLevel = eThreatNone;
-		acceleration = 0.0;
-		timeToCollision = NAN;
-		probability = 0.0;
-	}
-}
 
 bool Detection::IsValid()
 
@@ -588,3 +603,4 @@ bool Track::IsValid()
 
 	 return(false);
  }
+

@@ -91,6 +91,7 @@
     <ClCompile Include="..\AWLQtScope\knob.cpp" />
     <ClCompile Include="..\AWLQtScope\signaldata.cpp" />
     <ClCompile Include="..\AWLQtScope\wheelbox.cpp" />
+    <ClCompile Include="awlcoord.cpp" />
     <ClCompile Include="awlqtdemo.cpp" />
     <ClCompile Include="AWLSettings.cpp" />
     <ClCompile Include="DebugPrintf.cpp" />
@@ -103,6 +104,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_knob.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_TableView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_awlqtscope.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -110,14 +114,17 @@
     <ClCompile Include="GeneratedFiles\Release\moc_fov_2dscan.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_TableView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="range_image.cpp" />
     <ClCompile Include="ReceiverBareMetalCapture.cpp" />
     <ClCompile Include="ReceiverCANCapture.cpp" />
     <ClCompile Include="ReceiverCapture.cpp" />
-    <ClCompile Include="ReceiverFileCapture.cpp" />
     <ClCompile Include="ReceiverUDPCapture.cpp" />
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="Subscription.cpp" />
+    <ClCompile Include="TableView.cpp" />
     <ClCompile Include="Tracker.cpp" />
     <ClCompile Include="VideoCapture.cpp" />
     <ClCompile Include="VideoViewer.cpp" />
@@ -193,6 +200,7 @@
     </CustomBuild>
     <ClInclude Include="..\AWLQtScope\curvedata.h" />
     <ClInclude Include="..\AWLQtScope\signaldata.h" />
+    <ClInclude Include="awlcoord.h" />
     <ClInclude Include="AWLSettings.h" />
     <ClInclude Include="BlockingReader.h" />
     <ClInclude Include="DebugPrintf.h" />
@@ -211,13 +219,23 @@
     <ClInclude Include="GeneratedFiles\ui_awlqtdemo.h" />
     <ClInclude Include="GeneratedFiles\ui_awlqtscope.h" />
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h" />
+    <ClInclude Include="GeneratedFiles\ui_TableView.h" />
     <ClInclude Include="ReceiverBareMetalCapture.h" />
     <ClInclude Include="ReceiverCANCapture.h" />
     <ClInclude Include="ReceiverCapture.h" />
-    <ClInclude Include="ReceiverFileCapture.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sensor.h" />
     <ClInclude Include="Subscription.h" />
+    <CustomBuild Include="TableView.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing TableView.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing TableView.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-IC:\Program Files (x86)\PCL 1.6.0\include\pcl-1.6" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Eigen\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Boost\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\FLANN\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\Qhull\include" "-IC:\Program Files (x86)\PCL 1.6.0\3rdParty\VTK\include\VTK-5.8" "-IC:\OpenCV2.4.4\opencv\modules\videostab\include" "-IC:\OpenCV2.4.4\opencv\modules\stitching\include" "-IC:\OpenCV2.4.4\opencv\modules\contrib\include" "-IC:\OpenCV2.4.4\opencv\modules\legacy\include" "-IC:\OpenCV2.4.4\opencv\modules\calib3d\include" "-IC:\OpenCV2.4.4\opencv\modules\features2d\include" "-IC:\OpenCV2.4.4\opencv\modules\nonfree\include" "-IC:\OpenCV2.4.4\opencv\modules\photo\include" "-IC:\OpenCV2.4.4\opencv\modules\objdetect\include" "-IC:\OpenCV2.4.4\opencv\modules\video\include" "-IC:\OpenCV2.4.4\opencv\modules\ml\include" "-IC:\OpenCV2.4.4\opencv\modules\highgui\include" "-IC:\OpenCV2.4.4\opencv\modules\imgproc\include" "-IC:\OpenCV2.4.4\opencv\modules\flann\include" "-IC:\OpenCV2.4.4\opencv\modules\core\include" "-IC:\OpenCV2.4.4\opencv\include" "-IC:\OpenCV2.4.4\opencv" "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src"</Command>
+    </CustomBuild>
     <ClInclude Include="Tracker.h" />
     <ClInclude Include="VideoCapture.h" />
     <ClInclude Include="VideoViewer.h" />
@@ -814,6 +832,17 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="plugin1.bin" />
+    <CustomBuild Include="TableView.ui">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Content Include="InstallableDLLs\D3DCompiler_43.dll">

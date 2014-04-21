@@ -64,10 +64,9 @@ public:
 	/** \brief ReceiverBareMetalCapture constructor.
  	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
       */
 
-	ReceiverBareMetalCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannels, int argc, char** argv);
+	ReceiverBareMetalCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty);
 
 	/** \brief ReceiverBareMetalCapture Destructor.  Insures that all threads are stopped before destruction.
       */

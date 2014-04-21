@@ -25,16 +25,16 @@ namespace awl
 #define DEG2MRAD(d)           (float)(17.4533*(d))     // 1000*PI/180
 #define MRAD2DEG(r)           (float)(0.057295791*(r)) // 180/(1000*PI)
 
-class ReceiverCoordinates;
+class ViewerCoordinates;
 class Receiver;
 class ReceiverChannel;
 
-class ReceiverCoordinates: public pcl::RangeImage
+class ViewerCoordinates: public pcl::RangeImage
 {
 // Public types
 public:
-	typedef boost::shared_ptr<ReceiverCoordinates> Ptr;
-    typedef boost::shared_ptr<ReceiverCoordinates > ConstPtr;
+	typedef boost::shared_ptr<ViewerCoordinates> Ptr;
+    typedef boost::shared_ptr<ViewerCoordinates > ConstPtr;
 
 // protected variables
 protected:
@@ -44,9 +44,9 @@ protected:
 	double fovX;
 	double fovY;
 	/** \brief  sensor height to ground */
-	double  sensorHeight;
+	double  viewerHeight;
 	/** \brief  sensor depth from bumper (ideally, should be negative)*/
-	double  sensorDepth;
+	double  viewerDepth;
 	/** \brief  diplay plane for max range*/
 	double rangeMax;
 
@@ -56,34 +56,34 @@ public:
 
 // public functions
 public:
-	ReceiverCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, const double inSensorHeight, double inSensorDepth, double iRangeMax);
+	ViewerCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, const double inViewerHeight, double inViewerDepth, double iRangeMax);
 
-	void ReceiverCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
+	void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
 									PointXYZRGB &ioCloudPoint);
 
 
 	int GetWidth() {return (width);};
 	int	GetHeight() {return(height);};
 
-	/** \brief Modify the viewer's sensor height parameter.
-      * \param[in] inSensorHeight sensor height, in meters
+	/** \brief Modify the viewer's viewer height parameter.
+      * \param[in] inViewerrHeight viewer height, in meters
       */
-	void SetSensorHeight(double inSensorHeight);
+	void SetViewerHeight(double inViewerHeight);
 
-	/** \brief Get the viewer's sensor height in meters.
-      * \param[out] outSensorHeight sensor height.
+	/** \brief Get the viewer's viewer height in meters.
+      * \param[out] outViewerHeight viewer height.
       */
-	void GetSensorHeight(double &outSensorHeight);
+	void GetViewerHeight(double &outViewerHeight);
 
-	/** \brief Modify the viewer's sensor depth parameter (depth from bumper).
-      * \param[in] inSensorDepth sensor depth, in meters (normally negative)
+	/** \brief Modify the viewer's viewer depth parameter (depth from bumper).
+      * \param[in] inViewerDepth viewer depth, in meters (normally negative)
       */
-	void SetSensorDepth(double inSensorDepth);
+	void SetViewerDepth(double inViewerDepth);
 
-	/** \brief Get the viewer's sensor depth in meters.
-      * \param[out] outSensorDepth sensor depth.
+	/** \brief Get the viewer's viewer depth in meters.
+      * \param[out] outViewerDepth viewer depth.
       */
-	void GetSensorDepth(double &outSensorDepth);
+	void GetViewerDepth(double &outViewerDepth);
 
 	/** \brief Sets   horizontal camera FOV.
       * \param[in] cameraFovX horizontal FOV of camera in radians.
@@ -138,6 +138,7 @@ public:
 protected:
 
 	// Receiver channel descriptor
+	int		receiverID;
 	int		channelID;
 	float	fovWidthX;
 	float	fovWidthY;
@@ -160,9 +161,9 @@ protected:
 	int		decimationY;
 
 	// Current image ROI and correspondence parameters
-	// Updated to reflect current cam with a call to UpdateReceiverCoordinates()
+	// Updated to reflect current cam with a call to UpdateViewerCoordinates()
 	
-	ReceiverCoordinates::Ptr receiverCoordinatesPtr;
+	ViewerCoordinates::Ptr viewerCoordinatesPtr;
 
 	int		imageWidth;
 	int		imageHeight;
@@ -174,9 +175,9 @@ protected:
 	int		bottomRightY;
 
 	/** \brief  sensor height to ground */
-	double  sensorHeight;
+	double  sensorZ;
 	/** \brief  sensor depth from bumber (ideally, should be negative)*/
-	double  sensorDepth;
+	double  sensorY;
 
 #ifdef _JYD_DEBUG
 	// Receiver channel LIDAR data
@@ -228,7 +229,8 @@ protected:
 	// public methods
 public:
 
-	ReceiverChannel(const int inChannelID, 
+	ReceiverChannel(const int inReceiverID,
+					const int inChannelID, 
 					const float inFovX, const float inFovY, 
 					const float inCenterX, const float inCenterY, 
 					const float inRangeMax, 
@@ -250,7 +252,7 @@ public:
 	  * \param[out] originY value of the y coordinate of the sensor's origin.
 	  * \param[out] originZ value of the z coordinate of the sensor's origin.
      */
-	void GetChannelLimits(ReceiverCoordinates::Ptr &inReceiverCoordinates, double &minX, double &minY, double &minZ, 
+	void GetChannelLimits(ViewerCoordinates::Ptr &inViewerCoordinates, double &minX, double &minY, double &minZ, 
 		double &maxX, double &maxY, double &maxZ, double &originX, double &originY, double &originZ);
 
 /** \brief Obtain the  channel's bounding rectange on the video frame.
@@ -261,18 +263,18 @@ public:
 	  * \param[out] right value of the X the right extreme of bounding rectangle.
      */	
 	
-	void GetChannelRect(ReceiverCoordinates::Ptr &inReceiverCoordinates, int &top, int &left, int &bottom, int &right);
+	void GetChannelRect(ViewerCoordinates::Ptr &inViewerCoordinates, int &top, int &left, int &bottom, int &right);
 
 	void GetDisplayColor(double &outR, double &outG, double&outB);
-	void UpdateReceiverCoordinates(ReceiverCoordinates::Ptr &inReceiverCoordinates);
+	void UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCoordinates);
 
 	/** \brief Modify the viewer display so as to hide/show all voxels under ground.
-      * \param[in] inDisplayUnderZero If false, values under "-sensorHeight"  not be displayed.  Displayed if true.
+      * \param[in] inDisplayUnderZero If false, values under "-sensorZ"  not be displayed.  Displayed if true.
       */
 	bool SetDisplayUnderZero(bool inDisplayUnderZero);
 	
 	/** \brief Get the value of the displayUnderZero display mode.
-      * \return If false, values under "-sensorHeight"  are not be displayed.  Displayed if true.
+      * \return If false, values under "-sensorZ"  are not be displayed.  Displayed if true.
       */
 
 	bool GetDisplayUnderZero();
@@ -289,24 +291,24 @@ public:
 	void GetDecimation(int &outDecimationX, int &outDecimationY);
 
 		/** \brief Modify the viewer's sensor height parameter.
-      * \param[in] inSensorHeight sensor height, in meters
+      * \param[in] inSensorZ sensor height, in meters
       */
-	void SetSensorHeight(double inSensorHeight);
+	void SetSensorZ(double inSensorZ);
 
 	/** \brief Get the viewer's sensor height in meters.
-      * \param[out] outSensorHeight sensor height.
+      * \param[out] outSensorZ sensor height.
       */
-	void GetSensorHeight(double &outSensorHeight);
+	void GetSensorZ(double &outSensorZ);
 
 	/** \brief Modify the viewer's sensor depth parameter (depth from bumper).
-      * \param[in] inSensorDepth sensor depth, in meters (normally negative)
+      * \param[in] inSensorY sensor depth, in meters (normally negative)
       */
-	void SetSensorDepth(double inSensorDepth);
+	void SetSensorY(double inSensorY);
 
 	/** \brief Get the viewer's sensor depth in meters.
-      * \param[out] outSensorDepth sensor depth.
+      * \param[out] outSensorY sensor depth.
       */
-	void GetSensorDepth(double &outSensorDepth);
+	void GetSensorY(double &outSensorY);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters
@@ -432,37 +434,37 @@ public:
 	void SetBackgroundFrame(ReceiverProjector::FramePtr &inFrame);
 
 	/** \brief Modify the viewer display so as to hide/show all voxels under ground.
-      * \param[in] bDisplayUnderZero If false, values under "-sensorHeight"  not be displayed.  Displayed if true.
+      * \param[in] bDisplayUnderZero If false, values under "-sensorZ"  not be displayed.  Displayed if true.
       */
 	bool SetDisplayUnderZero(bool inDisplayUnderZero);
 
 	/** \brief Get the value of the displayUnderZero display mode.
-      * \param[out] bDisplayUnderZero If false, values under "-sensorHeight"  are not be displayed.  Displayed if true.
+      * \param[out] bDisplayUnderZero If false, values under "-sensorZ"  are not be displayed.  Displayed if true.
       */
 	bool GetDisplayUnderZero();
 
 	void SetDecimation(int inDecimationX, int inDecimationY);
 	void GetDecimation(int &outDecimationX, int &outDecimationY);
 
-	/** \brief Modify the viewer's sensor height parameter.
-      * \param[in] inSensorHeight sensor height, in meters
+	/** \brief Modify the viewer's viewer height parameter.
+      * \param[in] inViewerHeight viewer height, in meters
       */
-	void SetSensorHeight(double inSensorHeight);
+	void SetViewerHeight(double inViewerHeight);
 
-	/** \brief Get the viewer's sensor height in meters.
-      * \param[out] outSensorHeight sensor height.
+	/** \brief Get the viewer's viewer height in meters.
+      * \param[out] outViewerHeight sensor height.
       */
-	void GetSensorHeight(double &sensorHeight);
+	void GetViewerHeight(double &viewerHeight);
 
-	/** \brief Modify the viewer's sensor depth parameter (depth from bumper).
-      * \param[in] inSensorDepth sensor depth, in meters (normally negative)
+	/** \brief Modify the viewer's viewer depth parameter (depth from bumper).
+      * \param[in] inViewerDepth viewer depth, in meters (normally negative)
       */
-	void SetSensorDepth(double inSensorDepth);
+	void SetViewerDepth(double inViewerDepth);
 
-	/** \brief Get the viewer's sensor depth in meters.
-      * \param[out] outSensorDepth sensor depth.
+	/** \brief Get the viewer's  depth in meters.
+      * \param[out] outViewerDepth viewer depth.
       */
-	void GetSensorDepth(double &sensorDepth);
+	void GetViewerDepth(double &viewerDepth);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters
@@ -524,8 +526,6 @@ public:
       */
 	void GetCameraFovX(double &outCameraFov);
 
-
-
 	/** \brief Sets   verticsl camera FOV.
       * \param[in] cameraFovY vertical FOV of camera in radians.
 	      */
@@ -580,7 +580,7 @@ protected:
     boost::mutex mMutex;
 
 	/** \brief Object used to support coordinate conversion */
-	ReceiverCoordinates::Ptr mReceiverCoordinatesPtr;
+	ViewerCoordinates::Ptr mViewerCoordinatesPtr;
 
 	/** \brief video capture device that supplies the video data */
 	VideoCapture::Ptr videoCapture; 
@@ -608,10 +608,10 @@ protected:
 	int		decimationY;
 	/** \brief Boolean indicates if we display lidar points that are below the ground line. */
 	bool	displayUnderZero;
-	/** \brief  sensor height to ground */
-	double  sensorHeight;
-	/** \brief  sensor depth from bumber (ideally, should be negative)*/
-	double  sensorDepth;
+	/** \brief  viewer height to ground */
+	double  viewerHeight;
+	/** \brief  viewer depth from bumper (ideally, should be negative)*/
+	double  viewerDepth;
 	/** \brief  maximum range (which is also distance at whick we project image place)*/
 	double  rangeMax;
 

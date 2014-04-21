@@ -71,9 +71,6 @@
     <ClCompile Include="ReceiverCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverFileCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ReceiverUDPCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -146,6 +143,18 @@
     <ClCompile Include="ReceiverBareMetalCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="awlcoord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TableView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_TableView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_TableView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -178,6 +187,12 @@
     <CustomBuild Include="FOV_2DScan.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="TableView.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TableView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_awlqtdemo.h">
@@ -190,9 +205,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ReceiverCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReceiverFileCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sensor.h">
@@ -239,6 +251,12 @@
     </ClInclude>
     <ClInclude Include="ReceiverBareMetalCapture.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="awlcoord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_TableView.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

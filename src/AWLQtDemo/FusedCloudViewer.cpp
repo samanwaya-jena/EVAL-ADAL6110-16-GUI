@@ -263,30 +263,30 @@ void CloudViewerWin::GetPixelSize(int &outPixelSize)
 	}
 }
 
-void CloudViewerWin::SetSensorHeight(double inSensorHeight)
+void CloudViewerWin::SetViewerHeight(double inSensorHeight)
 {
-	sourceProjector->SetSensorHeight(inSensorHeight);
+	sourceProjector->SetViewerHeight(inSensorHeight);
 }
 
-void CloudViewerWin::GetSensorHeight(double &outSensorHeight)
+void CloudViewerWin::GetViewerHeight(double &outSensorHeight)
 {
 	double  decimationX;
 	int decimationY;
 
-	sourceProjector->GetSensorHeight(outSensorHeight);
+	sourceProjector->GetViewerHeight(outSensorHeight);
 }
 
-void CloudViewerWin::SetSensorDepth(double inSensorDepth)
+void CloudViewerWin::SetViewerDepth(double inSensorDepth)
 {
-	sourceProjector->SetSensorDepth(inSensorDepth);
+	sourceProjector->SetViewerDepth(inSensorDepth);
 }
 
-void CloudViewerWin::GetSensorDepth(double &outSensorDepth)
+void CloudViewerWin::GetViewerDepth(double &outSensorDepth)
 {
 	double  decimationX;
 	int decimationY;
 
-	sourceProjector->GetSensorDepth(outSensorDepth);
+	sourceProjector->GetViewerDepth(outSensorDepth);
 }
 
 
@@ -500,8 +500,8 @@ void FusedCloudViewer::DrawGrid()
 	double originX = 0.0;
 	double originY = 0.0;
 	double originZ = 0.0;
-	sourceProjector->GetSensorHeight(originY);
-	sourceProjector->GetSensorDepth(originZ);
+	sourceProjector->GetViewerHeight(originY);
+	sourceProjector->GetViewerDepth(originZ);
 
 	double rangeMax = 0.0;
 	sourceProjector->GetRangeMax(rangeMax);
@@ -626,27 +626,27 @@ void FusedCloudViewer::SpinOnce(int time, bool forceRedraw)
 }
 
 
-void  FusedCloudViewer::SetSensorHeight(double inSensorHeight) 
+void  FusedCloudViewer::SetViewerHeight(double inSensorHeight) 
 {
 	if (mStopRequested) return;
 
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
 	{
-		viewers[i]->SetSensorHeight(inSensorHeight);
+		viewers[i]->SetViewerHeight(inSensorHeight);
 	}
 	
 	DrawGrid();
 }
 
-void  FusedCloudViewer::SetSensorDepth(double inSensorDepth) 
+void  FusedCloudViewer::SetViewerDepth(double inSensorDepth) 
 {
 	if (mStopRequested) return;
 
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
 	{
-		viewers[i]->SetSensorDepth(inSensorDepth);
+		viewers[i]->SetViewerDepth(inSensorDepth);
 	}
 	
 	DrawGrid();

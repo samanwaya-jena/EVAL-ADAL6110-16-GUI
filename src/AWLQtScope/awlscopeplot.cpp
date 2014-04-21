@@ -197,7 +197,7 @@ void AWLScopePlot::adjustDisplayedCurves()
 	}
 		
 	// Y Scale for distances
-	setAxisScale(distanceAxis, 0, settings->displayedRangeMax);
+	setAxisScale(distanceAxis, 0, settings->receiverSettings[0].displayedRangeMax);
 	
 	for (int curveIndex = 0; curveIndex < d_velocityCurve.size(); curveIndex++)
 	{
@@ -233,7 +233,7 @@ void AWLScopePlot::replot()
 	// If distance is displayed and the maxRange has changed, redo the axes
 	if (settings->bDisplayScopeDistance)
 	{
-		if (abs(settings->displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
+		if (abs(settings->receiverSettings[0].displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
 		{
 			bRescale = true;
 		}

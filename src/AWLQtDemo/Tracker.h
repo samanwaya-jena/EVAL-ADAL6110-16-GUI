@@ -7,11 +7,12 @@
 #include <fstream>
 #include <string>
 #include <queue>
-
+#include <cmath>
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
+#include "awlcoord.h"
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
@@ -59,6 +60,7 @@ typedef union
 
 } ChannelMask;
 
+
 /** \brief The Detection class corresponds to a single detectio returned by the receiver.
            It holds the distance for the detection, its intensity, threat level
 */
@@ -80,13 +82,11 @@ public:
 	ThreatLevel;
 
 public:
+	Detection();
+	Detection(int inReceiverID, int inChannelID, int inDetectionID);
+	Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
+	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel = eThreatNone);
 	
-	Detection(int inChannelID, int inDetectionID);
-	Detection(int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
-	float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel = eThreatNone);
-	
-	Detection::Detection(int inChannelID, int inDetectionID,  ifstream &inTrackFile);
-
 	/** \brief Verify if there is any data in the detection.
 	  *        a detection with distance = 0 is invalid.  it should not be stored.
       * \return bool true if the detection is valid.  False otherwise.
@@ -96,6 +96,9 @@ public:
 	int	GetChannelID() {return(channelID);}
 
 public:
+	/** \brief sensor ID of the sensor where detection origins from */
+	int	  receiverID;
+
 	/** \brief channel ID of the channel where detection origins from */
 	int	  channelID;
 
@@ -131,6 +134,26 @@ public:
 
 	/** \brief Track ID. */
 	TrackID	trackID;
+
+	/** \brief Coordinates of detection relative to sensor */
+	CartesianCoord relativeToSensorCart;
+	PolarCoord	   relativeToSensorPolar;
+
+	/** \brief Coordinates of detection relative to vehicule bumper */
+	CartesianCoord relativeToVehicleCart;
+	PolarCoord	   relativeToVehiclePolar;
+
+	/** \brief Coordinates of detection relative to world */
+	CartesianCoord relativeToWorldCart;
+	PolarCoord	   relativeToWorldPolar;
+
+	/** \brief AbsoluteYCoordinate. */
+	float absoluteY;
+
+	/** \brief AbsoluteYCoordinate. */
+	float absoluteZ;
+
+
 
 	/** \brief Threat level associated to detection */
 	ThreatLevel	threatLevel;
@@ -217,16 +240,18 @@ public:
     typedef boost::shared_ptr<ChannelFrame> ConstPtr;
 	typedef std::vector<ChannelFrame::Ptr> Vector;
 public:
-	ChannelFrame(int channelID);
-	ChannelFrame(int channelID, int inDetectionQty, ifstream &inTrackFile);
+	ChannelFrame(int inReceiverID, int channelID);
 	virtual ~ChannelFrame() {};
 
 
+	int GetReceiverID() { return(receiverID);}
 	int GetChannelID() { return(channelID);}
 
 	bool FindDetection(int inDetectionID, Detection::Ptr &outDetection);
 
 public:
+	int receiverID;
+
 	int channelID;
 	// Timestamp im milliseconds, elapsed from start of thread.
 	double timeStamp;
@@ -245,16 +270,16 @@ public:
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
 	typedef std::queue<SensorFrame::Ptr> Queue;
 public:
-	SensorFrame(uint32_t inFrameID);
-	SensorFrame(uint32_t inFrameID, int inChannelQty, int inDetectionQty);
-	SensorFrame(int inChannelQty, int inDetectionQty, ifstream &inTrackFile);
+	SensorFrame(int inReceiverID, uint32_t inFrameID);
+	SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty);
 	virtual ~SensorFrame() {};
 
+	int GetReceiverID() { return(receiverID);}
 	uint32_t	GetFrameID() {return(frameID);}
-	
 
 	Detection::Ptr MakeUniqueDetection(int channelID, int detectionID);
 public:
+	int receiverID;
 	uint32_t frameID;
 	ChannelFrame::Vector channelFrames;
 	Track::Vector tracks; 
@@ -282,13 +307,8 @@ public:
 
 
 public:
-	AcquisitionSequence(int inSequenceID);
-	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty);
-	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, ifstream &inTrackFile);
-	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, std::string inFileName);
-
-	void ReadFile(std::string inFileName, int inChannelQty, int inDetectionQty);
-	void ReadFile(ifstream &inTrackFile, int inChannelQty, int inDetectionQty);
+	AcquisitionSequence(int inReceiverID, int inSequenceID);
+	AcquisitionSequence(int inReceiverID, int inSequenceID, int inChannelQty);
 
 //	SensorFrame &operator[](int frameIndex) {return(*(sensorFrames[frameIndex]));}
 
@@ -318,6 +338,7 @@ protected:
 	void UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 
 public: 
+	int receiverID;
 	int sequenceID;
 	int channelQty;
 	int detectionQty;

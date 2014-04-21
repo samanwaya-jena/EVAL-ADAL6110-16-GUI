@@ -37,8 +37,8 @@ const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh ra
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
-ReceiverBareMetalCapture::ReceiverBareMetalCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, int argc, char** argv):
-ReceiverCapture(inSequenceID, inReceiverChannelQty, inDetectionsPerChannel),
+ReceiverBareMetalCapture::ReceiverBareMetalCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty):
+ReceiverCapture(inReceiverID, inSequenceID, inReceiverChannelQty),
 port(NULL),
 reader(NULL),
 lastMessageID(0),
@@ -49,8 +49,8 @@ responseString("")
 {
 	// Update settings from application
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	sCommPort = globalSettings->sBareMetalCommPort.toStdString();
-	serialPortRate = globalSettings->serialBareMetalPortRate;
+	sCommPort = globalSettings->receiverSettings[receiverID].sCommPort.toStdString();
+	serialPortRate = globalSettings->receiverSettings[receiverID].serialPortRate;
 
     OpenDebugFile(debugFile, "BareBusLog.dat");
 
@@ -419,7 +419,6 @@ void ReceiverBareMetalCapture::ParseChannelDistance(AWLBareMessage &inMsg)
         distance = inMsg.peakIndex;
         distance *= .375; // meters per sample;
 		distance += measurementOffset;
-		distance += sensorDepth;
 
 		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
 		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
@@ -612,8 +611,8 @@ void ReceiverBareMetalCapture::ParseParameterAlgoParameterResponse(AWLBareMessag
 	uint32_t registerValue=  inMsg.value;
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	QList<AlgorithmParameters> algoParameters = globalSettings->parametersAlgos[receiverStatus.currentAlgo];
-	int index = globalSettings->FindAlgoParamByAddress(globalSettings->parametersAlgos[receiverStatus.currentAlgo],
+	QList<AlgorithmParameters> algoParameters = globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo];
+	int index = globalSettings->FindAlgoParamByAddress(globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo],
 		                                           registerAddress);
 
 
@@ -624,9 +623,9 @@ void ReceiverBareMetalCapture::ParseParameterAlgoParameterResponse(AWLBareMessag
 
 	if (index >= 0)
 	{
-		globalSettings->parametersAlgos[receiverStatus.currentAlgo][index].floatValue = *(float *) &registerValue; 
-		globalSettings->parametersAlgos[receiverStatus.currentAlgo][index].intValue = *(int16_t *) &registerValue; 
-		globalSettings->parametersAlgos[receiverStatus.currentAlgo][index].pendingUpdates--;
+		globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo][index].floatValue = *(float *) &registerValue; 
+		globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo][index].intValue = *(int16_t *) &registerValue; 
+		globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo][index].pendingUpdates--;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -639,7 +638,7 @@ void ReceiverBareMetalCapture::ParseParameterFPGARegisterResponse(AWLBareMessage
     uint32_t registerValue=  *(uint32_t *) &inMsg.value;
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterFPGAByAddress(registerAddress);
+	int index = globalSettings->FindRegisterFPGAByAddress(receiverID, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
@@ -648,10 +647,10 @@ void ReceiverBareMetalCapture::ParseParameterFPGARegisterResponse(AWLBareMessage
 
 	if (index >= 0)
 	{
-		globalSettings->registersFPGA[index].value = registerValue; 
-		if (globalSettings->registersFPGA[index].pendingUpdates > 0)
+		globalSettings->receiverSettings[receiverID].registersFPGA[index].value = registerValue; 
+		if (globalSettings->receiverSettings[receiverID].registersFPGA[index].pendingUpdates > 0)
 		{
-			globalSettings->registersFPGA[index].pendingUpdates--;
+			globalSettings->receiverSettings[receiverID].registersFPGA[index].pendingUpdates--;
 		}
 	}
 
@@ -670,7 +669,7 @@ void ReceiverBareMetalCapture::ParseParameterADCRegisterResponse(AWLBareMessage 
     uint32_t registerValue=  *(uint32_t *) &inMsg.value;
 
     AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterADCByAddress(registerAddress);
+	int index = globalSettings->FindRegisterADCByAddress(receiverID, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
@@ -679,10 +678,10 @@ void ReceiverBareMetalCapture::ParseParameterADCRegisterResponse(AWLBareMessage 
 
 	if (index >= 0)
 	{
-		globalSettings->registersADC[index].value = registerValue; 
-		if (globalSettings->registersADC[index].pendingUpdates > 0)
+		globalSettings->receiverSettings[receiverID].registersADC[index].value = registerValue; 
+		if (globalSettings->receiverSettings[receiverID].registersADC[index].pendingUpdates > 0)
 		{
-			globalSettings->registersADC[index].pendingUpdates--;
+			globalSettings->receiverSettings[receiverID].registersADC[index].pendingUpdates--;
 		}
 	}
 
@@ -703,8 +702,8 @@ void ReceiverBareMetalCapture::ParseParameterGlobalParameterResponse(AWLBareMess
 	int globalAlgo = 0;  // PlaceHolder, so we know which algo pointer to use.
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	QList<AlgorithmParameters> algoParameters = globalSettings->parametersAlgos[globalAlgo];
-	int index = globalSettings->FindAlgoParamByAddress(globalSettings->parametersAlgos[globalAlgo],
+	QList<AlgorithmParameters> algoParameters = globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo];
+	int index = globalSettings->FindAlgoParamByAddress(globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo],
 		                                           registerAddress);
 
 
@@ -715,9 +714,9 @@ void ReceiverBareMetalCapture::ParseParameterGlobalParameterResponse(AWLBareMess
 
 	if (index >= 0)
 	{
-		globalSettings->parametersAlgos[globalAlgo][index].floatValue = *(float *) &registerValue; 
-		globalSettings->parametersAlgos[globalAlgo][index].intValue = *(int16_t *) &registerValue; 
-		globalSettings->parametersAlgos[globalAlgo][index].pendingUpdates--;
+		globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo][index].floatValue = *(float *) &registerValue; 
+		globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo][index].intValue = *(int16_t *) &registerValue; 
+		globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo][index].pendingUpdates--;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -730,7 +729,7 @@ void ReceiverBareMetalCapture::ParseParameterGPIORegisterResponse(AWLBareMessage
     uint32_t registerValue=  *(uint32_t *) &inMsg.value;
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterGPIOByAddress(registerAddress);
+	int index = globalSettings->FindRegisterGPIOByAddress(receiverID, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
@@ -739,10 +738,10 @@ void ReceiverBareMetalCapture::ParseParameterGPIORegisterResponse(AWLBareMessage
 
 	if (index >= 0)
 	{
-		globalSettings->registersGPIO[index].value = registerValue; 
-		if (globalSettings->registersGPIO[index].pendingUpdates > 0)
+		globalSettings->receiverSettings[receiverID].registersGPIO[index].value = registerValue; 
+		if (globalSettings->receiverSettings[receiverID].registersGPIO[index].pendingUpdates > 0)
 		{
-			globalSettings->registersGPIO[index].pendingUpdates--;
+			globalSettings->receiverSettings[receiverID].registersGPIO[index].pendingUpdates--;
 		}
 	}
 
@@ -1231,13 +1230,13 @@ bool ReceiverBareMetalCapture::SetFPGARegister(uint16_t registerAddress, uint32_
 
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterFPGAByAddress(registerAddress);
+	int index = globalSettings->FindRegisterFPGAByAddress(receiverID, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		globalSettings->registersFPGA[index].pendingUpdates = 1;
+		globalSettings->receiverSettings[receiverID].registersFPGA[index].pendingUpdates = 1;
 	}
 
     // Simulate rsponse for tests
@@ -1268,13 +1267,13 @@ bool ReceiverBareMetalCapture::SetADCRegister(uint16_t registerAddress, uint32_t
 #endif
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterADCByAddress(registerAddress);
+	int index = globalSettings->FindRegisterADCByAddress(receiverID, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		globalSettings->registersADC[index].pendingUpdates = 1;
+		globalSettings->receiverSettings[receiverID].registersADC[index].pendingUpdates = 1;
 	}
 
 
@@ -1307,13 +1306,13 @@ bool ReceiverBareMetalCapture::SetGPIORegister(uint16_t registerAddress, uint32_
 #endif
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterGPIOByAddress(registerAddress);
+	int index = globalSettings->FindRegisterGPIOByAddress(receiverID, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		globalSettings->registersGPIO[index].pendingUpdates = 1;
+		globalSettings->receiverSettings[receiverID].registersGPIO[index].pendingUpdates = 1;
 	}
 
 
@@ -1456,13 +1455,13 @@ bool ReceiverBareMetalCapture::QueryFPGARegister(uint16_t registerAddress)
 #endif
 	// Signal that we are waiting for an update of the register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterFPGAByAddress(registerAddress);
+	int index = globalSettings->FindRegisterFPGAByAddress(receiverID, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		globalSettings->registersFPGA[index].pendingUpdates = 1;
+		globalSettings->receiverSettings[receiverID].registersFPGA[index].pendingUpdates = 1;
 	}
 
         // Simulate rsponse for tests
@@ -1492,13 +1491,13 @@ bool ReceiverBareMetalCapture::QueryADCRegister(uint16_t registerAddress)
 
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterADCByAddress(registerAddress);
+	int index = globalSettings->FindRegisterADCByAddress(receiverID, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		globalSettings->registersADC[index].pendingUpdates = 1;
+		globalSettings->receiverSettings[receiverID].registersADC[index].pendingUpdates = 1;
 	}
 
         // Simulate rsponse for tests
@@ -1526,13 +1525,13 @@ bool ReceiverBareMetalCapture::QueryGPIORegister(uint16_t registerAddress)
 #endif
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindRegisterGPIOByAddress(registerAddress);
+	int index = globalSettings->FindRegisterGPIOByAddress(receiverID, registerAddress);
 	if (index >= 0)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		globalSettings->registersGPIO[index].pendingUpdates = 1;
+		globalSettings->receiverSettings[receiverID].registersGPIO[index].pendingUpdates = 1;
 	}
 
         // Simulate rsponse for tests

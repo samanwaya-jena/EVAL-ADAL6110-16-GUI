@@ -8,8 +8,15 @@
 
 #include <stdint.h>
 
+#define VelocityToKmH(velocity) (velocity * 3.6)
+
+#define ALGO_QTY 4
+#define GLOBAL_PARAMETERS_INDEX 0
+
 namespace awl
 {
+
+	typedef int ReceiverID;
 
 	typedef struct RegisterSettings 
 	{
@@ -62,11 +69,53 @@ namespace awl
 	}
 	VelocityUnits;
 
+	typedef struct ReceiverSettings
+	{
+	QList<RegisterSettings> registersFPGA;
+	QList<RegisterSettings> registersADC;
+	QList<RegisterSettings> registersGPIO;
 	
-#define VelocityToKmH(velocity) (velocity * 3.6)
+	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
+	QList<AlgorithmParameters> parametersAlgos[ALGO_QTY+1];
 
-#define ALGO_QTY 4
-#define GLOBAL_PARAMETERS_INDEX 0
+	// Channel configuration
+	QList<ChannelConfig> channelsConfig;
+
+	// Receiver
+	QString sReceiverType;
+	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
+	uint8_t receiverFrameRate;			// Frame rate, in hertz
+
+	// Receiver communications port config
+	QString sCommPort;       // Default is "COM16"
+	long serialPortRate;		// In bpschannelMask
+	QString sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
+	uint16_t yearOffset;		   // All sensor Dates are offset from 1900
+	uint16_t monthOffset;		// All sensor months start at 0.  Posix starts aty 1.
+	
+	
+	// Messages enabled
+	bool msgEnableObstacle;
+	bool msgEnableDistance_1_4;
+	bool msgEnableDistance_5_8;
+	bool msgEnableIntensity_1_4;
+	bool msgEnableIntensity_5_8;
+
+	// Calibration parameters
+	float sensorX;
+	float sensorY;
+	float sensorZ;
+
+	float sensorPitch; // In degrees
+	float sensorRoll;  // In degrees
+	float sensorYaw;   // In degrees
+
+	float displayedRangeMin;
+	float displayedRangeMax;
+	float rangeOffset;
+	}
+	ReceiverSettings;
+
 
 class AWLSettings
 {
@@ -81,11 +130,12 @@ public:
 
 	/** \brief Return the index of the FPGA RegisterSettings for the object that
 	           has the address specified.
-    * \param[in] inAddress the register address
+    * \param[in] inReceiver the receiver for which we want the register read
+	* \param[in] inAddress the register address
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
-	int FindRegisterFPGAByAddress(uint16_t inAddress);
+	int FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress);
 
 	/** \brief Return the index of the FPGA RegisterSettings for the object that
 	           has the address specified.
@@ -93,7 +143,7 @@ public:
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
-	int FindRegisterADCByAddress(uint16_t inAddress);
+	int FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress);
 
 	/** \brief Return the index of the FPGA RegisterSettings for the object that
 	           has the address specified.
@@ -101,7 +151,7 @@ public:
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
-	int FindRegisterGPIOByAddress(uint16_t inAddress);
+	int FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress);
 
 	/** \brief Return the index of the FPGA RegisterSettings for the object that
 	           has the address specified.
@@ -112,26 +162,27 @@ public:
 	int FindAlgoParamByAddress(QList<AlgorithmParameters>&paramList, uint16_t inAddress);
 
 public:
-	// Registers
+	// Default register configurations
 
-	QList<RegisterSettings> registersFPGA;
-	QList<RegisterSettings> registersADC;
-	QList<RegisterSettings> registersGPIO;
+	QList<RegisterSettings> defaultRegistersFPGA;
+	QList<RegisterSettings> defaultRegistersADC;
+	QList<RegisterSettings> defaultRegistersGPIO;
 
 	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
-	QList<AlgorithmParameters> parametersAlgos[ALGO_QTY+1];
+	QList<AlgorithmParameters> defaultParametersAlgos[ALGO_QTY+1];
+
+
+	// Receiver configuration
+	QList<ReceiverSettings> receiverSettings;
 
 	QString sAlgoNames[ALGO_QTY+1];
-
-	// Channel Configurations
-	QList<ChannelConfig> channelsConfig;
-	
 	// Default displayedAlgo
 	int defaultAlgo;
 
 	// Layout
 	bool bDisplay3DWindow;
 	bool bDisplay2DWindow;
+	bool bDisplayTableViewWindow;
 	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
 
@@ -148,22 +199,21 @@ public:
 	int  demoInjectType;
 
 	// Calibration parameters
-	float sensorHeight;
-	float sensorDepth;
-	float displayedRangeMin;
-	float displayedRangeMax;
-	float rangeOffset;
 	float distanceScale;
 	float targetHintDistance;
 	float targetHintAngle;
 
-	// 3D display options
-	int decimation;
-	int pixelSize;
-	int colorStyle;
-	int cameraView;
+	
+	// Table view options
+	int displayedDetectionsPerChannelInTableView;
 
 	// 2D display options
+	float carWidth;
+	float carLength;
+	float carHeight;
+
+	float laneWidth;
+
 	float shortRangeDistance;
 	float shortRangeDistanceStartLimited;
 	float shortRangeAngle;
@@ -177,32 +227,24 @@ public:
 	bool showPalette;
 	int mergeDisplayMode;
 	int measureMode;
-	float mergeAcceptance;
+	int displayDistanceMode2D;
+	float mergeAcceptanceX;
+	float mergeAcceptanceY;
 	int colorCode2D;
 	float maxVelocity2D;
 	float zeroVelocity;
 
-	// Receiver
-	QString sReceiverType;
-	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
-	uint8_t receiverFrameRate;			// Frame rate, in hertz
 
-	// CAN Receiver config
-	QString sCANCommPort;       // Default is "COM16"
-	QString sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
-	long serialCANPortRate;		// In bpschannelMask
-	uint16_t yearOffsetCAN;		   // All CAN Dates are offset from 1900
-	uint16_t monthOffsetCAN;		// All CAN months start at 0.  Posix starts aty 1.
-	
-	bool msgEnableObstacle;
-	bool msgEnableDistance_1_4;
-	bool msgEnableDistance_5_8;
-	bool msgEnableIntensity_1_4;
-	bool msgEnableIntensity_5_8;
-		
-	// BareMetal receiverConfig
-	QString sBareMetalCommPort;       // Default is "COM16"
-	long serialBareMetalPortRate;	 // In bps
+	// 3D display options
+	int decimation;
+	int pixelSize;
+	int colorStyle;
+	int cameraView;
+	float viewerDepth; 
+	float viewerHeight;
+	float viewerMaxRange;
+
+
 
 	// Scope
 	int scopeTimerInterval;
@@ -216,6 +258,12 @@ public:
 	float travelSpeed;
 
 	// Camera
+	float cameraX;
+	float cameraY; 
+	float cameraZ; 
+	float cameraPitch; 
+	float cameraRoll; 
+	float cameraYaw; 
 	float cameraFovXDegrees;
 	float cameraFovYDegrees;
 

@@ -32,8 +32,6 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 [Gg]eneratedFiles*/
-*.h
-*.cpp
 [Ii]pch*/
 *.ipch
-src/AWLQtDemo/BareBusLog.dat
+src/AWLQtDemo/*.dat

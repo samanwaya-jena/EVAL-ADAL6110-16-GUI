@@ -7,8 +7,12 @@
 #include <QAction>
 #include <QActionGroup>
 
+#include "Tracker.h"
 #include "DetectionStruct.h"
 #include "AWLSettings.h"
+
+namespace awl
+{
 
 class FOV_2DScan : public QFrame
 {
@@ -44,6 +48,12 @@ public:
 		eColorCodeVelocity = 1  // Color code speeds
 	} DisplayColorCode;
 
+	typedef enum DisplayDistanceMode
+	{	
+		eDisplayDistanceModeHide = 0, // Hide all distances
+		eDisplayDistanceModeShow = 1  // Show all distances
+	} DisplayDistanceMode;
+
 signals:
     void closed();
 
@@ -55,12 +65,18 @@ public slots:
 	void slotMergeDisplayAction();
 	void slotMeasureModeAction();
 	void slotColorCodeAction();
+	void slotDisplayDistanceModeAction();
 
 protected :
     void paintEvent(QPaintEvent *p);
 	void closeEvent(QCloseEvent * event);
 	void resizeEvent(QResizeEvent * event);
 private:
+
+	float carWidth;
+	float carLength;
+	float carHeight;
+	float laneWidth;
 
     float Ratio;
     bool ShowPalette;
@@ -77,7 +93,10 @@ private:
 	MergeDisplayMode mergeDisplayMode;
 	MeasureMode measureMode;
 	DisplayColorCode colorCode;
-	float mergeAcceptance;
+	DisplayDistanceMode displayDistanceMode;
+
+	float mergeAcceptanceX;
+	float mergeAcceptanceY;
 	float maxAbsVelocity;
 	float zeroVelocity;
 
@@ -102,26 +121,32 @@ private:
 	QAction* colorCodeDistanceAction;
 	QAction* colorCodeVelocityAction;
 
+	QActionGroup* groupDisplayDistanceMode;
+	QAction* displayDistanceModeShowAction;
+	QAction* displayDistanceModeHideAction;
+
 	void drawArc(QPainter* p, float angle, float angleWidth, float length);
-    void drawPie(QPainter* p, float angle, float angleWidth, float length);
+    void drawPie(QPainter* p, float angle, float angleWidth, float xOffset, float yOffset, float length);
     void drawLine(QPainter* p,float angle, float startLength,float length);
     void drawText(QPainter* p,float angle, float pos, QString text);
     void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
-    void drawTextDetection(QPainter* p, DetectionData *detection, float angle, float pos, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
+    void drawTextDetection(QPainter* p, Detection *detection, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
     float degree_to_rad (float degrees);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
-	bool isInRange(DetectionData* detection1, DetectionData* detection2 );
+	bool isInRange(Detection* detection1, Detection* detection2 );
     QColor getColorFromDistance(float distance);
 	QColor FOV_2DScan::getColorFromVelocity(float velocity);
 
     void drawPalette(QPainter* p);
 
-    void drawDetection(QPainter* p, DetectionData *detection, float angle, float width, float distanceRadial, float distanceLongitudinal, int channel, int id,  bool drawTarget = true, bool drawLegend = true);
+    void drawDetection(QPainter* p, Detection *detection,  bool drawTarget = true, bool drawLegend = true);
 	void drawMergedData(QPainter* p, DetectionDataVect* data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
 
 	void createAction();
 	
 };
 
+
+} // namespace awl
 #endif // FOV_2DSCAN_H
