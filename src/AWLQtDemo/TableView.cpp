@@ -1,5 +1,3 @@
-#include "TableView.h"
-#include <math.h>
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -8,13 +6,11 @@
 
 
 #include "AWLSettings.h"
+#include "TableView.h"
 #include "DetectionStruct.h"
-#include "ReceiverCapture.h"
 
 using namespace std;
 using namespace awl;
-
-
 
 TableView::TableView(QWidget *parent) :
     QFrame(parent)

@@ -1,23 +1,16 @@
-#define CV_NO_BACKWARD_COMPATIBILITY
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-
-#include <iostream>
-#include <cstdio>
-
-#include "VideoCapture.h"
-#include "ReceiverCapture.h"
-#include "Sensor.h"
-#include "AWLSettings.h"
+#include <fstream>
 
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
 
+#include "Sensor.h"
+#include "VideoCapture.h"
+#include "ReceiverCapture.h"
+#include "AWLSettings.h"
+#include "awlcoord.h"
+
 #include "windows.h"
+
 using namespace std;
 using namespace pcl;
 using namespace awl;

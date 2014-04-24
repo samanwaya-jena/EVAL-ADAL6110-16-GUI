@@ -20,7 +20,6 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/asio/serial_port.hpp> 
-#include <boost/bind.hpp>
 #endif
 
 class blocking_reader

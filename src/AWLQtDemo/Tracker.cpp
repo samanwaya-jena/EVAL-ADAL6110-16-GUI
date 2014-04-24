@@ -1,39 +1,19 @@
 
 
 #include <stdint.h>
-#include <iostream>
-#include <fstream>
 #include <string>
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
 #include <math.h>
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
-
-#include "Tracker.h"
-#include "DebugPrintf.h"
 #include "AWLSettings.h"
+#include "Tracker.h"
+#include "awlcoord.h"
+#include "DebugPrintf.h"
 
 using namespace std;
 using namespace awl;
 
-#ifndef M_PI
-#define M_PI       3.14159265358979323846
-#endif
-#ifndef M_PI_2
-#define M_PI_2     1.57079632679489661923
-#endif
- 
-#define DEG2RAD(angle) (angle * 3.14159265358979323846 / 180.0)
-
 const AcquisitionSequence::TrackingMode defaultTrackingMode = AcquisitionSequence::eTrackAllChannels;
-
 
 AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID):
 receiverID(inReceiverID),
@@ -50,8 +30,6 @@ channelQty(inChannelQty),
 frameID(0)
 
 {
-
-
 }
 
 uint32_t AcquisitionSequence::AllocateFrameID()

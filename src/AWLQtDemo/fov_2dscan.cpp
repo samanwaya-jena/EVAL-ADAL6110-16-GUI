@@ -1,14 +1,18 @@
 #include "fov_2dscan.h"
 #include <QPainter>
 #include <QLabel>
-#include <math.h>
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
 
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
+#include <math.h>
+
+#include "awlcoord.h"
+#include "AWLSettings.h"
+
 using namespace awl;
 
-#define PI 3.1416
 
 const int transitionLightness= 160;  // Lightness at which we start to write in ligther shade
 const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
@@ -301,7 +305,7 @@ void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
 	float minHeight = 240;
 	Ratio = (minHeight-(minHeight*0.1)) / totalDistance;
  
-	float angleInRad = degree_to_rad((pConfig->shortRangeAngle/2)+180);
+	float angleInRad = DEG2RAD((pConfig->shortRangeAngle/2)+180);
 	float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
 
 	int minWidth = (xWidth*2)+125;
@@ -743,7 +747,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, Detection *detection, QString te
 
 void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
 {
-	float angleInRad = degree_to_rad(angle+180);
+	float angleInRad = DEG2RAD(angle+180);
 	// Real position of object, from sensor on  the grid is postion + bumperOffset.
 	// the sensorDepth was added at the moment of capture, so we have to remove it here.
 	pos -= config.sensorDepth;
@@ -789,7 +793,7 @@ void FOV_2DScan::drawPie(QPainter* p, float angle, float angleWidth, float xOffs
 void FOV_2DScan::drawLine(QPainter* p, float angle, float startLength, float length)
 {
 
-    float angleInRad = degree_to_rad(angle+180);
+    float angleInRad = DEG2RAD(angle+180);
 
     QPoint start(0, (startLength*Ratio));
     QPoint end(0, ((startLength+length)*Ratio));
@@ -805,11 +809,6 @@ void FOV_2DScan::drawLine(QPainter* p, float angle, float startLength, float len
 
     p->drawLine(start + QPoint(width()/2, height()), end + QPoint(width()/2, height()));
 
-}
-
-float FOV_2DScan::degree_to_rad (float degrees)
-{
-    return (degrees * PI/ 180.0);
 }
 
 QColor FOV_2DScan::getColorFromDistance(float distance)

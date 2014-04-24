@@ -1,9 +1,6 @@
 
-#include <iostream>
-
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
 #endif
 
 #include "AWLSettings.h"
@@ -17,10 +14,10 @@
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
 
+#include "windows.h"
+
 using namespace std;
 using namespace awl;
-
-#define THREADED_VIEWER
 
 const char *szCameraWindowClassName = "Main HighGUI class";  // Class name for the camera windows created by OpenCV
 															// We could also use NULL, but that would pose a risk.
@@ -97,12 +94,7 @@ void  VideoViewer::Go()
 		{
 			cvNamedWindow(cameraName.c_str(), 1 );
 			bWindowCreated = true;
-#if 0
-		// Place the window in the top left corner
-		top = 0;
-		left = 0;
-		cvMoveWindow(cameraName.c_str(),left, top)
-#endif
+
 		// Set the icon for the window
 		HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 		if (window != NULL) 
@@ -125,9 +117,7 @@ void  VideoViewer::Go()
 		mStopRequested = false;
 		mThreadExited = false;
 
-#ifdef THREADED_VIEWER
 		mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoViewer::DoThreadLoop, this)));
-#endif
 	}
 }
  
@@ -146,14 +136,13 @@ void  VideoViewer::Stop()
 	if (mStopRequested || mThreadExited) 
 	{
 		mThreadExited=false;
-#ifdef THREADED_VIEWER
+
 		if (mThread.get() &&
 			mThread->joinable())
 		{
 			mThread->join();
 			mThread.reset();
 		}
-#endif
 	}
 
 	if (bWindowCreated) 

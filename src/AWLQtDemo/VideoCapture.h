@@ -3,12 +3,10 @@
 
 #define CV_NO_BACKWARD_COMPATIBILITY
 
-
-#include <iostream>
+#include <fstream>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
 #endif
 
 using namespace std;
@@ -20,8 +18,6 @@ using namespace std;
 
 #include "subscription.h"
 
-// Frame rate, in frame per seconds
-#define FRAME_RATE	33.0
 
 namespace awl
 {

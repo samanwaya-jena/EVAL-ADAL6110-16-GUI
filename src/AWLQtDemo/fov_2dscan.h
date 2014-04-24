@@ -7,9 +7,7 @@
 #include <QAction>
 #include <QActionGroup>
 
-#include "Tracker.h"
 #include "DetectionStruct.h"
-#include "AWLSettings.h"
 
 namespace awl
 {
@@ -131,7 +129,6 @@ private:
     void drawText(QPainter* p,float angle, float pos, QString text);
     void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
     void drawTextDetection(QPainter* p, Detection *detection, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
-    float degree_to_rad (float degrees);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
 	bool isInRange(Detection* detection1, Detection* detection2 );

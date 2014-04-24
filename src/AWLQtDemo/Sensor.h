@@ -1,12 +1,6 @@
 #ifndef _SENSOR_H
 #define _SENSOR_H
 
-#define CV_NO_BACKWARD_COMPATIBILITY
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-
-
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
 #include <pcl/range_image/range_image.h>
@@ -21,10 +15,6 @@ using namespace pcl;
 
 namespace awl
 {
-
-#define DEG2MRAD(d)           (float)(17.4533*(d))     // 1000*PI/180
-#define MRAD2DEG(r)           (float)(0.057295791*(r)) // 180/(1000*PI)
-
 class ViewerCoordinates;
 class Receiver;
 class ReceiverChannel;
@@ -106,23 +96,6 @@ public:
 	double GetCameraFovY() {return(fovY);}
 };
 
-class ReceiverPoint 
-{
-public:
-	int   channelID;
-	float distance;
-	uint16_t intensity;
-	float speed;
-
-	ReceiverPoint(int inChannelID, float inDistance, uint16_t inIntensity, float inSpeed):
-	channelID(inChannelID),
-	distance(inDistance),
-	intensity(inIntensity),
-	speed(inSpeed)
-	{
-	}
-};
-
 
 class ReceiverChannel
 {
@@ -178,11 +151,6 @@ protected:
 	double  sensorZ;
 	/** \brief  sensor depth from bumber (ideally, should be negative)*/
 	double  sensorY;
-
-#ifdef _JYD_DEBUG
-	// Receiver channel LIDAR data
-	std::vector<ReceiverPoint> lidarPoints;
-#endif
 
 	// Pointer to background during frame reconstruction
 	ReceiverChannel::FramePtr backgroundPtr;
@@ -328,10 +296,6 @@ public:
 	void SetBackgroundPtr(ReceiverChannel::FramePtr inBackgroundPtr);
 	void SetColorPtr(ReceiverChannel::FramePtr inColorPtr);
 	void SetCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &inCurrentCloud); 
-#ifdef _JYD_DEBUG
-	void AddPoint(ReceiverPoint point);
-#endif
-
 }; // class ReceiverChannel
 
 /** \brief Threaded ReceiverProjector class is used to control the projection of 3D data acquired from ReceiverChannels

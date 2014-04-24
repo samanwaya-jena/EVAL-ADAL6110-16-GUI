@@ -2,17 +2,12 @@
 #define TableView_H
 
 #include <QFrame>
-#include <QLabel>
-#include <QPainter>
 #include <QAction>
 #include <QActionGroup>
 
 #include "ui_TableView.h"
 
-#include "Tracker.h"
 #include "DetectionStruct.h"
-#include "ReceiverCapture.h"
-#include "AWLSettings.h"
 
 namespace awl
 {

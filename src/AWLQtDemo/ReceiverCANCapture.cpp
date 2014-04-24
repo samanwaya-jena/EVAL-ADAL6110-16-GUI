@@ -1,21 +1,14 @@
-#define CV_NO_BACKWARD_COMPATIBILITY
+//#include <iostream>
+//#include <cstdio>
+//#include <fstream>
 
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-#include <iostream>
-#include <cstdio>
-#include <iostream>
-#include <fstream>
 #include <string>
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
 #endif
+
 #include "DebugPrintf.h"
 #include "BlockingReader.h"
 
@@ -26,11 +19,9 @@
 
 
 using namespace std;
-using namespace pcl;
 using namespace awl;
 
 const float maxIntensity = 1024.0;
-
 const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh rate is 100Hz, this should not exceed 10ms
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects

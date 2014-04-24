@@ -1,17 +1,18 @@
+#include <QDesktopWidget>
+#include <QApplication>
+#include <qwt_plot_curve.h>
+#include <qlabel.h>
+#include <qlayout.h>
+
 #include "awlqtscope.h"
 #include "AWLScopePlot.h"
 #include "knob.h"
 #include "wheelbox.h"
 
-#include <QDesktopWidget>
-#include <QApplication>
-#include <qwt_scale_engine.h>
-#include <qwt_plot_curve.h>
-#include <qlabel.h>
-#include <qlayout.h>
-
 #include "AWLSettings.h"
 #include "DebugPrintf.h"
+#include "tracker.h"
+
 
 int timerInterval = 30; // In ms.  So 30FPS
 

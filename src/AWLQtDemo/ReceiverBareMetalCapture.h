@@ -1,16 +1,10 @@
 #ifndef AWL_RECEIVER_BAREMETAL_CAPTURE_H
 #define AWL_RECEIVER_BAREMETAL_CAPTURE_H
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
 #include <stdint.h>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/range_image/range_image.h>
 
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
@@ -21,8 +15,8 @@
 #include "Subscription.h"
 #include "Tracker.h"
 #include "ReceiverCapture.h"
+
 using namespace std;
-using namespace pcl;
 
 namespace awl
 {

@@ -3,35 +3,18 @@
 
 
 #include <stdint.h>
-#include <iostream>
-#include <fstream>
 #include <string>
 #include <queue>
-#include <cmath>
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
+#include <boost/shared_ptr.hpp>
 #include "awlcoord.h"
-
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
-
 
 using namespace std;
 
 namespace awl
 {
 
-#if 0
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *) __nan)
-#else
 const float NAN = std::numeric_limits<float>::quiet_NaN ();
 #define isNAN(val) (val == NAN)
-#endif
-
 
 typedef uint16_t TrackID;
 

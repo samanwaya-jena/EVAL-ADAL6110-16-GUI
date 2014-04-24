@@ -8,25 +8,17 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #endif
 
 using namespace std;
-using namespace pcl;
 
 #include "sensor.h"
 #include "ReceiverCapture.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-// Frame rate, in frame per seconds
-#define FRAME_RATE	33.0
+//#include "opencv2/highgui/highgui_c.h"
+//#include "opencv2/highgui/highgui.hpp"
 
 namespace awl
 {

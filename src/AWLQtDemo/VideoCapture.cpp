@@ -1,24 +1,23 @@
-#include <iostream>
+#include <fstream>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
 #endif
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
+#include "awlcoord.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
 
-#include "windows.h"
-
 using namespace std;
 using namespace awl;
 
-#define THREADED_CAPTURE
+// Frame rate, in frame per seconds
+#define FRAME_RATE	33.0
 
 // Define camera resolution = 640x360
 VideoCapture::VideoCapture(int argc, char** argv):
@@ -116,18 +115,11 @@ void  VideoCapture::Go()
 {
 	assert(!mThread);
     mStopRequested = false;
-;
+
 	mThreadExited = false;
-#ifdef THREADED_CAPTURE
+
 	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
-#if 0
-	// Set the priority under windows.  This is the most critical display thread 
-	// for user interaction
-	
-    HANDLE th = mThread->native_handle();
-    SetThreadPriority(th, THREAD_PRIORITY_TIME_CRITICAL);
-#endif
-#endif
+
 }
  
 
@@ -139,10 +131,8 @@ void  VideoCapture::Stop()
 	if (mStopRequested || mThreadExited) 
 	{
 		mThreadExited=false;
-#ifdef THREADED_CAPTURE
 		assert(mThread);
 		mThread->join();
-#endif
 	}	
 }
 
@@ -221,12 +211,6 @@ void VideoCapture::DoThreadLoop()
 		}
 
 		threadLock.unlock();
-#if 0
-		if( cv::waitKey(1) >= 0 )
-		 {
-             break;
-		 }
-#endif
 	} // for ;;
 
 

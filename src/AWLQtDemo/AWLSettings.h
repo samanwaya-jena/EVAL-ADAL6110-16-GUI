@@ -3,7 +3,6 @@
 
 #include <QtCore/qlist.h>
 #include <QtCore/qstring.h>
-#include <QtCore/qstringlist.h>
 #include <QSettings>
 
 #include <stdint.h>

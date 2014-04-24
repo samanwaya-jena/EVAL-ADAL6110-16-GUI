@@ -1,21 +1,11 @@
-#define CV_NO_BACKWARD_COMPATIBILITY
-
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-#include <iostream>
-#include <cstdio>
-#include <iostream>
-#include <fstream>
 #include <string>
+
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
 #endif
+
 #include "DebugPrintf.h"
 #include "BlockingReader.h"
 
@@ -26,7 +16,6 @@
 
 
 using namespace std;
-using namespace pcl;
 using namespace awl;
 
 const float maxIntensity = 1024.0;

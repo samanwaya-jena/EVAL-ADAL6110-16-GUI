@@ -1,16 +1,11 @@
 #ifndef AWL_RECEIVER_CAPTURE_H
 #define AWL_RECEIVER_CAPTURE_H
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
 #include <stdint.h>
+#include <fstream>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/range_image/range_image.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 
@@ -19,8 +14,6 @@
 #include "AWLSettings.h"
 
 using namespace std;
-using namespace pcl;
-
 const int maxReceiverFrames = 100;
 
 namespace awl

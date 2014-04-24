@@ -7,7 +7,21 @@ using namespace std;
 
 namespace awl
 {
+#ifndef DEG2MRAD
+#define DEG2MRAD(d)           (float)(17.453293*(d))     // 1000*PI/180
+#endif
 
+#ifndef MRAD2DEG
+#define MRAD2DEG(r)           (float)(0.05729579513*(r)) // 180/(1000*PI)
+#endif
+
+#ifndef DEG2RAD
+#define DEG2RAD(d)            (float)(0.017453293*(d))     // PI/180
+#endif
+
+#ifndef RAD2DEG
+#define RAD2DEG(r)           (float)(57.295779513*(r)) // 180/(PI)
+#endif
 
 class PolarCoord;
 class CartesianCoord;

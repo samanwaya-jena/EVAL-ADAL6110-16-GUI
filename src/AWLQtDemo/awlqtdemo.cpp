@@ -1,16 +1,15 @@
-#include "awlqtdemo.h"
+
 
 #include <QTableWidget>
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QTime>
-#include <QSettings>
 #include <QMessageBox>
 #include <QListWidget>
 
-
 #include <string>
-#include "boost\pointer_cast.hpp"
+
+#include "awlqtdemo.h"
 #include "Tracker.h"
 #include "ReceiverCapture.h"
 #include "ReceiverCANCapture.h"
@@ -21,19 +20,11 @@
 #include "DetectionStruct.h"
 #include "tableview.h"
 
-#include "boost\pointer_cast.hpp"
 #include "..\awlqtscope\awlqtscope.h"
-#include "..\awlqtscope\curvedata.h"
-#include "..\awlqtscope\signaldata.h"
+
 
 using namespace std;
 using namespace awl;
-using namespace pcl;
-
-
-
-// Frame rate, in frame per seconds
-#define FRAME_RATE	30.0
 
 // Text update rate, in frame per seconds
 #if 1
@@ -250,7 +241,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
 
 	// Place the 2D view in the screen
-#if 1
+
 	int frameWindowWidth = 712;
 	m2DScan->move(scr.right()-frameWindowWidth, scr.top());
 	m2DScan->show();
@@ -259,7 +250,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	int verticalDecorationsHeight = frame.height() - client.height();
 	int horizontalDecorationsWidth = frame.width() - client.width();
 	m2DScan->resize(frameWindowWidth-horizontalDecorationsWidth, scr.height() - verticalDecorationsHeight);
-#endif
 
 	mCfgSensor.shortRangeDistance = globalSettings->shortRangeDistance;
     mCfgSensor.shortRangeDistanceStartLimited = globalSettings->shortRangeDistanceStartLimited;
@@ -281,7 +271,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	mTableView->setWindowTitle(this->windowTitle() + " Table View");
 
 	// Place the table view in the top left of screen
-#if 1
+
 	mTableView->move(scr.left(), scr.top());
 	mTableView->show();
 	frame = mTableView->frameGeometry();
@@ -289,7 +279,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	verticalDecorationsHeight = frame.height() - client.height();
 	horizontalDecorationsWidth = frame.width() - client.width();
 	mTableView->resize(client.width(), scr.height() - verticalDecorationsHeight);
-#endif
+
 	mTableView->slotConfigChanged();
 
 	// Calibration 

@@ -2,10 +2,12 @@
 #define AWLQTDEMO_H
 
 #include <QtWidgets/QMainWindow>
+#include <QList>
 #include <QTimer>
 
 #include "ui_awlqtdemo.h"
 
+#include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
 #include "Sensor.h"
@@ -13,13 +15,8 @@
 #include "FusedCloudViewer.h"
 #include "FOV_2DScan.h"
 #include "TableView.h"
-#include "AWLSettings.h"
 #include "..\awlqtscope\awlqtscope.h"
 
-using namespace pcl;
-
-
-// Not a number
 
 namespace awl
 {

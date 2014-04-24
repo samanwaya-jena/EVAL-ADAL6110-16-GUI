@@ -1,27 +1,16 @@
-#define CV_NO_BACKWARD_COMPATIBILITY
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
 
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 
-#include <iostream>
-#include <cstdio>
+#include <fstream>
 
 #include "AWLSettings.h"
 #include "tracker.h"
 #include "ReceiverCapture.h"
 #include "DebugPrintf.h"
 
-#include <pcl/common/common_headers.h>
-#include <pcl/common/io.h>
-
 using namespace std;
-using namespace pcl;
 using namespace awl;
 
 const int ReceiverCapture::maximumSensorFrames(100);
