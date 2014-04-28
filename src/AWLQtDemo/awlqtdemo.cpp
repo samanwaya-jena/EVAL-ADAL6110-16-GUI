@@ -92,15 +92,15 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		// Create the LIDAR acquisition thread object
 		if (!globalSettings->receiverSettings[receiverID].sReceiverType.compare("BareMetal", Qt::CaseInsensitive))
 		{
-			receiverCaptures.append(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverBareMetalCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.count())));
+			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverBareMetalCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.count())));
 		}
 		else 
 		{
 			// CAN Capture is used if defined in the ini file, and by default
-			receiverCaptures.append(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.count())));
+			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.count())));
 		}
 
-		receiverCaptureSubscriberIDs.append(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->Subscribe());
+		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->Subscribe());
 	}
 
 
@@ -300,7 +300,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Start the threads for background capture objects
 	videoCapture->Go();
-	for (int receiverID = 0; receiverID < receiverCaptures.count(); receiverID++) 
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
 	{ 
 		receiverCaptures[receiverID]->Go(true);
 	}
@@ -401,7 +401,7 @@ void AWLQtDemo::on_destroy()
 {
 	if (fusedCloudViewer) fusedCloudViewer->Stop();
 	if (videoCapture) videoCapture->Stop();
-	for (int receiverID = 0; receiverID < receiverCaptures.count(); receiverID++)
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
@@ -446,7 +446,7 @@ void AWLQtDemo::on_simulatedDataInjectCheckBox_setChecked(bool  bChecked)
 		receiverCaptures[0]->EnableSimulationData(bChecked);
 	}
 
-	if (receiverCaptures.count() >= 2 && receiverCaptures[1])
+	if (receiverCaptures.size() >= 2 && receiverCaptures[1])
 	{
 		receiverCaptures[1]->EnableSimulationData(bChecked);
 	}
@@ -904,7 +904,7 @@ void AWLQtDemo::on_timerTimeout()
 #endif
 	if (bContinue)
 	{
-		for (int receiverID = 0; receiverID < receiverCaptures.count(); receiverID++)
+		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 		{
 			if (!receiverCaptures[receiverID]) 
 			{
@@ -977,7 +977,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	DetectionDataVect vect;
 
-	for (int receiverID = 0; receiverID < receiverCaptures.count(); receiverID++)
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		// Use the frame snapped by the main display timer as the current frame
@@ -1025,7 +1025,7 @@ void AWLQtDemo::DisplayReceiverValuesToTableView()
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	DetectionDataVect vect;
 
-	for (int receiverID = 0; receiverID < receiverCaptures.count(); receiverID++)
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		// Use the frame snapped by the main display timer as the current frame
@@ -1071,7 +1071,7 @@ void AWLQtDemo::DisplayReceiverValuesToTableView()
 void AWLQtDemo::DisplayReceiverStatus()
 {
 
-	int receiverQty = receiverCaptures.count();
+	int receiverQty = receiverCaptures.size();
 	 for (int receiverID = 0; receiverID < receiverQty; receiverID++) 
 	 {
 		DisplayReceiverStatus(receiverID);
@@ -1227,7 +1227,7 @@ void AWLQtDemo::on_algo1RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	int receiverCount = receiverCaptures.count();
+	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		receiverCaptures[receiverID]->SetAlgorithm(1);
@@ -1239,7 +1239,7 @@ void AWLQtDemo::on_algo2RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	int receiverCount = receiverCaptures.count();
+	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		receiverCaptures[receiverID]->SetAlgorithm(2);
@@ -1251,7 +1251,7 @@ void AWLQtDemo::on_algo3RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	int receiverCount = receiverCaptures.count();
+	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		receiverCaptures[receiverID]->SetAlgorithm(3);
@@ -1264,7 +1264,7 @@ void AWLQtDemo::on_algo4RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	int receiverCount = receiverCaptures.count();
+	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		receiverCaptures[receiverID]->SetAlgorithm(4);

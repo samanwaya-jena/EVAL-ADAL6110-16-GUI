@@ -8,6 +8,7 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
+#include <boost/container/vector.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
@@ -39,6 +40,7 @@ class  CloudViewerWin
 public:
 	typedef boost::shared_ptr<CloudViewerWin> Ptr;
     typedef boost::shared_ptr<CloudViewerWin > ConstPtr;
+	typedef boost::container::vector<CloudViewerWin::Ptr> List;
 
 	typedef enum ColorHandlerType 
 	{
@@ -286,7 +288,7 @@ public:
 	typedef boost::shared_ptr<FusedCloudViewer> Ptr;
     typedef boost::shared_ptr<FusedCloudViewer> ConstPtr;
 
-	std::vector<CloudViewerWin::Ptr> viewers;
+	boost::container::vector<CloudViewerWin::Ptr> viewers;
 
 	/** \brief the source projector used as a sinmk */
 	ReceiverProjector::Ptr sourceProjector;

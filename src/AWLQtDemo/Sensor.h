@@ -2,6 +2,7 @@
 #define _SENSOR_H
 
 #ifndef Q_MOC_RUN
+#include <boost/container/vector.hpp>
 #include <boost/thread/thread.hpp>
 #include <pcl/range_image/range_image.h>
 #endif
@@ -170,7 +171,7 @@ public:
 	cv::Mat	frameImage;
 
 	// Receiver points in RGB image covered by FOV
-	std::vector<CvPoint> maskPoints;
+	boost::container::vector<CvPoint> maskPoints;
 
 // protected methods
 protected:
@@ -505,7 +506,7 @@ public:
 	friend class ReceiverChannel;
 
 	/** \brief Vector holding each of the individual lidar channels. */
-	std::vector<ReceiverChannel::Ptr> receiverChannels;
+	boost::container::vector<ReceiverChannel::Ptr> receiverChannels;
 
 	/** \brief A public subscription checkpoint infrastructure for the output  currentFrame.
       */

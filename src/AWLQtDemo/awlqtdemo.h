@@ -5,6 +5,10 @@
 #include <QList>
 #include <QTimer>
 
+#ifndef Q_MOC_RUN
+#include <boost/container/vector.hpp>
+#endif
+
 #include "ui_awlqtdemo.h"
 
 #include "AWLSettings.h"
@@ -151,7 +155,7 @@ private:
 	FusedCloudViewer::Ptr fusedCloudViewer;
 
 	/** \brief Our subscription identifier to access to lidar data. */
-	QList<Subscription::SubscriberID> receiverCaptureSubscriberIDs;
+	boost::container::vector<Subscription::SubscriberID> receiverCaptureSubscriberIDs;
 };
 
 } // namespace AWL          

@@ -7,6 +7,7 @@
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/container/vector.hpp>
 #endif
 
 #include "Subscription.h"
@@ -199,7 +200,7 @@ public:
 	static const int maximumSensorFrames;  // Maximum number of frames kept in frame buffer
 	typedef boost::shared_ptr<ReceiverCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCapture> ConstPtr;
-	typedef QList<ReceiverCapture::Ptr> List;
+	typedef boost::container::vector<ReceiverCapture::Ptr> List;
 	typedef ReceiverCapture::List *ListPtr;
 
 	typedef enum  

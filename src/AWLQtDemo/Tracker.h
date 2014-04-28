@@ -6,6 +6,7 @@
 #include <string>
 #include <queue>
 #include <boost/shared_ptr.hpp>
+#include <boost/container/vector.hpp>
 #include "awlcoord.h"
 
 using namespace std;
@@ -54,7 +55,7 @@ class Detection
 public:
 	typedef boost::shared_ptr<Detection> Ptr;
     typedef boost::shared_ptr<Detection> ConstPtr;
-	typedef std::vector<Detection::Ptr> Vector;
+	typedef boost::container::vector<Detection::Ptr> Vector;
 
 	typedef enum ThreatLevel {
 		eThreatNone = 0,  // No threat level assigned
@@ -151,7 +152,7 @@ class Track
 public:
 	typedef boost::shared_ptr<Track> Ptr;
     typedef boost::shared_ptr<Track> ConstPtr;
-	typedef std::vector<Track::Ptr> Vector;
+	typedef boost::container::vector<Track::Ptr> Vector;
 
 	Track(int trackID);
 
@@ -220,8 +221,7 @@ class ChannelFrame
 {
 public:
 	typedef boost::shared_ptr<ChannelFrame> Ptr;
-    typedef boost::shared_ptr<ChannelFrame> ConstPtr;
-	typedef std::vector<ChannelFrame::Ptr> Vector;
+    typedef boost::container::vector<ChannelFrame::Ptr> Vector;
 public:
 	ChannelFrame(int inReceiverID, int channelID);
 	virtual ~ChannelFrame() {};

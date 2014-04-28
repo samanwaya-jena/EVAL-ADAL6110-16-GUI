@@ -14,8 +14,8 @@ Subscription::Subscription()
 
 Subscription::SubscriberID Subscription::Subscribe()
 {
-	int qty = 0;
-	subscribers.push_back(qty);
+	int publicationQty = 0;
+	subscribers.push_back(publicationQty);
 	
 	return ((SubscriberID) subscribers.size()-1);
 }
