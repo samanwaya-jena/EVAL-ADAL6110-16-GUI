@@ -113,7 +113,7 @@ using namespace awl;
 	 // Yaw
 	 // Yaw is clockWise in degrees, counterClockWise in our coordinate system,  so we reverse the sign
 	 SetUpInputMatrix(vehicleCoord);
-	 SetUpRotationMatrix(DEG2RAD(-yaw), 0, 0, 1);
+	 SetUpRotationMatrix(DEG2RAD(yaw), 0, 0, 1);
 	 MultiplyMatrix();
 	 vehicleCoord.x = outputMatrix[0] [0];
 	 vehicleCoord.y = outputMatrix[1] [0];

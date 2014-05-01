@@ -44,13 +44,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	FillADCList(globalSettings);
 	FillGPIOList(globalSettings);
 
-	int receiverQty = globalSettings->receiverSettings.count();
+	int receiverQty = globalSettings->receiverSettings.size();
 	long absoluteMaxRange = 0.0;
 
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		long absoluteMaxRangeForReceiver = 0.0;
-		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.count();
+		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 		{
 			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
@@ -66,9 +66,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 
 	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.isEmpty())
+	if (!globalSettings->sIconFileName.empty())
 	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName));
+		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
 	}
 
 	// Position the main widget on the top left corner
@@ -90,14 +90,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object
-		if (!globalSettings->receiverSettings[receiverID].sReceiverType.compare("BareMetal", Qt::CaseInsensitive))
+		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "BareMetal"))
 		{
-			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverBareMetalCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.count())));
+			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverBareMetalCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
 		}
 		else 
 		{
 			// CAN Capture is used if defined in the ini file, and by default
-			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.count())));
+			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
 		}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->Subscribe());
@@ -116,7 +116,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.count(); channelID++)
+		for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.size(); channelID++)
 		{
 			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovX),
@@ -124,8 +124,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].sMaskName.toStdString().c_str(),
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].sFrameName.toStdString().c_str(),
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].sMaskName.c_str(),
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].sFrameName.c_str(),
 				false,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorRed / 255.0,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorGreen / 255.0,
@@ -345,7 +345,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoViewer->move(scr.left(), scr.top()+95); 
 	}
 
-	switch (globalSettings->defaultAlgo)
+	switch (globalSettings->defaultParametersAlgos.defaultAlgo)
 	{
 	case 1: 
 		{
@@ -711,7 +711,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	settings->receiverSettings[0].channelsConfig[channelID].maxRange = range;
 
 	// Calculate the absolute max distance from the settings
-	int channelQty = settings->receiverSettings[0].channelsConfig.count();
+	int channelQty = settings->receiverSettings[0].channelsConfig.size();
 	long absoluteMaxRange = 0.0;
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
@@ -1276,15 +1276,15 @@ void AWLQtDemo::PrepareParametersView()
 
 {
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
+	int currentAlgo = settingsPtr->defaultParametersAlgos.defaultAlgo;
 
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1313,13 +1313,13 @@ void AWLQtDemo::PrepareParametersView()
 	for (int row = 0; row < rowCount; row++) 
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
-		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex);
+		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
 		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 		newItem->setCheckState(Qt::Unchecked);
 		ui.parametersTable->setItem(row, eParameterCheckColumn, newItem);
 
 		// Column 1: Is Description .  Not editable text
-		newItem = new QTableWidgetItem(algoParameters[row].sDescription);
+		newItem = new QTableWidgetItem(algoParameters[row].sDescription.c_str());
 		newItem->setFlags(Qt::ItemIsEnabled);
 		ui.parametersTable->setItem(row, eParameterDescriptionColumn, newItem);
 
@@ -1357,18 +1357,15 @@ void AWLQtDemo::PrepareParametersView()
 void AWLQtDemo::UpdateParametersView()
 
 {
-
+	int currentAlgo;
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
-
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1414,17 +1411,15 @@ void AWLQtDemo::UpdateParametersView()
 }
 void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 {
+	int currentAlgo;
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
-
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1466,24 +1461,22 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
-			receiverCaptures[0]->SetAlgoParameter(settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo], parameterAddress, parameterValue); 
+			receiverCaptures[0]->SetAlgoParameter(currentAlgo, parameterAddress, parameterValue); 
 		} // if checked
 	} // for 
 }
 
 void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 {
+	int currentAlgo;
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
-
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1506,7 +1499,7 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = algoParameters[row].address;
-			receiverCaptures[0]->QueryAlgoParameter(settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo],  parameterAddress); 
+			receiverCaptures[0]->QueryAlgoParameter(currentAlgo,  parameterAddress); 
 		} // if checked
 	} // for 
 }
@@ -1519,7 +1512,7 @@ void AWLQtDemo::PrepareGlobalParametersView()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1548,13 +1541,13 @@ void AWLQtDemo::PrepareGlobalParametersView()
 	for (int row = 0; row < rowCount; row++) 
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
-		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex);
+		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
 		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 		newItem->setCheckState(Qt::Unchecked);
 		ui.globalParametersTable->setItem(row, eParameterCheckColumn, newItem);
 
 		// Column 1: Is Description .  Not editable text
-		newItem = new QTableWidgetItem(algoParameters[row].sDescription);
+		newItem = new QTableWidgetItem(algoParameters[row].sDescription.c_str());
 		newItem->setFlags(Qt::ItemIsEnabled);
 		ui.globalParametersTable->setItem(row, eParameterDescriptionColumn, newItem);
 
@@ -1592,12 +1585,10 @@ void AWLQtDemo::PrepareGlobalParametersView()
 void AWLQtDemo::UpdateGlobalParametersView()
 
 {
-
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1646,8 +1637,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1689,7 +1679,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
-			receiverCaptures[0]->SetGlobalAlgoParameter(settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo], parameterAddress, parameterValue); 
+			receiverCaptures[0]->SetGlobalAlgoParameter(parameterAddress, parameterValue); 
 		} // if checked
 	} // for 
 }
@@ -1699,8 +1689,7 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1723,7 +1712,7 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 			ui.globalParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = algoParameters[row].address;
-			receiverCaptures[0]->QueryGlobalAlgoParameter(settingsPtr->receiverSettings[0].parametersAlgos[currentAlgo],  parameterAddress); 
+			receiverCaptures[0]->QueryGlobalAlgoParameter(parameterAddress); 
 		} // if checked
 	} // for 
 }
@@ -1800,12 +1789,11 @@ void AWLQtDemo::on_viewGraphClose()
 
 void AWLQtDemo::FillFPGAList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersFPGA.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersFPGA.size(); i++) 
 	{
-		QString sLabel = settingsPtr->receiverSettings[0].registersFPGA[i].sDescription;
-		sLabel = settingsPtr->receiverSettings[0].registersFPGA[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersFPGA[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersFPGA[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersFPGA[i].sDescription.c_str();
 		ui.registerFPGAAddressSetComboBox->addItem(sLabel);
 	}
 
@@ -1871,12 +1859,11 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersADC.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersADC.size(); i++) 
 	{
-		QString sLabel = settingsPtr->receiverSettings[0].registersADC[i].sDescription;
-		sLabel = settingsPtr->receiverSettings[0].registersADC[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersADC[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersADC[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersADC[i].sDescription.c_str();
 		ui.registerADCAddressSetComboBox->addItem(sLabel);
 	}
 
@@ -1943,12 +1930,11 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 
 void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
-		sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
 		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
@@ -1968,14 +1954,13 @@ void AWLQtDemo::UpdateGPIOList()
 {
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
 
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
-		sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
 		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
@@ -1997,7 +1982,7 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
 		uint16_t registerAddress = settingsPtr->receiverSettings[0].registersGPIO[i].address;
 		uint32_t registerValue = 0;
@@ -2017,10 +2002,9 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 		}
 
 		// Update the user interface
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
-		sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
 		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
@@ -2035,7 +2019,7 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
 		uint16_t registerAddress = settingsPtr->receiverSettings[0].registersGPIO[i].address;
 
@@ -2048,10 +2032,9 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 		}
 
 		// Update the user interface
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
-		sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
 		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";

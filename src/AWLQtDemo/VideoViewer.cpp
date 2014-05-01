@@ -100,9 +100,9 @@ void  VideoViewer::Go()
 		if (window != NULL) 
 		{
 			AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-			if (!globalSettings->sIconFileName.isEmpty())
+			if (!globalSettings->sIconFileName.empty())
 			{
-				HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.toStdString().c_str(), IMAGE_ICON,
+				HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.c_str(), IMAGE_ICON,
 											GetSystemMetrics(SM_CXSMICON), 
 											GetSystemMetrics(SM_CYSMICON),
 											LR_LOADFROMFILE);

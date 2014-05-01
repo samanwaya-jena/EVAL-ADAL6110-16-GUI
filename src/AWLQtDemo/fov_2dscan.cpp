@@ -47,9 +47,9 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	setMinimumSize(480,480);
 
 	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.isEmpty())
+	if (!globalSettings->sIconFileName.empty())
 	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName));
+		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
 	}
 
     rgblongRangeLimited = qRgba(188,205,203,127);
@@ -66,9 +66,9 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 
 	logoLabel = new QLabel(this);
 	QPixmap *myPix = NULL;
-	if (!globalSettings->sLogoFileName.isEmpty()) 
+	if (!globalSettings->sLogoFileName.empty()) 
 	{
-		myPix = new QPixmap(globalSettings->sLogoFileName);
+		myPix = new QPixmap(globalSettings->sLogoFileName.c_str());
 	}
 	
 	if (myPix && !myPix->isNull())
@@ -351,7 +351,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	// Draw sensor FOVs
 	painter.setPen(Qt::NoPen);
 
-	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.count();
+	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
@@ -363,11 +363,11 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
 			painter.setBrush(QBrush(channelColor));
 			float startAngle = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].sensorYaw + 
-				               channelConfig.centerX - (channelConfig.fovX/2);
-			// Angles in drawPie are counter clockwise, our config is clockwise. 
+				               channelConfig.centerX + (channelConfig.fovX/2);
+			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
 			// All distances are relative to bumper, subtract the sensor depth  
 			// Angles are drawn from sensor position add the sensor depth
-			drawPie(&painter, -startAngle, -channelConfig.fovX, receiverSettings.sensorX, receiverSettings.sensorY+config.sensorDepth, channelConfig.maxRange);
+			drawPie(&painter, startAngle, -channelConfig.fovX, receiverSettings.sensorX, receiverSettings.sensorY+config.sensorDepth, channelConfig.maxRange);
 		}
 	}
 

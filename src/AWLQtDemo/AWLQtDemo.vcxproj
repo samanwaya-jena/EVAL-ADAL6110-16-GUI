@@ -789,6 +789,9 @@
       <FileType>Document</FileType>
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="awlqtdemo.xml">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ChannelFrame1.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>

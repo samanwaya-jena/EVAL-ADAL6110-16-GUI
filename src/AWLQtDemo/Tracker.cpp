@@ -207,9 +207,8 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->threatLevel = track->threatLevel;
 				// Convert FOV data in polar coord
 
-				float centerX = globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX;
-				centerX = DEG2RAD(centerX);
-				centerX = -centerX + M_PI_2;
+				float centerX = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX);
+				centerX = centerX + M_PI_2;
 
 				float centerY = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX);
 				centerY += M_PI_2;

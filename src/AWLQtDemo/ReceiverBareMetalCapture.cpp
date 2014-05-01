@@ -38,7 +38,7 @@ responseString("")
 {
 	// Update settings from application
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	sCommPort = globalSettings->receiverSettings[receiverID].sCommPort.toStdString();
+	sCommPort = globalSettings->receiverSettings[receiverID].sCommPort;
 	serialPortRate = globalSettings->receiverSettings[receiverID].serialPortRate;
 
     OpenDebugFile(debugFile, "BareBusLog.dat");
@@ -595,26 +595,22 @@ void ReceiverBareMetalCapture::ParseParameterAlgoSelectResponse(AWLBareMessage &
 
 void ReceiverBareMetalCapture::ParseParameterAlgoParameterResponse(AWLBareMessage &inMsg)
 {
-
-	uint16_t registerAddress = inMsg.address;
-	uint32_t registerValue=  inMsg.value;
+   uint16_t registerAddress = *(uint16_t *) &inMsg.address;
+    uint32_t registerValue=  *(uint32_t *) &inMsg.value;
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	QList<AlgorithmParameters> algoParameters = globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo];
-	int index = globalSettings->FindAlgoParamByAddress(globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo],
-		                                           registerAddress);
-
+	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, receiverStatus.currentAlgo, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 	receiverStatus.fpgaRegisterAddressRead = registerAddress;
 	receiverStatus.fpgaRegisterValueRead = registerValue;
 
-	if (index >= 0)
+	if (parameter != NULL)
 	{
-		globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo][index].floatValue = *(float *) &registerValue; 
-		globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo][index].intValue = *(int16_t *) &registerValue; 
-		globalSettings->receiverSettings[receiverID].parametersAlgos[receiverStatus.currentAlgo][index].pendingUpdates--;
+		parameter->floatValue = *(float *) &registerValue; 
+		parameter->intValue = *(int16_t *) &registerValue; 
+		parameter->pendingUpdates--;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -686,26 +682,23 @@ void ReceiverBareMetalCapture::ParseParameterPresetResponse(AWLBareMessage &inMs
 
 void ReceiverBareMetalCapture::ParseParameterGlobalParameterResponse(AWLBareMessage &inMsg)
 {
-	uint16_t registerAddress = inMsg.address;
-	uint32_t registerValue=  inMsg.value;
-	int globalAlgo = 0;  // PlaceHolder, so we know which algo pointer to use.
+   uint16_t registerAddress = *(uint16_t *) &inMsg.address;
+    uint32_t registerValue=  *(uint32_t *) &inMsg.value;
+	int globalAlgo = 0; // Just so we know....
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	QList<AlgorithmParameters> algoParameters = globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo];
-	int index = globalSettings->FindAlgoParamByAddress(globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo],
-		                                           registerAddress);
-
+	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, GLOBAL_PARAMETERS_INDEX, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
 	receiverStatus.fpgaRegisterAddressRead = registerAddress;
 	receiverStatus.fpgaRegisterValueRead = registerValue;
 
-	if (index >= 0)
+	if (parameter!= NULL)
 	{
-		globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo][index].floatValue = *(float *) &registerValue; 
-		globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo][index].intValue = *(int16_t *) &registerValue; 
-		globalSettings->receiverSettings[receiverID].parametersAlgos[globalAlgo][index].pendingUpdates--;
+		parameter->floatValue = *(float *) &registerValue; 
+		parameter->intValue = *(int16_t *) &registerValue; 
+		parameter->pendingUpdates--;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -1314,11 +1307,10 @@ bool ReceiverBareMetalCapture::SetGPIORegister(uint16_t registerAddress, uint32_
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue)
+bool ReceiverBareMetalCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue)
 {
-    AWLBareMessage message;
-#if 0
-	
+	AWLBareMessage message;
+#if 0	
 	message.id = 80;       // Message id: 80- Command message
 
     message.len = 8;       // Frame size (0.8)
@@ -1329,35 +1321,29 @@ bool ReceiverBareMetalCapture::SetAlgoParameter(QList<AlgorithmParameters> &para
 	* (int32_t *) &message.data[4] = registerValue;
 
 	bool bMessageOk = WriteMessage(message);
- #else
+#else
     bool bMessageOk(true);
- #endif
-
+#endif
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings-> FindAlgoParamByAddress(parametersList, registerAddress);
-	if (index >= 0)
+	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, algoID, registerAddress);
+	if (parameter != NULL)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parametersList[index].pendingUpdates = 1;
+		parameter->pendingUpdates = 1;
 	}
 
-
-    // Simulate rsponse for tests
-     message.address = registerAddress;
-     message.value = registerValue;
-     ParseParameterAlgoParameterResponse(message);
+  	     ParseParameterAlgoParameterResponse(message);
 
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue)
+bool ReceiverBareMetalCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue)
 {
-    AWLBareMessage message;
-#if 0
-	
+	AWLBareMessage message;
+#if 0	
 	message.id = 80;       // Message id: 80- Command message
 
     message.len = 8;       // Frame size (0.8)
@@ -1368,29 +1354,27 @@ bool ReceiverBareMetalCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters>
 	* (int32_t *) &message.data[4] = registerValue;
 
 	bool bMessageOk = WriteMessage(message);
- #else
+#else
     bool bMessageOk(true);
- #endif
+#endif
 
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings-> FindAlgoParamByAddress(parametersList, registerAddress);
-	if (index >= 0)
+	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, GLOBAL_PARAMETERS_INDEX, registerAddress);
+	if (parameter!= NULL)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parametersList[index].pendingUpdates = 1;
+		parameter->pendingUpdates = 1;
 	}
 
-     // Simulate rsponse for tests
-     message.address = registerAddress;
-     message.value = registerValue;
-     ParseParameterGlobalParameterResponse(message);
-
-
+    ParseParameterGlobalParameterResponse(message);
+ 
 	return(bMessageOk);
 }
+
+
 
 bool ReceiverBareMetalCapture::QueryAlgorithm()
 {
@@ -1529,9 +1513,10 @@ bool ReceiverBareMetalCapture::QueryGPIORegister(uint16_t registerAddress)
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress)
+bool ReceiverBareMetalCapture::QueryAlgoParameter(int algoID, uint16_t registerAddress)
 {
-    AWLBareMessage message;
+	AWLBareMessage message;
+	
 #if 0	
 	message.id = 80;       // Message id: 80- Command message
 
@@ -1546,26 +1531,27 @@ bool ReceiverBareMetalCapture::QueryAlgoParameter(QList<AlgorithmParameters> &pa
 #else
 	bool bMessageOk(true);
 #endif
+
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindAlgoParamByAddress(parametersList, registerAddress);
-	if (index >= 0)
+	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, algoID, registerAddress);
+	if (parameter != NULL)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parametersList[index].pendingUpdates = 1;
+		parameter->pendingUpdates = 1;
 	}
 
-        // Simulate rsponse for tests
-         ParseParameterAlgoParameterResponse(message);
+	// Simulate rsponse for tests
+	ParseParameterAlgoParameterResponse(message);
 
 	return(bMessageOk);
 }
 
-bool ReceiverBareMetalCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress)
+bool ReceiverBareMetalCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 {
-    AWLBareMessage message;
+	AWLBareMessage message;
 #if 0	
 	message.id = 80;       // Message id: 80- Command message
 
@@ -1580,21 +1566,22 @@ bool ReceiverBareMetalCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameter
 #else
 	bool bMessageOk(true);
 #endif
+
 	// Signal that we are waiting for an update of thet register settings.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int index = globalSettings->FindAlgoParamByAddress(parametersList, registerAddress);
-	if (index >= 0)
+	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, GLOBAL_PARAMETERS_INDEX, registerAddress);
+	if (parameter!= NULL)
 	{
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parametersList[index].pendingUpdates = 1;
+		parameter->pendingUpdates = 1;
 	}
 
-    // Simulate rsponse for tests
-     ParseParameterGlobalParameterResponse(message);
+	     ParseParameterGlobalParameterResponse(message);
 
 	return(bMessageOk);
 }
+
 
 

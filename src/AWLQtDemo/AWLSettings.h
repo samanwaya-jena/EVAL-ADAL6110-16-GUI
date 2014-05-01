@@ -1,10 +1,8 @@
 #ifndef _AWLSettings__H
 #define _AWLSettings__H
 
-#include <QtCore/qlist.h>
-#include <QtCore/qstring.h>
-#include <QSettings>
-
+#include <string>
+#include <boost/container/vector.hpp>
 #include <stdint.h>
 
 #define VelocityToKmH(velocity) (velocity * 3.6)
@@ -17,15 +15,18 @@ namespace awl
 
 	typedef int ReceiverID;
 
-	typedef struct RegisterSettings 
+	typedef struct RegisterSetting 
 	{
-		QString sIndex;
+		std::string sIndex;
 		uint16_t address;
-		QString sDescription;
+		std::string sDescription;
 		uint32_t value;
 		int pendingUpdates;
 	}
-	RegisterSettings;
+	RegisterSetting;
+	
+	typedef boost::container::vector<RegisterSetting> RegisterSet;
+
 
 	typedef enum  {
 		eAlgoParamInt = 0,
@@ -33,17 +34,35 @@ namespace awl
 	}
 	AlgoParamType;
 
-	typedef struct AlgorithmParameters 
+	typedef struct AlgorithmParameter 
 	{
-		QString sIndex;
+		std::string sIndex;
 		uint16_t address;
-		QString sDescription;
+		std::string sDescription;
 		AlgoParamType paramType;
 		uint32_t intValue;
 		float floatValue;
 		int pendingUpdates;
 	}
-	AlgorithmParameters;
+	AlgorithmParameter;
+	
+	typedef boost::container::vector<AlgorithmParameter> AlgorithmParameterVector;
+
+	typedef struct AlgorithmDescription
+	{
+		std::string sAlgoName;
+		uint16_t	algoID;
+		AlgorithmParameterVector parameters;
+	}
+	AlgorithmDescription;
+
+	typedef struct AlgorithmSet
+	{
+		// Default displayedAlgo
+		int defaultAlgo;
+		boost::container::vector<AlgorithmDescription> algorithms;
+	}
+	AlgorithmSet;
 
 	typedef struct ChannelConfig 
 	{
@@ -53,13 +72,15 @@ namespace awl
 		float centerX;
 		float centerY;
 		float maxRange;
-		QString sMaskName;
-		QString sFrameName;
+		std::string sMaskName;
+		std::string sFrameName;
 		uint8_t displayColorRed;
 		uint8_t displayColorGreen;
 		uint8_t displayColorBlue;
 	}
 	ChannelConfig;
+
+	typedef boost::container::vector<ChannelConfig> ChannelConfigVector;
 
 
 	typedef enum {
@@ -70,25 +91,25 @@ namespace awl
 
 	typedef struct ReceiverSettings
 	{
-	QList<RegisterSettings> registersFPGA;
-	QList<RegisterSettings> registersADC;
-	QList<RegisterSettings> registersGPIO;
+	RegisterSet registersFPGA;
+	RegisterSet registersADC;
+	RegisterSet registersGPIO;
 	
 	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
-	QList<AlgorithmParameters> parametersAlgos[ALGO_QTY+1];
+	AlgorithmSet parametersAlgos;
 
 	// Channel configuration
-	QList<ChannelConfig> channelsConfig;
+	ChannelConfigVector channelsConfig;
 
 	// Receiver
-	QString sReceiverType;
+	std::string sReceiverType;
 	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
 	uint8_t receiverFrameRate;			// Frame rate, in hertz
 
 	// Receiver communications port config
-	QString sCommPort;       // Default is "COM16"
+	std::string sCommPort;       // Default is "COM16"
 	long serialPortRate;		// In bpschannelMask
-	QString sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
+	std::string sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
 	uint16_t yearOffset;		   // All sensor Dates are offset from 1900
 	uint16_t monthOffset;		// All sensor months start at 0.  Posix starts aty 1.
 	
@@ -115,10 +136,11 @@ namespace awl
 	}
 	ReceiverSettings;
 
+	typedef boost::container::vector<ReceiverSettings> ReceiverSettingsVector;
+
 
 class AWLSettings
 {
-public:
 public:
 	static AWLSettings *InitSettings();
 	static AWLSettings *GetGlobalSettings();
@@ -127,7 +149,7 @@ public:
 	AWLSettings();
 	bool ReadSettings();
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
+	/** \brief Return the index of the FPGA RegisterSetting for the object that
 	           has the address specified.
     * \param[in] inReceiver the receiver for which we want the register read
 	* \param[in] inAddress the register address
@@ -136,47 +158,46 @@ public:
       */
 	int FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress);
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
+	/** \brief Return the index of the ADC RegisterSetting for the object that
 	           has the address specified.
-    * \param[in] inAddress the register address
+    * \param[in] inReceiver the receiver for which we want the register read
+	* \param[in] inAddress the register address
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
 	int FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress);
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
+	/** \brief Return the index of the GPIO RegisterSetting for the object that
 	           has the address specified.
-    * \param[in] inAddress the register address
+     * \param[in] inReceiver the receiver for which we want the register read
+	 * \param[in] inAddress the register address
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
 	int FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress);
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
-	           has the address specified.
-    * \param[in] inAddress the register address
-	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
+	/** \brief Returna pointer to the Algorithm parameter for the parameter that
+	           has the address specified, on the specified receiver
+     * \param[in] receiverID index of the receiver for which we want the parameter
+	  * \param[in] algoID an algorithm for which we want the parameter description.
+	 * \param[in] inAddress the parameter address
+	* \return pointer to the found parameter in the list. NULL if no parameters match that address.
 
       */
-	int FindAlgoParamByAddress(QList<AlgorithmParameters>&paramList, uint16_t inAddress);
+	AlgorithmParameter *AWLSettings::FindAlgoParamByAddress(int receiverID, int AlgoID, uint16_t inAddress);
 
 public:
 	// Default register configurations
 
-	QList<RegisterSettings> defaultRegistersFPGA;
-	QList<RegisterSettings> defaultRegistersADC;
-	QList<RegisterSettings> defaultRegistersGPIO;
+	RegisterSet defaultRegistersFPGA;
+	RegisterSet defaultRegistersADC;
+	RegisterSet defaultRegistersGPIO;
 
 	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
-	QList<AlgorithmParameters> defaultParametersAlgos[ALGO_QTY+1];
-
+	AlgorithmSet defaultParametersAlgos;
 
 	// Receiver configuration
-	QList<ReceiverSettings> receiverSettings;
-
-	QString sAlgoNames[ALGO_QTY+1];
-	// Default displayedAlgo
-	int defaultAlgo;
+	ReceiverSettingsVector receiverSettings;
 
 	// Layout
 	bool bDisplay3DWindow;
@@ -190,8 +211,8 @@ public:
 
 	VelocityUnits velocityUnits; 
 
-	QString sLogoFileName;
-	QString sIconFileName;
+	std::string sLogoFileName;
+	std::string sIconFileName;
 
 	// Demo mode
 	bool bEnableDemo;
@@ -272,10 +293,8 @@ public:
 
 
 protected:
-	QSettings settings;
-
+	std::string sFileName;
 	static AWLSettings *globalSettings;
-
 };
 
 } // namespace AWL          

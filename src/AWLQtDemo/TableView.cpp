@@ -24,9 +24,9 @@ TableView::TableView(QWidget *parent) :
 	setMinimumSize(350,350);
 
 	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.isEmpty())
+	if (!globalSettings->sIconFileName.empty())
 	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName));
+		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
 	}
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -185,10 +185,10 @@ void TableView::PrepareTableViews()
 
 	// Create the table widgets that will hold the data.  If required, add additional rows.
 	int row = 0;
-	int receiverCount = globalSettings->receiverSettings.count();
+	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
-		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.count();
+		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelCount; channelID++) 
 		{
 			for (int detectionID = 0; detectionID < displayedDetectionsPerChannel; detectionID++) 
@@ -222,10 +222,10 @@ void TableView::DisplayReceiverValues(DetectionDataVect* data)
 	DetectionDataVect::const_iterator detection = data->begin();
  
 	int tableRow = 0;
-	int receiverCount = globalSettings->receiverSettings.count();
+	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++) 
 	{
-		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.count();
+		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelCount ; channelID++) 
 		{
 			int detectionID = 0;

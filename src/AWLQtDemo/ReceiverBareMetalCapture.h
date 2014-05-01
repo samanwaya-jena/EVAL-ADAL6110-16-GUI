@@ -177,21 +177,22 @@ public:
 		
 	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue);
 
-		/** \brief Sets algorithm parameters to the value sent as argument. 
+	/** \brief Sets algorithm parameters to the value sent as argument. 
+	  *\param[in] algoID ID of the detection algo affected by the change.
 	  *\param[in] registerAddress Adrress of the parameter to change.
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue);
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the parameter to change.
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
-	virtual bool SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
-
+		
+	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue);
 
 	/** \brief Issues an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.
@@ -223,22 +224,24 @@ public:
 		*/
 	virtual bool QueryGPIORegister(uint16_t registerAddress);
 
-		/** \brief Send an asynchronous query command for an algorithm parameter. 
+
+	/** \brief Send an asynchronous query command for an algorithm parameter. 
+		  *\param[in] algoID ID of the detection algo for which we want to query.
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
+	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress);
 
 		/** \brief Send an asynchronous query command for a global algorithm parameter. 
+		  *\param[in] algoID ID of the detection algo for which we want to query.
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
-
+	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress);
 // Protected methods
 protected:
 

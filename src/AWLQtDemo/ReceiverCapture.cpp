@@ -65,12 +65,12 @@ nextElapsedDistance(0)
 	bEnableDemo = globalSettings->bEnableDemo;
 	injectType = (InjectType) globalSettings->demoInjectType;
 
-	receiverStatus.currentAlgo = globalSettings->defaultAlgo;
+	receiverStatus.currentAlgo = globalSettings->defaultParametersAlgos.defaultAlgo;
 	receiverStatus.currentAlgoPendingUpdates = 0;
 	
 	for (int channelID = 0; channelID < receiverChannelQty; channelID++)
 	{
-		maxDistances.append(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange); 
+		maxDistances.push_back(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange); 
 	}
 
 	startTime = boost::posix_time::microsec_clock::local_time();
@@ -343,12 +343,12 @@ bool ReceiverCapture::SetGPIORegister(uint16_t registerAddress, uint32_t registe
 	return(true);
 }
 
-bool ReceiverCapture::SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue)
+bool ReceiverCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue)
 {
 	return(true);
 }
 
-bool ReceiverCapture::SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue)
+bool ReceiverCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue)
 {
 	return(true);
 }
@@ -405,12 +405,12 @@ bool ReceiverCapture::QueryGPIORegister(uint16_t registerAddress)
 	return(true);
 }
 
-bool ReceiverCapture::QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress)
+bool ReceiverCapture::QueryAlgoParameter(int algoID, uint16_t registerAddress)
 {
 	return(true);
 }
 
-bool ReceiverCapture::QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress)
+bool ReceiverCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 {
 	return(true);
 }
