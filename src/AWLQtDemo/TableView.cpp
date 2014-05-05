@@ -4,6 +4,7 @@
 #include <QTableWidget>
 #include <QListWidget>
 
+#include <boost/foreach.hpp>
 
 #include "AWLSettings.h"
 #include "TableView.h"
@@ -112,7 +113,7 @@ void TableView::slotConfigChanged()
 	PrepareTableViews();
 }
 
-void TableView::slotDetectionDataChanged(DetectionDataVect* data)
+void TableView::slotDetectionDataChanged(const DetectionDataVect &data)
 
 {
 	DisplayReceiverValues(data);
@@ -157,6 +158,9 @@ void TableView::PrepareTableViews()
 	tableWidget->clearContents();
 	tableWidget->setRowCount(1);
 
+	receiverFirstRow.clear();
+
+
 	// Adjust column width
 	int columnQty =  tableWidget->columnCount();
 	for (int column = 0; column < columnQty; column++) 
@@ -188,6 +192,9 @@ void TableView::PrepareTableViews()
 	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
+		// Store the index of the first row for each channel, for future references
+		receiverFirstRow.push_back(row);
+
 		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelCount; channelID++) 
 		{
@@ -212,48 +219,39 @@ void TableView::PrepareTableViews()
 }
 
 
-void TableView::DisplayReceiverValues(DetectionDataVect* data)
+void TableView::DisplayReceiverValues(const DetectionDataVect &data)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 	QTableWidget *tableWidget = ui.distanceTable;
 	int rowCount = tableWidget->rowCount();
 
-	DetectionDataVect::const_iterator detection = data->begin();
- 
-	int tableRow = 0;
+	// Fill the table with blanks
 	int receiverCount = globalSettings->receiverSettings.size();
+	int tableRow = 0;
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++) 
-	{
+	{	
 		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelCount ; channelID++) 
+		for (int channelID = 0; channelID < channelCount; channelID++) 
 		{
-			int detectionID = 0;
-			for (detectionID = 0; detectionID < displayedDetectionsPerChannel; detectionID++)
+			for (int detectionID = 0; detectionID < displayedDetectionsPerChannel; detectionID++)
 			{
-				if (detection->receiverID == receiverID && detection->channelID == channelID && detection->detectionID == detectionID)
-				{
-					AddDistanceToText(tableRow++, tableWidget, detection);	
-					if (detection != data->end()) detection++;
-				}
-				else
-				{
-					AddDistanceToText(tableRow++, tableWidget, receiverID, channelID, detectionID);
-				}
+				AddDistanceToText(tableRow++, tableWidget, receiverID, channelID, detectionID);
 			}  // for detection ID;
-
-			// Skip all extra detections for the channel
-			while (detection != data->end() && detection->receiverID == receiverID && detection->channelID == channelID)
-			{
-				detection++;
-			} // while 
-
 		} // for channelID
 	} // for receiverID
+
+	// Place the receiver data
+	BOOST_FOREACH(const Detection::Ptr & detection, data)
+	{
+		tableRow = detection->detectionID + (detection->channelID * displayedDetectionsPerChannel) + receiverFirstRow.at(detection->receiverID); 
+		AddDistanceToText(tableRow, tableWidget, detection);
+	}
+
 }
 
 
-void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable, const Detection *detection)
+void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable, const Detection::Ptr &detection)
 
 {
 	if (rowIndex >= pTable->rowCount()) return;
@@ -304,9 +302,9 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 	}
 	else
 	{
-		receiverStr.sprintf("%2d", receiverID+1);
-		channelStr.sprintf("%2d", channelID+1);
-		detectionStr.sprintf("%0d", detectionID+1);
+		receiverStr.sprintf("%d", receiverID+1);
+		channelStr.sprintf("%d", channelID+1);
+		detectionStr.sprintf("%d", detectionID+1);
 
 		distanceStr.sprintf("%.2f", distance);
 

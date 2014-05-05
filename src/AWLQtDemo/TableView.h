@@ -6,6 +6,7 @@
 #include <QActionGroup>
 
 #include "ui_TableView.h"
+#include <boost/container/vector.hpp>
 
 #include "DetectionStruct.h"
 
@@ -41,7 +42,7 @@ public slots:
 	void ShowContextMenu(const QPoint& pos);
 	void slotDetectionsPerChannelAction();
     void slotConfigChanged();
-    void slotDetectionDataChanged(DetectionDataVect* data);
+    void slotDetectionDataChanged(const DetectionDataVect &data);
 
 protected :
 	void closeEvent(QCloseEvent * event);
@@ -49,8 +50,8 @@ protected :
 
 private:
 	void PrepareTableViews();
-	void DisplayReceiverValues(DetectionDataVect* data);
-	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection *detection);
+	void DisplayReceiverValues(const DetectionDataVect &data);
+	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,
 						   int receiverID,
 						   int channelID,
@@ -77,8 +78,8 @@ private:
 	QAction* detectionsPerChannel4Action;
 	QAction* detectionsPerChannel8Action;
 
-
 	int displayedDetectionsPerChannel;
+	boost::container::vector<int> receiverFirstRow;
 };
 
 

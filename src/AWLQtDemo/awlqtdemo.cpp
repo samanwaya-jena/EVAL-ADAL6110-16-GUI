@@ -264,7 +264,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.sensorDepth = globalSettings->cameraY;
     mCfgSensor.sensorHeight = globalSettings->cameraZ;
 
-	m2DScan->slotConfigChanged(&mCfgSensor);
+	m2DScan->slotConfigChanged(mCfgSensor);
 
 	// Initialize the table view
 	mTableView = new TableView();
@@ -679,7 +679,7 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 	if (m2DScan && !m2DScan->isHidden())
 	{
 	    mCfgSensor.sensorDepth = depth;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 
 	// Restore the wait cursor
@@ -744,7 +744,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	{
 
 	    mCfgSensor.longRangeDistance = absoluteMaxRange;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 
 	// Restore the wait cursor
@@ -1007,8 +1007,8 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 						if ((detection->distance >= receiverCaptures[receiverID]->GetMinDistance()) && 
 							(detection->distance <= receiverCaptures[receiverID]->GetMaxDistance(channelID))) 
 						{
-							Detection storedDetection = *detection;
-							vect.append(storedDetection);
+							Detection::Ptr storedDetection = detection;
+							vect.push_back(storedDetection);
 						}
 					}
 				}
@@ -1017,7 +1017,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 		}
 	}
 
-	m2DScan->slotDetectionDataChanged(&vect);
+	m2DScan->slotDetectionDataChanged(vect);
 }
 
 void AWLQtDemo::DisplayReceiverValuesToTableView()
@@ -1055,8 +1055,8 @@ void AWLQtDemo::DisplayReceiverValuesToTableView()
 						if ((detection->distance >= receiverCaptures[receiverID]->GetMinDistance()) && 
 							(detection->distance <= receiverCaptures[receiverID]->GetMaxDistance(channelID))) 
 						{
-							Detection storedDetection = *detection;
-							vect.append(storedDetection);
+							Detection::Ptr storedDetection = detection;
+							vect.push_back(storedDetection);
 						}
 					}
 				}
@@ -1065,7 +1065,7 @@ void AWLQtDemo::DisplayReceiverValuesToTableView()
 		}
 	}
 
-	mTableView->slotDetectionDataChanged(&vect);
+	mTableView->slotDetectionDataChanged(vect);
 }
 
 void AWLQtDemo::DisplayReceiverStatus()

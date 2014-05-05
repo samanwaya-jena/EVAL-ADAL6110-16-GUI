@@ -1,13 +1,14 @@
 #ifndef DETECTIONSTRUCT_H
 #define DETECTIONSTRUCT_H
 
-#include <QVector>
+#include <boost/container/vector.hpp>
+
 #include "Tracker.h"
 
 namespace awl
 {
 
-typedef QVector<Detection> DetectionDataVect;
+typedef boost::container::vector<Detection::Ptr> DetectionDataVect;
 
 /** \brief Structure containing 2D View configuration. */
 typedef struct

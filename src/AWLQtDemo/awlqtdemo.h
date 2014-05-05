@@ -2,7 +2,6 @@
 #define AWLQTDEMO_H
 
 #include <QtWidgets/QMainWindow>
-#include <QList>
 #include <QTimer>
 
 #ifndef Q_MOC_RUN

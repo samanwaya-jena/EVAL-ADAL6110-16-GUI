@@ -56,8 +56,8 @@ signals:
     void closed();
 
 public slots:
-    void slotConfigChanged(ConfigSensor*);
-    void slotDetectionDataChanged(DetectionDataVect* data);
+    void slotConfigChanged(const ConfigSensor &inConfig);
+    void slotDetectionDataChanged(const DetectionDataVect & data);
 	void ShowContextMenu(const QPoint& pos);
 	void slotPaletteAction();
 	void slotMergeDisplayAction();
@@ -79,7 +79,7 @@ private:
     float Ratio;
     bool ShowPalette;
     DetectionDataVect copyData;
-	QVector<DetectionDataVect> mergedData;
+	boost::container::vector<DetectionDataVect> mergedData;
     ConfigSensor config;
     QRgb rgblongRangeLimited;
     QRgb rgblongRange;
@@ -128,17 +128,17 @@ private:
     void drawLine(QPainter* p,float angle, float startLength,float length);
     void drawText(QPainter* p,float angle, float pos, QString text);
     void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
-    void drawTextDetection(QPainter* p, Detection *detection, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
+    void drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
-	bool isInRange(Detection* detection1, Detection* detection2 );
+	bool isInRange(const Detection::Ptr &detection1, const Detection::Ptr &detection2 );
     QColor getColorFromDistance(float distance);
 	QColor FOV_2DScan::getColorFromVelocity(float velocity);
 
     void drawPalette(QPainter* p);
 
-    void drawDetection(QPainter* p, Detection *detection,  bool drawTarget = true, bool drawLegend = true);
-	void drawMergedData(QPainter* p, DetectionDataVect* data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
+    void drawDetection(QPainter* p, const Detection::Ptr &detection,  bool drawTarget = true, bool drawLegend = true);
+	void drawMergedData(QPainter* p, const DetectionDataVect &data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
 
 	void createAction();
 	

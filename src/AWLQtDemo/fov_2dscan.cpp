@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
+#include <boost/foreach.hpp>
+
 #define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
 #include <math.h>
 
@@ -292,26 +294,23 @@ void FOV_2DScan::slotDisplayDistanceModeAction()
 	}
 }
 
-void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
+void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
 {
-    config = *pConfig;
+    config = inConfig;
 
 	// All distances reported are relative to bumper
 	double totalDistance = config.longRangeDistance-config.sensorDepth;
 
-
 	// Calculate minimum window size;
-
 	float minHeight = 240;
 	Ratio = (minHeight-(minHeight*0.1)) / totalDistance;
  
-	float angleInRad = DEG2RAD((pConfig->shortRangeAngle/2)+180);
+	float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
 	float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
 
 	int minWidth = (xWidth*2)+125;
     setMinimumSize(minWidth, minHeight);
 
-#if 1
 	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
 	QRect frame = frameGeometry();
 	QRect client = geometry();
@@ -324,7 +323,6 @@ void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
 	float recommendedWidth = (xWidth*2)+125;
 	resize(recommendedWidth, recommendedHeight);
 	move(scr.right()-(recommendedWidth + horizontalDecorationsWidth), scr.top());
-#endif
 
     update();
 }
@@ -339,7 +337,6 @@ void FOV_2DScan::resizeEvent(QResizeEvent * event)
 
 	logoLabel->resize(labelWidth, labelHeight);
 	logoLabel->move(55, height() - labelHeight);
-
 }
 
 void FOV_2DScan::paintEvent(QPaintEvent *)
@@ -404,7 +401,6 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+(config.sensorDepth*Ratio), carWidthScreen, -config.sensorDepth*Ratio));
 
 	// Draw lane markings
-
 	QPen lanePen(rgbLaneMarkings);
 	lanePen.setStyle(Qt::DashLine);
 	lanePen.setWidth(2);
@@ -421,11 +417,10 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
     rightQty = 0;
 
-
 	// Draw the merged indicators, only if there are more than 1 detections in the area
 	// Otherwise, they are displayed as a square
-	for (int index = 0; index < mergedData.count(); index++)
-		{
+	BOOST_FOREACH(const DetectionDataVect & mergedDataItem, mergedData)
+	{
 			if (mergeDisplayMode == eNoMergeDisplay) 
 			{
 				// No merge display, do nothing
@@ -434,7 +429,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			{
 				// Only draw the bounding rectangle, only if there is more than one detection
 				// We never draw the targe or the legend
-				if (mergedData[index].count() > 1) drawMergedData(&painter, &mergedData[index], true, false, false);
+				if (mergedDataItem.size() > 1) drawMergedData(&painter, mergedDataItem, true, false, false);
 			}
 			else if (mergeDisplayMode == eMergeDistanceDisplay || mergeDisplayMode == eClusteredDistanceDisplay)
 			{
@@ -443,23 +438,22 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 				bool bDrawBoundingBox = true;
 				bool bDrawTarget = false;
 				bool bDrawLegend = (displayDistanceMode == eDisplayDistanceModeShow);
-				if (mergedData[index].count() <= 1) 
+				if (mergedDataItem.size() <= 1) 
 				{
 					bDrawBoundingBox = false;
 					bDrawTarget = true;
 				}
 
-				drawMergedData(&painter, &mergedData[index], bDrawBoundingBox, bDrawTarget, bDrawLegend); 
+				drawMergedData(&painter, mergedDataItem, bDrawBoundingBox, bDrawTarget, bDrawLegend); 
 			}
 	} // for
 
 	// Draw the individual detections
-	DetectionDataVect::iterator i;
-	for (i = copyData.begin(); i != copyData.end(); ++i)
+	BOOST_FOREACH(const Detection::Ptr &detection, copyData)
 	{
 		if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
 		{
-			drawDetection(&painter, i, true, (displayDistanceMode == eDisplayDistanceModeShow));
+			drawDetection(&painter, detection, true, (displayDistanceMode == eDisplayDistanceModeShow));
 		}
 		else if (mergeDisplayMode == eMergeDistanceDisplay)
 		{
@@ -468,12 +462,12 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 		else // if (mergeDisplayMode != eClusteredDistanceDisplay)
 		{
 			// Display the individual distance targets in s-scan without accompanying legend
-			drawDetection(&painter, i, true, false);
+			drawDetection(&painter, detection, true, false);
 		}
 	} // for
 }
 
-void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
+void FOV_2DScan::drawMergedData(QPainter* p, const DetectionDataVect& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
 {
 	int index;
 	float distanceMin = config.longRangeDistance;
@@ -489,34 +483,32 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 
 	QPolygon poly;
 
-    DetectionDataVect::const_iterator i;
-
-    for (i = data->begin(); i != data->end(); ++i)
-    {
-		if (i->relativeToVehiclePolar.rho > distanceMax)
-			distanceMax = i->relativeToVehiclePolar.rho;
-		if (i->relativeToVehiclePolar.rho < distanceMin)
-			distanceMin = i->relativeToVehiclePolar.rho;
-		distanceAverage += i->relativeToVehiclePolar.rho;
-
-		if (i->relativeToVehicleCart.y > yMax)
-			yMax = i->relativeToVehicleCart.y;
-		if (i->relativeToVehicleCart.y < yMin)
-			yMin = i->relativeToVehicleCart.y;
-		distanceLongitudinalAverage += i->relativeToVehicleCart.y;
-
-		if (i->relativeToVehicleCart.x > xMax)
-			xMax = i->relativeToVehicleCart.x;
-		if (i->relativeToVehicleCart.x < xMin)
-			xMin = i->relativeToVehicleCart.x;
-
-		if (i->velocity < velocityMin) velocityMin = i->velocity;
-	}
-
-	if (data->size()) 
+	BOOST_FOREACH(const Detection::Ptr detection, data)
 	{
-		distanceAverage /= data->size(); 
-		distanceLongitudinalAverage /= data->size();
+		if (detection->relativeToVehiclePolar.rho > distanceMax)
+			distanceMax = detection->relativeToVehiclePolar.rho;
+		if (detection->relativeToVehiclePolar.rho < distanceMin)
+			distanceMin = detection->relativeToVehiclePolar.rho;
+		distanceAverage += detection->relativeToVehiclePolar.rho;
+
+		if (detection->relativeToVehicleCart.y > yMax)
+			yMax = detection->relativeToVehicleCart.y;
+		if (detection->relativeToVehicleCart.y < yMin)
+			yMin = detection->relativeToVehicleCart.y;
+		distanceLongitudinalAverage += detection->relativeToVehicleCart.y;
+
+		if (detection->relativeToVehicleCart.x > xMax)
+			xMax = detection->relativeToVehicleCart.x;
+		if (detection->relativeToVehicleCart.x < xMin)
+			xMin = detection->relativeToVehicleCart.x;
+
+		if (detection->velocity < velocityMin) velocityMin = detection->velocity;
+	} // BOOST_FOREACH (detection)
+
+	if (data.size()) 
+	{
+		distanceAverage /= data.size(); 
+		distanceLongitudinalAverage /= data.size();
 	}
 
 	QString velocityLabel = " m/s";
@@ -540,15 +532,15 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 	}
 
 	QColor backColor;
-	
+
 	if (colorCode == eColorCodeVelocity)
 		backColor = getColorFromVelocity(velocityMin);
 	else
 		backColor = getColorFromDistance(distanceDisplayed);
-    p->setBrush(backColor);
+	p->setBrush(backColor);
 
 	QColor pencolor = backColor.darker(180);
-    p->setPen(pencolor);
+	p->setPen(pencolor);
 
 	// Draw the legend and target, according to the flags
 	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
@@ -567,7 +559,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 			pencolor = Qt::black;
 
 		// Draw the detection, but without the legend
-		Detection *detection = data->begin();
+		const Detection::Ptr detection = data.at(0);
 		drawTextDetection(p, detection, textToDisplay, pencolor, backColor, drawTarget, drawLegend);
 	}
 
@@ -579,7 +571,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 		p->setPen(pencolor);
 
 
- 		QPoint bottomLeft(xMin * Ratio , (-yMin+config.sensorDepth)*Ratio);
+		QPoint bottomLeft(xMin * Ratio , (-yMin+config.sensorDepth)*Ratio);
 		QPoint topRight(xMax* Ratio, (-yMax+config.sensorDepth)*Ratio);
 		QPoint temp;
 
@@ -603,20 +595,20 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 
 void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
-    p->setPen(QPen(Qt::red));
+	p->setPen(QPen(Qt::red));
 	double pos = config.longRangeDistance-config.sensorDepth;
 
-    drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
-    for (int i = config.shortRangeAngle; i >= 0; i-=5)
-    {
-        drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
+	drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
+	for (int i = config.shortRangeAngle; i >= 0; i-=5)
+	{
+		drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
 
 		// drawText removes the sensorDepthAlready. 
-        drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", Qt::red);
-    }
+		drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", Qt::red);
+	}
 }
 
-void FOV_2DScan::drawDetection(QPainter* p, Detection *detection, bool drawTarget, bool drawLegend)
+void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, bool drawTarget, bool drawLegend)
 {
 	QColor backColor;
 	QColor penColor = Qt::black;
@@ -654,7 +646,7 @@ void FOV_2DScan::drawDetection(QPainter* p, Detection *detection, bool drawTarge
     drawTextDetection(p, detection, textToDisplay, penColor,backColor, drawTarget, drawLegend);
 }
 
-void FOV_2DScan::drawTextDetection(QPainter* p, Detection *detection, QString text, QColor foregroundColor, QColor backgroundcolor,
+void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor foregroundColor, QColor backgroundcolor,
 	                                bool drawTarget, bool drawLegend)
 {
 	// Real position of the object, from bumper.
@@ -895,7 +887,7 @@ void FOV_2DScan::drawPalette(QPainter* p)
 }
 
 
-void FOV_2DScan::slotDetectionDataChanged(DetectionDataVect* data)
+void FOV_2DScan::slotDetectionDataChanged(const DetectionDataVect& data)
 {
     DetectionDataVect::const_iterator i;
     int index;
@@ -903,35 +895,46 @@ void FOV_2DScan::slotDetectionDataChanged(DetectionDataVect* data)
     copyData.clear();
 
 	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
-    for (i = data->begin(); i != data->end(); ++i)
-    {
-		if (i->relativeToVehiclePolar.rho > config.longRangeDistance)
+	BOOST_FOREACH(const Detection::Ptr detection, data)
+	{
+		if (detection->relativeToVehiclePolar.rho > config.longRangeDistance)
 			continue;
 
-        for (index = 0; index < copyData.count(); ++index)
-        {
-			if (qFuzzyCompare(copyData[index].relativeToVehicleCart.y, i->relativeToVehicleCart.y))
-			//if (qFuzzyCompare(copyData[index].distanceRadial, i->distanceRadial))
+		bool bFound = false;
+		DetectionDataVect::iterator iterator = copyData.begin();
+		int size = copyData.size();
+		for (int index = 0; index < size; index++, iterator++)
+		{
+			const Detection::Ptr detectionCopy = copyData.at(index);
+			if (qFuzzyCompare(detectionCopy->relativeToVehicleCart.y, detection->relativeToVehicleCart.y))
+			//if (qFuzzyCompare(copyData[index].distanceRadial, detection->distanceRadial))
             {
-				if (i->relativeToVehiclePolar.phi > 0)
+				if (detection->relativeToVehiclePolar.phi > 0)
 				{
-					if (copyData[index].relativeToVehiclePolar.phi < i->relativeToVehiclePolar.phi)
-						break;
+					if (detectionCopy->relativeToVehiclePolar.phi < detection->relativeToVehiclePolar.phi)
+						bFound = true;
 				}
 				else
 				{
-					if (copyData[index].relativeToVehiclePolar.phi > i->relativeToVehiclePolar.phi)
-						break;
+					if (detectionCopy->relativeToVehiclePolar.phi > detection->relativeToVehiclePolar.phi)
+						bFound = true;
 				}
             }
-            else if (copyData[index].relativeToVehicleCart.y > i->relativeToVehicleCart.y)
+            else if (detectionCopy->relativeToVehicleCart.y > detection->relativeToVehicleCart.y)
             {
-                break;
+                bFound = true;
             }
+
+			if (bFound)
+			{
+				copyData.insert(iterator, index, detection);
+				break;
+			}
 
         }
 
-        copyData.insert(index,*i);
+
+        if (!bFound) copyData.push_back(detection);
     }
 
 	mergeDetection();
@@ -946,20 +949,20 @@ void FOV_2DScan::mergeDetection()
 	bool found;
 
 	mergedData.clear();
-	for (indexPoint = 0; indexPoint < copyData.count(); ++indexPoint)
+	for (indexPoint = 0; indexPoint < copyData.size(); ++indexPoint)
 	{
 		found = false;
 		indexMerged = 0;
 		if (mergeDetectionMode != eNoMerge)
 		{
 
-			for (indexMerged = 0; indexMerged < mergedData.count(); ++indexMerged)
+			for (indexMerged = 0; indexMerged < mergedData.size(); ++indexMerged)
 			{
-				if (mergedData[indexMerged].count())
+				if (mergedData[indexMerged].size())
 				{
-					for (index = 0; index < mergedData[indexMerged].count(); ++index)
+					for (index = 0; index < mergedData[indexMerged].size(); ++index)
 					{
-						if (isInRange(&copyData[indexPoint],&mergedData[indexMerged][index] ))
+						if (isInRange(copyData[indexPoint], mergedData[indexMerged][index] ))
 						{
 							found = true;
 							break;
@@ -974,16 +977,16 @@ void FOV_2DScan::mergeDetection()
 
 		if (!found)
 		{
-			mergedData.append(DetectionDataVect());
-			mergedData.last().append(copyData[indexPoint]);
+			mergedData.push_back(DetectionDataVect());
+			mergedData.at(mergedData.size()-1).push_back(copyData[indexPoint]);
 		}
 		else
-			mergedData[indexMerged].append(copyData[indexPoint]);
+			mergedData[indexMerged].push_back(copyData[indexPoint]);
     }
 
 }
 
-bool FOV_2DScan::isInRange(Detection* detection1, Detection* detection2 )
+bool FOV_2DScan::isInRange(const Detection::Ptr &detection1, const Detection::Ptr &detection2 )
 {
 	bool distInRange = false;
 	bool xInRange = false;

@@ -254,7 +254,7 @@
     </receiver>
 
     <!-- Receiver 2 -->
-    <receiverTest>
+    <receiver>
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
@@ -457,7 +457,7 @@
           <blue>217</blue>
         </displayColor>
       </channel>
-    </receiverTest>
+    </receiver>
   </receivers>
 
 
