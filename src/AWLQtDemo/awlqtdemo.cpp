@@ -646,7 +646,7 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	if (m2DScan && !m2DScan->isHidden())
 	{
 	    mCfgSensor.sensorHeight = height;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 
 	// Restore the wait cursor
