@@ -3592,6 +3592,12 @@ color: rgb(255,255,255);</string>
    </property>
   </action>
   <action name="actionTableView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Table View</string>
    </property>
