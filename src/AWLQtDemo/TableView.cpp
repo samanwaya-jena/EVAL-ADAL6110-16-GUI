@@ -21,9 +21,6 @@ TableView::TableView(QWidget *parent) :
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	displayedDetectionsPerChannel = globalSettings->displayedDetectionsPerChannelInTableView;
 
-	// Position the widget on the top left side
-	setMinimumSize(350,350);
-
 	// Change the window icon if there is an override in the INI file
 	if (!globalSettings->sIconFileName.empty())
 	{
@@ -203,6 +200,7 @@ void TableView::PrepareTableViews()
 				if (row >= tableWidget->rowCount())
 				{
 					tableWidget->insertRow(tableWidget->rowCount());
+					tableWidget->rowHeight(row);
 				}
 
 				// Create the table items
@@ -216,6 +214,29 @@ void TableView::PrepareTableViews()
 			} // for detectionID
 		} // for channelID
 	} // for receiverID
+
+	// Resize the window to reflect the size of the updated table
+	int tableHeight = 2 + tableWidget->horizontalHeader()->height(); 
+	for(int row = 0; row < tableWidget->rowCount(); row++)
+	{ 
+	    tableHeight += tableWidget->rowHeight(row); 
+	} 
+
+	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
+	QRect frame = frameGeometry();
+	QRect client = geometry();
+	int verticalDecorationsHeight = frame.height() - client.height();
+	int horizontalDecorationsWidth = frame.width() - client.width();
+
+	float recommendedHeight =  scr.height() - verticalDecorationsHeight;
+	float recommendedWidth = scr.width() - horizontalDecorationsWidth;
+
+	int width = tableWidget->width() + 10;
+	int height = tableHeight + 10;
+	if (height > recommendedHeight) height = recommendedHeight;
+
+	setMinimumSize(width,height);
+	resize(width, height);
 }
 
 
