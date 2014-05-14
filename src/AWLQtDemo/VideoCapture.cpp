@@ -33,28 +33,8 @@ currentFrameSubscriptions(new(Subscription))
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
 
-	const std::string scaleOpt = "--scale=";
-    size_t scaleOptLen = scaleOpt.length();
-    std::string inputName;
+   std::string inputName;
 
-	// process input arguments
-    scale = 1;
-    for( int i = 1; i < argc; i++ )
-    {
-        if( scaleOpt.compare( 0, scaleOptLen, argv[i], scaleOptLen ) == 0 )
-        {
-            if( !sscanf( argv[i] + scaleOpt.length(), "%lf", &scale ) || scale < 1 )
-                scale = 1;
-        }
-        else if( argv[i][0] == '-' )
-        {
-            cerr << "WARNING: Unknown option %s" << argv[i] << endl;
-			return;
-        }
-        else
-            inputName.assign( argv[i] );
-    }
- 
 	// Determine capture source:  Camera, Single Frame or AVI
     if( inputName.empty() || (isdigit(inputName.c_str()[0]) && inputName.c_str()[1] == '\0') )
 	{
@@ -66,10 +46,12 @@ currentFrameSubscriptions(new(Subscription))
         if( image.empty() )
 		{
             capture = cvCaptureFromFile( inputName.c_str() );
+#if 0
 			if (capture == 0)
 			{
 			cerr << "Error: invalid input file" << inputName << endl;
 			}
+#endif
 		}
 		else 
 		{
