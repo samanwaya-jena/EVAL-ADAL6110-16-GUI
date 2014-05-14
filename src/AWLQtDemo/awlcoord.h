@@ -26,11 +26,29 @@ namespace awl
 class PolarCoord;
 class CartesianCoord;
 
+typedef enum eCoordLevel
+{
+	eVehicleCoord = 0,		// Vehicle position in world
+	eReceiverCoord = 1,		// Receiver position on vehicle		
+	eSensorCoord = 2		// Sensor posistion in receiver
+}
+eCoordLevel;
+
+
+
+
+
+
 /** \brief Structure containing relativePosition, in polar coordinates. */
-/*  \notes polar coordinates are using left-hand notation				*/
+/*  \notes polar coordinates are using right-handed notation				*/
 /*         rho is distance.												*/
 /*         theta is angle from z axis, clockwise.						*/
 /*         phi is angle from x axis, counterclockwise					*/
+//  We use the notation that is common practice in physics, 
+//  As specified by ISO standard 31-11.
+//  This means use positive sign for azimuth angles that are measured in 
+//  the counter-clockwise sense from the reference direction on the 
+//  reference plane, as seen from the zenith side of the plane
 
 class PolarCoord 
 {
@@ -79,6 +97,7 @@ public:
 };
 
 
+ 
 void ConvertSensorToVehicleCoord(const PolarCoord &sensorCoord, 
 					  const float pitch, const float yaw, const float roll, 
 					  const float xOffset, const float yOffset, const float zOffset, 
