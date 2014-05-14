@@ -784,13 +784,9 @@
     <None Include="AWLQtDemo.ico">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="awlqtdemo.ini">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
+    <None Include="AWLDemoSettings.xml">
       <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="awlqtdemo.xml">
-      <DeploymentContent>true</DeploymentContent>
+      <SubType>Designer</SubType>
     </None>
     <None Include="ChannelFrame1.bmp">
       <DeploymentContent>true</DeploymentContent>

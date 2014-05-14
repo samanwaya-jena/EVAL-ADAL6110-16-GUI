@@ -308,9 +308,6 @@
     <None Include="ChannelMask7.bmp">
       <Filter>Installable Files</Filter>
     </None>
-    <None Include="awlqtdemo.ini">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
       <Filter>Installable DLLs</Filter>
     </None>
@@ -816,7 +813,7 @@
     <None Include="AerostarIndustry-logo.jpg">
       <Filter>Installable Files</Filter>
     </None>
-    <None Include="awlqtdemo.xml">
+    <None Include="AWLDemoSettings.xml">
       <Filter>Installable Files</Filter>
     </None>
   </ItemGroup>

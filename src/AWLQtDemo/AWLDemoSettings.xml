@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <config>
   <layout>
     <!-- default layout at startup.  Tells which windows and parts of
@@ -29,7 +30,7 @@
     <!-- enableDemo:  
 	       when set to true, inject at startup and
 	       enable simulated feedback for common commands such as set/get registers -->
-    <enableDemo>true</enableDemo>
+    <enableDemo>false</enableDemo>
 
     <!-- injectType:
 	       0: ramp
@@ -81,7 +82,7 @@
 
       <sensorGeometry>
         <position>
-          <x>-0.84</x>
+          <x>-0.0</x>
           <!-- lateral offet -->
           <y>0.0</y>
           <!-- positionFromBumper -->
@@ -90,7 +91,7 @@
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>-15</yaw>
+          <yaw>-0.0</yaw>
         </orientation>
       </sensorGeometry>
 
@@ -253,216 +254,10 @@
       </channel>
     </receiver>
 
-    <!-- Receiver 2 -->
-    <receiver>
-      <!-- The receiverType determines which version of the 
-		       Receiver is used in the configuration.
-		       This can influence comm port communicationsValid
-		       values currently are "BareMetal" or "CAN" -->
-      <receiverType> CAN </receiverType>
-
-      <!-- Channel mask: Controls which channels are
-		       processed at AWL Unit Level -->
-      <!--enter the mask in decimal -->
-      <channelMask>127 </channelMask>
-
-      <!-- Frame rate, in Hertz -->
-      <frameRate> 30 </frameRate>
-      <!-- Message mask flags: 
-		       Controls which messages are sent to client unit
-		       if msgEnableObstacle is true, all displays will
-		       be configured for track mode operation -->
-      <msgEnableObstacle>true</msgEnableObstacle>
-      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
-      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
-      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
-      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
-
-      <commPort>COM16</commPort>
-      <serialPortRate>921600</serialPortRate>
-      <bitRate>S8</bitRate>
-
-      <yearOffset>1900</yearOffset>
-      <monthOffset>1</monthOffset>
-
-      <sensorGeometry>
-        <position>
-          <x>0.84</x>
-          <!-- lateral offet -->x
-          <y>0.0</y>
-          <!-- positionFromBumper -->
-          <z>1.35</z>
-        </position>
-        <orientation>
-          <pitch>0.0</pitch>
-          <roll>0.0</roll>
-          <yaw>15</yaw>
-        </orientation>
-      </sensorGeometry>
-
-      <displayedRangeMin>0.5</displayedRangeMin>
-      <displayedRangeMax>45</displayedRangeMax>
-      <rangeOffset>0.0</rangeOffset>
-
-      <channel>
-        <!--channel 0: Short-range left -->
-        <index>0</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>15</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <maskName>ChannelMask1.bmp</maskName>
-        <frameName>ChannelFrame1.bmp</frameName>
-        <displayColor>
-          <red>128</red>
-          <green>216</green>
-          <blue>168</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 1: short range - middle left -->
-        <index>1</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0</roll>
-          <yaw>5.0</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <maskName>ChannelMask2.bmp</maskName>
-        <frameName>ChannelFrame2.bmp</frameName>
-        <displayColor>
-          <red>54</red>
-          <green>166</green>
-          <blue>38</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 2: short range - middle right -->
-        <index>2</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>-5.0</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <maskName>ChannelMask3.bmp</maskName>
-        <frameName>ChannelFrame3.bmp</frameName>
-        <displayColor>
-          <red>54</red>
-          <green>166</green>
-          <blue>38</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 3: short range - right -->
-        <index>3</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>-15</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <maskName>ChannelMask4.bmp</maskName>
-        <frameName>ChannelFrame4.bmp</frameName>
-        <displayColor>
-          <red>128</red>
-          <green>216</green>
-          <blue>168</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 4: long range - left -->
-        <index>4</index>
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>4.6</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <maskName>ChannelMask5.bmp</maskName>
-        <frameName>ChannelFrame5.bmp</frameName>
-        <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 5: long range - center -->
-        <index>5</index>
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>0</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <maskName>ChannelMask6.bmp</maskName>
-        <frameName>ChannelFrame6.bmp</frameName>
-        <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 5: long range - right -->
-        <index>6</index>
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>-4.6</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <maskName>ChannelMask7.bmp</maskName>
-        <frameName>ChannelFrame7.bmp</frameName>
-        <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
-        </displayColor>
-      </channel>
-    </receiver>
-  </receivers>
-
+   </receivers>
 
   <displayTableView>
-    <displayedDetectionsPerChannelInTableView>4</displayedDetectionsPerChannelInTableView>
+    <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
   </displayTableView>
 
   <display2D>
@@ -477,7 +272,7 @@
 
     <shortRangeDistance>13.0</shortRangeDistance>
     <shortRangeDistanceStartLimited>13.0</shortRangeDistanceStartLimited>
-    <shortRangeAngle>80.0</shortRangeAngle>
+    <shortRangeAngle>40.0</shortRangeAngle>
     <shortRangeAngleStartLimited>20.0</shortRangeAngleStartLimited>
 
     <longRangeDistance>45.0</longRangeDistance>
@@ -895,10 +690,8 @@
     </register>
   </GPIOs>
 
-
-
   <algos>
-    <defaultAlgo>4</defaultAlgo>
+    <defaultAlgo>3</defaultAlgo>
 
     <algo>
       <!-- Algo 00 -->

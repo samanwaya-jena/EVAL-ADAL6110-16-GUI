@@ -9,6 +9,7 @@
 
 using namespace awl;
 using namespace std;
+const std::string sDefaultSettingsFileName("AWLDemoSettings.xml");
 
 
 void GetPosition(boost::property_tree::ptree &node, float &x, float &y, float&z);
@@ -21,7 +22,7 @@ void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t 
 AWLSettings *AWLSettings::globalSettings=NULL;
 
 AWLSettings::AWLSettings():
-sFileName("AWLQTDemo.xml"),
+sFileName(sDefaultSettingsFileName),
 targetHintDistance(0.0),
 targetHintAngle(0.0),
 decimation(3),
