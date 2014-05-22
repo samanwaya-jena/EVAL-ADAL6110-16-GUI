@@ -153,6 +153,8 @@ private:
 	VideoViewer::Ptr  videoViewer;
 	FusedCloudViewer::Ptr fusedCloudViewer;
 
+
+
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Subscription::SubscriberID> receiverCaptureSubscriberIDs;
 };

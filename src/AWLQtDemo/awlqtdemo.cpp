@@ -33,12 +33,17 @@ using namespace awl;
 #define LOOP_RATE	20
 #endif
 
+TransformationNode::Ptr myBaseNode;
+
 AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	: QMainWindow()
 {
 	ui.setupUi(this);
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
+
+	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
+	globalCoordinates->ReadCoordinates();
 
 	FillFPGAList(globalSettings);
 	FillADCList(globalSettings);
@@ -62,8 +67,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
-
-
 
 	// Change the window icon if there is an override in the INI file
 	if (!globalSettings->sIconFileName.empty())
@@ -134,6 +137,21 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			channelPtr = receiver->AddChannel(receiverChannel);
 		}
 	}
+
+
+#if 1
+
+	// Test the coordinates system
+	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	PolarCoord polarPointInChannel(10, 0, 0);
+	CartesianCoord cartesianPointInWorld0 = baseNode->children[0]->children[0]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	CartesianCoord cartesianPointInWorld1 = baseNode->children[0]->children[1]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	CartesianCoord cartesianPointInWorld2 = baseNode->children[0]->children[2]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	CartesianCoord cartesianPointInWorld3 = baseNode->children[0]->children[3]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	CartesianCoord cartesianPointInWorld4 = baseNode->children[0]->children[4]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	CartesianCoord cartesianPointInWorld5 = baseNode->children[0]->children[5]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	CartesianCoord cartesianPointInWorld6 = baseNode->children[0]->children[6]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+#endif
 
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)

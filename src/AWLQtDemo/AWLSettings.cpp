@@ -241,7 +241,6 @@ bool AWLSettings::ReadSettings()
 				}// if( receiversNode.first == "channel"
 			} // BOOST_FOREACH(ptree::value_type &channelsNode
 
-
 			// Copy default register, adc, GPIO and algo settings into each receiver
 			receiver.registersFPGA = defaultRegistersFPGA;
 			receiver.registersADC = defaultRegistersADC;
