@@ -266,7 +266,7 @@ void TableView::DisplayReceiverValues(const DetectionDataVect &data)
 	BOOST_FOREACH(const Detection::Ptr & detection, data)
 	{
 		tableRow = detection->detectionID + (detection->channelID * displayedDetectionsPerChannel) + receiverFirstRow.at(detection->receiverID); 
-		AddDistanceToText(tableRow, tableWidget, detection);
+		if (detection->detectionID < displayedDetectionsPerChannel) AddDistanceToText(tableRow, tableWidget, detection);
 	}
 
 }
