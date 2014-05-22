@@ -886,57 +886,48 @@ void FOV_2DScan::drawPalette(QPainter* p)
 	}
 }
 
+bool sortDetectionsBottomLeftTopRight (Detection::Ptr &left, Detection::Ptr &right) 
+
+{ 
+	// Same y position, sort from left to right
+	if (qFuzzyCompare(left->relativeToVehicleCart.y, right->relativeToVehicleCart.y))
+	{
+		if (left->relativeToVehicleCart.x < right->relativeToVehicleCart.x)
+		{
+				return(true);
+		}
+		else
+		{
+			return(false);
+		}
+	}
+	else if (left->relativeToVehicleCart.y < right->relativeToVehicleCart.y)
+	{
+		return(true);
+	}
+	else 
+	{
+		return(false);
+	}
+
+}
+
+
 
 void FOV_2DScan::slotDetectionDataChanged(const DetectionDataVect& data)
 {
     DetectionDataVect::const_iterator i;
     int index;
 
+	// Make a copy of the provided DetectionDataVect to work with
     copyData.clear();
+	copyData = data;
+
 
 	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
-	BOOST_FOREACH(const Detection::Ptr detection, data)
-	{
-		if (detection->relativeToVehiclePolar.rho > config.longRangeDistance)
-			continue;
+	std::sort(copyData.begin(), copyData.end(), sortDetectionsBottomLeftTopRight);
 
-		bool bFound = false;
-		DetectionDataVect::iterator iterator = copyData.begin();
-		int size = copyData.size();
-		for (int index = 0; index < size; index++, iterator++)
-		{
-			const Detection::Ptr detectionCopy = copyData.at(index);
-			if (qFuzzyCompare(detectionCopy->relativeToVehicleCart.y, detection->relativeToVehicleCart.y))
-			//if (qFuzzyCompare(copyData[index].distanceRadial, detection->distanceRadial))
-            {
-				if (detection->relativeToVehiclePolar.phi > 0)
-				{
-					if (detectionCopy->relativeToVehiclePolar.phi < detection->relativeToVehiclePolar.phi)
-						bFound = true;
-				}
-				else
-				{
-					if (detectionCopy->relativeToVehiclePolar.phi > detection->relativeToVehiclePolar.phi)
-						bFound = true;
-				}
-            }
-            else if (detectionCopy->relativeToVehicleCart.y > detection->relativeToVehicleCart.y)
-            {
-                bFound = true;
-            }
-
-			if (bFound)
-			{
-				copyData.insert(iterator, index, detection);
-				break;
-			}
-
-        }
-
-
-        if (!bFound) copyData.push_back(detection);
-    }
-
+	//Merge detections according to distance criteria
 	mergeDetection();
     update();
 }
