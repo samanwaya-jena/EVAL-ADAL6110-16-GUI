@@ -205,37 +205,24 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->timeToCollision = track->timeToCollision;
 				detection->decelerationToStop = track->decelerationToStop;
 				detection->threatLevel = track->threatLevel;
-				// Convert FOV data in polar coord
 
-				float centerX = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX);
-				centerX = centerX + M_PI_2;
+				// Place the coordinates relative to all their respective reference systems
+				TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+				PolarCoord polarPointInChannel(detection->distance, 0, 0);
+				detection->relativeToSensorCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+				detection->relativeToVehicleCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eVehicleCoord, polarPointInChannel);
+				detection->relativeToWorldCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eWorldCoord, polarPointInChannel);
 
-				float centerY = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[detection->channelID].centerX);
-				centerY += M_PI_2;
-				detection->relativeToSensorPolar.Set(detection->distance, centerY, centerX);
-				detection->relativeToSensorCart = detection->relativeToSensorPolar;
-
-				// Create vehicle coord
-				ConvertSensorToVehicleCoord(detection->relativeToSensorPolar, 
-					receiverSettings.sensorPitch, receiverSettings.sensorYaw, receiverSettings.sensorRoll, 
-					receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ, 
-					detection->relativeToVehicleCart);
+				detection->relativeToSensorPolar = detection->relativeToSensorCart;
 				detection->relativeToVehiclePolar = detection->relativeToVehicleCart;
+				detection->relativeToWorldPolar = detection->relativeToWorldCart;
 
-
-				// Integrate vehicle coordinates
-				detection->relativeToWorldPolar = detection->relativeToVehiclePolar;
-				detection->relativeToWorldCart = detection->relativeToVehicleCart;
 			}  // if (track...
 
 			trackIterator++;
 		} // while (trackIterator...
 	} // for (channelIndex)
 }
-
-
-
-
 
 bool AcquisitionSequence::FindTrack(SensorFrame::Ptr currentFrame, TrackID trackID, Track::Ptr &outTrack)
 {
@@ -269,8 +256,6 @@ Track::Ptr AcquisitionSequence::MakeUniqueTrack(SensorFrame::Ptr currentFrame, T
 
 	return(track);
 }
-
-
 
 bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame)
 {
@@ -438,29 +423,16 @@ relativeToVehiclePolar(),
 relativeToWorldCart(),
 relativeToWorldPolar()
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
-	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
+	// Place the coordinates relative to all their respective reference systems
+	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	PolarCoord polarPointInChannel(distance, 0, 0);
+	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, polarPointInChannel);
+	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, polarPointInChannel);
 
-	// Convert FOV data in polar coord
-	float centerX = DEG2RAD(channelConfig.centerX);
-	centerX = -centerX + M_PI_2;
-
-	float centerY = DEG2RAD(channelConfig.centerY);
-	centerY += M_PI_2;
-	relativeToSensorPolar.Set(distance, centerY, centerX);
-	relativeToSensorCart = relativeToSensorPolar;
-
-	// Create vehicle coord
-	ConvertSensorToVehicleCoord(relativeToSensorPolar, 
-					receiverSettings.sensorPitch, receiverSettings.sensorYaw, receiverSettings.sensorRoll, 
-					receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ, 
-					relativeToVehicleCart);
+	relativeToSensorPolar = relativeToSensorCart;
 	relativeToVehiclePolar = relativeToVehicleCart;
- 
-	// Integrate vehicle coordinates
-	relativeToWorldPolar = relativeToVehiclePolar;
-	relativeToWorldCart = relativeToVehicleCart;
+	relativeToWorldPolar = relativeToWorldCart;
 }
 
 Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
@@ -487,30 +459,16 @@ relativeToWorldPolar()
 
 
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
-	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
+	// Place the coordinates relative to all their respective reference systems
+	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	PolarCoord polarPointInChannel(distance, 0, 0);
+	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
+	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, polarPointInChannel);
+	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, polarPointInChannel);
 
-	// Convert FOV data in polar coord
-	float centerX = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX);
-	centerX = -centerX + M_PI_2;
-
-	float centerY = DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX);
-	centerY += M_PI_2;
-	relativeToSensorPolar.Set(distance, centerY, centerX);
-	relativeToSensorCart = relativeToSensorPolar;
-
-	// Create vehicle coord
-	ConvertSensorToVehicleCoord(relativeToSensorPolar, 
-					receiverSettings.sensorPitch, receiverSettings.sensorYaw, receiverSettings.sensorRoll, 
-				receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ, 
-					relativeToVehicleCart);
+	relativeToSensorPolar = relativeToSensorCart;
 	relativeToVehiclePolar = relativeToVehicleCart;
-
- 
-	// Integrate vehicle coordinates
-	relativeToWorldPolar = relativeToVehiclePolar;
-	relativeToWorldCart = relativeToVehicleCart; 
+	relativeToWorldPolar = relativeToWorldCart;
 }
 
 

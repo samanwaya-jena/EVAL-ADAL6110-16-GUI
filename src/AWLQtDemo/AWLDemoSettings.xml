@@ -38,7 +38,7 @@
 	       2: slow moving, single target
 	       3: steady target -->
 
-    <injectType>0</injectType>
+    <injectType>3</injectType>
   </demoMode>
 
   <calibration>
@@ -321,7 +321,7 @@
     <displayDistances>1</displayDistances>
   </display2D>
 
-  <display3D>
+  <display3D>   
     <decimation>3</decimation>
     <pixelSize>1</pixelSize>
     <colorStyle>0</colorStyle>

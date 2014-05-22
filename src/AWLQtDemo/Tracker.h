@@ -143,6 +143,7 @@ public:
 	ThreatLevel	threatLevel;
 };
 
+
 /** \brief A track corresponds to an obstacle tracking based on a singl;e or multiple detections,
            and gives information on the evolution of the detected obstacle across multiple frames
 */
