@@ -84,12 +84,12 @@ public:
 	/** \brief Return the  horizontal camera FOV.
       * \return horizontal camera FOV in radians.
       */
-	double GetCameraFovX() {return(cameraFovX);}
+	double GetCameraFovWidth() {return(cameraFovWidth);}
 
 	/** \brief Return the  vertical camera FOV.
       * \return vertical camera FOV in radians.
       */
-	double GetCameraFovY() {return(cameraFovY);}
+	double GetCameraFovHeight() {return(cameraFovHeight);}
 
 	/** \brief Return the current frame. 
       * \return a boost shared pointer to the current frame.
@@ -152,9 +152,9 @@ protected:
 	double scale;
 
 	/** \brief Horizontal field of view of the camera. */
-	float cameraFovX;
+	float cameraFovWidth;
 	/** \brief Vertical field of view of the camera. */
-	float cameraFovY;
+	float cameraFovHeight;
 
 	/** \brief Video capture device. */
 	CvCapture* capture;

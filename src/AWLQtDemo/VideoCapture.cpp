@@ -33,12 +33,15 @@ currentFrameSubscriptions(new(Subscription))
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
 
-   std::string inputName;
+	std::string inputName = "1101";
+
 
 	// Determine capture source:  Camera, Single Frame or AVI
-    if( inputName.empty() || (isdigit(inputName.c_str()[0]) && inputName.c_str()[1] == '\0') )
+    if( inputName.empty() || isdigit(inputName.c_str()[0]) )
 	{
-        capture = cvCaptureFromCAM( inputName.empty() ? 0 : inputName.c_str()[0] - '0' );
+		int inputID = 0;
+		if (!inputName.empty()) inputID = atoi(inputName.c_str());
+        capture = cvCaptureFromCAM( inputID );
 	}
 	else if( inputName.size() )
     {
@@ -81,8 +84,8 @@ currentFrameSubscriptions(new(Subscription))
 	// Field of view of the camera are in application seetings. 
 	// They are in degrees, so need to be converted in radians.
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	cameraFovX = DEG2RAD(globalSettings->cameraFovXDegrees);
-	cameraFovY = DEG2RAD(globalSettings->cameraFovYDegrees);
+	cameraFovWidth = DEG2RAD(globalSettings->cameraFovWidthDegrees);
+	cameraFovHeight = DEG2RAD(globalSettings->cameraFovHeightDegrees);
 }
 
 VideoCapture:: ~VideoCapture()
