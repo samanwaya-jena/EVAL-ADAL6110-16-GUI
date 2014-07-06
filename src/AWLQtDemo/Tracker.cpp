@@ -208,14 +208,14 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 
 				// Place the coordinates relative to all their respective reference systems
 				TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
-				PolarCoord polarPointInChannel(detection->distance, 0, 0);
-				detection->relativeToSensorCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-				detection->relativeToVehicleCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eVehicleCoord, polarPointInChannel);
-				detection->relativeToWorldCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eWorldCoord, polarPointInChannel);
+				SphericalCoord sphericalPointInChannel(detection->distance, M_PI_2, 0);
+				detection->relativeToSensorCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+				detection->relativeToVehicleCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eVehicleCoord, sphericalPointInChannel);
+				detection->relativeToWorldCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eWorldCoord, sphericalPointInChannel);
 
-				detection->relativeToSensorPolar = detection->relativeToSensorCart;
-				detection->relativeToVehiclePolar = detection->relativeToVehicleCart;
-				detection->relativeToWorldPolar = detection->relativeToWorldCart;
+				detection->relativeToSensorSpherical = detection->relativeToSensorCart;
+				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
+				detection->relativeToWorldSpherical = detection->relativeToWorldCart;
 
 			}  // if (track...
 
@@ -393,11 +393,11 @@ probability(0.0),
 timeStamp(0),
 firstTimeStamp(0),
 relativeToSensorCart(),
-relativeToSensorPolar(),
+relativeToSensorSpherical(),
 relativeToVehicleCart(),
-relativeToVehiclePolar(),
+relativeToVehicleSpherical(),
 relativeToWorldCart(),
-relativeToWorldPolar()
+relativeToWorldSpherical()
 {
 }
 
@@ -417,22 +417,22 @@ probability(0.0),
 timeStamp(0),
 firstTimeStamp(0),
 relativeToSensorCart(),
-relativeToSensorPolar(),
+relativeToSensorSpherical(),
 relativeToVehicleCart(),
-relativeToVehiclePolar(),
+relativeToVehicleSpherical(),
 relativeToWorldCart(),
-relativeToWorldPolar()
+relativeToWorldSpherical()
 {
 	// Place the coordinates relative to all their respective reference systems
 	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
-	PolarCoord polarPointInChannel(distance, 0, 0);
-	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, polarPointInChannel);
-	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, polarPointInChannel);
+	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
+	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, sphericalPointInChannel);
+	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, sphericalPointInChannel);
 
-	relativeToSensorPolar = relativeToSensorCart;
-	relativeToVehiclePolar = relativeToVehicleCart;
-	relativeToWorldPolar = relativeToWorldCart;
+	relativeToSensorSpherical = relativeToSensorCart;
+	relativeToVehicleSpherical = relativeToVehicleCart;
+	relativeToWorldSpherical = relativeToWorldCart;
 }
 
 Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
@@ -451,24 +451,24 @@ firstTimeStamp(inFirstTimeStamp),
 trackID(inTrackID),
 threatLevel(inThreatLevel),
 relativeToSensorCart(),
-relativeToSensorPolar(),
+relativeToSensorSpherical(),
 relativeToVehicleCart(),
-relativeToVehiclePolar(),
+relativeToVehicleSpherical(),
 relativeToWorldCart(),
-relativeToWorldPolar()
+relativeToWorldSpherical()
 
 
 {
 	// Place the coordinates relative to all their respective reference systems
 	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
-	PolarCoord polarPointInChannel(distance, 0, 0);
-	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, polarPointInChannel);
-	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, polarPointInChannel);
+	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
+	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, sphericalPointInChannel);
+	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, sphericalPointInChannel);
 
-	relativeToSensorPolar = relativeToSensorCart;
-	relativeToVehiclePolar = relativeToVehicleCart;
-	relativeToWorldPolar = relativeToWorldCart;
+	relativeToSensorSpherical = relativeToSensorCart;
+	relativeToVehicleSpherical = relativeToVehicleCart;
+	relativeToWorldSpherical = relativeToWorldCart;
 }
 
 

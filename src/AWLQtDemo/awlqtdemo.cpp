@@ -39,34 +39,34 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	: QMainWindow()
 {
 	ui.setupUi(this);
+
+	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
 
+	// Build a reference coodinate system from the settings
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
-	globalCoordinates->ReadCoordinates();
+	globalCoordinates->BuildCoordinatesFromSettings();
 
+#if 1
+
+	// Test the coordinates system
+	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	SphericalCoord sphericalPointInChannel(10, M_PI_2, 0);
+	CartesianCoord cartesianPointInWorld0 = baseNode->children[0]->children[0]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld1 = baseNode->children[0]->children[1]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld2 = baseNode->children[0]->children[2]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld3 = baseNode->children[0]->children[3]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld4 = baseNode->children[0]->children[4]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld5 = baseNode->children[0]->children[5]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld6 = baseNode->children[0]->children[6]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+#endif
+
+
+	// Fill the parameters  tables from the settings
 	FillFPGAList(globalSettings);
 	FillADCList(globalSettings);
 	FillGPIOList(globalSettings);
-
-	int receiverQty = globalSettings->receiverSettings.size();
-	long absoluteMaxRange = 0.0;
-
-	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
-	{
-		long absoluteMaxRangeForReceiver = 0.0;
-		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
-		{
-			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
-				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange;
-		}
-		AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRangeForReceiver;
-
-		if (absoluteMaxRangeForReceiver > absoluteMaxRange) absoluteMaxRange = absoluteMaxRangeForReceiver; 
-	}
-
-	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 
 	// Change the window icon if there is an override in the INI file
 	if (!globalSettings->sIconFileName.empty())
@@ -87,9 +87,15 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 
+	// Adjust the default displayed ranges depending on the sensor capabilities
+	AdjustDefaultDisplayedRanges();
+
+
 	// Create the image acquistion thread object
 	videoCapture = VideoCapture::Ptr(new VideoCapture(argc, argv));
 
+	// Create the receiver communication objects
+	int receiverQty = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object
@@ -114,7 +120,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// The projector feeds from the videoCapture and feeds from the base cloud
 	receiver = ReceiverProjector::Ptr(new ReceiverProjector(videoCapture, baseCloud, receiverCaptures[0]));
 
-	// Add the channels
+	// Add the channels to the point-cloud projector. 
 	ReceiverChannel::Ptr channelPtr;
 
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
@@ -122,8 +128,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.size(); channelID++)
 		{
 			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovX),
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovY),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovWidth),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovHeight),
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
@@ -139,20 +145,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 
-#if 1
-
-	// Test the coordinates system
-	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
-	PolarCoord polarPointInChannel(10, 0, 0);
-	CartesianCoord cartesianPointInWorld0 = baseNode->children[0]->children[0]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	CartesianCoord cartesianPointInWorld1 = baseNode->children[0]->children[1]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	CartesianCoord cartesianPointInWorld2 = baseNode->children[0]->children[2]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	CartesianCoord cartesianPointInWorld3 = baseNode->children[0]->children[3]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	CartesianCoord cartesianPointInWorld4 = baseNode->children[0]->children[4]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	CartesianCoord cartesianPointInWorld5 = baseNode->children[0]->children[5]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-	CartesianCoord cartesianPointInWorld6 = baseNode->children[0]->children[6]->ToReferenceCoord(eReceiverCoord, polarPointInChannel);
-#endif
-
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
 	videoViewer = VideoViewer::Ptr(new VideoViewer(this->windowTitle().toStdString() +" Camera", videoCapture, receiverCaptures[0], receiver));
@@ -167,8 +159,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	PrepareGlobalParametersView();
 
 	// Initialize the controls from the settings in INI file
-	ui.sensorHeightSpinBox->setValue(globalSettings->receiverSettings[0].sensorZ);
-	ui.sensorDepthSpinBox->setValue(globalSettings->receiverSettings[0].sensorY);
+	ui.sensorHeightSpinBox->setValue(globalSettings->receiverSettings[0].sensorUp);
+	ui.sensorDepthSpinBox->setValue(globalSettings->receiverSettings[0].sensorForward);
 	ui.measurementOffsetSpinBox->setValue(globalSettings->receiverSettings[0].rangeOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
@@ -279,8 +271,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-    mCfgSensor.sensorDepth = globalSettings->cameraY;
-    mCfgSensor.sensorHeight = globalSettings->cameraZ;
+    mCfgSensor.spareDepth = -globalSettings->cameraForward;
 
 	m2DScan->slotConfigChanged(mCfgSensor);
 
@@ -414,6 +405,32 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 AWLQtDemo::~AWLQtDemo()
 {
 }
+
+void AWLQtDemo::AdjustDefaultDisplayedRanges()
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	// Adjust the default maximum displayed range for the receiver (used in various interfaces) 
+	// to reflect the maximum of all its channel ranges.
+	int receiverQty = globalSettings->receiverSettings.size();
+	long absoluteMaxRange = 0.0;
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	{
+		long absoluteMaxRangeForReceiver = 0.0;
+		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
+		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+		{
+			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
+				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange;
+		}
+		AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRangeForReceiver;
+
+		if (absoluteMaxRangeForReceiver > absoluteMaxRange) absoluteMaxRange = absoluteMaxRangeForReceiver; 
+	}
+
+	// And the default maximum displayed range for interfaces to the max range of all receivers 
+	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
+}
+
 
 void AWLQtDemo::on_destroy()
 {
@@ -637,8 +654,8 @@ void AWLQtDemo::on_pixelSizeSpin_editingFinished()
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	double height = ui.sensorHeightSpinBox->value();
-	if (abs(height-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorZ) < 0.001) return;
-	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorZ = height;
+	if (abs(height-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp) < 0.001) return;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp = height;
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -661,12 +678,6 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 		fusedCloudViewer->SetViewerHeight(height);
 	}
 
-	if (m2DScan && !m2DScan->isHidden())
-	{
-	    mCfgSensor.sensorHeight = height;
-		m2DScan->slotConfigChanged(mCfgSensor);
-	}
-
 	// Restore the wait cursor
 	setCursor(Qt::ArrowCursor);
 }
@@ -674,9 +685,9 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
-	double depth = ui.sensorDepthSpinBox->value();
-	if (abs(depth-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorY) < 0.001) return;
-	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorY = depth;
+	double forward = ui.sensorDepthSpinBox->value();
+	if (abs(forward-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward) < 0.001) return;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward = forward;
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -686,17 +697,17 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 	if (receiver) 
 	{	
-		receiver->SetViewerDepth(depth);
+		receiver->SetViewerDepth(forward);
 	}
 
 	if (fusedCloudViewer) 
 	{
-		fusedCloudViewer->SetViewerDepth(depth);
+		fusedCloudViewer->SetViewerDepth(forward);
 	}
 
 	if (m2DScan && !m2DScan->isHidden())
 	{
-	    mCfgSensor.sensorDepth = depth;
+		mCfgSensor.spareDepth = -forward;
 		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 

@@ -115,6 +115,9 @@ private slots:
 	void on_timerTimeout();
 
 protected:
+	// Adjust the default displayed ranges depending on the sensor capabilities
+	void AdjustDefaultDisplayedRanges();
+
 	void PrepareParametersView();
 	void UpdateParametersView();
 

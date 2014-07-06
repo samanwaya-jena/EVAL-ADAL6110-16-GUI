@@ -32,8 +32,8 @@ protected:
 	int width;
 	int height;
 
-	double fovX;
-	double fovY;
+	double fovWidth;
+	double fovHeight;
 	/** \brief  sensor height to ground */
 	double  viewerHeight;
 	/** \brief  sensor depth from bumper (ideally, should be negative)*/
@@ -47,7 +47,7 @@ public:
 
 // public functions
 public:
-	ViewerCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, const double inViewerHeight, double inViewerDepth, double iRangeMax);
+	ViewerCoordinates(const int inWidth, const int inHeight, const double inFovWidth, const double inFovHeight, const double inViewerHeight, double inViewerDepth, double iRangeMax);
 
 	void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
 									PointXYZRGB &ioCloudPoint);
@@ -77,24 +77,24 @@ public:
 	void GetViewerDepth(double &outViewerDepth);
 
 	/** \brief Sets   horizontal camera FOV.
-      * \param[in] cameraFovX horizontal FOV of camera in radians.
+      * \param[in] cameraFovWidth horizontal FOV of camera in radians.
 	      */
-	void  SetCameraFovX(double inCameraFovX);
+	void  SetCameraFovWidth(double inCameraFovWidth);
 
 	/** \brief Return the  horizontal camera FOV.
       * \return horizontal camera FOV in radians.
       */
-	double GetCameraFovX() {return(fovX);}
+	double GetCameraFovWidth() {return(fovWidth);}
 
 	/** \brief Sets   verticsl camera FOV.
-      * \param[in] cameraFovY vertical FOV of camera in radians.
+      * \param[in] cameraFovHeight vertical FOV of camera in radians.
 	      */
-	void  SetCameraFovY(double inCameraFovY);
+	void  SetCameraFovHeight(double inCameraFovHeight);
 
 	/** \brief Return the  vertical camera FOV.
       * \return vertical camera FOV in radians.
       */
-	double GetCameraFovY() {return(fovY);}
+	double GetCameraFovHeight() {return(fovHeight);}
 };
 
 
@@ -149,9 +149,9 @@ protected:
 	int		bottomRightY;
 
 	/** \brief  sensor height to ground */
-	double  sensorZ;
+	double  sensorUp;
 	/** \brief  sensor depth from bumber (ideally, should be negative)*/
-	double  sensorY;
+	double  sensorForward;
 
 	// Pointer to background during frame reconstruction
 	ReceiverChannel::FramePtr backgroundPtr;
@@ -200,7 +200,7 @@ public:
 
 	ReceiverChannel(const int inReceiverID,
 					const int inChannelID, 
-					const float inFovX, const float inFovY, 
+					const float inFovWidth, const float inFovHeight, 
 					const float inCenterX, const float inCenterY, 
 					const float inRangeMax, 
 				    const std::string inMaskName, const std::string inFrameName, 
@@ -238,12 +238,12 @@ public:
 	void UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCoordinates);
 
 	/** \brief Modify the viewer display so as to hide/show all voxels under ground.
-      * \param[in] inDisplayUnderZero If false, values under "-sensorZ"  not be displayed.  Displayed if true.
+      * \param[in] inDisplayUnderZero If false, values under "-sensorUp"  not be displayed.  Displayed if true.
       */
 	bool SetDisplayUnderZero(bool inDisplayUnderZero);
 	
 	/** \brief Get the value of the displayUnderZero display mode.
-      * \return If false, values under "-sensorZ"  are not be displayed.  Displayed if true.
+      * \return If false, values under "-sensorUp"  are not be displayed.  Displayed if true.
       */
 
 	bool GetDisplayUnderZero();
@@ -260,24 +260,24 @@ public:
 	void GetDecimation(int &outDecimationX, int &outDecimationY);
 
 		/** \brief Modify the viewer's sensor height parameter.
-      * \param[in] inSensorZ sensor height, in meters
+      * \param[in] inSensorUp sensor height, in meters
       */
-	void SetSensorZ(double inSensorZ);
+	void SetSensorUp(double inSensorUp);
 
 	/** \brief Get the viewer's sensor height in meters.
-      * \param[out] outSensorZ sensor height.
+      * \param[out] outSensorUp sensor height.
       */
-	void GetSensorZ(double &outSensorZ);
+	void GetSensorUp(double &outSensorUp);
 
-	/** \brief Modify the viewer's sensor depth parameter (depth from bumper).
-      * \param[in] inSensorY sensor depth, in meters (normally negative)
+	/** \brief Modify the viewer's sensor forrward position parameter (depth from bumper).
+      * \param[in] inSensorForward sensor position (positive forward), in meters (normally negative)
       */
-	void SetSensorY(double inSensorY);
+	void SetSensorForward(double inSensorForward);
 
-	/** \brief Get the viewer's sensor depth in meters.
-      * \param[out] outSensorY sensor depth.
+	/** \brief Get the viewer's sensor forward position in meters.
+      * \param[out] outSensorForward sensor depth.
       */
-	void GetSensorY(double &outSensorY);
+	void GetSensorForward(double &outSensorForward);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters
@@ -399,12 +399,12 @@ public:
 	void SetBackgroundFrame(ReceiverProjector::FramePtr &inFrame);
 
 	/** \brief Modify the viewer display so as to hide/show all voxels under ground.
-      * \param[in] bDisplayUnderZero If false, values under "-sensorZ"  not be displayed.  Displayed if true.
+      * \param[in] bDisplayUnderZero If false, values under "-sensorUp"  not be displayed.  Displayed if true.
       */
 	bool SetDisplayUnderZero(bool inDisplayUnderZero);
 
 	/** \brief Get the value of the displayUnderZero display mode.
-      * \param[out] bDisplayUnderZero If false, values under "-sensorZ"  are not be displayed.  Displayed if true.
+      * \param[out] bDisplayUnderZero If false, values under "-sensorUp"  are not be displayed.  Displayed if true.
       */
 	bool GetDisplayUnderZero();
 
@@ -482,24 +482,24 @@ public:
 	double GetScale() { return(scale);}
 
 	/** \brief Sets   horizontal camera FOV.
-      * \param[in] cameraFovX horizontal FOV of camera in radians.
+      * \param[in] cameraFovWidth horizontal FOV of camera in radians.
 	      */
-	void  SetCameraFovX(double cameraFovX);
+	void  SetCameraFovWidth(double cameraFovWidth);
 
 	/** \brief Return the  horizontal camera FOV.
-      * \param[out] cameraFovX horizontal FOV of camera in radians.
+      * \param[out] cameraFovWidth horizontal FOV of camera in radians.
       */
-	void GetCameraFovX(double &outCameraFov);
+	void GetCameraFovWidth(double &outCameraFov);
 
 	/** \brief Sets   verticsl camera FOV.
-      * \param[in] cameraFovY vertical FOV of camera in radians.
+      * \param[in] cameraFovHeight vertical FOV of camera in radians.
 	      */
-	void  SetCameraFovY(double cameraFovY);
+	void  SetCameraFovHeight(double cameraFovHeight);
 
 	/** \brief Return the  vertical camera FOV.
-      * \param[out] cameraFovX vertical FOV of camera in radians.
+      * \param[out] cameraFovWidth vertical FOV of camera in radians.
       */
-	void GetCameraFovY(double &outCameraFov);
+	void GetCameraFovHeight(double &outCameraFov);
 
 	// public variables
 public:
@@ -594,9 +594,9 @@ protected:
 	double scale;
 
 	/** \brief Horizontal field of view of the camera. */
-	float cameraFovX;
+	float cameraFovWidth;
 	/** \brief Vertical field of view of the camera. */
-	float cameraFovY;
+	float cameraFovHeight;
 
 	/** \brief Our subscription identifier to access to video frame. */
 	Subscription::SubscriberID currentVideoSubscriberID;

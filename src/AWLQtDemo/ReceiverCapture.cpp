@@ -26,7 +26,7 @@ const int channelTransitions[channelTransitionQty][2] =
 	{1, -1},
 	{1, 5},
 	{5, -1},
-	{5, 2},
+	{2, 5},
 	{2, -1},
 	{2, 6},
 	{2, -1},
@@ -1023,8 +1023,8 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 		{
 			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackIDGenerator++);
 			track->distance = lastDistance;
-#if 0
-				track->distance = 5;
+#if 1
+				track->distance = 10;
 #endif
 			uint8_t test = 0x001 << channelA;
 			track->channels = test;
@@ -1051,8 +1051,8 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 			{
 				Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackIDGenerator++);
 				track->distance = lastDistance;
-#if 0
-				track->distance = 5;
+#if 1
+				track->distance = 10;
 #endif
 				track->channels = (0x01 << channelB);
 				track->velocity = (maxDistances[channelB]- (track->distance)) / 2;

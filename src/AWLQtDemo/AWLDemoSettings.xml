@@ -15,10 +15,10 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Aerostar-logo.jpg</logoFileName>
+    <logoFileName>AerostarIndustry-logo.jpg</logoFileName>
 
     <!-- Name of file containing displayed icon -->
-    <iconFileName>AWLQtDemo.ico</iconFileName>
+    <iconFileName>AWLQtDemo-US.ico</iconFileName>
   </layout>
 
   <debug>
@@ -82,12 +82,13 @@
 
       <sensorGeometry>
         <position>
-          <x>-0.0</x>
-          <!-- lateral offet -->
-          <y>0.0</y>
           <!-- positionFromBumper -->
-          <z>1.35</z>
-        </position>
+          <forward>0.0</forward>
+          <!-- lateral offet -->
+          <left>0.0</left>
+          <!-- height -->
+          <up>0.0</up>
+         </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
@@ -294,7 +295,7 @@
 	     2:		eLongitudinal - According to bumper distance -->
     <mergeDetectionMode>0</mergeDetectionMode>
 
-    <!-- MergeDisplayMode 
+    <!-- mergeDisplayMode 
 	     0: NONE
 	     1: Rectangle under detection 
 	        (Still display distance individually)
@@ -302,16 +303,21 @@
 	     3: Rectangle with detections, but only one distance -->
     <mergeDisplayMode>0</mergeDisplayMode>
 
-    <!-- MeasureMode
+    <!-- measureMode
 	     0: Radial
-	     1: Distance from bumper -->
+	     1: Longitudinal distance from bumper -->
     <measureMode>1</measureMode>
 
-    <!-- ColorCode
+    <!-- colorCode
 	     0: Colors indicate distances
 	     1: Colors indicate speed -->
     <colorCode>1</colorCode>
 
+    <!-- mergeAcceptance
+       distance before we merge targets
+       Merge acceptance is in 2D view coordinates, so:
+        - X is lateral
+        - Y is forward    -->
     <mergeAcceptance>
       <x>3.0</x>
       <y>1.0</y>
@@ -366,11 +372,12 @@
 
   <camera>
     <position>
-      <x>0.0</x>
-      <!-- lateral offet -->
-      <y>-1.54</y>
       <!-- positionFromBumper -->
-      <z>1.35</z>
+      <forward>-1.35</forward>
+      <!-- lateral offet -->
+      <left>0.0</left>
+      <!-- height -->
+      <up>1.54</up>
     </position>
     <orientation>
       <pitch>0.0</pitch>

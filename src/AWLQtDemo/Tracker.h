@@ -121,15 +121,15 @@ public:
 
 	/** \brief Coordinates of detection relative to sensor */
 	CartesianCoord relativeToSensorCart;
-	PolarCoord	   relativeToSensorPolar;
+	SphericalCoord	   relativeToSensorSpherical;
 
 	/** \brief Coordinates of detection relative to vehicule bumper */
 	CartesianCoord relativeToVehicleCart;
-	PolarCoord	   relativeToVehiclePolar;
+	SphericalCoord	   relativeToVehicleSpherical;
 
 	/** \brief Coordinates of detection relative to world */
 	CartesianCoord relativeToWorldCart;
-	PolarCoord	   relativeToWorldPolar;
+	SphericalCoord	   relativeToWorldSpherical;
 
 	/** \brief AbsoluteYCoordinate. */
 	float absoluteY;

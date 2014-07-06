@@ -277,6 +277,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable, const Dete
 {
 	if (rowIndex >= pTable->rowCount()) return;
 
+
 	AddDistanceToText(rowIndex, pTable, detection->receiverID, detection->channelID, detection->detectionID,
 		detection->trackID, detection->distance,  detection->threatLevel,
 		detection->intensity, detection->velocity, detection->acceleration, detection->timeToCollision,

@@ -67,8 +67,8 @@ namespace awl
 	typedef struct ChannelConfig 
 	{
 		int channelIndex;
-		float fovX;
-		float fovY;
+		float fovWidth;
+		float fovHeight;
 		float centerX;
 		float centerY;
 		float maxRange;
@@ -122,9 +122,9 @@ namespace awl
 	bool msgEnableIntensity_5_8;
 
 	// Calibration parameters
-	float sensorX;
-	float sensorY;
-	float sensorZ;
+	float sensorForward;
+	float sensorLeft;
+	float sensorUp;
 
 	float sensorPitch; // In degrees
 	float sensorRoll;  // In degrees
@@ -278,14 +278,14 @@ public:
 	float travelSpeed;
 
 	// Camera
-	float cameraX;
-	float cameraY; 
-	float cameraZ; 
+	float cameraForward;
+	float cameraLeft; 
+	float cameraUp; 
 	float cameraPitch; 
 	float cameraRoll; 
 	float cameraYaw; 
-	float cameraFovXDegrees;
-	float cameraFovYDegrees;
+	float cameraFovWidthDegrees;
+	float cameraFovHeightDegrees;
 
 	// Debug
 	bool bWriteDebugFile;

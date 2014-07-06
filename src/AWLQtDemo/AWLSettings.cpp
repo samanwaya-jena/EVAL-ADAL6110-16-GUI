@@ -12,11 +12,12 @@ using namespace std;
 const std::string sDefaultSettingsFileName("AWLDemoSettings.xml");
 
 
-void GetPosition(boost::property_tree::ptree &node, float &x, float &y, float&z);
+void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up);
+
 void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float&roll);
 void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y);
 
-void GetGeometry(boost::property_tree::ptree &geometryNode, float &x, float &y, float &z, float &pitch, float &yaw, float &roll);
+void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
 void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
 
 AWLSettings *AWLSettings::globalSettings=NULL;
@@ -210,7 +211,7 @@ bool AWLSettings::ReadSettings()
 			// Geometry
 			boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
 			GetGeometry(geometryNode, 
-				        receiver.sensorX, receiver.sensorY, receiver.sensorZ,
+				        receiver.sensorForward, receiver.sensorLeft, receiver.sensorUp,
 						receiver.sensorPitch, receiver.sensorYaw, receiver.sensorRoll);
 
 			// Display
@@ -227,7 +228,7 @@ bool AWLSettings::ReadSettings()
 					ChannelConfig channelConfig;
 
 					channelConfig.channelIndex = channelNode.get<int>("index");
-					Get2DPoint(channelNode.get_child("fov"), channelConfig.fovX, channelConfig.fovY);
+					Get2DPoint(channelNode.get_child("fov"), channelConfig.fovWidth, channelConfig.fovHeight);
 					float roll;
 					GetOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
 					channelConfig.maxRange = channelNode.get<float>("maxRange");
@@ -323,9 +324,9 @@ bool AWLSettings::ReadSettings()
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 
 	GetGeometry(propTree.get_child("config.camera"),
-				cameraX, cameraY, cameraZ,
+				cameraForward, cameraLeft, cameraUp,
 				cameraPitch, cameraYaw, cameraRoll);
-	Get2DPoint(propTree.get_child("config.camera.fov"), cameraFovXDegrees, cameraFovYDegrees);
+	Get2DPoint(propTree.get_child("config.camera.fov"), cameraFovWidthDegrees, cameraFovHeightDegrees);
 
 	return(true);
 }
@@ -396,11 +397,11 @@ AlgorithmParameter * AWLSettings::FindAlgoParamByAddress(int receiverID, int alg
 	return(NULL);
 }
 
-void GetPosition(boost::property_tree::ptree &node, float &x, float &y, float&z)
+void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up)
 {
-	x = node.get<float>("x");
-	y = node.get<float>("y");
-	z = node.get<float>("z");
+	forward = node.get<float>("forward");
+	left = node.get<float>("left");
+	up = node.get<float>("up");
 }
 
 void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float &roll)
@@ -416,11 +417,11 @@ void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y)
 	y = node.get<float>("y");
 }
 
-void GetGeometry(boost::property_tree::ptree &geometryNode, float &x, float &y, float &z, float &pitch, float &yaw, float &roll)
+void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll)
 {
 	boost::property_tree::ptree &positionNode = geometryNode.get_child("position");
 	boost::property_tree::ptree &orientationNode = geometryNode.get_child("orientation");
-	GetPosition(positionNode, x, y, z);
+	GetPosition(positionNode, forward, left, up);
 	GetOrientation(orientationNode, pitch, yaw, roll);
 }
 

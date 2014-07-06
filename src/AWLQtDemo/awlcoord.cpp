@@ -38,9 +38,9 @@ CartesianCoord::CartesianCoord(const CartesianCoord &inCartesian)
 	z = inCartesian.z;
 }
 
-CartesianCoord::CartesianCoord(const PolarCoord &inPolar)
+CartesianCoord::CartesianCoord(const SphericalCoord &inSpherical)
 {
-	*this = inPolar.ToCartesian();
+	*this = inSpherical.ToCartesian();
 }
 
 CartesianCoord::CartesianCoord(const TransformationVector &inVect)
@@ -57,29 +57,33 @@ void CartesianCoord::Set(float inX, float inY, float inZ)
 	z = inZ;
 }
 
-PolarCoord CartesianCoord::ToPolar(const CartesianCoord &inCartesian) 
+// Convert from cartesian to spherical 
+// Using formaulas indicated in http://mathworld.wolfram.com/SphericalCoordinates.html
+// But, since we are using physics convention instead of math convention (as Wolfram), swap theta and phi.
+
+SphericalCoord CartesianCoord::ToSpherical(const CartesianCoord &inCartesian) 
 {
-	PolarCoord polar;
+	SphericalCoord spherical;
 
-	polar.rho = sqrt((inCartesian.x*inCartesian.x) + (inCartesian.y*inCartesian.y) + (inCartesian.z * inCartesian.z));
+	spherical.rho = sqrt((inCartesian.x*inCartesian.x) + (inCartesian.y*inCartesian.y) + (inCartesian.z * inCartesian.z));
 
-	if (polar.rho != 0.0)
+	if (spherical.rho != 0.0)
 	{
-		polar.theta = acos(inCartesian.z/polar.rho);
+		spherical.theta = acos(inCartesian.z/spherical.rho);
 	}
 
 	if (inCartesian.x != 0.0) 
 	{
-		polar.phi = atan(inCartesian.y / inCartesian.x);
+		spherical.phi = atan(inCartesian.y / inCartesian.x);
 	}
 
-	return(polar);
+	return(spherical);
 }
 
-CartesianCoord& CartesianCoord::operator=(const PolarCoord &sourcePolar)
+CartesianCoord& CartesianCoord::operator=(const SphericalCoord &sourceSpherical)
 
 {
-	*this = sourcePolar.ToCartesian();
+	*this = sourceSpherical.ToCartesian();
 	return(*this);
 }
 
@@ -92,78 +96,81 @@ CartesianCoord& CartesianCoord::operator=(const TransformationVector &inVector)
 	return(*this);
 }
 
-PolarCoord CartesianCoord::ToPolar() const
+SphericalCoord CartesianCoord::ToSpherical() const
 {
-	return(ToPolar(*this));
+	return(ToSpherical(*this));
 }
 	
 
-PolarCoord::PolarCoord():
+SphericalCoord::SphericalCoord():
 rho(0.0),
 theta(0.0),
 phi(0.0)
 {
 }
 
-PolarCoord::PolarCoord(float inRho, float inTheta, float inPhi):
+SphericalCoord::SphericalCoord(float inRho, float inTheta, float inPhi):
 rho(inRho),
 theta(inTheta),
 phi(inPhi)
 {
 }
 
-PolarCoord::PolarCoord(const PolarCoord &inPolar)
+SphericalCoord::SphericalCoord(const SphericalCoord &inSpherical)
 {
-	rho = inPolar.rho;
-	theta = inPolar.theta;
-	phi = inPolar.phi;
+	rho = inSpherical.rho;
+	theta = inSpherical.theta;
+	phi = inSpherical.phi;
 }
 
-PolarCoord::PolarCoord(const CartesianCoord &inCartesian)
+SphericalCoord::SphericalCoord(const CartesianCoord &inCartesian)
 {
-	*this = inCartesian.ToPolar();
+	*this = inCartesian.ToSpherical();
 }
 
-PolarCoord::PolarCoord(const TransformationVector &inVect)
+SphericalCoord::SphericalCoord(const TransformationVector &inVect)
 {
 	*this = inVect;
 }
 
 
-void PolarCoord::Set(float inRho, float inTheta, float inPhi)
+void SphericalCoord::Set(float inRho, float inTheta, float inPhi)
 {
 	rho = inRho;
 	theta = inTheta;
 	phi = inPhi;
 }
 
+// Convert from spherical to cartesian 
+// Using formaulas indicated in http://mathworld.wolfram.com/SphericalCoordinates.html
+// But, since we are using physics convention instead of math convention (as Wolfram), swap theta and phi.
 
-CartesianCoord PolarCoord::ToCartesian(const PolarCoord &inPolar)
+CartesianCoord SphericalCoord::ToCartesian(const SphericalCoord &inSpherical)
 {
 	CartesianCoord cartesian;
-	float sinTheta = sin(inPolar.theta);
-	cartesian.x = inPolar.rho * sinTheta * cos(inPolar.phi);
-	cartesian.y = inPolar.rho * sinTheta * sin(inPolar.phi);
-	cartesian.z = inPolar.rho * cos(inPolar.theta);
+	float sinTheta = sin(inSpherical.theta);
+	cartesian.x = inSpherical.rho * cos(inSpherical.phi) * sinTheta;
+	cartesian.y = inSpherical.rho * sin(inSpherical.phi)* sinTheta;
+	cartesian.z = inSpherical.rho * cos(inSpherical.theta);
 	return(cartesian);
 }
 
-CartesianCoord PolarCoord::ToCartesian() const 
+CartesianCoord SphericalCoord::ToCartesian() const 
 {
 	return(ToCartesian(*this));
 }
 
-PolarCoord& PolarCoord::operator=(const TransformationVector &inVector)
+SphericalCoord& SphericalCoord::operator=(const TransformationVector &inVector)
 
 {
 	CartesianCoord cartesian= inVector;
-	*this = cartesian.ToPolar();
+	*this = cartesian.ToSpherical();
 	return(*this);
 }
 
-PolarCoord & PolarCoord::operator=(const CartesianCoord &sourceCartesian)
+SphericalCoord & SphericalCoord::operator=(const CartesianCoord &sourceCartesian)
 {
-	*this = sourceCartesian.ToPolar();
+	*this = sourceCartesian.ToSpherical();
 	return(*this);
 }
 
@@ -223,7 +230,7 @@ orientation(inOrientation)
 {
 }
 
-RelativePosition::RelativePosition(const PolarCoord &inPosition, const Orientation &inOrientation):
+RelativePosition::RelativePosition(const SphericalCoord &inPosition, const Orientation &inOrientation):
 position(inPosition),
 orientation(inOrientation)
 {
@@ -262,9 +269,9 @@ TransformationMatrix::TransformationMatrix(const CartesianCoord &inCartesian)
 
 }
 
-TransformationMatrix::TransformationMatrix(const PolarCoord &inPolar)
+TransformationMatrix::TransformationMatrix(const SphericalCoord &inSpherical)
 {
-	 *this = inPolar;
+	 *this = inSpherical;
 }
 
 TransformationMatrix::TransformationMatrix(const Orientation &inOrientation)
@@ -272,9 +279,9 @@ TransformationMatrix::TransformationMatrix(const Orientation &inOrientation)
 	*this = inOrientation;
 }
 
-TransformationMatrix::TransformationMatrix(const PolarCoord &inPolar, const Orientation &inOrientation)
+TransformationMatrix::TransformationMatrix(const SphericalCoord &inSpherical, const Orientation &inOrientation)
 {
-	*this = TransformationMatrix(CartesianCoord(inPolar), inOrientation);
+	*this = TransformationMatrix(CartesianCoord(inSpherical), inOrientation);
 }
 
 TransformationMatrix::TransformationMatrix(const CartesianCoord &inCartesian, const Orientation &inOrientation)
@@ -332,9 +339,9 @@ TransformationMatrix& TransformationMatrix::operator=(const CartesianCoord &inCa
 }
 
 
-TransformationMatrix& TransformationMatrix::operator=(const PolarCoord &inPolar)
+TransformationMatrix& TransformationMatrix::operator=(const SphericalCoord &inSpherical)
 {
-	CartesianCoord cartesian(inPolar);
+	CartesianCoord cartesian(inSpherical);
 	matrix[0][0] = 1;
 	matrix[0][1] = 0;
 	matrix[0][2] = 0;
@@ -429,9 +436,9 @@ TransformationVector::TransformationVector(const CartesianCoord &inCartesian)
 	vect[3] = 1.0;
 }
 
-TransformationVector::TransformationVector(const PolarCoord &inPolar)
+TransformationVector::TransformationVector(const SphericalCoord &inSpherical)
 {
-	*this = inPolar;
+	*this = inSpherical;
 }
 
 TransformationVector::TransformationVector(const Orientation &inOrientation)
@@ -450,9 +457,9 @@ TransformationVector& TransformationVector::operator=(const CartesianCoord &inCa
 }
 
 
-TransformationVector& TransformationVector::operator=(const PolarCoord &inPolar)
+TransformationVector& TransformationVector::operator=(const SphericalCoord &inSpherical)
 {
-	CartesianCoord cartesian(inPolar);
+	CartesianCoord cartesian(inSpherical);
 
 	vect[0] = cartesian.x;
 	vect[1] = cartesian.y;
@@ -657,18 +664,17 @@ TransformationNode::Ptr AWLCoordinates::GetFirstNode()
 	return(globalCoordinates->firstNode);
 }
 
-bool AWLCoordinates::ReadCoordinates()
+bool AWLCoordinates::BuildCoordinatesFromSettings()
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	int receiverQty = globalSettings->receiverSettings.size();
 	
-	// Create the coordinate transformation matrixes for the system
 	firstNode  = TransformationNode::Ptr(new TransformationNode(CartesianCoord(0, 0, 0), Orientation(0, 0, 0)));
 
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		ReceiverSettings &receiverSettings = globalSettings->receiverSettings[receiverID];
-		CartesianCoord receiverPosition(receiverSettings.sensorX, receiverSettings.sensorY, receiverSettings.sensorZ);
+		CartesianCoord receiverPosition(receiverSettings.sensorForward, receiverSettings.sensorLeft, receiverSettings.sensorUp);
 		Orientation receiverOrientation(receiverSettings.sensorRoll, receiverSettings.sensorPitch, receiverSettings.sensorYaw);
 		TransformationNode::Ptr receiverNode = TransformationNode::Ptr(new TransformationNode(receiverPosition, receiverOrientation));
 		firstNode->AddChild(receiverNode);
@@ -676,8 +682,8 @@ bool AWLCoordinates::ReadCoordinates()
 		{
 			CartesianCoord channelPosition(0, 0, 0);
 			float roll = 0.0;
-			float pitch = DEG2RAD(receiverSettings.channelsConfig[channelID].centerY) + M_PI_2;
-			float yaw = DEG2RAD(receiverSettings.channelsConfig[channelID].centerX) + M_PI_2;
+			float pitch = DEG2RAD(receiverSettings.channelsConfig[channelID].centerY) /*+ M_PI_2*/;
+			float yaw = DEG2RAD(receiverSettings.channelsConfig[channelID].centerX) /*+ M_PI_2*/;
 			Orientation channelOrientation(roll, pitch, yaw);
 
 			TransformationNode::Ptr channelNode = TransformationNode::Ptr(new TransformationNode(channelPosition, channelOrientation));

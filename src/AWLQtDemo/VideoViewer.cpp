@@ -58,8 +58,8 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	frameHeight = videoCapture->GetFrameHeight();
 	frameRate = videoCapture->GetFrameRate();
 	scale = videoCapture->GetScale();
-	cameraFovX = videoCapture->GetCameraFovX();
-	cameraFovY = videoCapture->GetCameraFovY();
+	cameraFovWidth = videoCapture->GetCameraFovWidth();
+	cameraFovHeight = videoCapture->GetCameraFovHeight();
 
 	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
 
@@ -182,8 +182,12 @@ void VideoViewer::DoThreadLoop()
 			DisplayReceiverValues(workFrame);
 
 			// Copy to the display (we are duouble-buffering)
+#if 1
 			workFrame->copyTo(*displayFrame);
-
+#else
+			CvSize displaySize(cvSize(frameWidth / 2, frameHeight /2));
+			cvResize(workframe, displayFrame, displaySize);
+#endif
 			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
 

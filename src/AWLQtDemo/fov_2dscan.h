@@ -123,9 +123,9 @@ private:
 	QAction* displayDistanceModeShowAction;
 	QAction* displayDistanceModeHideAction;
 
-	void drawArc(QPainter* p, float angle, float angleWidth, float length);
-    void drawPie(QPainter* p, float angle, float angleWidth, float xOffset, float yOffset, float length);
-    void drawLine(QPainter* p,float angle, float startLength,float length);
+	void drawArc(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset = 0, float yOffset = 0);
+    void drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset);
+    void drawLine(QPainter* p, float angle, float startRadius, float length);
     void drawText(QPainter* p,float angle, float pos, QString text);
     void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
     void drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);

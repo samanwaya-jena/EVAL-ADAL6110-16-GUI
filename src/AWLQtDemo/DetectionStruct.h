@@ -23,8 +23,7 @@ typedef struct
     float longRangeAngle;					// Max angle width for long range sensor (Including limited angle)
     float longRangeAngleStartLimited;		// Limited angle for long range sensor 
 
-    float sensorDepth;				// Sensor distance from bumper 
-    float sensorHeight;				// Sensor distance from ground
+    float spareDepth;				// Sensor distance from bumper 
 }ConfigSensor;
 
 
