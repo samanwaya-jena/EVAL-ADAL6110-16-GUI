@@ -278,6 +278,7 @@ public:
 	float travelSpeed;
 
 	// Camera
+	std::string sCameraName;
 	float cameraForward;
 	float cameraLeft; 
 	float cameraUp; 

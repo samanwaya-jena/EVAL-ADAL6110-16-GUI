@@ -13,19 +13,26 @@
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
 
+#if 1 //defined(HAVE_XIMEA)
+#include "xiapi.h"
+#endif
+
 using namespace std;
 using namespace awl;
 
 // Frame rate, in frame per seconds
 #define FRAME_RATE	33.0
 
-// Define camera resolution = 640x360
+const int ximeaDefaultBinningMode  = 4; // Binning mode on the ximea camera for 648x486 resolution
+
+
 VideoCapture::VideoCapture(int argc, char** argv):
 currentFrame(new (cv::Mat)), 
 bufferFrame(new (cv::Mat)), 
 currentFrameSubscriptions(new(Subscription))
 
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	mStopRequested = false;
 	mThreadExited = false;
 	capture = 0;
@@ -33,15 +40,26 @@ currentFrameSubscriptions(new(Subscription))
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
 
-	std::string inputName = "1101";
-
+	std::string inputName = globalSettings->sCameraName;
+	int inputID = 0;
+	if (!inputName.empty()) inputID = atoi(inputName.c_str());
 
 	// Determine capture source:  Camera, Single Frame or AVI
     if( inputName.empty() || isdigit(inputName.c_str()[0]) )
 	{
-		int inputID = 0;
-		if (!inputName.empty()) inputID = atoi(inputName.c_str());
         capture = cvCaptureFromCAM( inputID );
+		
+		// interpret preferred interface (0 = autodetect). This tells us what type of marea capabilities to expect
+		int pref = (inputID / 100) * 100;
+
+		// If we are using the Ximea driver, set the downsampling for a 640x480 image
+		if (pref == CV_CAP_XIAPI)
+		{
+				cvSetCaptureProperty( capture,  CV_CAP_PROP_XI_DATA_FORMAT, XI_RGB24 );
+//				cvSetCaptureProperty( capture,  CV_CAP_PROP_XI_DOWNSAMPLING_TYPE, XI_SKIPPING );
+				cvSetCaptureProperty( capture,  CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
+		}
+		
 	}
 	else if( inputName.size() )
     {
@@ -68,11 +86,20 @@ currentFrameSubscriptions(new(Subscription))
 		frameWidth = (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH);
 		frameHeight = (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT);
 		double framesPerSecond = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
+
+		framesPerSecond = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
+
+
 		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
 		frameRate = (double) 1.0/framesPerSecond;
 	}
 	else 
 	{
+		// Set default values not to be zeroes
+		frameWidth = 640;
+		frameHeight = 480;
+		frameRate = (double) 1.0/30.0;
+
 		if (!image.empty()) 
 		{
 			frameWidth = (int) image.cols;
@@ -83,7 +110,7 @@ currentFrameSubscriptions(new(Subscription))
 
 	// Field of view of the camera are in application seetings. 
 	// They are in degrees, so need to be converted in radians.
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
 	cameraFovWidth = DEG2RAD(globalSettings->cameraFovWidthDegrees);
 	cameraFovHeight = DEG2RAD(globalSettings->cameraFovHeightDegrees);
 }
@@ -169,6 +196,13 @@ void VideoCapture::DoThreadLoop()
 
 			if (iplImg) 
 			{
+#if 1
+				// Reset the iplImg dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera.
+				iplImg->width = frameWidth;
+				iplImg->height = frameHeight;
+				iplImg->widthStep = iplImg->width*iplImg->nChannels;
+				// End of the Ximea patch
+#endif
 				(*bufferFrame) = iplImg;
 
 				boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());

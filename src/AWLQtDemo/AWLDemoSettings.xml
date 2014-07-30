@@ -371,6 +371,7 @@
   </dynamicTesting>
 
   <camera>
+    <cameraName>1100</cameraName>
     <position>
       <!-- positionFromBumper -->
       <forward>-1.35</forward>

@@ -323,6 +323,7 @@ bool AWLSettings::ReadSettings()
 	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 
+	sCameraName = propTree.get<std::string>("config.camera.cameraName");
 	GetGeometry(propTree.get_child("config.camera"),
 				cameraForward, cameraLeft, cameraUp,
 				cameraPitch, cameraYaw, cameraRoll);

@@ -19,8 +19,13 @@
 using namespace std;
 using namespace awl;
 
+#if 0
 const char *szCameraWindowClassName = "Main HighGUI class";  // Class name for the camera windows created by OpenCV
-															// We could also use NULL, but that would pose a risk.
+															// We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
+#else
+const char *szCameraWindowClassName = NULL;  // Class name for the camera windows created by OpenCV
+															// We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
+#endif
 
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture, ReceiverProjector::Ptr inProjector):
@@ -47,6 +52,7 @@ VideoViewer::~VideoViewer()
 {
 	Stop();
 }
+
 
 void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
@@ -92,35 +98,70 @@ void  VideoViewer::Go()
 		// Create output window
 		if (!bWindowCreated) 
 		{
-			cvNamedWindow(cameraName.c_str(), 1 );
+			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 			bWindowCreated = true;
-
-		// Set the icon for the window
-		HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
-		if (window != NULL) 
-		{
-			AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-			if (!globalSettings->sIconFileName.empty())
-			{
-				HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.c_str(), IMAGE_ICON,
-											GetSystemMetrics(SM_CXSMICON), 
-											GetSystemMetrics(SM_CYSMICON),
-											LR_LOADFROMFILE);
-
-				::SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
-			}
-		}
-
-
-		}
-
+			SetWindowIcon();
+			SizeWindow();
+        
 		mStopRequested = false;
 		mThreadExited = false;
 
 		mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoViewer::DoThreadLoop, this)));
+		}
 	}
 }
  
+void VideoViewer::SetWindowIcon()
+
+{
+	// Set the icon for the window
+	HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
+	if (window != NULL) 
+	{
+		AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+		if (!globalSettings->sIconFileName.empty())
+		{
+			HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.c_str(), IMAGE_ICON,
+				GetSystemMetrics(SM_CXSMICON), 
+				GetSystemMetrics(SM_CYSMICON),
+				LR_LOADFROMFILE);
+
+			::SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+		}
+	}
+}
+
+
+void VideoViewer::SizeWindow()
+
+{
+		// Size the window to fit the screen
+		const long nScreenWidth  = GetSystemMetrics(SM_CXSCREEN);
+		const long nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+		int height = 0, width = 0;
+		if(frameWidth > nScreenWidth || frameHeight >nScreenHeight)
+		{
+			if((frameWidth/2) > nScreenWidth || (frameHeight/2) > nScreenHeight) 
+			{
+				width = frameWidth/4;
+				height = frameHeight /4;
+			} 
+			else 
+			{   
+				width = frameWidth / 2;
+				height = frameHeight /2; 
+			}
+		} 
+		else 
+		{   
+			width = frameWidth;
+			height = frameHeight; 
+		}
+
+		cvResizeWindow(cameraName.c_str(), width, height);
+
+}
 
 void VideoViewer::move(int left, int top)
 {
@@ -136,20 +177,14 @@ void  VideoViewer::Stop()
 	if (mStopRequested || mThreadExited) 
 	{
 		mThreadExited=false;
-
-		if (mThread.get() &&
-			mThread->joinable())
-		{
-			mThread->join();
-			mThread.reset();
-		}
+		assert(mThread);
+		mThread->join();
 	}
 
 	if (bWindowCreated) 
 	{
 		bWindowCreated = false;
 		cvDestroyWindow(cameraName.c_str());
-
 	}
 }
 
@@ -188,6 +223,7 @@ void VideoViewer::DoThreadLoop()
 			CvSize displaySize(cvSize(frameWidth / 2, frameHeight /2));
 			cvResize(workframe, displayFrame, displaySize);
 #endif
+
 			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
 
@@ -195,8 +231,9 @@ void VideoViewer::DoThreadLoop()
 		}
 
 		//Give a break to other threads and wait for next frame
-		if((!bWindowCreated) || (cv::waitKey(1) >= 0) )
+		if((!bWindowCreated))
 		{
+			Stop(); 
 			break;
 		}
 	} // while (!WasStoppped)
@@ -305,6 +342,8 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	int bottom;
 	int right;
 
+	if (!projector) return;
+
 	CvRect rect;
 
 	cv::Vec3b color;
@@ -367,6 +406,11 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	// If width argument is positive, will draw an empty square with
 	// using the width argument as a line width.
 	// If width argument is negative or zero, the square is filled.
+	left = -1;
+	top = -1;
+	bottom = -1;
+	right = -1;
+
 	projector->GetChannelRect(channelID, top, left, bottom, right);
 
 	for (int row = top; row <= bottom; row++) 

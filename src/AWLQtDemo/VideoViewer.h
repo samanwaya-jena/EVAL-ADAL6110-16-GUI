@@ -144,6 +144,15 @@ protected:
       */
 	void  DoThreadLoop();
 
+	/** \brief Resize the window to fit the screen.
+	  * \remarks implemented for compatibility  with Qt.
+      */
+	void SizeWindow();
+
+	/** \brief Set the window Icon to the icon specified in the configuration file.
+      */
+	void SetWindowIcon();
+
 	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame);
 	void DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection);
 

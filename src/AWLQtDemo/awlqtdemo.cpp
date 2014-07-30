@@ -113,6 +113,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 
+#if 0
 	// Create a common point-cloud object that will be "projected" upon
 	baseCloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
 
@@ -144,16 +145,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		}
 	}
 
-
-	// Create the video viewer to display the camera image
-	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-	videoViewer = VideoViewer::Ptr(new VideoViewer(this->windowTitle().toStdString() +" Camera", videoCapture, receiverCaptures[0], receiver));
-
+	
 	//  Create the fused viewer, that will instantiate all the point-cloud views.
 	// All point cloud updates feed from the receiver's point-cloud data.
 	// The fused Viewer also uses the receiver configuration info to build the background decorations  
 	// used in point-cloud
 	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString() + " 3D View", receiver));
+
+#endif
+
+	// Create the video viewer to display the camera image
+	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
+	videoViewer = VideoViewer::Ptr(new VideoViewer(this->windowTitle().toStdString() +" Camera", videoCapture, receiverCaptures[0], receiver));
 
 	PrepareParametersView();
 	PrepareGlobalParametersView();
@@ -314,7 +317,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		receiverCaptures[receiverID]->Go(true);
 	}
 
-	receiver->Go();
+	if (receiver) receiver->Go();
 
 	// Create a timer to keep the UI objects spinning
      myTimer = new QTimer(this);
@@ -755,7 +758,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	if (receiver) 
 	{
 		ReceiverChannel::Ptr receiverChannel = receiver->GetChannel(channelID);
-		receiverChannel->SetRangeMax(range);
+		if (receiverChannel) receiverChannel->SetRangeMax(range);
 	}
 
 	if (receiverCaptures[0]) 
@@ -921,7 +924,7 @@ void AWLQtDemo::on_timerTimeout()
 		bContinue = false;
 	}
 #endif
-	else if (receiver->WasStopped())
+	else if (receiver && receiver->WasStopped())
 	{
 		bContinue = false;
 	}
@@ -2075,6 +2078,16 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 
 void AWLQtDemo::closeEvent(QCloseEvent * event)
 {
+	if (fusedCloudViewer) fusedCloudViewer->Stop();
+	if (videoCapture) videoCapture->Stop();
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
+	}
+
+	if (receiver) receiver->Stop();
+	if (videoViewer) videoViewer->Stop();
+
 	qApp->closeAllWindows();
 }	
 
