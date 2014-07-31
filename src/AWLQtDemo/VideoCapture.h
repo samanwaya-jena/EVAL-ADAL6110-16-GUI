@@ -91,11 +91,6 @@ public:
       */
 	double GetCameraFovHeight() {return(cameraFovHeight);}
 
-	/** \brief Return the current frame. 
-      * \return a boost shared pointer to the current frame.
-      */
-	VideoCapture::FramePtr GetCurrentFrame();
-
 	/** \brief Copy the current frame to the targetFrame.  The current frame is thread-locked during transfer
       * \param[out] targetFrame pointer to the target frame that will get copied to.
       * \note Locking of the target frame is under the responsibility of the calling thread.
@@ -129,7 +124,7 @@ protected:
     /** \brief Local flag indicating a request for termination */
 	volatile bool mStopRequested;
 
-	    /** \brief Local flag indicating the termination of thread loop function. */
+	/** \brief Local flag indicating the termination of thread loop function. */
 	volatile bool mThreadExited;
 
     /** \brief Video acquisition thread . */
@@ -137,7 +132,6 @@ protected:
 
 	/**\brief thread mutex*/
 	boost::mutex mMutex;
-
 
     /** \brief Current video frame width. */
 	int frameWidth;
@@ -157,16 +151,13 @@ protected:
 	float cameraFovHeight;
 
 	/** \brief Video capture device. */
-	CvCapture* capture;
+	cv::VideoCapture cam;
 
 	/** \brief Captured image. Should be for reference purposes. */
-    boost::shared_ptr<cv::Mat> currentFrame; 
+    cv::Mat currentFrame; 
 
 	/** \brief Captured image-directly from CVCapture. Should be for reference purposes. */
-    boost::shared_ptr<cv::Mat> bufferFrame; 
-
-	/** \brief An image as loaded on file stream.Captured image. Should be for reference purposes. */
-	cv::Mat image;
+    cv::Mat bufferFrame; 
 }; // VideoCapture
 
 } // namespace awl

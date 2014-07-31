@@ -27,15 +27,12 @@ const int ximeaDefaultBinningMode  = 4; // Binning mode on the ximea camera for 
 
 
 VideoCapture::VideoCapture(int argc, char** argv):
-currentFrame(new (cv::Mat)), 
-bufferFrame(new (cv::Mat)), 
 currentFrameSubscriptions(new(Subscription))
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	mStopRequested = false;
 	mThreadExited = false;
-	capture = 0;
 
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
@@ -47,48 +44,30 @@ currentFrameSubscriptions(new(Subscription))
 	// Determine capture source:  Camera, Single Frame or AVI
     if( inputName.empty() || isdigit(inputName.c_str()[0]) )
 	{
-        capture = cvCaptureFromCAM( inputID );
+		cam.open(inputID);
+	}
+	else 
+	{
+		cam.open(inputName);
+	}
+
 		
+	if (cam.isOpened()) 
+	{
 		// interpret preferred interface (0 = autodetect). This tells us what type of marea capabilities to expect
 		int pref = (inputID / 100) * 100;
 
 		// If we are using the Ximea driver, set the downsampling for a 640x480 image
 		if (pref == CV_CAP_XIAPI)
 		{
-				cvSetCaptureProperty( capture,  CV_CAP_PROP_XI_DATA_FORMAT, XI_RGB24 );
-//				cvSetCaptureProperty( capture,  CV_CAP_PROP_XI_DOWNSAMPLING_TYPE, XI_SKIPPING );
-				cvSetCaptureProperty( capture,  CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
-		}
-		
-	}
-	else if( inputName.size() )
-    {
-        image = cv::imread( inputName, 1 );
-        if( image.empty() )
-		{
-            capture = cvCaptureFromFile( inputName.c_str() );
-#if 0
-			if (capture == 0)
-			{
-			cerr << "Error: invalid input file" << inputName << endl;
-			}
-#endif
-		}
-		else 
-		{
-			(*currentFrame) = image;
+			cam.set(CV_CAP_PROP_XI_DATA_FORMAT, XI_RGB24 );
+//			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING_TYPE, XI_SKIPPING );
+			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
 		}
 
-    }
-
-	if (capture) 
-	{
-		frameWidth = (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH);
-		frameHeight = (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT);
-		double framesPerSecond = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
-
-		framesPerSecond = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
-
+		frameWidth = (int) cam.get(CV_CAP_PROP_FRAME_WIDTH);
+		frameHeight = (int) cam.get(CV_CAP_PROP_FRAME_HEIGHT);
+		double framesPerSecond = cam.get(CV_CAP_PROP_FPS);
 
 		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
 		frameRate = (double) 1.0/framesPerSecond;
@@ -99,13 +78,6 @@ currentFrameSubscriptions(new(Subscription))
 		frameWidth = 640;
 		frameHeight = 480;
 		frameRate = (double) 1.0/30.0;
-
-		if (!image.empty()) 
-		{
-			frameWidth = (int) image.cols;
-			frameHeight = (int) image.rows;
-			frameRate = (double) 1/FRAME_RATE;
-		}
 	}
 
 	// Field of view of the camera are in application seetings. 
@@ -156,16 +128,10 @@ bool  VideoCapture::WasStopped()
 	return(false);
 }
 
-VideoCapture::FramePtr VideoCapture::GetCurrentFrame() 
-{
-	return(currentFrame);
-};
-
-
 void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame,  Subscription::SubscriberID inSubscriberID) 
 {
 	boost::mutex::scoped_lock updateLock(currentFrameSubscriptions->GetMutex());
- 	currentFrame->copyTo(*targetFrame);
+ 	*targetFrame = currentFrame.clone();
 	currentFrameSubscriptions->GetNews(inSubscriberID);
 	updateLock.unlock();
 };
@@ -182,63 +148,15 @@ void VideoCapture::DoThreadLoop()
 
 		// Acquire from camera source or AVI
    		boost::mutex::scoped_lock threadLock(GetMutex());
-		if( capture )
-		{
-			IplImage* iplImg = cvQueryFrame( capture );
-
-			// cvQuery frame is blocking, while waaiting for the frame.  
-			//Check again if we were stopped in the meantime 
-			if (WasStopped()) 
-			{
-			threadLock.unlock();
-			break;
-			}
-
-			if (iplImg) 
-			{
-#if 1
-				// Reset the iplImg dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera.
-				iplImg->width = frameWidth;
-				iplImg->height = frameHeight;
-				iplImg->widthStep = iplImg->width*iplImg->nChannels;
-				// End of the Ximea patch
-#endif
-				(*bufferFrame) = iplImg;
-
-				boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());
-				bufferFrame->copyTo(*currentFrame);
-				currentFrameSubscriptions->PutNews();
-				currentLock.unlock();
-			}
-
-            if( currentFrame->empty() )
-			{
-			threadLock.unlock();
-                break;
-			}
-		}
-
-		// Acquire a still video frame
-		else if  (!image.empty() )
-		{
-			boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());
-			currentFrameSubscriptions->PutNews();
-			currentLock.unlock();
-		}
-		else 
-		{
-		}
-
+		DoThreadIteration();
 		threadLock.unlock();
-	} // for ;;
-
-
-
-	if (capture) 
-	{
-		cvReleaseCapture( &capture );
-		capture = NULL;
 	}
+
+	if (cam.isOpened()) 
+	{
+		cam.release();
+	}
+
 	mThreadExited = true;
 }
 
@@ -248,28 +166,32 @@ void VideoCapture::DoThreadIteration()
 	double delay = (frameRate * 1000) / 2;
 	if (delay < 1.0) delay = 1;
 
-	if (!WasStopped())
-    {
-		// Acquire from camera source or AVI
-		if( capture )
+	// Acquire from camera source or AVI
+	if( cam.isOpened() )
+	{
+		cam.read(bufferFrame);
+		// cvQuery frame is blocking, while waaiting for the frame.  
+		//Check again if we were stopped in the meantime 
+		if (WasStopped()) 
 		{
-            IplImage* iplImg = cvQueryFrame( capture );
-			{
-            (*bufferFrame) = iplImg;
+			return;
+		}
 
-			boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());
-			bufferFrame->copyTo(*currentFrame);
-			currentFrameSubscriptions->PutNews();
-			currentLock.unlock();
-			}
-		}
-		// Acquire a still video frame
-		else if  (!image.empty() )
+		if (!bufferFrame.empty()) 
 		{
+#if 1
+			// Reset the iplImg dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera.
+			bufferFrame.cols = frameWidth;
+			bufferFrame.rows = frameHeight;
+			bufferFrame.step = bufferFrame.cols*bufferFrame.channels();
+			// End of the Ximea patch
+#endif
 			boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());
+			bufferFrame.copyTo(currentFrame);
 			currentFrameSubscriptions->PutNews();
 			currentLock.unlock();
-		}
-	} // for ;;
+		} // if (!bufferFrame.empty()) 
+	} // if( cam.isOpened() )
 }
+
 
