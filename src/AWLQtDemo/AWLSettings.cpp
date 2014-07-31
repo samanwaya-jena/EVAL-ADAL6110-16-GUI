@@ -232,8 +232,6 @@ bool AWLSettings::ReadSettings()
 					float roll;
 					GetOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
 					channelConfig.maxRange = channelNode.get<float>("maxRange");
-					channelConfig.sMaskName = channelNode.get<std::string>("maskName");
-					channelConfig.sFrameName = channelNode.get<std::string>("frameName");
 					
 					GetColor(channelNode.get_child("displayColor"), 
 						     channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);

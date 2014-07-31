@@ -120,10 +120,6 @@ protected:
 	float	fovCenterY;
 	float   rangeMax;
 
-	// Receiver channel image masks
-	std::string	maskName;
-	std::string	frameName;
-
 	// Display colors
 	double displayColorR;
 	double displayColorG;
@@ -141,8 +137,6 @@ protected:
 
 	int		imageWidth;
 	int		imageHeight;
-	int		imageCenterX;
-	int		imageCenterY;
 	int		topLeftX;
 	int		topLeftY;
 	int		bottomRightX;
@@ -167,10 +161,7 @@ protected:
 
 	// public variables
 public:
-	cv::Mat	maskImage;
-	cv::Mat	frameImage;
-
-	// Receiver points in RGB image covered by FOV
+	// List of Receiver points in RGB image covered by FOV
 	boost::container::vector<CvPoint> maskPoints;
 
 // protected methods
@@ -203,9 +194,10 @@ public:
 					const float inFovWidth, const float inFovHeight, 
 					const float inCenterX, const float inCenterY, 
 					const float inRangeMax, 
-				    const std::string inMaskName, const std::string inFrameName, 
 					bool inDisplayUnderZero = false, 
 					double inDisplayColorR = 0, double inDisplayColorG = 255, double inDisplayColorB = 0);
+	~ReceiverChannel();
+
 
 	void AddDistancesToCloud();
 

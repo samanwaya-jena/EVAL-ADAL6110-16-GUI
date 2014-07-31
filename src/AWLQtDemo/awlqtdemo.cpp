@@ -48,7 +48,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings();
 
-#if 1
+#if 0
 
 	// Test the coordinates system
 	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
@@ -113,7 +113,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 
-#if 0
+#if 1
 	// Create a common point-cloud object that will be "projected" upon
 	baseCloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
 
@@ -134,8 +134,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].sMaskName.c_str(),
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].sFrameName.c_str(),
 				false,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorRed / 255.0,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorGreen / 255.0,

@@ -275,48 +275,6 @@
     <None Include="InstallableDLLs\CopyDLLDependencies.BAT">
       <Filter>HelperTools</Filter>
     </None>
-    <None Include="ChannelMask6.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelMask5.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelMask4.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelMask3.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelMask2.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelMask1.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame7.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame6.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame5.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame4.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame3.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame2.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelFrame1.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="ChannelMask7.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
       <Filter>Installable DLLs</Filter>
     </None>

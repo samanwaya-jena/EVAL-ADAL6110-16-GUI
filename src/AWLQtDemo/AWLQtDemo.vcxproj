@@ -723,48 +723,6 @@
       <DeploymentContent>true</DeploymentContent>
       <SubType>Designer</SubType>
     </None>
-    <None Include="ChannelFrame1.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelFrame2.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelFrame3.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelFrame4.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelFrame5.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelFrame6.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelFrame7.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask1.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask2.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask3.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask4.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask5.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask6.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ChannelMask7.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="plugin1.bin" />
     <CustomBuild Include="TableView.ui">
       <FileType>Document</FileType>

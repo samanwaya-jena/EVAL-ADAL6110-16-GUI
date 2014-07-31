@@ -111,9 +111,7 @@
           <yaw>15</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask1.bmp</maskName>
-        <frameName>ChannelFrame1.bmp</frameName>
-        <displayColor>
+         <displayColor>
           <red>128</red>
           <green>216</green>
           <blue>168</blue>
@@ -133,8 +131,6 @@
           <yaw>5.0</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask2.bmp</maskName>
-        <frameName>ChannelFrame2.bmp</frameName>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -155,8 +151,6 @@
           <yaw>-5.0</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask3.bmp</maskName>
-        <frameName>ChannelFrame3.bmp</frameName>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -177,8 +171,6 @@
           <yaw>-15</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask4.bmp</maskName>
-        <frameName>ChannelFrame4.bmp</frameName>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -199,8 +191,6 @@
           <yaw>4.6</yaw>
         </orientation>
         <maxRange>30</maxRange>
-        <maskName>ChannelMask5.bmp</maskName>
-        <frameName>ChannelFrame5.bmp</frameName>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -221,8 +211,6 @@
           <yaw>0</yaw>
         </orientation>
         <maxRange>30</maxRange>
-        <maskName>ChannelMask6.bmp</maskName>
-        <frameName>ChannelFrame6.bmp</frameName>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -243,8 +231,6 @@
           <yaw>-4.6</yaw>
         </orientation>
         <maxRange>30</maxRange>
-        <maskName>ChannelMask7.bmp</maskName>
-        <frameName>ChannelFrame7.bmp</frameName>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -317,8 +303,6 @@
           <yaw>15</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask1.bmp</maskName>
-        <frameName>ChannelFrame1.bmp</frameName>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -339,8 +323,6 @@
           <yaw>5.0</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask2.bmp</maskName>
-        <frameName>ChannelFrame2.bmp</frameName>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -361,8 +343,6 @@
           <yaw>-5.0</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask3.bmp</maskName>
-        <frameName>ChannelFrame3.bmp</frameName>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -383,8 +363,6 @@
           <yaw>-15</yaw>
         </orientation>
         <maxRange>15</maxRange>
-        <maskName>ChannelMask4.bmp</maskName>
-        <frameName>ChannelFrame4.bmp</frameName>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -405,8 +383,6 @@
           <yaw>4.6</yaw>
         </orientation>
         <maxRange>30</maxRange>
-        <maskName>ChannelMask5.bmp</maskName>
-        <frameName>ChannelFrame5.bmp</frameName>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -427,8 +403,6 @@
           <yaw>0</yaw>
         </orientation>
         <maxRange>30</maxRange>
-        <maskName>ChannelMask6.bmp</maskName>
-        <frameName>ChannelFrame6.bmp</frameName>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -449,8 +423,6 @@
           <yaw>-4.6</yaw>
         </orientation>
         <maxRange>30</maxRange>
-        <maskName>ChannelMask7.bmp</maskName>
-        <frameName>ChannelFrame7.bmp</frameName>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -570,6 +542,13 @@
   </dynamicTesting>
 
   <camera>
+    <!-- cameraName:
+	    Camera index, as used in openCV.
+       Indexes start at 0, up to 99. 
+       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
+       XIMEA Cameras, add 1100 to the camera index -->
+    <cameraName>1100</cameraName>
+    
     <position>
       <x>0.0</x>
       <!-- lateral offet -->

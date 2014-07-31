@@ -72,8 +72,6 @@ namespace awl
 		float centerX;
 		float centerY;
 		float maxRange;
-		std::string sMaskName;
-		std::string sFrameName;
 		uint8_t displayColorRed;
 		uint8_t displayColorGreen;
 		uint8_t displayColorBlue;

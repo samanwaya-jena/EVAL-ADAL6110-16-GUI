@@ -3,6 +3,7 @@
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
 
+
 #include "Sensor.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
@@ -21,7 +22,6 @@ const cv::Vec3b cvBlack(0, 0, 0);
 
 ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID, const float inFovWidth, const float inFovHeight, 
 						const float inCenterX, const float inCenterY, const float inRangeMax, 
-						const std::string inMaskName, const std::string inFrameName,
 						bool inDisplayUnderZero, 
 						double inDisplayColorR, double inDisplayColorG, double inDisplayColorB):
 	receiverID(inReceiverID),
@@ -31,8 +31,6 @@ ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID,
 	fovCenterX(inCenterX),
 	fovCenterY(inCenterY),
 	rangeMax(inRangeMax), 
-	maskName(inMaskName),
-	frameName(inFrameName),
 	displayColorR(inDisplayColorR),
 	displayColorG(inDisplayColorG),
 	displayColorB(inDisplayColorB),
@@ -52,19 +50,12 @@ ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID,
 
 	WCHAR directoryName[255];
 	::GetCurrentDirectoryW(255, directoryName);
-
-	maskImage = cv::imread( maskName, 1 );
-	if( maskImage.empty() )
-	{
-	cerr << "Error: invalid maskImage " << maskName << endl;
-	}
-
-	frameImage = cv::imread( frameName, 1 );
-	if( frameImage.empty() )
-	{
-	cerr << "Error: invalid maskImage" << maskName << endl;
-	}
 } 
+
+ReceiverChannel::~ReceiverChannel()
+{
+
+}
 
 void ReceiverChannel::AddDistancesToCloud()
 {
@@ -105,13 +96,14 @@ void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)
 	PointXYZRGB newCloudPoint;
 	PointWithRange pointWithRange;
 	cv::Vec3b mask;
-	cv::Vec3b color;
 
 	assert(backgroundPtr!= NULL);
 	assert(colorPtr != NULL);
 
 	int size = maskPoints.size();
 	CvPoint *point = (CvPoint *) maskPoints.data();
+
+	mask.val[0] = 1; mask.val[1] = 1; mask.val[2] = 1;
 
 	for (int i = 0; i < size; i++, point++) 
 	{
@@ -124,10 +116,10 @@ void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)
 
 		if (bIsOnY && bIsOnX)// Display only points that are an even multimple of decimation Y
 		{
-			if (y < maskImage.rows && y < colorPtr->rows && y < backgroundPtr->rows &&
-				x < maskImage.cols && x < colorPtr->cols && x < backgroundPtr->cols) 
+			if (y < colorPtr->rows && y < backgroundPtr->rows &&
+				x < colorPtr->cols && x < backgroundPtr->cols) 
 			{
-				AddDistanceToCloud((const cv::Vec3b &) maskImage.at<cv::Vec3b>(y, x), 
+				AddDistanceToCloud((const cv::Vec3b &) mask, 
 										  (const cv::Vec3b &) colorPtr->at<cv::Vec3b>(y, x), 
 										  (cv::Vec3b &) backgroundPtr->at<cv::Vec3b>(y, x), 
 										   x, y, inDistance, inIntensity);
@@ -199,8 +191,6 @@ void ReceiverChannel::UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCo
 	viewerCoordinatesPtr = inViewerCoordinatesPtr;
 	imageWidth = viewerCoordinatesPtr->GetWidth();
 	imageHeight = viewerCoordinatesPtr->GetHeight();
-	imageCenterX = imageWidth / 2;
-	imageCenterY = imageHeight / 2;
 
 	float x, y;
 	viewerCoordinatesPtr->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
@@ -221,12 +211,17 @@ void ReceiverChannel::UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCo
 	if (bottomRightX >= imageWidth) bottomRightX = imageWidth - 1;
 	if (bottomRightY >= imageHeight) bottomRightY = imageHeight - 1;
 
-	topLeftX = 0;
-	topLeftY = 0;
-	bottomRightX = imageWidth-1;
-	bottomRightY = imageHeight- 1;
-
 	BuildPixelMask();
+}
+
+bool IsPtInCircle( CvPoint2D32f pt, CvPoint2D32f center, float radius )
+{
+    double dx = pt.x - center.x;
+    double dy = pt.y - center.y;
+    if (((double)radius*radius - dx*dx - dy*dy) > 0) 
+		return (true);
+	else
+		return(false);
 }
 
 void ReceiverChannel::BuildPixelMask()
@@ -237,12 +232,22 @@ void ReceiverChannel::BuildPixelMask()
 	cv::Vec3b mask;
 	cv::Vec3b color;
 
+	CvPoint2D32f center;
+	center.x = (topLeftX + bottomRightX) /2;
+	center.y = (topLeftY + bottomRightY) / 2;
+	int radius = (bottomRightY - topLeftY) / 2;
+	if (radius < 0) radius = 0;
+
+
 	for (int y = 0; y < imageHeight; y++)
 	{
 		for (int x = 0; x < imageWidth; x++) 
 		{
-			cv::Vec3b mask = maskImage.at<cv::Vec3b>(y, x);
-			if (mask[0] | mask.val[1] | mask.val[2])  
+			CvPoint2D32f thePoint;
+			thePoint.x = x;
+			thePoint.y = y;
+
+			if (IsPtInCircle(thePoint, center, radius))
 			{
 				CvPoint maskPoint;
 				maskPoint.x = x;
@@ -258,8 +263,7 @@ void ReceiverChannel::GetChannelLimits(ViewerCoordinates::Ptr &inViewerCoordinat
 {
 	imageWidth = inViewerCoordinates->GetWidth();
 	imageHeight = inViewerCoordinates->GetHeight();
-	imageCenterX = imageWidth / 2;
-	imageCenterY = imageHeight / 2;
+
 	float x, y;
 
 	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
@@ -302,8 +306,6 @@ void ReceiverChannel::GetChannelRect(ViewerCoordinates::Ptr &inViewerCoordinates
 {
 	imageWidth = inViewerCoordinates->GetWidth();
 	imageHeight = inViewerCoordinates->GetHeight();
-	imageCenterX = imageWidth / 2;
-	imageCenterY = imageHeight / 2;
 	float x, y;
 
 	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
