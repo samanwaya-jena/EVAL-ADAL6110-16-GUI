@@ -8,6 +8,7 @@
 #include "ReceiverCapture.h"
 #include "Sensor.h"
 #include "VideoViewer.h"
+#include "DebugPrintf.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
@@ -98,6 +99,7 @@ void  VideoViewer::Go()
 		// Create output window
 		if (!bWindowCreated) 
 		{
+//			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 			bWindowCreated = true;
 			SetWindowIcon();
@@ -202,6 +204,8 @@ void VideoViewer::CopyWorkFrame(VideoCapture::FramePtr targetFrame)
 //	updateLock.unlock();
 }
 
+static int frameCount = 0;
+
 void VideoViewer::DoThreadLoop()
 
 {
@@ -223,7 +227,6 @@ void VideoViewer::DoThreadLoop()
 			CvSize displaySize(cvSize(frameWidth / 2, frameHeight /2));
 			cvResize(workframe, displayFrame, displaySize);
 #endif
-
 			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
 
@@ -231,6 +234,8 @@ void VideoViewer::DoThreadLoop()
 		}
 
 		//Give a break to other threads and wait for next frame
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+
 		if((!bWindowCreated))
 		{
 			Stop(); 
@@ -241,37 +246,6 @@ void VideoViewer::DoThreadLoop()
 	mThreadExited = true;
 }
 	
-
-void VideoViewer::DoThreadIteration()
-
-{
-	if (!WasStopped())
-	{
-		// Update the video frame
-		if (videoCapture != NULL && videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID)) 
-		{
-			// Copy the contents of the cv::Mat
-			videoCapture->CopyCurrentFrame(workFrame, currentVideoSubscriberID);
-
-			// Add the lidar range decorations to the video frame
-			DisplayReceiverValues(workFrame);
-
-			// Copy to the display (we are duouble-buffering)
-			workFrame->copyTo(*displayFrame);
-			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
-			if (window == NULL) bWindowCreated = false;
-
-			if (bWindowCreated) cv::imshow(cameraName, *displayFrame);
-		}
-
-		//Give a break to other threads and wait for next frame
-		if((!bWindowCreated) || (cv::waitKey(1) >= 0) )
-		{
-			Stop();
-		}
-	} // if (!WasStoppped)
-}
-
 
 static uint16_t detectedCount[7] = {0, 0, 0, 0, 0, 0, 0};
 const int flashFrequency = 2;

@@ -150,6 +150,9 @@ protected:
 	/** \brief Vertical field of view of the camera. */
 	float cameraFovHeight;
 
+	/** \brief Set cameraFlip to true for 180 degree rotation of the camera image. */
+	bool bCameraFlip;
+
 	/** \brief Video capture device. */
 	cv::VideoCapture cam;
 

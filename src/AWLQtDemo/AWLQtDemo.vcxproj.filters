@@ -789,5 +789,8 @@
     <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_videostab249.dll">
       <Filter>Installable DLLs</Filter>
     </None>
+    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
   </ItemGroup>
 </Project>

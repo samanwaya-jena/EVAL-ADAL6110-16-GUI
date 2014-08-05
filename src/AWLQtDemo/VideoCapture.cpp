@@ -7,15 +7,14 @@
 #include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "awlcoord.h"
+#include "DebugPrintf.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
 
-#if 1 //defined(HAVE_XIMEA)
 #include "xiapi.h"
-#endif
 
 using namespace std;
 using namespace awl;
@@ -25,6 +24,60 @@ using namespace awl;
 
 const int ximeaDefaultBinningMode  = 4; // Binning mode on the ximea camera for 648x486 resolution
 
+class CvCaptureCAM_XIMEA
+{
+public:
+    CvCaptureCAM_XIMEA() { init(); }
+    virtual ~CvCaptureCAM_XIMEA() { close(); }
+
+    virtual bool open( int index );
+    virtual void close();
+    virtual double getProperty(int);
+    virtual bool setProperty(int, double);
+    virtual bool grabFrame();
+    virtual IplImage* retrieveFrame(int);
+    virtual int getCaptureDomain() { return CV_CAP_XIAPI; } // Return the type of the capture object: CV_CAP_VFW, etc...
+
+public:
+    void init();
+    void errMsg(const char* msg, int errNum);
+    void resetCvImage();
+    int  getBpp();
+    IplImage* frame;
+
+    HANDLE    hmv;
+    DWORD     numDevices;
+    int       timeout;
+    XI_IMG    image;
+};
+
+// VideoCaptureDummy is just a descriptive class to allow us to recuperate the private cap member from the 
+// openCV CVCapture device.
+
+class VideoCaptureDummy
+{
+public:
+    CV_WRAP VideoCaptureDummy();
+    CV_WRAP VideoCaptureDummy(const std::string& filename);
+    CV_WRAP VideoCaptureDummy(int device);
+
+    virtual ~VideoCaptureDummy();
+    CV_WRAP virtual bool open(const std::string& filename);
+    CV_WRAP virtual bool open(int device);
+    CV_WRAP virtual bool isOpened() const;
+    CV_WRAP virtual void release();
+
+    CV_WRAP virtual bool grab();
+    CV_WRAP virtual bool retrieve(CV_OUT cv::Mat& image, int channel=0);
+    virtual VideoCapture& operator >> (CV_OUT cv::Mat& image);
+    CV_WRAP virtual bool read(CV_OUT cv::Mat& image);
+
+    CV_WRAP virtual bool set(int propId, double value);
+    CV_WRAP virtual double get(int propId);
+
+public:
+    cv::Ptr<CvCaptureCAM_XIMEA> cap;
+};
 
 VideoCapture::VideoCapture(int argc, char** argv):
 currentFrameSubscriptions(new(Subscription))
@@ -60,19 +113,27 @@ currentFrameSubscriptions(new(Subscription))
 		// If we are using the Ximea driver, set the downsampling for a 640x480 image
 		if (pref == CV_CAP_XIAPI)
 		{
-			cam.set(CV_CAP_PROP_XI_DATA_FORMAT, XI_RGB24 );
-//			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING_TYPE, XI_SKIPPING );
+
+			// Capture format for Ximea is RGB32.  Preferable over RGB24 for performance reasons, according to Ximea documentation.
+			cam.set(CV_CAP_PROP_XI_DATA_FORMAT, XI_RGB32 );
+			// Downsampling: Prefer XI_SKIPPING over XI_BINNING for performance reasons.
+			xiSetParamInt(((VideoCaptureDummy *)&cam)->cap, XI_PRM_DOWNSAMPLING_TYPE, XI_SKIPPING);
+//			xiSetParamInt(((VideoCaptureDummy *)&cam)->cap, XI_PRM_SHUTTER_TYPE, XI_SHUTTER_GLOBAL);
+
+			// Set the amount of downsampling to get decent frame rate.
 			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
+			// Always get the most recent frame.
+			xiSetParamInt(((VideoCaptureDummy *)&cam)->cap, XI_PRM_RECENT_FRAME, XI_ON);
 		}
 
 		frameWidth = (int) cam.get(CV_CAP_PROP_FRAME_WIDTH);
 		frameHeight = (int) cam.get(CV_CAP_PROP_FRAME_HEIGHT);
 		double framesPerSecond = cam.get(CV_CAP_PROP_FPS);
 
-		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
+ 		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
 		frameRate = (double) 1.0/framesPerSecond;
 	}
-	else 
+	else // No camera
 	{
 		// Set default values not to be zeroes
 		frameWidth = 640;
@@ -85,13 +146,15 @@ currentFrameSubscriptions(new(Subscription))
 
 	cameraFovWidth = DEG2RAD(globalSettings->cameraFovWidthDegrees);
 	cameraFovHeight = DEG2RAD(globalSettings->cameraFovHeightDegrees);
+	bCameraFlip = globalSettings->cameraFlip; 
 }
 
 VideoCapture:: ~VideoCapture()
 
 {
-	Stop();
+
 	boost::mutex::scoped_lock threadLock(GetMutex());
+	Stop();
 	threadLock.unlock();
 }
 
@@ -103,7 +166,6 @@ void  VideoCapture::Go()
 	mThreadExited = false;
 
 	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
-
 }
  
 
@@ -140,37 +202,43 @@ void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame,  Subscri
 void VideoCapture::DoThreadLoop()
 
 {
-	double delay = (frameRate * 1000) / 2;
-	if (delay < 1.0) delay = 1;
-
 	while (!WasStopped())
     {
 
-		// Acquire from camera source or AVI
-   		boost::mutex::scoped_lock threadLock(GetMutex());
+		// Acquire one frame from camera source or AVI
+
+		// Do not lock the thread. We should not be blocking
+		//		boost::mutex::scoped_lock threadLock(GetMutex());
+
 		DoThreadIteration();
-		threadLock.unlock();
+		
+		//		threadLock.unlock();
+
+		// Messages must be at leat 1ms apart.
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2));	
 	}
 
+  	boost::mutex::scoped_lock threadLock(GetMutex());
 	if (cam.isOpened()) 
 	{
 		cam.release();
 	}
+	threadLock.unlock();
 
 	mThreadExited = true;
 }
 
+
+
 void VideoCapture::DoThreadIteration()
 
 {
-	double delay = (frameRate * 1000) / 2;
-	if (delay < 1.0) delay = 1;
-
 	// Acquire from camera source or AVI
 	if( cam.isOpened() )
 	{
 		cam.read(bufferFrame);
-		// cvQuery frame is blocking, while waaiting for the frame.  
+
+		// cvQuery frame is blocking, while waiting for the frame.  
 		//Check again if we were stopped in the meantime 
 		if (WasStopped()) 
 		{
@@ -180,17 +248,28 @@ void VideoCapture::DoThreadIteration()
 		if (!bufferFrame.empty()) 
 		{
 #if 1
-			// Reset the iplImg dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera.
+			// Force-set the bufferFrame dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera, after downsampling
 			bufferFrame.cols = frameWidth;
 			bufferFrame.rows = frameHeight;
-			bufferFrame.step = bufferFrame.cols*bufferFrame.channels();
+			bufferFrame.step = bufferFrame.cols*(bufferFrame.channels());
 			// End of the Ximea patch
 #endif
+
+
 			boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());
-			bufferFrame.copyTo(currentFrame);
+			if (bCameraFlip) 
+			{
+				cv::flip(bufferFrame, currentFrame, -1);
+			}
+			else 
+			{
+				bufferFrame.copyTo(currentFrame);
+			}
 			currentFrameSubscriptions->PutNews();
 			currentLock.unlock();
 		} // if (!bufferFrame.empty()) 
+
+
 	} // if( cam.isOpened() )
 }
 

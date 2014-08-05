@@ -277,6 +277,7 @@ public:
 
 	// Camera
 	std::string sCameraName;
+	bool cameraFlip;
 	float cameraForward;
 	float cameraLeft; 
 	float cameraUp; 

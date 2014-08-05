@@ -548,6 +548,12 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index -->
     <cameraName>0</cameraName>
+
+    <!-- cameraFlip:
+       if true, 180 degree rotation of the camera image, 
+       for cameras that need to be fixed upside down. -->
+    <cameraFlip>false</cameraFlip>
+
     <position>
       <x>0.0</x>
       <!-- lateral offet -->

@@ -129,11 +129,6 @@ public:
 	  */
 	void VideoViewer::SetReceiverProjector(ReceiverProjector::Ptr inProjector);
 
-	/** \brief Perform a single iteration of the video display thread loop.
-	  *        to be called from within the main event loop.
-      */
-	void VideoViewer::DoThreadIteration();
-
 	/** \brief Move the window at position left, top.
 	  * \remarks implemented for compatibility  with Qt.
       */
