@@ -79,7 +79,8 @@ public:
     cv::Ptr<CvCaptureCAM_XIMEA> cap;
 };
 
-VideoCapture::VideoCapture(int argc, char** argv):
+VideoCapture::VideoCapture(int inCameraID, int argc, char** argv):
+cameraID(inCameraID),
 currentFrameSubscriptions(new(Subscription))
 
 {
@@ -90,7 +91,9 @@ currentFrameSubscriptions(new(Subscription))
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
 
-	std::string inputName = globalSettings->sCameraName;
+	CameraSettings cameraSettings = globalSettings->cameraSettings[cameraID];
+
+	std::string inputName = cameraSettings.sCameraName;
 	int inputID = 0;
 	if (!inputName.empty()) inputID = atoi(inputName.c_str());
 
@@ -144,9 +147,9 @@ currentFrameSubscriptions(new(Subscription))
 	// Field of view of the camera are in application seetings. 
 	// They are in degrees, so need to be converted in radians.
 
-	cameraFovWidth = DEG2RAD(globalSettings->cameraFovWidthDegrees);
-	cameraFovHeight = DEG2RAD(globalSettings->cameraFovHeightDegrees);
-	bCameraFlip = globalSettings->cameraFlip; 
+	cameraFovWidth = DEG2RAD(cameraSettings.cameraFovWidthDegrees);
+	cameraFovHeight = DEG2RAD(cameraSettings.cameraFovHeightDegrees);
+	bCameraFlip = cameraSettings.cameraFlip; 
 }
 
 VideoCapture:: ~VideoCapture()

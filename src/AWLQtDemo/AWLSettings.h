@@ -136,6 +136,23 @@ namespace awl
 
 	typedef boost::container::vector<ReceiverSettings> ReceiverSettingsVector;
 
+typedef struct CameraSettings
+	{
+	// Camera
+	std::string sCameraName;
+	bool cameraFlip;
+	float cameraForward;
+	float cameraLeft; 
+	float cameraUp; 
+	float cameraPitch; 
+	float cameraRoll; 
+	float cameraYaw; 
+	float cameraFovWidthDegrees;
+	float cameraFovHeightDegrees;
+	}
+	CameraSettings;
+
+	typedef boost::container::vector<CameraSettings> CameraSettingsVector;
 
 class AWLSettings
 {
@@ -196,6 +213,10 @@ public:
 
 	// Receiver configuration
 	ReceiverSettingsVector receiverSettings;
+
+	// Camera configuration
+	CameraSettingsVector cameraSettings;
+
 
 	// Layout
 	bool bDisplay3DWindow;
@@ -274,18 +295,6 @@ public:
 
 	float brakingDeceleration;
 	float travelSpeed;
-
-	// Camera
-	std::string sCameraName;
-	bool cameraFlip;
-	float cameraForward;
-	float cameraLeft; 
-	float cameraUp; 
-	float cameraPitch; 
-	float cameraRoll; 
-	float cameraYaw; 
-	float cameraFovWidthDegrees;
-	float cameraFovHeightDegrees;
 
 	// Debug
 	bool bWriteDebugFile;

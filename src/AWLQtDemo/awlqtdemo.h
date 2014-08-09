@@ -148,12 +148,13 @@ private:
 
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr baseCloud;
-	VideoCapture::Ptr videoCapture;
+
 
 	ReceiverCapture::List receiverCaptures;
+	VideoCapture::List videoCaptures;
+	VideoViewer::List  videoViewers;
 
 	ReceiverProjector::Ptr receiver;
-	VideoViewer::Ptr  videoViewer;
 	FusedCloudViewer::Ptr fusedCloudViewer;
 
 

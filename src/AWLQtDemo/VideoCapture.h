@@ -34,12 +34,15 @@ public:
 	
 	typedef boost::shared_ptr<VideoCapture> Ptr;
 	typedef boost::shared_ptr<VideoCapture const> ConstPtr;
+	typedef boost::container::vector<VideoCapture::Ptr> List;
+	typedef VideoCapture::List *ListPtr;
 
 	/** \brief Video Capture constructor.
-      * \param[in] argc command-line argument count
-      * \param[in] argv command line argument strings
+      * \param[in] inCameraID index of the camera in the configuration parameters.
+      * \param[in] argc command-line argument count.  Used in OpenCV cvInit() call.
+      * \param[in] argv command line argument strings. Used in OpenCV cvInit() call.
       */
-	VideoCapture(int argc, char** argv);
+	VideoCapture(int inCameraID, int argc, char** argv);
 
 	/** \brief Video Capture destructor.  Insures that the thread is stopped.
 
@@ -120,6 +123,8 @@ protected:
 
 
 protected:
+	/** \brief Index of the camera in the configuration parameter list */
+	int cameraID;
 	
     /** \brief Local flag indicating a request for termination */
 	volatile bool mStopRequested;

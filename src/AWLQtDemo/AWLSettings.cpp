@@ -182,7 +182,7 @@ bool AWLSettings::ReadSettings()
 	} // BOOST_FOREACH(algosNode)
 
 
-	// Receiver Configurations
+	// Loop for all Receiver Configurations
 	BOOST_FOREACH(ptree::value_type &receiversNode, propTree.get_child("config.receivers"))
 	{
 		if( receiversNode.first == "receiver" ) 
@@ -250,6 +250,26 @@ bool AWLSettings::ReadSettings()
 		} //if ( receiversNode.first == "receiver" 
 	} // BOOST_FOREACH(receiversNode
 
+
+	// Loop for each camera Configurations
+	BOOST_FOREACH(ptree::value_type &camerasNode, propTree.get_child("config.cameras"))
+	{
+		if( camerasNode.first == "camera" ) 
+		{
+			boost::property_tree::ptree &cameraNode = camerasNode.second;
+			CameraSettings camera;
+
+			camera.sCameraName = cameraNode.get<std::string>("cameraName");
+			camera.cameraFlip = cameraNode.get<bool>("cameraFlip");
+			GetGeometry(cameraNode,
+					camera.cameraForward, camera.cameraLeft, camera.cameraUp,
+					camera.cameraPitch, camera.cameraYaw, camera.cameraRoll);
+			Get2DPoint(cameraNode.get_child("fov"), camera.cameraFovWidthDegrees, camera.cameraFovHeightDegrees);
+
+			// Store
+			cameraSettings.push_back(camera);
+		} //if ( receiversNode.first == "receiver" 
+	} // BOOST_FOREACH(receiversNode
 
 
 	// Debug and log file control
@@ -320,13 +340,6 @@ bool AWLSettings::ReadSettings()
 	threatLevelLowThreshold = propTree.get<float>("config.dynamicTesting.threatLevelLowThreshold");
 	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
-
-	sCameraName = propTree.get<std::string>("config.camera.cameraName");
-	cameraFlip = propTree.get<bool>("config.camera.cameraFlip");
-	GetGeometry(propTree.get_child("config.camera"),
-				cameraForward, cameraLeft, cameraUp,
-				cameraPitch, cameraYaw, cameraRoll);
-	Get2DPoint(propTree.get_child("config.camera.fov"), cameraFovWidthDegrees, cameraFovHeightDegrees);
 
 	return(true);
 }

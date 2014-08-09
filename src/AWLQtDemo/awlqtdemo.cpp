@@ -91,9 +91,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AdjustDefaultDisplayedRanges();
 
 
-	// Create the image acquistion thread object
-	videoCapture = VideoCapture::Ptr(new VideoCapture(argc, argv));
-
 	// Create the receiver communication objects
 	int receiverQty = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
@@ -112,6 +109,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->Subscribe());
 	}
 
+	// Create the video capture objects
+	int videoCaptureQty = globalSettings->cameraSettings.size();
+	for (int cameraID = 0; cameraID < videoCaptureQty; cameraID++)
+	{
+		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv)));
+	}
 
 #if 1
 	// Create a common point-cloud object that will be "projected" upon
@@ -119,7 +122,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Create the ReceiverProjector.
 	// The projector feeds from the videoCapture and feeds from the base cloud
-	receiver = ReceiverProjector::Ptr(new ReceiverProjector(videoCapture, baseCloud, receiverCaptures[0]));
+	receiver = ReceiverProjector::Ptr(new ReceiverProjector(videoCaptures[0], baseCloud, receiverCaptures[0]));
 
 	// Add the channels to the point-cloud projector. 
 	ReceiverChannel::Ptr channelPtr;
@@ -154,7 +157,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-	videoViewer = VideoViewer::Ptr(new VideoViewer(this->windowTitle().toStdString() +" Camera", videoCapture, receiverCaptures[0], receiver));
+	int videoViewerQty = videoCaptures.size();
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		QString cameraName(this->windowTitle()+" Camera");
+		cameraName.append(QString().sprintf(" %02d", videoViewerID));
+		
+		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID], receiverCaptures[0], receiver)));
+	}
 
 	PrepareParametersView();
 	PrepareGlobalParametersView();
@@ -272,7 +282,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-    mCfgSensor.spareDepth = -globalSettings->cameraForward;
+	mCfgSensor.spareDepth = -globalSettings->receiverSettings[0].sensorForward;
 
 	m2DScan->slotConfigChanged(mCfgSensor);
 
@@ -308,12 +318,19 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
 
 
-	// Start the threads for background capture objects
-	videoCapture->Go();
+	// Start the threads for background  receiver capture objects
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
 	{ 
 		receiverCaptures[receiverID]->Go(true);
 	}
+
+
+	// Start the threads for background video capture objects
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	{ 
+		videoCaptures[cameraID]->Go();
+	}
+
 
 	if (receiver) receiver->Go();
 
@@ -352,7 +369,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		// Position the video viewer.
 		// This has to be done agfter the Go(), to make sure the window is created
 //		videoViewer->move(scr.left(), scr.top()); 
-		videoViewer->move(scr.left(), scr.top()+95); 
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+		    videoViewers[viewerID]->move(scr.left()+(viewerID*10), scr.top()+95+(viewerID*10));
+		}
 	}
 
 	switch (globalSettings->defaultParametersAlgos.defaultAlgo)
@@ -436,14 +456,22 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 void AWLQtDemo::on_destroy()
 {
 	if (fusedCloudViewer) fusedCloudViewer->Stop();
-	if (videoCapture) videoCapture->Stop();
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	{
+		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
+	}
+
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
 
 	if (receiver) receiver->Stop();
-	if (videoViewer) videoViewer->Stop();
+
+	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+	{
+		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+	}
 
 	if (m2DScan) delete m2DScan;
 	if (mTableView) delete mTableView;	
@@ -912,26 +940,21 @@ void AWLQtDemo::on_timerTimeout()
 	myTimer->stop();
 
 	bool bContinue = true;
-	if (videoCapture->WasStopped()) 
+			
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
+	{
+		if (videoCaptures[cameraID]->WasStopped()) 
+		{
+			bContinue = false;
+			break;
+		}
+	}
+
+	if (receiver && receiver->WasStopped())
 	{
 		bContinue = false;
 	}
-#if 0  // Closing the videoviewer does not stop the application anymore
-	else if (videoViewer->WasStopped())
-	{
-		bContinue = false;
-	}
-#endif
-	else if (receiver && receiver->WasStopped())
-	{
-		bContinue = false;
-	}
-#if 0  // closing the fused viewer windows does not stop the application anymore
-	else if (fusedCloudViewer->WasStopped())
-	{
-		bContinue = false;
-	}
-#endif
+
 	if (bContinue)
 	{
 		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
@@ -975,9 +998,6 @@ void AWLQtDemo::on_timerTimeout()
 		if (fusedCloudViewer->viewers.size()>=1) 
 		{
 			fusedCloudViewer->viewers[0]->DoThreadIteration();
-#if 0 // closing the fused viewer windows does not stop the application anymore
-			if (fusedCloudViewer->WasStopped()) bContinue = false;
-#endif
 		}
 	}
 
@@ -988,11 +1008,7 @@ void AWLQtDemo::on_timerTimeout()
 	}
 
 
-#if 0 // closing the fused viewer windows does not stop the application anymore
-	if (bContinue  && fusedCloudViewer && !fusedCloudViewer->WasStopped())
-#else
 	if (bContinue)
-#endif
 	{
 		myTimer->start(LOOP_RATE);
 	}
@@ -1796,9 +1812,20 @@ void AWLQtDemo::on_viewGraphActionToggled()
 void AWLQtDemo::on_viewCameraActionToggled()
 {
 	if (ui.actionCamera->isChecked())
-		videoViewer->Go();
+	{
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID]) videoViewers[viewerID]->Go();
+		}
+	}
+
 	else
-		videoViewer->Stop();
+	{
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+		}
+	}
 }
 
 void AWLQtDemo::on_view2DClose()
@@ -2077,14 +2104,23 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 void AWLQtDemo::closeEvent(QCloseEvent * event)
 {
 	if (fusedCloudViewer) fusedCloudViewer->Stop();
-	if (videoCapture) videoCapture->Stop();
+
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	{
+		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
+	}
+
+
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
 
 	if (receiver) receiver->Stop();
-	if (videoViewer) videoViewer->Stop();
+	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+	{
+		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+	}
 
 	qApp->closeAllWindows();
 }	

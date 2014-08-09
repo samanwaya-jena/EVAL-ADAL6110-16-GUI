@@ -35,6 +35,8 @@ public:
 	
 	typedef boost::shared_ptr<VideoViewer> Ptr;
 	typedef boost::shared_ptr<VideoViewer const> ConstPtr;
+	typedef boost::container::vector<VideoViewer::Ptr> List;
+	typedef VideoViewer::List *ListPtr;
 
 	/** \brief Video Viewer constructor.
       * \param[in] inCameraName string used to identify camera and used as window title

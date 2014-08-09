@@ -99,7 +99,6 @@ void  VideoViewer::Go()
 		// Create output window
 		if (!bWindowCreated) 
 		{
-//			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 			bWindowCreated = true;
 			SetWindowIcon();

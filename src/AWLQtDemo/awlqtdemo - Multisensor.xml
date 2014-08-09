@@ -432,6 +432,62 @@
     </receiver>
   </receivers>
 
+  <cameras>
+    <camera>
+      <!-- cameraName:
+	    Camera index, as used in openCV.
+       Indexes start at 0, up to 99. 
+       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
+       XIMEA Cameras, add 1100 to the camera index -->
+      <cameraName>0</cameraName>
+
+      <!-- cameraFlip:
+       if true, 180 degree rotation of the camera image, 
+       for cameras that need to be fixed upside down. -->
+      <cameraFlip>false</cameraFlip>
+
+      <position>
+        <x>0.0</x>
+        <!-- lateral offet -->
+        <y>-1.54</y>
+        <!-- positionFromBumper -->
+        <z>1.35</z>
+      </position>
+      <orientation>
+        <pitch>0.0</pitch>
+        <roll>0.0</roll>
+        <yaw>0.0</yaw>
+      </orientation>
+
+      <!-- Comment out unused cameras
+		< MS_LIFECAM_CINEMA >
+		<fov>
+			<x>47.4</x>
+			<y>30.6</y>
+		</fov>
+
+		< MS_LIFECAM_HD6000 @640x360 >
+		<fov>
+			<x>45.0</x>
+			<y>39.0</y>
+		</fov>
+
+		< MS_LIFECAM_HD5000 @640x360 >
+			<fov>
+			<x>45.0</x>
+			<y>39.0</y>
+		</fov>
+     End Comment out unused cameras -->
+
+      <!-- LOGITECH_C270 @640 x 480 -->
+      <fov>
+        <x>42.0</x>
+        <y>27.0</y>
+      </fov>
+    </camera>
+
+
+  </cameras>
 
   <displayTableView>
     <displayedDetectionsPerChannelInTableView>4</displayedDetectionsPerChannelInTableView>
@@ -541,61 +597,7 @@
     <travelSpeed>16.66</travelSpeed>
   </dynamicTesting>
 
-  <camera>
-    <!-- cameraName:
-	    Camera index, as used in openCV.
-       Indexes start at 0, up to 99. 
-       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index -->
-    <cameraName>1100</cameraName>
-
-    <!-- cameraFlip:
-       if true, 180 degree rotation of the camera image, 
-       for cameras that need to be fixed upside down. -->
-    <cameraFlip>true</cameraFlip>
-
-    <position>
-      <x>0.0</x>
-      <!-- lateral offet -->
-      <y>-1.54</y>
-      <!-- positionFromBumper -->
-      <z>1.35</z>
-    </position>
-    <orientation>
-      <pitch>0.0</pitch>
-      <roll>0.0</roll>
-      <yaw>0.0</yaw>
-    </orientation>
-
-    <!-- Comment out unused cameras
-		< MS_LIFECAM_CINEMA >
-		<fov>
-			<x>47.4</x>
-			<y>30.6</y>
-		</fov>
-
-		< MS_LIFECAM_HD6000 @640x360 >
-		<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-
-		< MS_LIFECAM_HD5000 @640x360 >
-			<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-     End Comment out unused cameras -->
-
-    <!-- LOGITECH_C270 @640 x 480 -->
-    <fov>
-      <x>42.0</x>
-      <y>27.0</y>
-    </fov>
-  </camera>
-
-
-  <registersFPGA>
+   <registersFPGA>
     <register>
       <index>R0</index>
       <address>0</address>
