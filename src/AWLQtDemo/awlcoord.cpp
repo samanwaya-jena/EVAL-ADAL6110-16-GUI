@@ -420,6 +420,37 @@ TransformationMatrix& TransformationMatrix::operator=(const RelativePosition &in
  	return(*this);
 }
 
+TransformationMatrix TransformationMatrix::Reverse()
+{
+	TransformationMatrix destinationMatrix;
+	
+	 // Ref: http://www.cse.psu.edu/~rcollins/CSE486/lecture12.pdf
+
+	 // Transpose the rotation sub-matrix
+	 destinationMatrix.matrix[0][0] = matrix[0][0];
+	 destinationMatrix.matrix[0][1] = matrix[1][0];
+	 destinationMatrix.matrix[0][2] = matrix[2][0];
+	 destinationMatrix.matrix[1][0] = matrix[0][1];
+	 destinationMatrix.matrix[1][1] = matrix[1][1];
+	 destinationMatrix.matrix[1][2] = matrix[2][1];
+	 destinationMatrix.matrix[2][0] = matrix[0][2];
+	 destinationMatrix.matrix[2][1] = matrix[1][2];
+	 destinationMatrix.matrix[2][2] = matrix[2][2];
+	 
+	 // Negate the translations
+	 destinationMatrix.matrix[0][3] = matrix[0][3];
+	 destinationMatrix.matrix[1][3] = matrix[1][3];
+	 destinationMatrix.matrix[2][3] = matrix[2][3];
+
+	 // Carry over the other matrix items
+ 	 destinationMatrix.matrix[3][0] = matrix[3][0];     
+	 destinationMatrix.matrix[3][1] = matrix[3][1];     
+	 destinationMatrix.matrix[3][2] = matrix[3][2];     
+	 destinationMatrix.matrix[3][3] = matrix[3][3]; 
+
+ 	return(destinationMatrix);
+}
+
 TransformationVector::TransformationVector()
 {
 	vect[0] = 0.0;
@@ -638,6 +669,16 @@ CartesianCoord TransformationNode::ToReferenceCoord(eCoordLevel inLevel, const C
 	return (retCoord);
 }
 
+CartesianCoord TransformationNode::FromReferenceCoord(eCoordLevel inLevel, const CartesianCoord & inCoord)
+
+{
+	TransformationVector coordVect(inCoord);
+	TransformationMatrix reverseMatrix = transformations[inLevel].Reverse();
+	CartesianCoord retCoord = reverseMatrix * coordVect;
+
+	return (retCoord);
+}
+
 //// This should all be transferred to separate file
 
 #include "AWLSettings.h"
@@ -671,6 +712,9 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 	
 	firstNode  = TransformationNode::Ptr(new TransformationNode(CartesianCoord(0, 0, 0), Orientation(0, 0, 0)));
 
+	// Build a transformation matrix for each of the pixels in each of the receivers
+
+	// Loop for the receivers
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		ReceiverSettings &receiverSettings = globalSettings->receiverSettings[receiverID];
@@ -678,6 +722,8 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 		Orientation receiverOrientation(receiverSettings.sensorRoll, receiverSettings.sensorPitch, receiverSettings.sensorYaw);
 		TransformationNode::Ptr receiverNode = TransformationNode::Ptr(new TransformationNode(receiverPosition, receiverOrientation));
 		firstNode->AddChild(receiverNode);
+
+		// Loop for the sensors
 		for (int channelID = 0; channelID < receiverSettings.channelsConfig.size(); channelID++)
 		{
 			CartesianCoord channelPosition(0, 0, 0);
@@ -690,6 +736,8 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 			receiverNode->AddChild(channelNode);
 		}
 	}
+
+	// Build a transformation matrix for the camera
 
 	return(true);
 }

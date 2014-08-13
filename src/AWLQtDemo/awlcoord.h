@@ -51,6 +51,7 @@ typedef enum eCoordLevel
 	eWorldCoord = 0,		// Coordinates relative to world
 	eVehicleCoord = 1,		// Coordinates relative to vehicle axis and position
 	eReceiverCoord = 2,		// Coordinates relative to receiver axis and position
+	eCameraCoord = 2,
 	eSensorCoord = 3		// Coordinates relative to sensor axis and position
 }
 eCoordLevel;
@@ -63,7 +64,7 @@ typedef float (TransformationArray)[4][4];
 */
 typedef float (TransformationRow)[4];
 
-/** \brief Structure containing relativePosition, in cartesian coordinates. 
+/** \brief The CartesianCoord class defines a position, in cartesian coordinates. 
   * \Notes uses coordinate conventions as defined in PCL / ROS.
   *  See: http://www.ros.org/reps/rep-0103.html#coordinate-frame-conventions
   *  That is:
@@ -132,7 +133,7 @@ public:
 };
 
 
-/** \brief Structure containing relativePosition, in spherical coordinates. 
+/** \brief The SpericalCoord class defines a position, in spherical coordinates. 
  *  \notes spherical coordinates are using right-handed notation				
  *         rho is distance.												
  *         theta is angle from z axis, clockwise.						
@@ -172,7 +173,7 @@ public:
 	float phi;
 };
 
-/** \brief Structure representing relative orientation of and object from a reference. 
+/** \brief The Oreientation class defines the relative orientation of an object in a frame of reference. 
 	*  \notes
 	*  yaw is a counterclockwise rotation of $ \alpha$ about the $ z$-axis.
 	*  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis. 
@@ -198,6 +199,10 @@ public:
 	float yaw;
 };
 
+/** \brief The RelativePosition Class defines the relative position AND orientation of an object or frame of reference from another. 
+ *  \notes The class contains the relative position and orientation of a frame of reference, from the origin frame of reference. 
+*/
+
 class RelativePosition
 {
 public:
@@ -212,6 +217,11 @@ public:
 	Orientation		orientation;
 };
 
+/** \brief The TransformationMatrix class supports the basic operators on a 
+ *          4x4 affine transformation matrix.
+ *  \notes	Constructors allow the easy filling of a transformation matrix
+ *          for Position (or translation) and Orientation or (Rotation)
+*/
 class TransformationMatrix
 {
 public:
@@ -229,11 +239,17 @@ public:
 	TransformationMatrix& operator=(const Orientation &inOrientation);
 	TransformationMatrix& operator=(const RelativePosition &inRelativePosition);
 
+	TransformationMatrix Reverse();
 
 public:
 	TransformationArray matrix; 
 };
 
+/** \brief The TransformationMatrix class supports the basic operators on a 
+ *          1x4 vector.
+ *  \notes	The vectors can be used as operands in affine transformation operations
+ *          or as convenient placeholders for sub-sections of TransformationMatrix.
+*/
 class TransformationVector
 {
 public:
@@ -246,6 +262,7 @@ public:
 	TransformationVector& operator=(const CartesianCoord &inCartesian);
 	TransformationVector& operator=(const SphericalCoord &inSpherical);
 	TransformationVector& operator=(const Orientation &inOrientation);
+
 public:
 	TransformationRow vect; 
 };
@@ -258,8 +275,23 @@ TransformationMatrix operator * (const TransformationMatrix &left, float scalarR
 TransformationVector operator * (const TransformationMatrix &left, const TransformationVector &right); 
 
 
+/** \brief TransformationMatrixSteps define a sequence of affine transformations.
+ *  \notes	Using a deque (1 sided list) the steps can identify a sequence
+ *          of individual affine transformations.
+*/
 typedef boost::container::deque<TransformationMatrix> TransformationMatrixSteps;
 
+
+/** \brief TransformationNodes are coordinate frames that can be organized in 
+  *         a tree structure to describe the relative position and sequence of transformations
+  *		   from a coordinate frame to another.
+  *	\Notes For commodity, each node in the tree stores all of the TransformationMatrixSteps to 
+  *		   convert its coordinates into each of its parent's coordinates.
+  *		   The transformationNode can be used to facilitate transformation of coordinates in
+  *		   a multiple axis "robot" (using the ToReferenceCoord() method).
+  *		   After modification of a node's coordinates, RefreshGlobal() updates all the children's
+  *		   TransformationMaxtrixSteps.
+*/
 class TransformationNode : public boost::enable_shared_from_this<TransformationNode>
 
 {
@@ -279,6 +311,7 @@ public:
 	void RefreshGlobal();
 
 	CartesianCoord ToReferenceCoord(eCoordLevel inLevel, const CartesianCoord & inCoord);
+	CartesianCoord FromReferenceCoord(eCoordLevel inLevel, const CartesianCoord & inCoord);
 
 public:
 	TransformationNode::Ptr parent;
@@ -286,7 +319,6 @@ public:
 
 	RelativePosition relativePosition;
 	TransformationMatrixSteps transformations;
-
 };
 
 // Class AWL Coordinates should be ported.

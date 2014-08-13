@@ -48,7 +48,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings();
 
-#if 0
+#if 1
 
 	// Test the coordinates system
 	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
@@ -60,6 +60,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	CartesianCoord cartesianPointInWorld4 = baseNode->children[0]->children[4]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
 	CartesianCoord cartesianPointInWorld5 = baseNode->children[0]->children[5]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
 	CartesianCoord cartesianPointInWorld6 = baseNode->children[0]->children[6]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+
+	TransformationMatrix reverseMatrix = baseNode->children[0]->children[6]->transformations[eReceiverCoord].Reverse();
+	TransformationVector coordVect(cartesianPointInWorld6);
+	SphericalCoord worldPoint = reverseMatrix * coordVect;
+
 #endif
 
 
