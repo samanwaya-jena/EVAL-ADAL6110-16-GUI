@@ -7,6 +7,7 @@
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
 #include "Sensor.h"
+#include "AWLCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
 
@@ -112,6 +113,37 @@ void  VideoViewer::Go()
 	}
 }
  
+void  VideoViewer::Stop() 
+{
+	if (mStopRequested) return;
+	mStopRequested = true;
+
+	if (!mThreadExited) 
+	{
+	HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
+	if (window == NULL) bWindowCreated = false;
+	else bWindowCreated = true;
+	
+	if (bWindowCreated) cvDestroyWindow(cameraName.c_str());
+	}
+
+	if (mThreadExited) 
+	{
+		mThreadExited=false;
+		assert(mThread);
+		mThread->join();
+	}
+
+
+}
+
+bool  VideoViewer::WasStopped()
+{
+	if (mStopRequested || mThreadExited) return(true);
+
+	return(false);
+}
+
 void VideoViewer::SetWindowIcon()
 
 {
@@ -170,31 +202,6 @@ void VideoViewer::move(int left, int top)
 }
 
 
-void  VideoViewer::Stop() 
-{
-	if (mStopRequested) return;
-	mStopRequested = true;
-
-	if (mStopRequested || mThreadExited) 
-	{
-		mThreadExited=false;
-		assert(mThread);
-		mThread->join();
-	}
-
-	if (bWindowCreated) 
-	{
-		bWindowCreated = false;
-		cvDestroyWindow(cameraName.c_str());
-	}
-}
-
-bool  VideoViewer::WasStopped()
-{
-	if (mStopRequested || mThreadExited) return(true);
-
-	return(false);
-}
 
 void VideoViewer::CopyWorkFrame(VideoCapture::FramePtr targetFrame) 
 {
@@ -219,17 +226,17 @@ void VideoViewer::DoThreadLoop()
 			// Add the lidar range decorations to the video frame
 			DisplayReceiverValues(workFrame);
 
-			// Copy to the display (we are duouble-buffering)
+			// Copy to the display (we are double-buffering)
 #if 1
 			workFrame->copyTo(*displayFrame);
 #else
 			CvSize displaySize(cvSize(frameWidth / 2, frameHeight /2));
 			cvResize(workframe, displayFrame, displaySize);
 #endif
+			// 
 			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
-
-			if (bWindowCreated) cv::imshow(cameraName, *displayFrame);
+			if (bWindowCreated && ::IsWindowVisible(window)) cv::imshow(cameraName, *displayFrame);
 		}
 
 		//Give a break to other threads and wait for next frame
@@ -237,10 +244,14 @@ void VideoViewer::DoThreadLoop()
 
 		if((!bWindowCreated))
 		{
+#if 1
 			Stop(); 
+
 			break;
+#endif
 		}
 	} // while (!WasStoppped)
+
 
 	mThreadExited = true;
 }
@@ -306,6 +317,8 @@ void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 		}
 	}
 }
+
+
 
 
 void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection)
@@ -384,7 +397,13 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	bottom = -1;
 	right = -1;
 
+#if 1
 	projector->GetChannelRect(channelID, top, left, bottom, right);
+#else
+
+#endif
+
+	// The rectagle is not just drawn as solid, but as a colored highlight so we manually address the pixels.
 
 	for (int row = top; row <= bottom; row++) 
 	{
