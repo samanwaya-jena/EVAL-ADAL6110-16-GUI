@@ -62,6 +62,12 @@ public:
       */
 	bool  WasStopped();
 
+	/** \brief Return the camera ID.
+      * \return cameraID (also is the index of the camera in our structures).
+      */
+	double GetCameraID() {return(cameraID);};
+
+
 	/** \brief Return the video frame rate.
       * \return video acquisition frame rate in FPS.
       */

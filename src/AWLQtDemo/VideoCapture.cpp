@@ -13,6 +13,10 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/types_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/imgproc/imgproc.hpp"
+
 
 #include "xiapi.h"
 
@@ -196,7 +200,13 @@ bool  VideoCapture::WasStopped()
 void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame,  Subscription::SubscriberID inSubscriberID) 
 {
 	boost::mutex::scoped_lock updateLock(currentFrameSubscriptions->GetMutex());
+#if 0
  	*targetFrame = currentFrame.clone();
+#else
+	//Instead of simply cloning, make sure the target comes out as a 3 channel BGR image.
+	targetFrame->create(currentFrame.rows, currentFrame.cols, CV_8UC3);
+	cv::cvtColor(currentFrame, *targetFrame, CV_BGRA2BGR);
+#endif
 	currentFrameSubscriptions->GetNews(inSubscriberID);
 	updateLock.unlock();
 };
