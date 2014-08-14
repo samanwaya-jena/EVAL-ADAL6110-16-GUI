@@ -705,16 +705,27 @@ TransformationNode::Ptr AWLCoordinates::GetFirstNode()
 	return(globalCoordinates->firstNode);
 }
 
+TransformationNode::List AWLCoordinates::GetReceivers()
+{
+	return(globalCoordinates->receivers);
+}
+
+TransformationNode::List AWLCoordinates::GetCameras()
+{
+	return(globalCoordinates->cameras);
+}
+
+
 bool AWLCoordinates::BuildCoordinatesFromSettings()
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	int receiverQty = globalSettings->receiverSettings.size();
 	
 	firstNode  = TransformationNode::Ptr(new TransformationNode(CartesianCoord(0, 0, 0), Orientation(0, 0, 0)));
 
 	// Build a transformation matrix for each of the pixels in each of the receivers
 
 	// Loop for the receivers
+	int receiverQty = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		ReceiverSettings &receiverSettings = globalSettings->receiverSettings[receiverID];
@@ -722,6 +733,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 		Orientation receiverOrientation(receiverSettings.sensorRoll, receiverSettings.sensorPitch, receiverSettings.sensorYaw);
 		TransformationNode::Ptr receiverNode = TransformationNode::Ptr(new TransformationNode(receiverPosition, receiverOrientation));
 		firstNode->AddChild(receiverNode);
+		receivers.push_back(receiverNode);
 
 		// Loop for the sensors
 		for (int channelID = 0; channelID < receiverSettings.channelsConfig.size(); channelID++)
@@ -734,10 +746,24 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 
 			TransformationNode::Ptr channelNode = TransformationNode::Ptr(new TransformationNode(channelPosition, channelOrientation));
 			receiverNode->AddChild(channelNode);
+
 		}
 	}
 
-	// Build a transformation matrix for the camera
+	// Build a transformation matrix for the cameras
+	// Loop for the receivers
+	int cameraQty = globalSettings->cameraSettings.size();
+	for (int cameraID = 0; cameraID < cameraQty; cameraID++)
+	{
+		CameraSettings &cameraSettings = globalSettings->cameraSettings[cameraID];
+		CartesianCoord cameraPosition(cameraSettings.cameraForward, cameraSettings.cameraLeft, cameraSettings.cameraUp);
+		Orientation cameraOrientation(cameraSettings.cameraRoll, cameraSettings.cameraPitch, cameraSettings.cameraYaw);
+		TransformationNode::Ptr cameraNode = TransformationNode::Ptr(new TransformationNode(cameraPosition, cameraOrientation));
+		firstNode->AddChild(cameraNode);
+		cameras.push_back(cameraNode);
+
+	}
+
 
 	return(true);
 }

@@ -48,11 +48,21 @@ class TransformationNode;
 
 typedef enum eCoordLevel
 {
-	eWorldCoord = 0,		// Coordinates relative to world
-	eVehicleCoord = 1,		// Coordinates relative to vehicle axis and position
-	eReceiverCoord = 2,		// Coordinates relative to receiver axis and position
-	eCameraCoord = 2,
-	eSensorCoord = 3		// Coordinates relative to sensor axis and position
+	eSensorToReceiverCoord = 2,
+	eSensorToVehicleCoord = 1,
+	eSensorToWorldCoord = 0,
+
+	eReceiverToVehicleCoord = 1,
+	eReceiverToWorldCoord = 0,
+
+	eVehicleToWorldCoord = 0,
+
+	eCameraToVehicleCoord = 1,
+	eCameraToWorldCoord = 0,
+
+	eWorldToVehicleCoord = 0,
+	eWorldToReceiverCoord = 1,
+	eWorldToCameraCoord = 1
 }
 eCoordLevel;
 
@@ -173,7 +183,7 @@ public:
 	float phi;
 };
 
-/** \brief The Oreientation class defines the relative orientation of an object in a frame of reference. 
+/** \brief The Orientation class defines the relative orientation of an object in a frame of reference. 
 	*  \notes
 	*  yaw is a counterclockwise rotation of $ \alpha$ about the $ z$-axis.
 	*  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis. 
@@ -316,6 +326,7 @@ public:
 public:
 	TransformationNode::Ptr parent;
 	TransformationNode::List children;
+	
 
 	RelativePosition relativePosition;
 	TransformationMatrixSteps transformations;
@@ -328,12 +339,17 @@ public:
 	static AWLCoordinates *InitCoordinates();
 	static AWLCoordinates *GetGlobalCoordinates();
 	static TransformationNode::Ptr GetFirstNode();
+	static TransformationNode::List GetReceivers();
+	static TransformationNode::List GetCameras();
 	// Constructor
 	AWLCoordinates();
 	bool BuildCoordinatesFromSettings();
 protected:
 	static AWLCoordinates *globalCoordinates;
 	TransformationNode::Ptr	firstNode;
+
+	TransformationNode::List receivers;
+	TransformationNode::List cameras;
 };
 
 } // namespace awl

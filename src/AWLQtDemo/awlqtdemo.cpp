@@ -51,20 +51,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 #if 1
 
 	// Test the coordinates system
-	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
 	SphericalCoord sphericalPointInChannel(10, M_PI_2, 0);
-	CartesianCoord cartesianPointInWorld0 = baseNode->children[0]->children[0]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld1 = baseNode->children[0]->children[1]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld2 = baseNode->children[0]->children[2]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld3 = baseNode->children[0]->children[3]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld4 = baseNode->children[0]->children[4]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld5 = baseNode->children[0]->children[5]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld6 = baseNode->children[0]->children[6]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld0 = receiverCoords[0]->children[0]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld1 = receiverCoords[0]->children[1]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld2 = receiverCoords[0]->children[2]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld3 = receiverCoords[0]->children[3]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld4 = receiverCoords[0]->children[4]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld5 = receiverCoords[0]->children[5]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld6 = receiverCoords[0]->children[6]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
 
-	TransformationMatrix reverseMatrix = baseNode->children[0]->children[6]->transformations[eReceiverCoord].Reverse();
-	TransformationVector coordVect(cartesianPointInWorld6);
-	SphericalCoord worldPoint = reverseMatrix * coordVect;
-
+	TransformationNode::List cameraCoords = AWLCoordinates::GetCameras();
+	SphericalCoord worldPoint = cameraCoords[0]->FromReferenceCoord(eCameraToWorldCoord, cartesianPointInWorld0);
 #endif
 
 

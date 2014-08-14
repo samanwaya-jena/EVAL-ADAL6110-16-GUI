@@ -207,11 +207,11 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->threatLevel = track->threatLevel;
 
 				// Place the coordinates relative to all their respective reference systems
-				TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+				TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
 				SphericalCoord sphericalPointInChannel(detection->distance, M_PI_2, 0);
-				detection->relativeToSensorCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-				detection->relativeToVehicleCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eVehicleCoord, sphericalPointInChannel);
-				detection->relativeToWorldCart = baseNode->children[receiverID]->children[channelIndex]->ToReferenceCoord(eWorldCoord, sphericalPointInChannel);
+				detection->relativeToSensorCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+				detection->relativeToVehicleCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+				detection->relativeToWorldCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
 				detection->relativeToSensorSpherical = detection->relativeToSensorCart;
 				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
@@ -424,11 +424,11 @@ relativeToWorldCart(),
 relativeToWorldSpherical()
 {
 	// Place the coordinates relative to all their respective reference systems
-	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
 	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
-	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, sphericalPointInChannel);
-	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, sphericalPointInChannel);
+	relativeToSensorCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	relativeToVehicleCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+	relativeToWorldCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
 	relativeToSensorSpherical = relativeToSensorCart;
 	relativeToVehicleSpherical = relativeToVehicleCart;
@@ -460,11 +460,11 @@ relativeToWorldSpherical()
 
 {
 	// Place the coordinates relative to all their respective reference systems
-	TransformationNode::Ptr baseNode = AWLCoordinates::GetFirstNode();
+	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
 	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
-	relativeToSensorCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eReceiverCoord, sphericalPointInChannel);
-	relativeToVehicleCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eVehicleCoord, sphericalPointInChannel);
-	relativeToWorldCart = baseNode->children[receiverID]->children[channelID]->ToReferenceCoord(eWorldCoord, sphericalPointInChannel);
+	relativeToSensorCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	relativeToVehicleCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+	relativeToWorldCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
 	relativeToSensorSpherical = relativeToSensorCart;
 	relativeToVehicleSpherical = relativeToVehicleCart;
