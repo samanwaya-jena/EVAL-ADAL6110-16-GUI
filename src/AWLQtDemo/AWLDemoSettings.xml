@@ -30,7 +30,7 @@
     <!-- enableDemo:  
 	       when set to true, inject at startup and
 	       enable simulated feedback for common commands such as set/get registers -->
-    <enableDemo>false</enableDemo>
+    <enableDemo>true</enableDemo>
 
     <!-- injectType:
 	       0: ramp
@@ -108,7 +108,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0.0</roll>
           <yaw>15</yaw>
         </orientation>
@@ -128,7 +128,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0</roll>
           <yaw>5.0</yaw>
         </orientation>
@@ -148,7 +148,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
@@ -168,7 +168,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0.0</roll>
           <yaw>-15</yaw>
         </orientation>
@@ -188,7 +188,7 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>2.15</pitch>
+          <pitch>-2.15</pitch>
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
@@ -208,7 +208,7 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>2.15</pitch>
+          <pitch>-2.15</pitch>
           <roll>0.0</roll>
           <yaw>0</yaw>
         </orientation>
@@ -228,7 +228,7 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>2.15</pitch>
+          <pitch>-2.15</pitch>
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
@@ -250,7 +250,7 @@
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index.
-       An non-numeric camera name can be used to specify a video file.-->
+       A non-numeric camera name can be used to specify a video file.-->
       <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
@@ -260,11 +260,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>-1.35</forward>
+        <forward>0</forward>
         <!-- lateral offet -->
         <left>0.0</left>
         <!-- height -->
-        <up>1.54</up>
+        <up>0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -307,8 +307,8 @@
 
       <!-- Webcam -->
       <fov>
-        <x>45.0</x>
-        <y>39.0</y>
+        <x>42.0</x>
+        <y>27.0</y>
       </fov>
     </camera>
 

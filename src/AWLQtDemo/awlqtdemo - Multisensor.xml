@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <config>
   <layout>
     <!-- default layout at startup.  Tells which windows and parts of
@@ -37,7 +38,7 @@
 	       2: slow moving, single target
 	       3: steady target -->
 
-    <injectType>0</injectType>
+    <injectType>3</injectType>
   </demoMode>
 
   <calibration>
@@ -81,16 +82,17 @@
 
       <sensorGeometry>
         <position>
-          <x>-0.84</x>
+          <!-- positionFromBumper -->
+          <forward>0.0</forward>
           <!-- lateral offet -->
-          <y>0.0</y>
-          <!-- positionFromBumper -->
-          <z>1.35</z>
+          <left>0.0</left>
+          <!-- height -->
+          <up>0.0</up>
         </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>-15</yaw>
+          <yaw>-0.0</yaw>
         </orientation>
       </sensorGeometry>
 
@@ -106,199 +108,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>15</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-         <displayColor>
-          <red>128</red>
-          <green>216</green>
-          <blue>168</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 1: short range - middle left -->
-        <index>1</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0</roll>
-          <yaw>5.0</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <displayColor>
-          <red>54</red>
-          <green>166</green>
-          <blue>38</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 2: short range - middle right -->
-        <index>2</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>-5.0</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <displayColor>
-          <red>54</red>
-          <green>166</green>
-          <blue>38</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 3: short range - right -->
-        <index>3</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>-15</yaw>
-        </orientation>
-        <maxRange>15</maxRange>
-        <displayColor>
-          <red>128</red>
-          <green>216</green>
-          <blue>168</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 4: long range - left -->
-        <index>4</index>
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>4.6</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 5: long range - center -->
-        <index>5</index>
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>0</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
-        </displayColor>
-      </channel>
-
-      <channel>
-        <!--channel 5: long range - right -->
-        <index>6</index>
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>-4.6</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
-        </displayColor>
-      </channel>
-    </receiver>
-
-    <!-- Receiver 2 -->
-    <receiver>
-      <!-- The receiverType determines which version of the 
-		       Receiver is used in the configuration.
-		       This can influence comm port communicationsValid
-		       values currently are "BareMetal" or "CAN" -->
-      <receiverType> CAN </receiverType>
-
-      <!-- Channel mask: Controls which channels are
-		       processed at AWL Unit Level -->
-      <!--enter the mask in decimal -->
-      <channelMask>127 </channelMask>
-
-      <!-- Frame rate, in Hertz -->
-      <frameRate> 30 </frameRate>
-      <!-- Message mask flags: 
-		       Controls which messages are sent to client unit
-		       if msgEnableObstacle is true, all displays will
-		       be configured for track mode operation -->
-      <msgEnableObstacle>true</msgEnableObstacle>
-      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
-      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
-      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
-      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
-
-      <commPort>COM16</commPort>
-      <serialPortRate>921600</serialPortRate>
-      <bitRate>S8</bitRate>
-
-      <yearOffset>1900</yearOffset>
-      <monthOffset>1</monthOffset>
-
-      <sensorGeometry>
-        <position>
-          <x>0.84</x>
-          <!-- lateral offet -->x
-          <y>0.0</y>
-          <!-- positionFromBumper -->
-          <z>1.35</z>
-        </position>
-        <orientation>
-          <pitch>0.0</pitch>
-          <roll>0.0</roll>
-          <yaw>15</yaw>
-        </orientation>
-      </sensorGeometry>
-
-      <displayedRangeMin>0.5</displayedRangeMin>
-      <displayedRangeMax>45</displayedRangeMax>
-      <rangeOffset>0.0</rangeOffset>
-
-      <channel>
-        <!--channel 0: Short-range left -->
-        <index>0</index>
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0.0</roll>
           <yaw>15</yaw>
         </orientation>
@@ -318,7 +128,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0</roll>
           <yaw>5.0</yaw>
         </orientation>
@@ -338,7 +148,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
@@ -358,7 +168,7 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>6.8</pitch>
+          <pitch>-6.8</pitch>
           <roll>0.0</roll>
           <yaw>-15</yaw>
         </orientation>
@@ -378,7 +188,7 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>2.15</pitch>
+          <pitch>-2.15</pitch>
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
@@ -398,7 +208,7 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>2.15</pitch>
+          <pitch>-2.15</pitch>
           <roll>0.0</roll>
           <yaw>0</yaw>
         </orientation>
@@ -418,7 +228,7 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>2.15</pitch>
+          <pitch>-2.15</pitch>
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
@@ -430,6 +240,7 @@
         </displayColor>
       </channel>
     </receiver>
+
   </receivers>
 
   <cameras>
@@ -438,8 +249,10 @@
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index -->
+       XIMEA Cameras, add 1100 to the camera index.
+       A non-numeric camera name can be used to specify a video file.-->
       <cameraName>0</cameraName>
+      <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -447,11 +260,12 @@
       <cameraFlip>false</cameraFlip>
 
       <position>
-        <x>0.0</x>
-        <!-- lateral offet -->
-        <y>-1.54</y>
         <!-- positionFromBumper -->
-        <z>1.35</z>
+        <forward>-5</forward>
+        <!-- lateral offet -->
+        <left>0.0</left>
+        <!-- height -->
+        <up>0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -477,20 +291,67 @@
 			<x>45.0</x>
 			<y>39.0</y>
 		</fov>
-     End Comment out unused cameras -->
+    
+     < LOGITECH_C270 @640 x 480 >
+    <fov>
+      <x>42.0</x>
+      <y>27.0</y>
+    </fov>
 
-      <!-- LOGITECH_C270 @640 x 480 -->
+     < XIMEA with 3.6mm lensing >
+    <fov>
+      <x>96.75</x>
+      <y>72.5</y>
+     </fov>
+
+    End Comment out unused cameras -->
+
+      <!-- Webcam -->
       <fov>
-        <x>42.0</x>
-        <y>27.0</y>
+        <x>45.0</x>
+        <y>45.0</y>
       </fov>
     </camera>
 
+    <camera>
+      <!-- cameraName:
+	    Camera index, as used in openCV.
+       Indexes start at 0, up to 99. 
+       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
+       XIMEA Cameras, add 1100 to the camera index.
+       An non-numeric camera name can be used to specify a video file.-->
+      <cameraName>1100</cameraName>
+      <!-- Camera #1100 is first Ximea in a 2 camera setup -->
 
+      <!-- cameraFlip:
+       if true, 180 degree rotation of the camera image, 
+       for cameras that need to be fixed upside down. -->
+      <cameraFlip>true</cameraFlip>
+
+      <position>
+        <!-- positionFromBumper -->
+        <forward>-1.35</forward>
+        <!-- lateral offet -->
+        <left>0.0</left>
+        <!-- height -->
+        <up>1.54</up>
+      </position>
+      <orientation>
+        <pitch>0.0</pitch>
+        <roll>0.0</roll>
+        <yaw>0.0</yaw>
+      </orientation>
+
+      <!-- XIMEA with 3.6mm lensing -->
+      <fov>
+        <x>96.75</x>
+        <y>72.5</y>
+      </fov>
+    </camera>
   </cameras>
 
   <displayTableView>
-    <displayedDetectionsPerChannelInTableView>4</displayedDetectionsPerChannelInTableView>
+    <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
   </displayTableView>
 
   <display2D>
@@ -505,7 +366,7 @@
 
     <shortRangeDistance>13.0</shortRangeDistance>
     <shortRangeDistanceStartLimited>13.0</shortRangeDistanceStartLimited>
-    <shortRangeAngle>80.0</shortRangeAngle>
+    <shortRangeAngle>40.0</shortRangeAngle>
     <shortRangeAngleStartLimited>20.0</shortRangeAngleStartLimited>
 
     <longRangeDistance>45.0</longRangeDistance>
@@ -527,7 +388,7 @@
 	     2:		eLongitudinal - According to bumper distance -->
     <mergeDetectionMode>0</mergeDetectionMode>
 
-    <!-- MergeDisplayMode 
+    <!-- mergeDisplayMode 
 	     0: NONE
 	     1: Rectangle under detection 
 	        (Still display distance individually)
@@ -535,16 +396,21 @@
 	     3: Rectangle with detections, but only one distance -->
     <mergeDisplayMode>0</mergeDisplayMode>
 
-    <!-- MeasureMode
+    <!-- measureMode
 	     0: Radial
-	     1: Distance from bumper -->
+	     1: Longitudinal distance from bumper -->
     <measureMode>1</measureMode>
 
-    <!-- ColorCode
+    <!-- colorCode
 	     0: Colors indicate distances
 	     1: Colors indicate speed -->
     <colorCode>1</colorCode>
 
+    <!-- mergeAcceptance
+       distance before we merge targets
+       Merge acceptance is in 2D view coordinates, so:
+        - X is lateral
+        - Y is forward    -->
     <mergeAcceptance>
       <x>3.0</x>
       <y>1.0</y>
@@ -597,7 +463,9 @@
     <travelSpeed>16.66</travelSpeed>
   </dynamicTesting>
 
-   <registersFPGA>
+
+
+  <registersFPGA>
     <register>
       <index>R0</index>
       <address>0</address>
@@ -881,10 +749,8 @@
     </register>
   </GPIOs>
 
-
-
   <algos>
-    <defaultAlgo>4</defaultAlgo>
+    <defaultAlgo>3</defaultAlgo>
 
     <algo>
       <!-- Algo 00 -->

@@ -194,14 +194,14 @@ void ReceiverChannel::UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCo
 
 	float x, y;
 	viewerCoordinatesPtr->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
-											 -(fovCenterY) - (fovWidthY/2),
+											 (fovCenterY) - (fovWidthY/2),
 											 x, y);
 	topLeftX = (int) x;
 	bottomRightY = imageHeight - (int) y;  // Y is reversed between video and cloudView!
 
 			
 	viewerCoordinatesPtr->getImagePointFromAngles(-(fovCenterX + (fovWidthX/2)), 
-											 -(fovCenterY) + (fovWidthY/2),
+											 (fovCenterY) + (fovWidthY/2),
 											 x, y);
 	bottomRightX = (int) x;
 	topLeftY = imageHeight - (int) y; // Y is reversed between video and cloudView!
@@ -267,14 +267,14 @@ void ReceiverChannel::GetChannelLimits(ViewerCoordinates::Ptr &inViewerCoordinat
 	float x, y;
 
 	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
-											 -(fovCenterY) - (fovWidthY/2),
+											 (fovCenterY) - (fovWidthY/2),
 											 x, y);
 	int topLeftX = (int) x;
 	int bottomRightY = imageHeight - (int) y;  // Y is reversed between video and cloudView!
 
 			
 	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX + (fovWidthX/2)), 
-											 -(fovCenterY) + (fovWidthY/2),
+											 (fovCenterY) + (fovWidthY/2),
 											 x, y);
 	int bottomRightX = (int) x;
 	int topLeftY = imageHeight - (int) y; // Y is reversed between video and cloudView!
@@ -309,14 +309,14 @@ void ReceiverChannel::GetChannelRect(ViewerCoordinates::Ptr &inViewerCoordinates
 	float x, y;
 
 	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
-											 -(fovCenterY) - (fovWidthY/2),
+											 (fovCenterY) - (fovWidthY/2),
 											 x, y);
 	left = (int) x;
 	bottom = imageHeight - (int) y;  // Y is reversed between video and cloudView!
 
 			
 	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX + (fovWidthX/2)), 
-											 -(fovCenterY) + (fovWidthY/2),
+											 (fovCenterY) + (fovWidthY/2),
 											 x, y);
 	right = (int) x;
 	top = imageHeight - (int) y; // Y is reversed between video and cloudView!
