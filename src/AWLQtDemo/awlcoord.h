@@ -158,6 +158,10 @@ public:
  * in http://mathworld.wolfram.com/SphericalCoordinates.html
  * But, since we are using physics convention instead of math convention (as Wolfram), 
  * swap theta and phi from document.
+ * 
+ 8 With x looking forward:
+ * Theta: -: Up  +: Down
+ * Phi:   + Left  -: Right
 */
 
 class SphericalCoord 
@@ -185,9 +189,14 @@ public:
 
 /** \brief The Orientation class defines the relative orientation of an object in a frame of reference. 
 	*  \notes
-	*  yaw is a counterclockwise rotation of $ \alpha$ about the $ z$-axis.
-	*  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis. 
-	 * roll is a counterclockwise rotation of $ \gamma$ about the $ x$-axis.
+	*  yaw is a counterclockwise rotation of $ \alpha$ about the $ z$-axis (looking right is yaw negative).
+	*  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis (looking down is pitch negative). 
+	 * roll is a counterclockwise rotation of $ \gamma$ about the $ x$-axis (rolling .
+	*  This meansd that, for a standard reference frame, where X axis is looking forward from the object:
+	*  - looking right is yaw negative.
+	*  - looking down is pitch negative. 
+	 * - rolling to the right side is negative.
+
 	 * \reference: http://planning.cs.uiuc.edu/node102.html
 */
 

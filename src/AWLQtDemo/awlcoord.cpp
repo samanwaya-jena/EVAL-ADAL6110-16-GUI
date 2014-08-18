@@ -438,9 +438,9 @@ TransformationMatrix TransformationMatrix::Reverse()
 	 destinationMatrix.matrix[2][2] = matrix[2][2];
 	 
 	 // Negate the translations
-	 destinationMatrix.matrix[0][3] = matrix[0][3];
-	 destinationMatrix.matrix[1][3] = matrix[1][3];
-	 destinationMatrix.matrix[2][3] = matrix[2][3];
+	 destinationMatrix.matrix[0][3] = -matrix[0][3];
+	 destinationMatrix.matrix[1][3] = -matrix[1][3];
+	 destinationMatrix.matrix[2][3] = -matrix[2][3];
 
 	 // Carry over the other matrix items
  	 destinationMatrix.matrix[3][0] = matrix[3][0];     
