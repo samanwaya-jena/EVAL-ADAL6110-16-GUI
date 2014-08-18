@@ -154,6 +154,11 @@ protected:
 	void DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection);
 
 protected:
+	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iWidth);
+	void GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
+    void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth);
+
+protected:
 	
     /** \brief Local flag indicating a request for termination of thread. */
 	volatile bool mStopRequested;
