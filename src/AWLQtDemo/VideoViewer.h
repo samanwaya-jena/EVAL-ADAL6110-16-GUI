@@ -156,8 +156,8 @@ protected:
 protected:
 	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iWidth);
 	void GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
-    void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth);
-
+    void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight);
+ 
 protected:
 	
     /** \brief Local flag indicating a request for termination of thread. */
@@ -218,6 +218,9 @@ protected:
 
 	/** \brief receiver projector that supplies the range data */
 	ReceiverProjector::Ptr projector;
+
+	/** \brief Time the object was created.  Used to calculate flashing rates */
+	boost::posix_time::ptime startTime;
 }; // VideoViewer
 
 } // namespace awl

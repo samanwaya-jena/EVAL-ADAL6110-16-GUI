@@ -29,9 +29,9 @@ const char *szCameraWindowClassName = "Main HighGUI class";  // Class name for t
 															// We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
 #else
 const char *szCameraWindowClassName = NULL;  // Class name for the camera windows created by OpenCV
-															// We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
+											 // We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
 #endif
-
+const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture, ReceiverProjector::Ptr inProjector):
 workFrame(new (cv::Mat)),
@@ -44,7 +44,7 @@ bWindowCreated(false),
 mThread()
 
 {
-
+	startTime = boost::posix_time::microsec_clock::local_time();
 	SetVideoCapture(videoCapture);
 	SetReceiverCapture(receiverCapture);
 	mStopRequested = false;
@@ -213,8 +213,6 @@ void VideoViewer::CopyWorkFrame(VideoCapture::FramePtr targetFrame)
 //	updateLock.unlock();
 }
 
-static int frameCount = 0;
-
 void VideoViewer::DoThreadLoop()
 
 {
@@ -230,12 +228,8 @@ void VideoViewer::DoThreadLoop()
 			DisplayReceiverValues(workFrame);
 
 			// Copy to the display (we are double-buffering)
-#if 1
 			workFrame->copyTo(*displayFrame);
-#else
-			CvSize displaySize(cvSize(frameWidth / 2, frameHeight /2));
-			cvResize(workframe, displayFrame, displaySize);
-#endif
+
 			// 
 			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
 			if (window == NULL) bWindowCreated = false;
@@ -243,7 +237,7 @@ void VideoViewer::DoThreadLoop()
 		}
 
 		//Give a break to other threads and wait for next frame
-		boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 
 		if((!bWindowCreated))
 		{
@@ -260,14 +254,10 @@ void VideoViewer::DoThreadLoop()
 }
 	
 
-static uint16_t detectedCount[7] = {0, 0, 0, 0, 0, 0, 0};
-const int flashFrequency = 2;
-
 void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 
 {
-		// Use the frame snapped by the main display timer as the current frame
-	// display will «
+	// Use the frame snapped by the main display timer as the current frame
 	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
 
 	for (int channelID = 0; channelID < 7; channelID++) 
@@ -307,14 +297,8 @@ void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 
 					if (bDetected) 
 					{
-						detectedCount[channelID]++;
 						DisplayTarget(targetFrame, channelID, selectedDetection);
 					}
-					else 
-					{
-						detectedCount[channelID] = 0;
-					}
-
 				}
 			}
 		}
@@ -322,125 +306,6 @@ void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
 }
 
 
-
-#if 0
-void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection)
-{
-	int top;
-	int left;
-	int bottom;
-	int right;
-
-	if (!projector) return;
-
-	CvRect rect;
-
-	cv::Vec3b color;
-	cv::Vec3b colorEnhance;
-	cv::Vec3b colorDehance;
-	bool bFlash = false;
-
-	int width = -1;
-	colorEnhance = cv::Vec3b(0, 0, 0);
-	colorDehance = cv::Vec3b(0, 0, 0);
-
-	Detection::ThreatLevel threatLevel = detection->threatLevel;
-	switch (threatLevel) 
-	{
-	case Detection::eThreatNone: 
-		{
-			colorEnhance = cv::Vec3b(128, 0, 0);  // Blue
-			colorDehance = cv::Vec3b(0, 64, 64);
-			width = 4;
-		}
-		break;
-	case Detection::eThreatLow:
-		{
-			colorEnhance = cv::Vec3b(0, 128, 0); // Green
-			colorDehance = cv::Vec3b(64, 0,64);
-			width = 4;
-		}
-		break;
-
-	case Detection::eThreatWarn:
-		{
-			colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
-			colorDehance = cv::Vec3b(32, 0, 0);
-			width = 15;
-			bFlash = true;
-			if (bFlash && !(detectedCount[channelID] % flashFrequency)) width = 5;
-		}
-		break;
-
-	case Detection::eThreatCritical:
-		{
-	 		colorEnhance = cv::Vec3b(0, 0, 128);  // Red
-//			colorEnhance = cv::Vec3b(0, 0, 196);  // Red
-			colorDehance = cv::Vec3b(32, 32, 0);
-			width = 15;
-			bFlash = true;
-			if (bFlash && !(detectedCount[channelID] % flashFrequency)) width = 5;
-		}
-		break;
-
-	default:
-		{
-			colorEnhance = cv::Vec3b(0, 0, 0);
-		}
-
-	} // case
-
-
-	// Paint a square that corresponds to the receiver FOV
-	// If width argument is positive, will draw an empty square with
-	// using the width argument as a line width.
-	// If width argument is negative or zero, the square is filled.
-	left = -1;
-	top = -1;
-	bottom = -1;
-	right = -1;
-
-#if 1
-	projector->GetChannelRect(channelID, top, left, bottom, right);
-#else
-
-#endif
-
-	// The rectagle is not just drawn as solid, but as a colored highlight so we manually address the pixels.
-
-	for (int row = top; row <= bottom; row++) 
-	{
-		for (int column = left; column <= right; column++) 
-		{
-			bool overlay = false;
-			if ((row < (top + width)) || (row > (bottom - width))) overlay = true;
-			else if ((column < (left + width)) || (column > (right - width))) overlay = true;
-			else if (width <= 0) overlay = true;
-			
-			if (overlay) 
-			{
-				color = targetFrame->at<cv::Vec3b>(row, column);
-				int r = (int)color[0]+ (int)colorEnhance[0] - (int)colorDehance[0];
-				int g = (int)color[1] + (int)colorEnhance[1] - (int)colorDehance[1];
-				int b = (int)color[2] + (int)colorEnhance[2] - (int)colorDehance[2];
-
-				if (r > 255) color[0] = 255;
-				else if (r < 0) color[0] = 0;
-				else		 color[0] = r;
-			
-				if (g > 255) color[1] = 255;
-				else if (g < 0) color[1] = 0;
-				else		 color[1] = g;
-			
-				if (b > 255) color[2] = 255;
-				else if (b < 0) color[2] = 0;
-				else		 color[2] = b;
-				targetFrame->at<cv::Vec3b>(row, column) = color;
-			}
-		}
-	}
-}
-#else
 void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection)
 {
 	int top;
@@ -462,28 +327,50 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	colorDehance = cv::Vec3b(0, 0, 0);
 	GetDetectionColors(detection, colorEnhance, colorDehance, width);
 
-
-
 	// Paint a square that corresponds to the receiver FOV
-	// If width argument is positive, will draw an empty square with
-	// using the width argument as a line width.
-	// If width argument is negative or zero, the square is filled.
 	CvPoint topLeft;
 	CvPoint topRight;
 	CvPoint bottomLeft;
 	CvPoint bottomRight;
 	GetChannelRect(detection, topLeft, topRight, bottomLeft, bottomRight);
 
-	DrawDetectionLine(targetFrame, topLeft, topRight, colorEnhance, colorDehance, width);
-	DrawDetectionLine(targetFrame, topRight, bottomRight, colorEnhance, colorDehance, width);
-	DrawDetectionLine(targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, width);
-	DrawDetectionLine(targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, width);
+	// Inset the vertical lines horizontally, to compensate for line width.
+	//Draw the vertical lines
+	topLeft.x += (width/2);
+	topRight.x -=  (width - (width/2) - 1); // In case width is odd 
+
+	bottomLeft.x += (width/2); 
+	bottomRight.x -= (width - (width/2) -1); // in case width is odd
+
+	DrawDetectionLine(targetFrame, topRight, bottomRight, colorEnhance, colorDehance, width, 1);
+	DrawDetectionLine(targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, width, 1);
+
+	// Inset the horizontal lines vertically, to compensate for line height
+	topLeft.y -= width/2;
+	bottomLeft.y += (width - (width/2) -1);
+	topRight.y -= width/2;
+	bottomRight.y += (width - (width/2) -1);
+
+	// Shorten the horizontal lines still, to avoid overlap with the verticals
+	topLeft.x += (width - (width/2));
+	topRight.x -= (width/2)+1;
+	bottomLeft.x += (width - (width/2));
+	bottomRight.x -= (width/2)+1;
+
+	DrawDetectionLine(targetFrame, topLeft, topRight, colorEnhance, colorDehance, 1, width);
+	DrawDetectionLine(targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, width);
 }
 
 void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iWidth)
 
 {
 	bool bFlash = false;
+
+	long millisecs = (boost::posix_time::microsec_clock::local_time() - startTime).total_milliseconds();
+	if ((millisecs/(flashPeriodMillisec/2)) & 0x01)  
+	{
+		bFlash = true;
+	}
 
 	int channelID = detection->channelID;
 	Detection::ThreatLevel threatLevel = detection->threatLevel;
@@ -510,8 +397,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 			colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
 			colorDehance = cv::Vec3b(32, 0, 0);
 			iWidth = 15;
-			bFlash = true;
-			if (bFlash && !(detectedCount[channelID] % flashFrequency)) iWidth = 5;	
+			if (bFlash) iWidth = 5;	
 		}
 		break;
 
@@ -520,8 +406,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 	 		colorEnhance = cv::Vec3b(0, 0, 128);  // Red
 			colorDehance = cv::Vec3b(32, 32, 0);
 			iWidth = 15;
-			bFlash = true;
-			if (bFlash && !(detectedCount[channelID] % flashFrequency)) iWidth = 5;
+			if (bFlash) iWidth = 5;
 		}
 		break;
 
@@ -535,7 +420,6 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 
 void VideoViewer::GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
 {	
-	
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 	float x, y;
@@ -551,23 +435,12 @@ void VideoViewer::GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, Cv
 	TransformationNode::Ptr channelCoords = AWLCoordinates::GetReceivers()[receiverID]->children[channelID];
 	
 	// Camera FOV description
-	double cameraFovHeightInDegrees = RAD2DEG(cameraFovHeight);
-	double cameraFovWidthInDegrees = RAD2DEG(cameraFovWidth);
-
 	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
 	CartesianCoord cameraTopLeft(SphericalCoord(10, M_PI_2 - (cameraFovHeight/2), +(cameraFovWidth/2)));
 	CartesianCoord cameraBottomRight(SphericalCoord(10, M_PI_2 + (cameraFovHeight/2), - (cameraFovWidth/2)));
 
 
 	// Position of the topLeft corner of the channel FOV 
-#if 0
-	SphericalCoord sphericalPointInChannel(detection->distance, M_PI_2, 0);
-	detection->relativeToSensorCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	detection->relativeToVehicleCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
-	detection->relativeToWorldCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
-#endif
-
-
 	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
 	SphericalCoord topLeftInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, topLeftInChannel);          // Convert to world
 	SphericalCoord topLeftInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, topLeftInWorld);			 // Convert to camera
@@ -610,40 +483,47 @@ void VideoViewer::GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, Cv
 
 	bottomRight.x = frameWidth * (bottomRightInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
 	bottomRight.y = frameHeight * (bottomRightInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up - cameraBottomRight.up);
-
 }
 
-void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth)
+void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)
 {
 	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
 
 	// alternative way of iterating through the line
 	for(int i = 0; i < lineIter.count; i++, ++lineIter)
 	{
-		cv::Vec3b	color = targetFrame->at<cv::Vec3b>(lineIter.pos());
+		cv::Point centerPos = lineIter.pos();
+		cv::Point pixelPos = centerPos;
+		pixelPos.x = centerPos.x - (iWidth /2);
+		for (int width = 0; width < iWidth; width++, pixelPos.x++)
+		{
+			pixelPos.y = centerPos.y + (iHeight / 2); 
+			for (int height = 0; height < iHeight; height++, pixelPos.y--)
+			{
+				if (pixelPos.x >= 0 && pixelPos.x < frameWidth && pixelPos.y >= 0 && pixelPos.y < frameHeight)
+				{
+					cv::Vec3b	color = targetFrame->at<cv::Vec3b>(pixelPos);
 
+					int r = (int)color[0]+ (int)colorEnhance[0] - (int)colorDehance[0];
+					int g = (int)color[1] + (int)colorEnhance[1] - (int)colorDehance[1];
+					int b = (int)color[2] + (int)colorEnhance[2] - (int)colorDehance[2];
 
+					if (r > 255) color[0] = 255;
+					else if (r < 0) color[0] = 0;
+					else		 color[0] = r;
 
-		int r = (int)color[0]+ (int)colorEnhance[0] - (int)colorDehance[0];
-		int g = (int)color[1] + (int)colorEnhance[1] - (int)colorDehance[1];
-		int b = (int)color[2] + (int)colorEnhance[2] - (int)colorDehance[2];
+					if (g > 255) color[1] = 255;
+					else if (g < 0) color[1] = 0;
+					else		 color[1] = g;
 
-		if (r > 255) color[0] = 255;
-		else if (r < 0) color[0] = 0;
-		else		 color[0] = r;
-
-		if (g > 255) color[1] = 255;
-		else if (g < 0) color[1] = 0;
-		else		 color[1] = g;
-
-		if (b > 255) color[2] = 255;
-		else if (b < 0) color[2] = 0;
-		else		 color[2] = b;
-		targetFrame->at<cv::Vec3b>(lineIter.pos()) = color;
+					if (b > 255) color[2] = 255;
+					else if (b < 0) color[2] = 0;
+					else		 color[2] = b;
+					targetFrame->at<cv::Vec3b>(pixelPos) = color;
+				}
+			}
+		}
 	}
-
-
 }
 
-#endif
 
