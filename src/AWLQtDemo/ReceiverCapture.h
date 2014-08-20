@@ -188,8 +188,9 @@ ReceiverStatus;
 
 
 
-/** \brief Threaded ReceiverCapture class is used to acquire data from the physical LIDAR unit.
-  *        The receiver capture buffers up a few frames to faciulitae processing afterwards.
+/** \brief ReceiverCapture class is an abstract class for all classes used to acquire data from the physical LIDAR unit.
+  *        The receiver capture buffers up a few frames to facilitate processing afterwards.
+  *        The receiver capture manages optional "logging" of the track and distance data into a local log file on the PC
   * \author Jean-Yves Deschênes
   */
 class ReceiverCapture
@@ -287,20 +288,6 @@ public:
       */
 	virtual float SetMaxDistance(int channelIndex, float inMaxDistance);
 
-
-	/** \brief Return the number of receiver channels used for video projection
-      * \return int indicating the number of channels.
-      */
-	virtual int GetDetectionQtyInChannel(int channelID) {return currentFrame->channelFrames[channelID]->detections.size();};
-
-	/** \brief copy the current channel data to to a local copy (thread-safe)
-     * \param[in] inChannelID index of the required channel
-	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
-	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
-     * \return frameID of the current sensorFrame from which the data is taken.
-     */
-	virtual uint32_t CopyCurrentReceiverChannelData(int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID);
-
 	/** \brief copy the channel data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
@@ -309,7 +296,6 @@ public:
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
 	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID);
-
 
 	/** \brief Return the current frame identification number for informational purposes 
      * \return Current frame identification number.
@@ -330,18 +316,6 @@ public:
      * \return Last complete frame identification number.
 	    */
 	virtual uint32_t GetLastFrameID() {return(acquisitionSequence->GetLastFrameID());};
-
-	/** \brief Return the timeStamp of the specified frame 
-      * \param[in] inFrameID frame identificator of the requiested frame
-    * \return timeStamp (elapsed in milliseconds) of specified frame.  Negative value if frame not found
-     */
-	virtual double GetFrameTime(uint32_t inFrameID);
-
-	/** \brief Return the timeStamp of the frame located at index.
-      * \param[in] inFrameIndex index of the requiested frame
-    * \return timeStamp (elapsed in milliseconds) of specified frame.  Negative value if frame not found
-     */
-	virtual double GetFrameTimeAtIndex(int inFrameIndex);
 
 	/** \brief Sets the current frame as the frameID for all user interface snapshots
 	  * \return Current frame identification number.
@@ -432,7 +406,7 @@ public:
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
+	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask) = 0;
 
 
 	/** \brief Stops any current recording. 
@@ -442,12 +416,12 @@ public:
     */
 	virtual bool StopRecord();
 
-	/** \brief Starts the logging of distance data. 
+	/** \brief Starts the logging of distance data in a local log file. 
       * \return true if success.  false on error
      */
 	virtual bool BeginDistanceLog();
 
-	/** \brief Starts the logging of distance data. 
+	/** \brief Ends the logging of distance data in a local log file. 
       * \return true if success.  false on error
      */
 	virtual bool EndDistanceLog();
@@ -458,7 +432,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetAlgorithm(uint16_t algorithmID);
+	virtual bool SetAlgorithm(uint16_t algorithmID) = 0;
 
 	/** \brief Sets an internal FPGA register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -466,14 +440,14 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets an ADC register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
-	virtual bool SetADCRegister(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetADCRegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets an internal GPIO register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -481,7 +455,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets algorithm parameters to the value sent as argument. 
 	  *\param[in] algoID ID of the detection algo affected by the change.
@@ -490,7 +464,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the parameter to change.
@@ -498,7 +472,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect the current global setting.
 	* \return true if success.  false on error.
@@ -506,7 +480,6 @@ public:
 	*/
 		
 	virtual bool SetMessageFilters();
-
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -521,7 +494,7 @@ public:
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.
 	*/
-	virtual bool QueryAlgorithm();
+	virtual bool QueryAlgorithm() = 0;
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -529,7 +502,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in globalSettings. 
 		*/
-	virtual bool QueryFPGARegister(uint16_t registerAddress);
+	virtual bool QueryFPGARegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for an ADC register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -537,7 +510,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in globalSettings. 
 		*/
-	virtual bool QueryADCRegister(uint16_t registerAddress);
+	virtual bool QueryADCRegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for a GPIO register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -545,7 +518,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryGPIORegister(uint16_t registerAddress);
+	virtual bool QueryGPIORegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for an algorithm parameter. 
 		  *\param[in] algoID ID of the detection algo for which we want to query.
@@ -554,7 +527,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress);
+	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress) = 0;
 
 		/** \brief Send an asynchronous query command for a global algorithm parameter. 
 		  *\param[in] algoID ID of the detection algo for which we want to query.
@@ -563,7 +536,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress);
+	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) = 0;
 
 	// public variables
 public:

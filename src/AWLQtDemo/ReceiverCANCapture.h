@@ -289,8 +289,6 @@ protected:
       */
 	void ParseChannelDistance(AWLCANMessage &inMsg);
 
-	
-
 
 	/** \brief Read the intensity readings from CAN messages (40-46 50-56)
  	    * \param[in] inMsg   CAN message contents
@@ -376,24 +374,24 @@ protected:
 	  * \remarks Once the port is successfully opened, use the "reader" pointer to access the can data.
 	  *          If opening the port fails, reader is set to NULL.
 	  */
-	bool OpenCANPort();
+	virtual bool OpenCANPort();
 
 
 	/** \brief Closes the CAN port and associated objects.
 	  * \returns true if the port is successfully closed, false otherwise.
 	  */
-	bool CloseCANPort();
+	virtual bool CloseCANPort();
 
 	/** \brief Synchronous write of a sting in the stream 
  	  * \param[in] inString  Message to send
       */
-	void WriteString(std::string inString);
+	virtual void WriteString(std::string inString);
 
 	/** \brief Synchronous write of a CAN message in the stream 
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
       */
-	bool WriteMessage(const AWLCANMessage &inMsg);
+	virtual bool WriteMessage(const AWLCANMessage &inMsg);
 
 	/** \brief Put the current date and time to the CAN port
  	  * \return true iof the function was successful. false otherwise.

@@ -178,27 +178,6 @@ int ReceiverCapture::GetFrameQty()
 	return acquisitionSequence->sensorFrames.size();
 }
 
-uint32_t ReceiverCapture::CopyCurrentReceiverChannelData(int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID)
-{
-	boost::mutex::scoped_lock updateLock(currentReceiverCaptureSubscriptions->GetMutex());
-
-	SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames.back();
-	ChannelFrame::Ptr sourceChannelFrame =  sensorFrame->channelFrames[inChannelID];
-	outChannelFrame->detections.clear();
-
-	int detectionQty = sourceChannelFrame->detections.size();
-	for (int i = 0; i< detectionQty; i++) {
- 		outChannelFrame->detections.push_back(sourceChannelFrame->detections[i]);
-	}	
-	
-	outChannelFrame->channelID = sourceChannelFrame->channelID;
-	currentReceiverCaptureSubscriptions->GetNews(inSubscriberID);
-
-	updateLock.unlock();
-
-	return(sensorFrame->GetFrameID());
-};
-
 
 bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID)
 {
@@ -225,35 +204,6 @@ bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelI
 	updateLock.unlock();
 	return(bFound);
 };
-
-
-double ReceiverCapture::GetFrameTime(uint32_t inFrameID)
-{
-	boost::mutex::scoped_lock updateLock(currentReceiverCaptureSubscriptions->GetMutex());
-
-	SensorFrame::Ptr sensorFrame;
-	double timeStamp;
-	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
-	if (!bFound) timeStamp = -1.0;
-	else timeStamp = sensorFrame->timeStamp;
-
-	updateLock.unlock();
-	return(timeStamp);
-}
-
-double ReceiverCapture::GetFrameTimeAtIndex(int  inFrameIndex)
-{
-	double timeStamp;
-
-	if (inFrameIndex > acquisitionSequence->sensorFrames.size()-1) timeStamp = -1.0;
-	else 
-	{ 
-		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(inFrameIndex);
-		timeStamp = sensorFrame->timeStamp;
-	}
-
-	return(timeStamp);
-}
 
 uint32_t ReceiverCapture::GetFrameID(int  inFrameIndex)
 {
@@ -317,41 +267,6 @@ bool ReceiverCapture::StopRecord()
 	return(true);
 }
 
-bool ReceiverCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
-{
-	return(true);
-}
-
-bool ReceiverCapture::SetAlgorithm(uint16_t algorithmID)
-{
-	return(true);
-}
-
-bool ReceiverCapture::SetFPGARegister(uint16_t registerAddress, uint32_t registerValue)
-{
-	return(true);
-}
-
-bool ReceiverCapture::SetADCRegister(uint16_t registerAddress, uint32_t registerValue)
-{
-	return(true);
-}
-
-
-bool ReceiverCapture::SetGPIORegister(uint16_t registerAddress, uint32_t registerValue)
-{
-	return(true);
-}
-
-bool ReceiverCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue)
-{
-	return(true);
-}
-
-bool ReceiverCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue)
-{
-	return(true);
-}
 
 bool ReceiverCapture::SetMessageFilters()
 
@@ -373,48 +288,13 @@ bool ReceiverCapture::SetMessageFilters()
 	if (globalSettings->receiverSettings[receiverID].msgEnableIntensity_5_8) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
 
 	return(SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask));
-
 }
-
 
 bool ReceiverCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
 
 {
-	return(true);
+   return(true);
 }
-
-
-
-bool ReceiverCapture::QueryAlgorithm()
-{
-	return(true);
-}
-
-bool ReceiverCapture::QueryFPGARegister(uint16_t registerAddress)
-{
-	return(true);
-}
-
-bool ReceiverCapture::QueryADCRegister(uint16_t registerAddress)
-{
-	return(true);
-}
-
-bool ReceiverCapture::QueryGPIORegister(uint16_t registerAddress)
-{
-	return(true);
-}
-
-bool ReceiverCapture::QueryAlgoParameter(int algoID, uint16_t registerAddress)
-{
-	return(true);
-}
-
-bool ReceiverCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
-{
-	return(true);
-}
-
 
 void ReceiverCapture::DoThreadLoop()
 
