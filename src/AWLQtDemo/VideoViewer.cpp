@@ -5,10 +5,11 @@
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
-#include "ReceiverCapture.h"
 #include "AWLCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
+
+#include <boost/foreach.hpp>
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
@@ -32,19 +33,17 @@ const char *szCameraWindowClassName = NULL;  // Class name for the camera window
 #endif
 const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
-VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture):
+VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
 workFrame(new (cv::Mat)),
 displayFrame(new (cv::Mat)),
 cameraName(inCameraName),
 videoCapture(inVideoCapture),
-receiverCapture(inReceiverCapture),
 bWindowCreated(false),
 mThread()
 
 {
 	startTime = boost::posix_time::microsec_clock::local_time();
 	SetVideoCapture(videoCapture);
-	SetReceiverCapture(receiverCapture);
 	mStopRequested = false;
 	mThreadExited = false;
 
@@ -65,23 +64,11 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 
 	frameWidth = videoCapture->GetFrameWidth();
 	frameHeight = videoCapture->GetFrameHeight();
-	frameRate = videoCapture->GetFrameRate();
 	scale = videoCapture->GetScale();
 	cameraFovWidth = videoCapture->GetCameraFovWidth();
 	cameraFovHeight = videoCapture->GetCameraFovHeight();
 
 	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
-
-	updateLock.unlock();
-}
-
-void VideoViewer::SetReceiverCapture( ReceiverCapture::Ptr inReceiverCapture)
-{
-	boost::mutex::scoped_lock updateLock(mMutex);
- 
-	receiverCapture = inReceiverCapture;
-
-	currentReceiverSubscriberID = receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
 
 	updateLock.unlock();
 }
@@ -204,6 +191,65 @@ void VideoViewer::CopyWorkFrame(VideoCapture::FramePtr targetFrame)
 //	updateLock.unlock();
 }
 
+bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right) 
+
+{ 
+	// Sort by:
+	//  - Threat Level.
+	//  - Distance from vehicle
+	//  - Left/Right
+
+	// Same threat level, sort from left to right
+	if (left->threatLevel == right->threatLevel)
+	{
+		// Same distance from vehicle, sort from left to right
+		if (abs(left->relativeToVehicleCart.forward - right->relativeToVehicleCart.forward) < 0.01)
+		{
+			// Remember vehicle Y is positive going left, So we reverse the < operator.
+			if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
+			{
+				return(true);
+			}
+			else
+			{
+				return(false);
+			}
+		}
+		// Not same depth, compare forward
+		else if (left->relativeToVehicleCart.forward < right->relativeToVehicleCart.forward)
+		{
+			return(true);
+		}
+		else 
+		{
+			return(false);
+		}
+	}
+	else if (left->threatLevel < right->threatLevel)
+	{
+		return(true);
+	}
+	else 
+	{
+		return(false);
+	}
+
+}
+
+void VideoViewer::slotDetectionDataChanged(const DetectionDataVect& data)
+{
+	boost::mutex::scoped_lock updateLock(mMutex);
+	// Make a copy of the provided DetectionDataVect to work with
+    detectionData.clear();
+	detectionData = data;
+
+	// Sort the detection DataVect in threatLevel order
+	// This insures that most urgent threats are displayed last.
+	std::sort(detectionData.begin(), detectionData.end(), SortDetectionsInThreatLevel);
+
+	updateLock.unlock();
+}
+
 void VideoViewer::DoThreadLoop()
 
 {
@@ -216,7 +262,9 @@ void VideoViewer::DoThreadLoop()
 			videoCapture->CopyCurrentFrame(workFrame, currentVideoSubscriberID);
 
 			// Add the lidar range decorations to the video frame
-			DisplayReceiverValues(workFrame);
+			boost::mutex::scoped_lock updateLock(mMutex);
+			DisplayReceiverValues(workFrame, detectionData);
+			updateLock.unlock();
 
 			// Copy to the display (we are double-buffering)
 			workFrame->copyTo(*displayFrame);
@@ -240,64 +288,20 @@ void VideoViewer::DoThreadLoop()
 		}
 	} // while (!WasStoppped)
 
-
 	mThreadExited = true;
 }
 	
-
-void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame)
+void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const DetectionDataVect & iDetectionData)
 
 {
-	// Use the frame snapped by the main display timer as the current frame
-	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
-
-	for (int channelID = 0; channelID < 7; channelID++) 
+	// Draw the individual detections
+	BOOST_FOREACH(const Detection::Ptr &detection, iDetectionData)
 	{
-		if (channelID < receiverCapture->GetChannelQty())
-		{
-			if (receiverCapture->GetFrameQty()) 
-			{
-
-				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverCapture->receiverID, channelID));
-
-				// Thread safe
-				if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, currentReceiverSubscriberID)) 
-				{
-					float minDistance = receiverCapture->GetMinDistance();
-					float maxDistance = receiverCapture->GetMaxDistance(channelID);
-
-					Detection::ThreatLevel maxThreatLevel = Detection::eThreatNone;
-					Detection::Ptr selectedDetection;
-					bool bDetected = false;
-
-					int detectionQty = channelFrame->detections.size();
-					for (int i = 0; i < detectionQty; i++)
-					{	
-						Detection::Ptr detection = channelFrame->detections.at(i);
-						float distance = detection->distance;
-						if ((distance >= minDistance) && (distance <= maxDistance))
-						{  
-							if (detection->threatLevel >= maxThreatLevel) 
-							{
-								selectedDetection = detection;
-								maxThreatLevel = detection->threatLevel;
-								bDetected = true;
-							}
-						}
-					} // for detections
-
-					if (bDetected) 
-					{
-						DisplayTarget(targetFrame, channelID, selectedDetection);
-					}
-				}
-			}
-		}
+			DisplayTarget(targetFrame, detection);
 	}
 }
 
-
-void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection)
+void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection)
 {
 	int top;
 	int left;
@@ -407,7 +411,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 	} // case
 }
 
-void VideoViewer::GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
+void VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
 {	
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	AWLCoordinates *globalCoordinates = AWLCoordinates::GetGlobalCoordinates();

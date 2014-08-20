@@ -161,7 +161,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		QString cameraName(this->windowTitle()+" Camera");
 		cameraName.append(QString().sprintf(" %02d", videoViewerID));
 		
-		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID], receiverCaptures[0])));
+		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID])));
 	}
 
 	PrepareParametersView();
@@ -986,8 +986,20 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue) 
 	{
-		DisplayReceiverValuesToTableView();
-		DisplayReceiverValuesTo2DScanView();
+		DetectionDataVect detectionData;
+		GetLatestDetections(detectionData);
+
+		// Update the 2D view
+		if (m2DScan) m2DScan->slotDetectionDataChanged(detectionData);
+
+		// Update the camera views
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID]) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
+		}
+
+		// Update the table views
+		if (mTableView) mTableView->slotDetectionDataChanged(detectionData);
 	}
 
 
@@ -1016,23 +1028,20 @@ void AWLQtDemo::on_timerTimeout()
 	}
 }
 
-void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
+void AWLQtDemo::GetLatestDetections(DetectionDataVect &detectionData)
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-	DetectionDataVect vect;
 
+	// Build the list of detections that need to be updated
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		// Use the frame snapped by the main display timer as the current frame
 		uint32_t lastDisplayedFrame = receiver->GetSnapshotFrameID();
 
-		float currentAngle = 0;
 		int channelQty = receiver->GetChannelQty();
 		for (int channelID = 0; channelID < channelQty; channelID++) 
 		{
-
-			currentAngle = settings->receiverSettings[receiverID].channelsConfig[channelID].centerX;
 			if (receiverCaptures[receiverID]->GetFrameQty()) 
 			{
 
@@ -1052,7 +1061,7 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 							(detection->distance <= receiverCaptures[receiverID]->GetMaxDistance(channelID))) 
 						{
 							Detection::Ptr storedDetection = detection;
-							vect.push_back(storedDetection);
+							detectionData.push_back(storedDetection);
 						}
 					}
 				}
@@ -1060,57 +1069,8 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 			}
 		}
 	}
-
-	m2DScan->slotDetectionDataChanged(vect);
 }
 
-void AWLQtDemo::DisplayReceiverValuesToTableView()
-{
-	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-	DetectionDataVect vect;
-
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
-	{
-		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
-		// Use the frame snapped by the main display timer as the current frame
-		uint32_t lastDisplayedFrame = receiver->GetSnapshotFrameID();
-
-		float currentAngle = 0;
-		int channelQty = receiver->GetChannelQty();
-		for (int channelID = 0; channelID < channelQty; channelID++) 
-		{
-
-			currentAngle = settings->receiverSettings[receiverID].channelsConfig[channelID].centerX;
-			if (receiverCaptures[receiverID]->GetFrameQty()) 
-			{
-
-				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverID, channelID));
-
-				// Thread safe
-				// The UI thread "Snaps" the frame ID for all other interface objects to display
-				if (receiverCaptures[receiverID]->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberIDs[receiverID])) 
-				{
-
-					int detectionQty = channelFrame->detections.size();
-					int detectionIndex = 0;
-					for (int i = 0; i < detectionQty; i++)
-					{
-						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= receiverCaptures[receiverID]->GetMinDistance()) && 
-							(detection->distance <= receiverCaptures[receiverID]->GetMaxDistance(channelID))) 
-						{
-							Detection::Ptr storedDetection = detection;
-							vect.push_back(storedDetection);
-						}
-					}
-				}
-
-			}
-		}
-	}
-
-	mTableView->slotDetectionDataChanged(vect);
-}
 
 void AWLQtDemo::DisplayReceiverStatus()
 {

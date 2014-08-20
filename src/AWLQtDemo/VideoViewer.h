@@ -12,17 +12,17 @@
 
 using namespace std;
 
-#include "ReceiverCapture.h"
+#include "DetectionStruct.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
+
 
 namespace awl
 {
 /** \brief Threaded Video Display class that also overlays decorations based on lidar acquisition.
   *        The video display thread is based on OpenCV.
   *		   The VideoViewer takes a VideoCaptureDevice as input for image information.
-  *		   The VideoViewer also takes a ReceiverCapture as input for detection information
   * \author Jean-Yves Deschênes
   */
 class VideoViewer
@@ -38,10 +38,9 @@ public:
 	/** \brief Video Viewer constructor.
       * \param[in] inCameraName string used to identify camera and used as window title
       * \param[in] inVideoCapture videoCaptureDevice we feed image from.
-      * \param[in] inreceiverCapture receiver Capture device that retuns us witha actual dinstance info.
 	  * \param[in] inProjector receiverProjector that supplies us with range info
       */
-	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture);
+	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture);
 
 	/** \brief Video Viewer destructor. Insures that the viewer thread is Stopped()
       */
@@ -59,11 +58,6 @@ public:
       * \return true if the video display thread is stoppped.
       */
 	bool  WasStopped();
-
-	/** \brief Return the video frame rate.
-      * \return video acquisition frame rate in FPS.
-      */
-	double GetFrameRate() {return(frameRate);};
 
 	/** \brief Return the video frame width.
       * \return videoframe width in pixels.
@@ -116,16 +110,15 @@ public:
 	
 	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
 
-	/** \brief Modify the receiverCapture source.  Thread safe
-      * \param[in] inReceiverCapture receiverCaptureDevice we feed distance from.
-      */
-	
-	void SetReceiverCapture(ReceiverCapture::Ptr inReceiverCapture);
-
 	/** \brief Move the window at position left, top.
 	  * \remarks implemented for compatibility  with Qt.
       */
 	void move(int left, int top); 
+
+	/** \brief Update the detection positions.
+	  * \remarks Udate is thread safe.
+      */
+	void slotDetectionDataChanged(const DetectionDataVect & data);
 
 protected:
 	/** \brief Perform the video display thread loop
@@ -141,12 +134,12 @@ protected:
       */
 	void SetWindowIcon();
 
-	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame);
-	void DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection);
+	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const DetectionDataVect & data);
+	void DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
 
 protected:
 	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
-	void GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
+	void GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
     void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight);
  
 protected:
@@ -178,9 +171,6 @@ protected:
     /** \brief Current video frame height. */
 	int frameHeight;
 
-	/** \brief Current video stram frame rate in FPS.  For still video, it defaults to 33FPS. */
-	double frameRate;
-
 	/** \brief Video scaling factor, that can be set on the command line. */
 	double scale;
 
@@ -204,11 +194,11 @@ protected:
 	/** \brief video capture device that supplies the video data */
 	VideoCapture::Ptr videoCapture; 
 
-	/** \brief receiver capture device that supplies the range data */
-	ReceiverCapture::Ptr receiverCapture; 
-
 	/** \brief Time the object was created.  Used to calculate flashing rates */
 	boost::posix_time::ptime startTime;
+
+	/** \brief Vector containing the detections to be displayed */
+   DetectionDataVect detectionData;
 }; // VideoViewer
 
 } // namespace awl
