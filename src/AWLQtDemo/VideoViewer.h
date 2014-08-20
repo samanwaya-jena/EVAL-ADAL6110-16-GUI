@@ -12,20 +12,17 @@
 
 using namespace std;
 
-#include "sensor.h"
 #include "ReceiverCapture.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
-//#include "opencv2/highgui/highgui_c.h"
-//#include "opencv2/highgui/highgui.hpp"
 
 namespace awl
 {
 /** \brief Threaded Video Display class that also overlays decorations based on lidar acquisition.
   *        The video display thread is based on OpenCV.
-  *		   The VideoViewer takes a VideoCaptureDevice as input.
-  *		   The VideoViewer also takes a ReceiverProjector as input
+  *		   The VideoViewer takes a VideoCaptureDevice as input for image information.
+  *		   The VideoViewer also takes a ReceiverCapture as input for detection information
   * \author Jean-Yves Deschênes
   */
 class VideoViewer
@@ -44,7 +41,7 @@ public:
       * \param[in] inreceiverCapture receiver Capture device that retuns us witha actual dinstance info.
 	  * \param[in] inProjector receiverProjector that supplies us with range info
       */
-	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture, ReceiverProjector::Ptr inProjector);
+	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture);
 
 	/** \brief Video Viewer destructor. Insures that the viewer thread is Stopped()
       */
@@ -125,12 +122,6 @@ public:
 	
 	void SetReceiverCapture(ReceiverCapture::Ptr inReceiverCapture);
 
-
-	/** \brief Modify the receiverProjector that feeds us with data.  Thread safe
-      * \param[in] inProjector receiverProjector that supplies us with range info
-	  */
-	void VideoViewer::SetReceiverProjector(ReceiverProjector::Ptr inProjector);
-
 	/** \brief Move the window at position left, top.
 	  * \remarks implemented for compatibility  with Qt.
       */
@@ -154,7 +145,7 @@ protected:
 	void DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection);
 
 protected:
-	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iWidth);
+	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
 	void GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
     void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight);
  
@@ -215,9 +206,6 @@ protected:
 
 	/** \brief receiver capture device that supplies the range data */
 	ReceiverCapture::Ptr receiverCapture; 
-
-	/** \brief receiver projector that supplies the range data */
-	ReceiverProjector::Ptr projector;
 
 	/** \brief Time the object was created.  Used to calculate flashing rates */
 	boost::posix_time::ptime startTime;

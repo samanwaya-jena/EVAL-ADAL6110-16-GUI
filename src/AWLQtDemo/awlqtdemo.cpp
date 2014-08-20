@@ -166,7 +166,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		QString cameraName(this->windowTitle()+" Camera");
 		cameraName.append(QString().sprintf(" %02d", videoViewerID));
 		
-		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID], receiverCaptures[0], receiver)));
+		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID], receiverCaptures[0])));
 	}
 
 	PrepareParametersView();

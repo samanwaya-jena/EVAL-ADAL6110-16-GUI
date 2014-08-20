@@ -6,7 +6,6 @@
 #include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
-#include "Sensor.h"
 #include "AWLCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
@@ -33,13 +32,12 @@ const char *szCameraWindowClassName = NULL;  // Class name for the camera window
 #endif
 const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
-VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture, ReceiverProjector::Ptr inProjector):
+VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture):
 workFrame(new (cv::Mat)),
 displayFrame(new (cv::Mat)),
 cameraName(inCameraName),
 videoCapture(inVideoCapture),
 receiverCapture(inReceiverCapture),
-projector(inProjector),
 bWindowCreated(false),
 mThread()
 
@@ -85,13 +83,6 @@ void VideoViewer::SetReceiverCapture( ReceiverCapture::Ptr inReceiverCapture)
 
 	currentReceiverSubscriberID = receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
 
-	updateLock.unlock();
-}
-
-void VideoViewer::SetReceiverProjector(ReceiverProjector::Ptr inProjector)
-{
-	boost::mutex::scoped_lock updateLock(mMutex);
-	projector = inProjector;
 	updateLock.unlock();
 }
 
@@ -313,8 +304,6 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	int bottom;
 	int right;
 
-	if (!projector) return;
-
 	CvRect rect;
 
 	cv::Vec3b color;
@@ -322,46 +311,46 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, int channel
 	cv::Vec3b colorDehance;
 	bool bFlash = false;
 
-	int width = -1;
+	int thickness = -1;
 	colorEnhance = cv::Vec3b(0, 0, 0);
 	colorDehance = cv::Vec3b(0, 0, 0);
-	GetDetectionColors(detection, colorEnhance, colorDehance, width);
+	GetDetectionColors(detection, colorEnhance, colorDehance, thickness);
 
-	// Paint a square that corresponds to the receiver FOV
+	// Paint a square that corresponds to the receiver FOV, with the given line thickness
 	CvPoint topLeft;
 	CvPoint topRight;
 	CvPoint bottomLeft;
 	CvPoint bottomRight;
 	GetChannelRect(detection, topLeft, topRight, bottomLeft, bottomRight);
 
-	// Inset the vertical lines horizontally, to compensate for line width.
+	// Inset the vertical lines horizontally, to compensate for line thickness.
 	//Draw the vertical lines
-	topLeft.x += (width/2);
-	topRight.x -=  (width - (width/2) - 1); // In case width is odd 
+	topLeft.x += (thickness/2);
+	topRight.x -=  (thickness - (thickness/2) - 1); // In case thickness is odd 
 
-	bottomLeft.x += (width/2); 
-	bottomRight.x -= (width - (width/2) -1); // in case width is odd
+	bottomLeft.x += (thickness/2); 
+	bottomRight.x -= (thickness - (thickness/2) -1); // in case thickness is odd
 
-	DrawDetectionLine(targetFrame, topRight, bottomRight, colorEnhance, colorDehance, width, 1);
-	DrawDetectionLine(targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, width, 1);
+	DrawDetectionLine(targetFrame, topRight, bottomRight, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, thickness, 1);
 
 	// Inset the horizontal lines vertically, to compensate for line height
-	topLeft.y -= width/2;
-	bottomLeft.y += (width - (width/2) -1);
-	topRight.y -= width/2;
-	bottomRight.y += (width - (width/2) -1);
+	topLeft.y -= thickness/2;
+	bottomLeft.y += (thickness - (thickness/2) -1);
+	topRight.y -= thickness/2;
+	bottomRight.y += (thickness - (thickness/2) -1);
 
 	// Shorten the horizontal lines still, to avoid overlap with the verticals
-	topLeft.x += (width - (width/2));
-	topRight.x -= (width/2)+1;
-	bottomLeft.x += (width - (width/2));
-	bottomRight.x -= (width/2)+1;
+	topLeft.x += (thickness - (thickness/2));
+	topRight.x -= (thickness/2)+1;
+	bottomLeft.x += (thickness - (thickness/2));
+	bottomRight.x -= (thickness/2)+1;
 
-	DrawDetectionLine(targetFrame, topLeft, topRight, colorEnhance, colorDehance, 1, width);
-	DrawDetectionLine(targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, width);
+	DrawDetectionLine(targetFrame, topLeft, topRight, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, thickness);
 }
 
-void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iWidth)
+void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness)
 
 {
 	bool bFlash = false;
@@ -381,14 +370,14 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 		{
 			colorEnhance = cv::Vec3b(128, 0, 0);  // Blue
 			colorDehance = cv::Vec3b(0, 64, 64);
-			iWidth = 4;
+			iThickness = 4;
 		}
 		break;
 	case Detection::eThreatLow:
 		{
 			colorEnhance = cv::Vec3b(0, 128, 0); // Green
 			colorDehance = cv::Vec3b(64, 0,64);
-			iWidth = 4;
+			iThickness = 4;
 		}
 		break;
 
@@ -396,8 +385,8 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 		{
 			colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
 			colorDehance = cv::Vec3b(32, 0, 0);
-			iWidth = 15;
-			if (bFlash) iWidth = 5;	
+			iThickness = 15;
+			if (bFlash) iThickness = 5;	
 		}
 		break;
 
@@ -405,8 +394,8 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 		{
 	 		colorEnhance = cv::Vec3b(0, 0, 128);  // Red
 			colorDehance = cv::Vec3b(32, 32, 0);
-			iWidth = 15;
-			if (bFlash) iWidth = 5;
+			iThickness = 15;
+			if (bFlash) iThickness = 5;
 		}
 		break;
 
@@ -421,68 +410,31 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 void VideoViewer::GetChannelRect(Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
 {	
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	AWLCoordinates *globalCoordinates = AWLCoordinates::GetGlobalCoordinates();
 
 	float x, y;
 	int receiverID = detection->receiverID;
 	int channelID = detection->channelID;
 	int cameraID = videoCapture->GetCameraID();
 
-	// Position of the target relative to world. Target is straight in the center of the detector.
-	CartesianCoord targetRelativeToWorldCart = detection->relativeToWorldCart;
-
 	// Channel description pointer
 	ChannelConfig *channel = &globalSettings->receiverSettings[receiverID].channelsConfig[channelID];
-	TransformationNode::Ptr channelCoords = AWLCoordinates::GetReceivers()[receiverID]->children[channelID];
-	
-	// Camera FOV description
-	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
-	CartesianCoord cameraTopLeft(SphericalCoord(10, M_PI_2 - (cameraFovHeight/2), +(cameraFovWidth/2)));
-	CartesianCoord cameraBottomRight(SphericalCoord(10, M_PI_2 + (cameraFovHeight/2), - (cameraFovWidth/2)));
-
 
 	// Position of the topLeft corner of the channel FOV 
 	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
-	SphericalCoord topLeftInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, topLeftInChannel);          // Convert to world
-	SphericalCoord topLeftInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, topLeftInWorld);			 // Convert to camera
-	topLeftInCamera.rho = 10;																						 // Place in projection Plane.
-	CartesianCoord topLeftInCameraCart(topLeftInCamera);
-
-	// Remember: In relation to a body the standard convention is
-	//  x forward, y left and z up.
-	// Careful when converting to projected plane, where X is right and y is up
-
-	topLeft.x = frameWidth * (topLeftInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	topLeft.y = frameHeight * (topLeftInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up- cameraBottomRight.up);
+	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topLeftInChannel, topLeft.x, topLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	SphericalCoord topRightInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, topRightInChannel);
-	SphericalCoord topRightInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, topRightInWorld);
-	topRightInCamera.rho = 10;																						 // Place in projection Plane.
-	CartesianCoord topRightInCameraCart(topRightInCamera);
-
-	topRight.x = frameWidth * (topRightInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	topRight.y = frameHeight * (topRightInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up - cameraBottomRight.up);
+	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topRightInChannel, topRight.x, topRight.y);
 
 	// Position of the bottomLeft corner of the channel FOV 
 	SphericalCoord bottomLeftInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
-	SphericalCoord bottomLeftInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, bottomLeftInChannel);
-	SphericalCoord bottomLeftInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, bottomLeftInWorld);
-	bottomLeftInCamera.rho = 10;																						 // Place in projection Plane.
-	CartesianCoord bottomLeftInCameraCart(bottomLeftInCamera);
-
-	bottomLeft.x = frameWidth * (bottomLeftInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	bottomLeft.y = frameHeight * (bottomLeftInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up - cameraBottomRight.up);
+	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord bottomRightInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	SphericalCoord bottomRightInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, bottomRightInChannel);
-	SphericalCoord bottomRightInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, bottomRightInWorld);
-	bottomRightInCamera.rho = 10;																						 // Place in projection Plane.
-	CartesianCoord bottomRightInCameraCart(bottomRightInCamera);
-
-	bottomRight.x = frameWidth * (bottomRightInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	bottomRight.y = frameHeight * (bottomRightInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up - cameraBottomRight.up);
+	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomRightInChannel, bottomRight.x, bottomRight.y);
 }
 
 void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)
