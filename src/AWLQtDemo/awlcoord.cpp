@@ -715,6 +715,32 @@ TransformationNode::List AWLCoordinates::GetCameras()
 	return(globalCoordinates->cameras);
 }
 
+bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	// Channel description pointer
+	TransformationNode::Ptr channelCoords = AWLCoordinates::GetReceivers()[receiverID]->children[channelID];
+	
+	// Camera FOV description
+	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
+	CartesianCoord cameraTopLeft(SphericalCoord(10, M_PI_2 - (cameraFovHeightInRad/2), +(cameraFovWidthInRad/2)));
+	CartesianCoord cameraBottomRight(SphericalCoord(10, M_PI_2 + (cameraFovHeightInRad/2), - (cameraFovWidthInRad/2)));
+
+	SphericalCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
+	SphericalCoord coordInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
+	coordInCamera.rho = 10;																				     // Place in projection Plane.
+	CartesianCoord coordInCameraCart(coordInCamera);
+
+	// Remember: In relation to a body the standard convention is
+	//  x forward, y left and z up.
+	// Careful when converting to projected plane, where X is right and y is up
+
+	cameraX = frameWidthInPixels * (coordInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
+	cameraY = frameHeightInPixels * (coordInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up- cameraBottomRight.up);
+
+	return(true);
+}
 
 bool AWLCoordinates::BuildCoordinatesFromSettings()
 {

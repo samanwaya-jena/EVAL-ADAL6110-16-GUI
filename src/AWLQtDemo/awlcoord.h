@@ -353,6 +353,8 @@ public:
 	// Constructor
 	AWLCoordinates();
 	bool BuildCoordinatesFromSettings();
+
+	static bool SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
 protected:
 	static AWLCoordinates *globalCoordinates;
 	TransformationNode::Ptr	firstNode;
