@@ -53,8 +53,8 @@
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
-		       values currently are "BareMetal" or "CAN" -->
-      <receiverType>CAN</receiverType>
+		       values currently possible are "EasySyncCAN" -->
+      <receiverType>EasySyncCAN</receiverType>
 
       <!-- Channel mask: Controls which channels are
 		       processed at AWL Unit Level -->
@@ -328,16 +328,16 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>-1.35</forward>
+        <forward>0</forward>
         <!-- lateral offet -->
-        <left>0.0</left>
+        <left>1.0</left>
         <!-- height -->
-        <up>1.54</up>
+        <up>0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
         <roll>0.0</roll>
-        <yaw>0.0</yaw>
+        <yaw>-60</yaw>
       </orientation>
 
       <!-- XIMEA with 3.6mm lensing -->

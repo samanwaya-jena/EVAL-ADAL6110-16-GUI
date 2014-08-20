@@ -53,9 +53,9 @@
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
-		       values currently are "BareMetal" or "CAN" -->
-      <receiverType>CAN</receiverType>
-
+		       values currently possible are "EasySyncCAN" -->
+      <receiverType>EasySyncCAN</receiverType>
+      
       <!-- Channel mask: Controls which channels are
 		       processed at AWL Unit Level -->
       <!--enter the mask in decimal -->

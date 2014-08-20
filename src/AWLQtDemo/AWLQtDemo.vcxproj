@@ -123,7 +123,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp" />
     <ClCompile Include="range_image.cpp" />
-    <ClCompile Include="ReceiverBareMetalCapture.cpp" />
     <ClCompile Include="ReceiverCANCapture.cpp" />
     <ClCompile Include="ReceiverCapture.cpp" />
     <ClCompile Include="ReceiverUDPCapture.cpp" />
@@ -225,7 +224,6 @@
     <ClInclude Include="GeneratedFiles\ui_awlqtscope.h" />
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h" />
     <ClInclude Include="GeneratedFiles\ui_TableView.h" />
-    <ClInclude Include="ReceiverBareMetalCapture.h" />
     <ClInclude Include="ReceiverCANCapture.h" />
     <ClInclude Include="ReceiverCapture.h" />
     <ClInclude Include="resource.h" />

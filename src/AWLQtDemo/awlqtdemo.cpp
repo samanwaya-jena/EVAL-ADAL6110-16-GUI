@@ -13,7 +13,6 @@
 #include "Tracker.h"
 #include "ReceiverCapture.h"
 #include "ReceiverCANCapture.h"
-#include "ReceiverBareMetalCapture.h"
 #include "FusedCloudViewer.h"
 #include "DebugPrintf.h"
 #include "AWLSettings.h"
@@ -99,13 +98,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object
-		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "BareMetal"))
+		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
-			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverBareMetalCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
-		}
-		else 
-		{
-			// CAN Capture is used if defined in the ini file, and by default
+			// EasySync CAN Capture is used if defined in the ini file, and by default
 			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
 		}
 

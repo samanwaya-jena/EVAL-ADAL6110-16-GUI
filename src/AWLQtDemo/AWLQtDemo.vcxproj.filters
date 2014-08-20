@@ -131,9 +131,6 @@
     <ClCompile Include="fov_2dscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverBareMetalCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="awlcoord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -256,9 +253,6 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReceiverBareMetalCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="awlcoord.h">
