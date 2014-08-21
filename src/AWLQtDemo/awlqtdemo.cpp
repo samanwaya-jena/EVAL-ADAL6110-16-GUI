@@ -1,39 +1,29 @@
-#include "awlqtdemo.h"
+
 
 #include <QTableWidget>
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QTime>
-#include <QSettings>
 #include <QMessageBox>
 #include <QListWidget>
 
-
 #include <string>
-#include "boost\pointer_cast.hpp"
+
+#include "awlqtdemo.h"
 #include "Tracker.h"
 #include "ReceiverCapture.h"
-#include "ReceiverFileCapture.h"
 #include "ReceiverCANCapture.h"
-#include "ReceiverBareMetalCapture.h"
 #include "FusedCloudViewer.h"
 #include "DebugPrintf.h"
 #include "AWLSettings.h"
 #include "DetectionStruct.h"
+#include "tableview.h"
 
-#include "boost\pointer_cast.hpp"
 #include "..\awlqtscope\awlqtscope.h"
-#include "..\awlqtscope\curvedata.h"
-#include "..\awlqtscope\signaldata.h"
+
 
 using namespace std;
 using namespace awl;
-using namespace pcl;
-
-
-
-// Frame rate, in frame per seconds
-#define FRAME_RATE	30.0
 
 // Text update rate, in frame per seconds
 #if 1
@@ -41,46 +31,55 @@ using namespace pcl;
 #else
 #define LOOP_RATE	20
 #endif
-const int channelQty = 7;
-const int  detectionsPerChannel =  8;
 
-
+TransformationNode::Ptr myBaseNode;
 
 AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	: QMainWindow()
 {
 	ui.setupUi(this);
+
+	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
 
+	// Build a reference coodinate system from the settings
+	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
+	globalCoordinates->BuildCoordinatesFromSettings();
+
+#if 1
+
+	// Test the coordinates system
+	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
+	SphericalCoord sphericalPointInChannel(10, M_PI_2, 0);
+	CartesianCoord cartesianPointInWorld0 = receiverCoords[0]->children[0]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld1 = receiverCoords[0]->children[1]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld2 = receiverCoords[0]->children[2]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld3 = receiverCoords[0]->children[3]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld4 = receiverCoords[0]->children[4]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld5 = receiverCoords[0]->children[5]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	CartesianCoord cartesianPointInWorld6 = receiverCoords[0]->children[6]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+
+	TransformationNode::List cameraCoords = AWLCoordinates::GetCameras();
+	SphericalCoord worldPoint = cameraCoords[0]->FromReferenceCoord(eCameraToWorldCoord, cartesianPointInWorld0);
+#endif
+
+
+	// Fill the parameters  tables from the settings
 	FillFPGAList(globalSettings);
 	FillADCList(globalSettings);
 	FillGPIOList(globalSettings);
 
-	int channelQty = globalSettings->channelsConfig.size();
-	long absoluteMaxRange = 0.0;
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
-	{
-		if (globalSettings->channelsConfig[channelIndex].maxRange > absoluteMaxRange)
-			absoluteMaxRange = globalSettings->channelsConfig[channelIndex].maxRange;
-	}
-	AWLSettings::GetGlobalSettings()->displayedRangeMax = absoluteMaxRange;
-	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
-
-
-
 	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.isEmpty())
+	if (!globalSettings->sIconFileName.empty())
 	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName));
+		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
 	}
 
-	// Position the main widget on the bottom left corner
+	// Position the main widget on the top left corner
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
 	show();
-//	int topCornerX = scr.bottom() - (this->frameSize().height());
-	int topCornerX = scr.top();
-	move(scr.left(), topCornerX); 
+	move(scr.left(),  scr.top()); 
 
 
 	// In demo mode, put demo mode in window title
@@ -89,76 +88,98 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		this->setWindowTitle(this->windowTitle()+" [DEMO Mode]");
 	}
 
-	PrepareTableViews();
 
-	PrepareParametersView();
-	PrepareGlobalParametersView();
+	// Adjust the default displayed ranges depending on the sensor capabilities
+	AdjustDefaultDisplayedRanges();
 
-	// Create the image acquistion thread object
-	videoCapture = VideoCapture::Ptr(new VideoCapture(argc, argv));
-	// Create the LIDAR acquisition thread object
-	if (!globalSettings->sReceiverType.compare("BareMetal", Qt::CaseInsensitive))
+
+	// Create the receiver communication objects
+	int receiverQty = globalSettings->receiverSettings.size();
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		receiverCapture = ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverBareMetalCapture(0, channelQty, detectionsPerChannel, argc, argv));
-	}
-	else 
-	{
-		// CAN Capture is used if defined in the ini file, and by default
-		receiverCapture = ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(0, channelQty, detectionsPerChannel, argc, argv));
+		// Create the LIDAR acquisition thread object
+		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
+		{
+			// EasySync CAN Capture is used if defined in the ini file, and by default
+			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
+		}
+
+		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->Subscribe());
 	}
 
-	receiverCaptureSubscriberID = receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
+	// Create the video capture objects
+	int videoCaptureQty = globalSettings->cameraSettings.size();
+	for (int cameraID = 0; cameraID < videoCaptureQty; cameraID++)
+	{
+		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv)));
+	}
+
+#if 1
 	// Create a common point-cloud object that will be "projected" upon
 	baseCloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
 
 	// Create the ReceiverProjector.
 	// The projector feeds from the videoCapture and feeds from the base cloud
-	receiver = ReceiverProjector::Ptr(new ReceiverProjector(videoCapture, baseCloud, receiverCapture));
+	receiver = ReceiverProjector::Ptr(new ReceiverProjector(videoCaptures[0], baseCloud, receiverCaptures[0]));
 
-	// Add the channels to the projector
+	// Add the channels to the point-cloud projector. 
 	ReceiverChannel::Ptr channelPtr;
 
-	for (int channelID = 0; channelID < globalSettings->channelsConfig.size(); channelID++)
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(channelID,
-			DEG2RAD(globalSettings->channelsConfig[channelID].fovX),
-			DEG2RAD(globalSettings->channelsConfig[channelID].fovY),
-			DEG2RAD(globalSettings->channelsConfig[channelID].centerX),
-			DEG2RAD(globalSettings->channelsConfig[channelID].centerY),
-			globalSettings->channelsConfig[channelID].maxRange,
-			globalSettings->channelsConfig[channelID].sMaskName.toStdString().c_str(),
-			globalSettings->channelsConfig[channelID].sFrameName.toStdString().c_str(),
-			false,
-			globalSettings->channelsConfig[channelID].displayColorRed / 255.0,
-			globalSettings->channelsConfig[channelID].displayColorGreen / 255.0,
-			globalSettings->channelsConfig[channelID].displayColorBlue / 255.0));
+		for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.size(); channelID++)
+		{
+			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovWidth),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovHeight),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
+				false,
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorRed / 255.0,
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorGreen / 255.0,
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorBlue / 255.0));
 
-		channelPtr = receiver->AddChannel(receiverChannel);
+			channelPtr = receiver->AddChannel(receiverChannel);
+		}
 	}
 
-	// Create the video viewer to display the camera image
-	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-	videoViewer = VideoViewer::Ptr(new VideoViewer(this->windowTitle().toStdString(), videoCapture, receiverCapture, receiver));
-
+	
 	//  Create the fused viewer, that will instantiate all the point-cloud views.
 	// All point cloud updates feed from the receiver's point-cloud data.
 	// The fused Viewer also uses the receiver configuration info to build the background decorations  
 	// used in point-cloud
-	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString(), receiver));
+	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString() + " 3D View", receiver));
+
+#endif
+
+	// Create the video viewer to display the camera image
+	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
+	int videoViewerQty = videoCaptures.size();
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		QString cameraName(this->windowTitle()+" Camera");
+		cameraName.append(QString().sprintf(" %02d", videoViewerID));
+		
+		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID])));
+	}
+
+	PrepareParametersView();
+	PrepareGlobalParametersView();
 
 	// Initialize the controls from the settings in INI file
-	ui.sensorHeightSpinBox->setValue(globalSettings->sensorHeight);
-	ui.sensorDepthSpinBox->setValue(globalSettings->sensorDepth);
-	ui.measurementOffsetSpinBox->setValue(globalSettings->rangeOffset);
-	ui.sensorRangeMinSpinBox->setValue(globalSettings->displayedRangeMin);
+	ui.sensorHeightSpinBox->setValue(globalSettings->receiverSettings[0].sensorUp);
+	ui.sensorDepthSpinBox->setValue(globalSettings->receiverSettings[0].sensorForward);
+	ui.measurementOffsetSpinBox->setValue(globalSettings->receiverSettings[0].rangeOffset);
+	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
-	ui.sensorRangeMax0SpinBox->setValue(globalSettings->channelsConfig[0].maxRange);
-	ui.sensorRangeMax1SpinBox->setValue(globalSettings->channelsConfig[1].maxRange);
-	ui.sensorRangeMax2SpinBox->setValue(globalSettings->channelsConfig[2].maxRange);
-	ui.sensorRangeMax3SpinBox->setValue(globalSettings->channelsConfig[3].maxRange);
-	ui.sensorRangeMax4SpinBox->setValue(globalSettings->channelsConfig[4].maxRange);
-	ui.sensorRangeMax5SpinBox->setValue(globalSettings->channelsConfig[5].maxRange);
-	ui.sensorRangeMax6SpinBox->setValue(globalSettings->channelsConfig[6].maxRange);
+	ui.sensorRangeMax0SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
+	ui.sensorRangeMax1SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[1].maxRange);
+	ui.sensorRangeMax2SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[2].maxRange);
+	ui.sensorRangeMax3SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[3].maxRange);
+	ui.sensorRangeMax4SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[4].maxRange);
+	ui.sensorRangeMax5SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[5].maxRange);
+	ui.sensorRangeMax6SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[6].maxRange);
 
 	ui.targetHintDistanceSpinBox->setValue(globalSettings->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(globalSettings->targetHintAngle);
@@ -169,25 +190,25 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Default values
 	ChannelMask channelMask;
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		ui.recordChannel1CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel0);
-		ui.recordChannel2CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel1);
-		ui.recordChannel3CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel2);
-		ui.recordChannel4CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel3);
-		ui.recordChannel5CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel4);
-		ui.recordChannel6CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel5);
-		ui.recordChannel7CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel6);
+		ui.recordChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
+		ui.recordChannel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel1);
+		ui.recordChannel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel2);
+		ui.recordChannel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel3);
+		ui.recordChannel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel4);
+		ui.recordChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
+		ui.recordChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
 
-		ui.calibrationChannel1CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel0);
-		ui.calibrationChannel2CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel1);
-		ui.calibrationChannel3CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel2);
-		ui.calibrationChannel4CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel3);
-		ui.calibrationChannel5CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel4);
-		ui.calibrationChannel6CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel5);
-		ui.calibrationChannel7CheckBox->setChecked(receiverCapture->receiverStatus.channelMask.bitFieldData.channel6);
+		ui.calibrationChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
+		ui.calibrationChannel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel1);
+		ui.calibrationChannel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel2);
+		ui.calibrationChannel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel3);
+		ui.calibrationChannel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel4);
+		ui.calibrationChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
+		ui.calibrationChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
 
-		ui.frameRateSpinBox->setValue(receiverCapture->receiverStatus.frameRate);
+		ui.frameRateSpinBox->setValue(receiverCaptures[0]->receiverStatus.frameRate);
 	}
 	else
 	{
@@ -207,9 +228,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.calibrationChannel5CheckBox->setChecked(true);
 		ui.calibrationChannel6CheckBox->setChecked(true);
 		ui.calibrationChannel7CheckBox->setChecked(true);
-
 		
-		ui.frameRateSpinBox->setValue(globalSettings->receiverFrameRate);
+		ui.frameRateSpinBox->setValue(globalSettings->receiverSettings[0].receiverFrameRate);
 	}
 
 	CloudViewerWin::ColorHandlerType defaultColorType = (CloudViewerWin::ColorHandlerType) globalSettings->colorStyle;
@@ -225,9 +245,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	// Initialize from other operating variables.
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		ui.injectSimulatedCheckbox->setChecked(receiverCapture->IsSimulatedDataEnabled());
+		ui.injectSimulatedCheckbox->setChecked(receiverCaptures[0]->IsSimulatedDataEnabled());
 	}
 
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
@@ -237,10 +257,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
-	m2DScan->setWindowTitle(this->windowTitle());
+	m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
 
 	// Place the 2D view in the screen
-#if 1
+
 	int frameWindowWidth = 712;
 	m2DScan->move(scr.right()-frameWindowWidth, scr.top());
 	m2DScan->show();
@@ -249,7 +269,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	int verticalDecorationsHeight = frame.height() - client.height();
 	int horizontalDecorationsWidth = frame.width() - client.width();
 	m2DScan->resize(frameWindowWidth-horizontalDecorationsWidth, scr.height() - verticalDecorationsHeight);
-#endif
 
 	mCfgSensor.shortRangeDistance = globalSettings->shortRangeDistance;
     mCfgSensor.shortRangeDistanceStartLimited = globalSettings->shortRangeDistanceStartLimited;
@@ -261,15 +280,31 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-    mCfgSensor.sensorDepth = globalSettings->sensorDepth;
-    mCfgSensor.sensorHeight = globalSettings->sensorHeight;
+	mCfgSensor.spareDepth = -globalSettings->receiverSettings[0].sensorForward;
 
-	m2DScan->slotConfigChanged(&mCfgSensor);
+	m2DScan->slotConfigChanged(mCfgSensor);
+
+	// Initialize the table view
+	mTableView = new TableView();
+	mTableView->setWindowTitle(this->windowTitle() + " Table View");
+
+	// Place the table view in the top left of screen
+
+	mTableView->move(scr.left(), scr.top());
+	mTableView->show();
+	frame = mTableView->frameGeometry();
+	client = mTableView->geometry();
+	verticalDecorationsHeight = frame.height() - client.height();
+	horizontalDecorationsWidth = frame.width() - client.width();
+	mTableView->resize(client.width(), scr.height() - verticalDecorationsHeight);
+
+	mTableView->slotConfigChanged();
 
 	// Calibration 
 
 	// Menu items signals and slots
 	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
+	connect(ui.actionTableView, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
 	connect(ui.actionCamera, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
 	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
 	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
@@ -277,26 +312,43 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	connect(ui.actionQuitter, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
 	// View signals and slots on close
 	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
+	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
 	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
 
 
-	// Start the threads for background capture objects
-	videoCapture->Go();
-	receiverCapture->Go(true);
-	receiver->Go();
+	// Start the threads for background  receiver capture objects
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
+	{ 
+		receiverCaptures[receiverID]->Go(true);
+	}
+
+
+	// Start the threads for background video capture objects
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	{ 
+		videoCaptures[cameraID]->Go();
+	}
+
+
+	if (receiver) receiver->Go();
 
 	// Create a timer to keep the UI objects spinning
      myTimer = new QTimer(this);
      connect(myTimer, SIGNAL(timeout()), this, SLOT(on_timerTimeout()));
 	 myTimer->start(LOOP_RATE);
 
-	 // Initial Update the various status indicators on the display
-	 DisplayReceiverStatus();
+	// Initial Update the various status indicators on the display
+	DisplayReceiverStatus();
 
 	// Start the threads and display the windows if they are defined as startup in the ini file
 	if (globalSettings->bDisplay2DWindow) 
 	{
 		ui.action2D->toggle();
+	}
+
+	if (globalSettings->bDisplayTableViewWindow) 
+	{
+		ui.actionTableView->toggle();
 	}
 
 	if (globalSettings->bDisplay3DWindow) 
@@ -315,10 +367,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		// Position the video viewer.
 		// This has to be done agfter the Go(), to make sure the window is created
 //		videoViewer->move(scr.left(), scr.top()); 
-		videoViewer->move(scr.left(), scr.top()+95); 
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+		    videoViewers[viewerID]->move(scr.left()+(viewerID*10), scr.top()+95+(viewerID*10));
+		}
 	}
 
-	switch (globalSettings->defaultAlgo)
+	switch (globalSettings->defaultParametersAlgos.defaultAlgo)
 	{
 	case 1: 
 		{
@@ -357,11 +412,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
 
 	// In demo mode, automatically force the injection of data on receiver.
-	// put demo mode in window title
+	// put demo mode in window titles
 	if (globalSettings->bEnableDemo)
 	{
 		ui.injectSimulatedCheckbox->setChecked(true);
-		m2DScan->setWindowTitle(this->windowTitle());
+		m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
+		mTableView->setWindowTitle(this->windowTitle() + " Table View");
 	}
 }
 
@@ -369,15 +425,54 @@ AWLQtDemo::~AWLQtDemo()
 {
 }
 
+void AWLQtDemo::AdjustDefaultDisplayedRanges()
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	// Adjust the default maximum displayed range for the receiver (used in various interfaces) 
+	// to reflect the maximum of all its channel ranges.
+	int receiverQty = globalSettings->receiverSettings.size();
+	long absoluteMaxRange = 0.0;
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	{
+		long absoluteMaxRangeForReceiver = 0.0;
+		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
+		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+		{
+			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
+				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange;
+		}
+		AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRangeForReceiver;
+
+		if (absoluteMaxRangeForReceiver > absoluteMaxRange) absoluteMaxRange = absoluteMaxRangeForReceiver; 
+	}
+
+	// And the default maximum displayed range for interfaces to the max range of all receivers 
+	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
+}
+
+
 void AWLQtDemo::on_destroy()
 {
 	if (fusedCloudViewer) fusedCloudViewer->Stop();
-	if (videoCapture) videoCapture->Stop();
-	if (receiverCapture) receiverCapture->Stop();
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	{
+		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
+	}
+
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
+	}
+
 	if (receiver) receiver->Stop();
-	if (videoViewer) videoViewer->Stop();
+
+	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+	{
+		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+	}
 
 	if (m2DScan) delete m2DScan;
+	if (mTableView) delete mTableView;	
 	if (scopeWindow) delete scopeWindow;
 }
 
@@ -408,9 +503,14 @@ void AWLQtDemo::on_rangeImageRadioButton_setChecked(bool bChecked)
 
 void AWLQtDemo::on_simulatedDataInjectCheckBox_setChecked(bool  bChecked)
 {
-	if (receiverCapture)
+	if (receiverCaptures[0])
 	{
-		receiverCapture->EnableSimulationData(bChecked);
+		receiverCaptures[0]->EnableSimulationData(bChecked);
+	}
+
+	if (receiverCaptures.size() >= 2 && receiverCaptures[1])
+	{
+		receiverCaptures[1]->EnableSimulationData(bChecked);
 	}
 
 }
@@ -492,14 +592,14 @@ void AWLQtDemo::on_recordPushButton_clicked()
 	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetRecordFileName(sRecordFileName);
-		receiverCapture->StartRecord(frameRate, channelMask);
+		receiverCaptures[0]->SetRecordFileName(sRecordFileName);
+		receiverCaptures[0]->StartRecord(frameRate, channelMask);
 	}
 
 	// Update the state of buttons
-	DisplayReceiverStatus();
+	DisplayReceiverStatus(0);
 }
 
 
@@ -519,14 +619,14 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 	
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetPlaybackFileName(sPlaybackFileName);
-		receiverCapture->StartPlayback(frameRate, channelMask);
+		receiverCaptures[0]->SetPlaybackFileName(sPlaybackFileName);
+		receiverCaptures[0]->StartPlayback(frameRate, channelMask);
 	}
 
 	// Update the state of buttons
-	DisplayReceiverStatus();
+	DisplayReceiverStatus(0);
 }
 
 
@@ -535,20 +635,20 @@ void AWLQtDemo::on_stopPushButton_clicked()
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		if (receiverCapture->receiverStatus.bInPlayback) 
+		if (receiverCaptures[0]->receiverStatus.bInPlayback) 
 		{
-			receiverCapture->StopPlayback();
+			receiverCaptures[0]->StopPlayback();
 		}
-		else if (receiverCapture->receiverStatus.bInRecord) 
+		else if (receiverCaptures[0]->receiverStatus.bInRecord) 
 		{
-			receiverCapture->StopRecord();
+			receiverCaptures[0]->StopRecord();
 		}
 	}
 
 	// Update the state of buttons
-	DisplayReceiverStatus();
+	DisplayReceiverStatus(0);
 }
 
 
@@ -581,8 +681,8 @@ void AWLQtDemo::on_pixelSizeSpin_editingFinished()
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	double height = ui.sensorHeightSpinBox->value();
-	if (abs(height-AWLSettings::GetGlobalSettings()->sensorHeight) < 0.001) return;
-	AWLSettings::GetGlobalSettings()->sensorHeight = height;
+	if (abs(height-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp) < 0.001) return;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp = height;
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -591,18 +691,18 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	// Process
 	if (receiver) 
 	{	
-		receiver->SetSensorHeight(height);
+		receiver->SetViewerHeight(height);
 	}
+
+	if (receiverCaptures[0]) 
+	{
+	//	receiverCaptures[0]->SetSensorHeight(height);
+	}
+
 
 	if (fusedCloudViewer) 
 	{
-		fusedCloudViewer->SetSensorHeight(height);
-	}
-
-	if (m2DScan && !m2DScan->isHidden())
-	{
-	    mCfgSensor.sensorHeight = height;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		fusedCloudViewer->SetViewerHeight(height);
 	}
 
 	// Restore the wait cursor
@@ -612,9 +712,9 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
-	double depth = ui.sensorDepthSpinBox->value();
-	if (abs(depth-AWLSettings::GetGlobalSettings()->sensorDepth) < 0.001) return;
-	AWLSettings::GetGlobalSettings()->sensorDepth = depth;
+	double forward = ui.sensorDepthSpinBox->value();
+	if (abs(forward-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward) < 0.001) return;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward = forward;
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -624,23 +724,18 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 	if (receiver) 
 	{	
-		receiver->SetSensorDepth(depth);
-	}
-
-	if (receiverCapture) 
-	{
-		receiverCapture->SetSensorDepth(depth);
+		receiver->SetViewerDepth(forward);
 	}
 
 	if (fusedCloudViewer) 
 	{
-		fusedCloudViewer->SetSensorDepth(depth);
+		fusedCloudViewer->SetViewerDepth(forward);
 	}
 
 	if (m2DScan && !m2DScan->isHidden())
 	{
-	    mCfgSensor.sensorDepth = depth;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		mCfgSensor.spareDepth = -forward;
+		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 
 	// Restore the wait cursor
@@ -650,11 +745,11 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 {
 	double range = ui.sensorRangeMinSpinBox->value();
-	AWLSettings::GetGlobalSettings()->displayedRangeMin = range;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMin = range;
 #if 1
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetMinDistance(range);
+		receiverCaptures[0]->SetMinDistance(range);
 	}
 #endif
 
@@ -669,30 +764,30 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 
 	// Update the settings
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-	settings->channelsConfig[channelID].maxRange = range;
+	settings->receiverSettings[0].channelsConfig[channelID].maxRange = range;
 
 	// Calculate the absolute max distance from the settings
-	int channelQty = settings->channelsConfig.size();
+	int channelQty = settings->receiverSettings[0].channelsConfig.size();
 	long absoluteMaxRange = 0.0;
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
-		if (settings->channelsConfig[channelIndex].maxRange > absoluteMaxRange)
-			absoluteMaxRange = settings->channelsConfig[channelIndex].maxRange;
+		if (settings->receiverSettings[0].channelsConfig[channelIndex].maxRange > absoluteMaxRange)
+			absoluteMaxRange = settings->receiverSettings[0].channelsConfig[channelIndex].maxRange;
 	}
 
-	AWLSettings::GetGlobalSettings()->displayedRangeMax = absoluteMaxRange;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRange;
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 
 	// Update user interface parts
 	if (receiver) 
 	{
 		ReceiverChannel::Ptr receiverChannel = receiver->GetChannel(channelID);
-		receiverChannel->SetRangeMax(range);
+		if (receiverChannel) receiverChannel->SetRangeMax(range);
 	}
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetMaxDistance(channelID, range);
+		receiverCaptures[0]->SetMaxDistance(channelID, range);
 	}
 
 	if (fusedCloudViewer) 
@@ -705,7 +800,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	{
 
 	    mCfgSensor.longRangeDistance = absoluteMaxRange;
-		m2DScan->slotConfigChanged(&mCfgSensor);
+		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 
 	// Restore the wait cursor
@@ -715,7 +810,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 void AWLQtDemo::on_calibrationRangeMax0Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax0SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[0].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[0].maxRange) < 0.001) return;
 
 	ChangeRangeMax(0, range);
 }
@@ -723,7 +818,7 @@ void AWLQtDemo::on_calibrationRangeMax0Spin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMax1Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax1SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[1].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[1].maxRange) < 0.001) return;
 
 	ChangeRangeMax(1, range);
 }
@@ -731,7 +826,7 @@ void AWLQtDemo::on_calibrationRangeMax1Spin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMax2Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax2SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[2].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[2].maxRange) < 0.001) return;
 
 	ChangeRangeMax(2, range);
 }
@@ -739,7 +834,7 @@ void AWLQtDemo::on_calibrationRangeMax2Spin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMax3Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax3SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[3].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[3].maxRange) < 0.001) return;
 
 	ChangeRangeMax(3, range);
 }
@@ -747,7 +842,7 @@ void AWLQtDemo::on_calibrationRangeMax3Spin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMax4Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax4SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[4].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[4].maxRange) < 0.001) return;
 
 	ChangeRangeMax(4, range);
 }
@@ -755,7 +850,7 @@ void AWLQtDemo::on_calibrationRangeMax4Spin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMax5Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax5SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[5].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[5].maxRange) < 0.001) return;
 
 	ChangeRangeMax(5, range);
 }
@@ -763,7 +858,7 @@ void AWLQtDemo::on_calibrationRangeMax5Spin_editingFinished()
 void AWLQtDemo::on_calibrationRangeMax6Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax6SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->channelsConfig[6].maxRange) < 0.001) return;
+	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[6].maxRange) < 0.001) return;
 
 	ChangeRangeMax(6, range);
 }
@@ -773,12 +868,12 @@ void AWLQtDemo::on_measurementOffsetSpin_editingFinished()
 {
 	double offset = ui.measurementOffsetSpinBox->value();
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetMeasurementOffset(offset);
+		receiverCaptures[0]->SetMeasurementOffset(offset);
 	}
 
-	AWLSettings::GetGlobalSettings()->rangeOffset = offset;
+	AWLSettings::GetGlobalSettings()->receiverSettings[0].rangeOffset = offset;
 
 }
 
@@ -799,13 +894,13 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 	channelMask.bitFieldData.channel6 = ui.calibrationChannel7CheckBox->isChecked();
 	channelMask.bitFieldData.unused = 0;
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->StartCalibration(frameQty, beta, channelMask);
+		receiverCaptures[0]->StartCalibration(frameQty, beta, channelMask);
 	}
 
 	// Update the state of buttons
-	DisplayReceiverStatus();
+	DisplayReceiverStatus(0);
 }
 
 void AWLQtDemo::on_targetHintDistanceSpin_editingFinished()
@@ -829,11 +924,11 @@ void AWLQtDemo::on_distanceLogCheckBox_setChecked(bool  bChecked)
 	if (bChecked) 
 	{
 		AWLSettings::GetGlobalSettings()->bWriteLogFile = bChecked;
-		if (receiverCapture) receiverCapture->BeginDistanceLog();
+		if (receiverCaptures[0]) receiverCaptures[0]->BeginDistanceLog();
 	}
 	else 
 	{
-		if (receiverCapture) receiverCapture->EndDistanceLog();
+		if (receiverCaptures[0]) receiverCaptures[0]->EndDistanceLog();
 		AWLSettings::GetGlobalSettings()->bWriteLogFile = bChecked;
 	}
 }
@@ -843,37 +938,40 @@ void AWLQtDemo::on_timerTimeout()
 	myTimer->stop();
 
 	bool bContinue = true;
-	if (videoCapture->WasStopped()) 
+			
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
-		bContinue = false;
-	}
-#if 0  // Closing the videoviewer does not stop the application anymore
-	else if (videoViewer->WasStopped())
-	{
-		bContinue = false;
-	}
-#endif
-	else if (receiver->WasStopped())
-	{
-		bContinue = false;
-	}
-#if 0  // closing the fused viewer windows does not stop the application anymore
-	else if (fusedCloudViewer->WasStopped())
-	{
-		bContinue = false;
-	}
-#endif
-	if (bContinue && receiverCapture)
-	{
-		// Use the frame snapped by the  as the current frame
-		// all displays will reference to.
-		uint32_t lastDisplayedFrame = receiverCapture->SnapSnapshotFrameID();
-
-		// Update the status information
-		if (receiverCapture->receiverStatus.bUpdated) 
+		if (videoCaptures[cameraID]->WasStopped()) 
 		{
-			DisplayReceiverStatus();
+			bContinue = false;
+			break;
 		}
+	}
+
+	if (receiver && receiver->WasStopped())
+	{
+		bContinue = false;
+	}
+
+	if (bContinue)
+	{
+		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+		{
+			if (!receiverCaptures[receiverID]) 
+			{
+				bContinue = false;
+				break;
+			}
+			// Use the frame snapped by the  as the current frame
+			// all displays will reference to.
+			uint32_t lastDisplayedFrame = receiverCaptures[receiverID]->SnapSnapshotFrameID();
+
+			// Update the status information
+			if (receiverCaptures[receiverID]->receiverStatus.bUpdated) 
+			{
+				DisplayReceiverStatus(receiverID);
+			}
+		}// For
 	}
 
 	// Uopdate the 3D display
@@ -888,8 +986,20 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue) 
 	{
-		DisplayReceiverValues();
-		DisplayReceiverValuesTo2DScanView();
+		DetectionDataVect detectionData;
+		GetLatestDetections(detectionData);
+
+		// Update the 2D view
+		if (m2DScan) m2DScan->slotDetectionDataChanged(detectionData);
+
+		// Update the camera views
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID]) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
+		}
+
+		// Update the table views
+		if (mTableView) mTableView->slotDetectionDataChanged(detectionData);
 	}
 
 
@@ -898,9 +1008,6 @@ void AWLQtDemo::on_timerTimeout()
 		if (fusedCloudViewer->viewers.size()>=1) 
 		{
 			fusedCloudViewer->viewers[0]->DoThreadIteration();
-#if 0 // closing the fused viewer windows does not stop the application anymore
-			if (fusedCloudViewer->WasStopped()) bContinue = false;
-#endif
 		}
 	}
 
@@ -911,11 +1018,7 @@ void AWLQtDemo::on_timerTimeout()
 	}
 
 
-#if 0 // closing the fused viewer windows does not stop the application anymore
-	if (bContinue  && fusedCloudViewer && !fusedCloudViewer->WasStopped())
-#else
 	if (bContinue)
-#endif
 	{
 		myTimer->start(LOOP_RATE);
 	}
@@ -925,44 +1028,28 @@ void AWLQtDemo::on_timerTimeout()
 	}
 }
 
-void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
+void AWLQtDemo::GetLatestDetections(DetectionDataVect &detectionData)
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 
-	// Use the frame snapped by the main display timer as the current frame
-	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
-	DetectionDataVect vect;
-	DetectionData detect;
-
-	float currentAngle = 0;
-
-	for (int channelID = 0; channelID < channelQty; channelID++) 
+	// Build the list of detections that need to be updated
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
-#if 0
-		switch(channelID)
+		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
+		// Use the frame snapped by the main display timer as the current frame
+		uint32_t lastDisplayedFrame = receiver->GetSnapshotFrameID();
+
+		int channelQty = receiver->GetChannelQty();
+		for (int channelID = 0; channelID < channelQty; channelID++) 
 		{
-		case 0: currentAngle = -15; break;
-		case 1: currentAngle =  -5; break;
-		case 2: currentAngle = 5; break;
-		case 3: currentAngle = 15; break;
-		case 4: currentAngle = -4.6; break;
-		case 5: currentAngle = 0.0; break;
-		case 6: currentAngle = 4.6; break;
-		default: currentAngle = 0.0; break;
-		}
-#else
-		currentAngle = settings->channelsConfig[channelID].centerX;
-#endif
-		if (channelID < receiverCapture->GetChannelQty())
-		{
-			if (receiverCapture->GetFrameQty()) 
+			if (receiverCaptures[receiverID]->GetFrameQty()) 
 			{
 
-				ChannelFrame::Ptr channelFrame(new ChannelFrame(channelID));
+				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverID, channelID));
 
 				// Thread safe
 				// The UI thread "Snaps" the frame ID for all other interface objects to display
-				if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberID)) 
+				if (receiverCaptures[receiverID]->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberIDs[receiverID])) 
 				{
 
 					int detectionQty = channelFrame->detections.size();
@@ -970,44 +1057,48 @@ void AWLQtDemo::DisplayReceiverValuesTo2DScanView()
 					for (int i = 0; i < detectionQty; i++)
 					{
 						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= receiverCapture->GetMinDistance()) && 
-							(detection->distance <= receiverCapture->GetMaxDistance(channelID))) 
+						if ((detection->distance >= receiverCaptures[receiverID]->GetMinDistance()) && 
+							(detection->distance <= receiverCaptures[receiverID]->GetMaxDistance(channelID))) 
 						{
-							detect.distanceRadial = detection->distance;
-							detect.id = detection->detectionID;
-							detect.fromChannel =  detection->channelID;
-							detect.angle = currentAngle;
-							detect.angleWidth = ((channelID > 4) ? 4.3  : 9.0);
-							detect.distanceLongitudinal = (-(detect.distanceRadial*cosf(DEG2RAD(detect.angle+180))));
-							detect.velocity = detection->velocity;
-							detect.acceleration = detection->acceleration;
-							detect.timeToCollision = detection->timeToCollision;
-							detect.threatLevel = detection ->threatLevel;
-							vect.append(detect);
+							Detection::Ptr storedDetection = detection;
+							detectionData.push_back(storedDetection);
 						}
 					}
 				}
+
 			}
 		}
 	}
-
-	m2DScan->slotDetectionDataChanged(&vect);
 }
 
+
 void AWLQtDemo::DisplayReceiverStatus()
+{
+
+	int receiverQty = receiverCaptures.size();
+	 for (int receiverID = 0; receiverID < receiverQty; receiverID++) 
+	 {
+		DisplayReceiverStatus(receiverID);
+	 }
+
+}
+
+void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 
 {
 	bool bEnableButtons = true;
 
-	if (receiverCapture) 
+	if (receiverID != 0) return;
+
+	if (receiverCaptures[receiverID]) 
 	{
 		bEnableButtons = true;
 
-		boost::mutex::scoped_lock rawLock(receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->GetMutex());
 
 
-		receiverCapture->receiverStatus.bUpdated = false;
-		ReceiverStatus status = receiverCapture->receiverStatus;
+		receiverCaptures[receiverID]->receiverStatus.bUpdated = false;
+		ReceiverStatus status = receiverCaptures[receiverID]->receiverStatus;
 		rawLock.unlock();
 
 		QString formattedString;
@@ -1080,8 +1171,8 @@ void AWLQtDemo::DisplayReceiverStatus()
 			ui.calibrateButton->setEnabled(true);
 			ui.stopButton->setEnabled(false);
 		}
-	}
-	else  /* ! receiverCapture */ 
+	}  // If receiverCaptures[receiverID]
+	else  /* ! receiverCapture[receiverID] */ 
 	{
 		bEnableButtons = false;
 
@@ -1135,52 +1226,16 @@ void AWLQtDemo::DisplayReceiverStatus()
 		UpdateGlobalParametersView();
 }
 
-void AWLQtDemo::PrepareTableViews()
-
-{
-	bool bDisplayVelocityKmh = AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsKMH;
-
-	QTableWidget *tableWidgets[channelQty];
-
-	tableWidgets[0] = ui.distanceTable1;
-	tableWidgets[1] = ui.distanceTable2;
-	tableWidgets[2] = ui.distanceTable3;
-	tableWidgets[3] = ui.distanceTable4;
-	tableWidgets[4] = ui.distanceTable5;
-	tableWidgets[5] = ui.distanceTable6;
-	tableWidgets[6] = ui.distanceTable7;
-
-	for (int sensor = 0; sensor < channelQty; sensor++) 
-	{
-		// Adjust the velocity title to display units
-		if (bDisplayVelocityKmh) 
-		{
-		tableWidgets[sensor]->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("Vel km/h");
-		}
-		else
-		{
-		tableWidgets[sensor]->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("Vel m/s");
-		}
-
-		// Create the table items
-		for (int row = 0; row < tableWidgets[sensor]->rowCount(); row++) 
-		{
-			for (int column = 0; column < tableWidgets[sensor]->columnCount(); column++)
-			{
-			QTableWidgetItem *newItem = new QTableWidgetItem("");
-			tableWidgets[sensor]->setItem(row, column, newItem);
-			}
-		}
-	}
-}
-
-
 
 void AWLQtDemo::on_algo1RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	receiverCapture->SetAlgorithm(1);
+	int receiverCount = receiverCaptures.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		receiverCaptures[receiverID]->SetAlgorithm(1);
+	}
 	PrepareParametersView();
 }
 
@@ -1188,7 +1243,11 @@ void AWLQtDemo::on_algo2RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	receiverCapture->SetAlgorithm(2);
+	int receiverCount = receiverCaptures.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		receiverCaptures[receiverID]->SetAlgorithm(2);
+	}
 	PrepareParametersView();
 }
 
@@ -1196,7 +1255,11 @@ void AWLQtDemo::on_algo3RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	receiverCapture->SetAlgorithm(3);
+	int receiverCount = receiverCaptures.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		receiverCaptures[receiverID]->SetAlgorithm(3);
+	}
 	PrepareParametersView();
 }
 
@@ -1205,7 +1268,11 @@ void AWLQtDemo::on_algo4RadioButton_setChecked(bool bChecked)
 {
 	if (!bChecked) return;
 
-	receiverCapture->SetAlgorithm(4);
+	int receiverCount = receiverCaptures.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		receiverCaptures[receiverID]->SetAlgorithm(4);
+	}
 	PrepareParametersView();
 }
 
@@ -1213,15 +1280,15 @@ void AWLQtDemo::PrepareParametersView()
 
 {
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
+	int currentAlgo = settingsPtr->defaultParametersAlgos.defaultAlgo;
 
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		currentAlgo = receiverCapture->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1250,13 +1317,13 @@ void AWLQtDemo::PrepareParametersView()
 	for (int row = 0; row < rowCount; row++) 
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
-		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex);
+		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
 		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 		newItem->setCheckState(Qt::Unchecked);
 		ui.parametersTable->setItem(row, eParameterCheckColumn, newItem);
 
 		// Column 1: Is Description .  Not editable text
-		newItem = new QTableWidgetItem(algoParameters[row].sDescription);
+		newItem = new QTableWidgetItem(algoParameters[row].sDescription.c_str());
 		newItem->setFlags(Qt::ItemIsEnabled);
 		ui.parametersTable->setItem(row, eParameterDescriptionColumn, newItem);
 
@@ -1294,18 +1361,15 @@ void AWLQtDemo::PrepareParametersView()
 void AWLQtDemo::UpdateParametersView()
 
 {
-
+	int currentAlgo;
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
-
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		currentAlgo = receiverCapture->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1351,17 +1415,15 @@ void AWLQtDemo::UpdateParametersView()
 }
 void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 {
+	int currentAlgo;
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
-
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		currentAlgo = receiverCapture->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1403,24 +1465,22 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
-			receiverCapture->SetAlgoParameter(settingsPtr->parametersAlgos[currentAlgo], parameterAddress, parameterValue); 
+			receiverCaptures[0]->SetAlgoParameter(currentAlgo, parameterAddress, parameterValue); 
 		} // if checked
 	} // for 
 }
 
 void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 {
+	int currentAlgo;
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultAlgo;
-
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		currentAlgo = receiverCapture->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->defaultAlgo;
+		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
 	}
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1443,7 +1503,7 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = algoParameters[row].address;
-			receiverCapture->QueryAlgoParameter(settingsPtr->parametersAlgos[currentAlgo],  parameterAddress); 
+			receiverCaptures[0]->QueryAlgoParameter(currentAlgo,  parameterAddress); 
 		} // if checked
 	} // for 
 }
@@ -1456,7 +1516,7 @@ void AWLQtDemo::PrepareGlobalParametersView()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1485,13 +1545,13 @@ void AWLQtDemo::PrepareGlobalParametersView()
 	for (int row = 0; row < rowCount; row++) 
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
-		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex);
+		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
 		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 		newItem->setCheckState(Qt::Unchecked);
 		ui.globalParametersTable->setItem(row, eParameterCheckColumn, newItem);
 
 		// Column 1: Is Description .  Not editable text
-		newItem = new QTableWidgetItem(algoParameters[row].sDescription);
+		newItem = new QTableWidgetItem(algoParameters[row].sDescription.c_str());
 		newItem->setFlags(Qt::ItemIsEnabled);
 		ui.globalParametersTable->setItem(row, eParameterDescriptionColumn, newItem);
 
@@ -1529,12 +1589,10 @@ void AWLQtDemo::PrepareGlobalParametersView()
 void AWLQtDemo::UpdateGlobalParametersView()
 
 {
-
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1583,8 +1641,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1626,7 +1683,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
-			receiverCapture->SetGlobalAlgoParameter(settingsPtr->parametersAlgos[currentAlgo], parameterAddress, parameterValue); 
+			receiverCaptures[0]->SetGlobalAlgoParameter(parameterAddress, parameterValue); 
 		} // if checked
 	} // for 
 }
@@ -1636,8 +1693,7 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	QList<AlgorithmParameters> algoParameters = settingsPtr->parametersAlgos[currentAlgo];
-
+	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1660,200 +1716,11 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 			ui.globalParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = algoParameters[row].address;
-			receiverCapture->QueryGlobalAlgoParameter(settingsPtr->parametersAlgos[currentAlgo],  parameterAddress); 
+			receiverCaptures[0]->QueryGlobalAlgoParameter(parameterAddress); 
 		} // if checked
 	} // for 
 }
 
-
-void AWLQtDemo::DisplayReceiverValues()
-
-{
-	QTableWidget *tableWidgets[channelQty];
-
-	tableWidgets[0] = ui.distanceTable1;
-	tableWidgets[1] = ui.distanceTable2;
-	tableWidgets[2] = ui.distanceTable3;
-	tableWidgets[3] = ui.distanceTable4;
-	tableWidgets[4] = ui.distanceTable5;
-	tableWidgets[5] = ui.distanceTable6;
-	tableWidgets[6] = ui.distanceTable7;
-
-	// Use the frame snapped by the main display timer as the current frame
-	// display will �
-	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
-
-	for (int channelID = 0; channelID < channelQty; channelID++) 
-	{
-		if (channelID < receiverCapture->GetChannelQty())
-		{
-			if (receiverCapture->GetFrameQty()) 
-			{
-
-				ChannelFrame::Ptr channelFrame(new ChannelFrame(channelID));
-
-				// Thread safe
-				// The UI thread "Snaps" the frame ID for all other interface objects to display
-				if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberID)) 
-				{
-
-					int detectionQty = channelFrame->detections.size();
-					int detectionIndex = 0;
-					for (int i = 0; i < detectionQty; i++)
-					{
-						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= receiverCapture->GetMinDistance()) && 
-							(detection->distance <= receiverCapture->GetMaxDistance(channelID))) 
-						{
-							AddDistanceToText(detectionIndex++, tableWidgets[channelID], detection);
-						}
-					}
-					for  (int i = detectionIndex; i < tableWidgets[channelID]->rowCount(); i++) 
-					{
-							AddDistanceToText(i, tableWidgets[channelID], 0);
-					}
-				}
-			}
-		}
-	}
-}
-
-
-void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable, Detection::Ptr &detection)
-
-{
-	if (detectionID >= pTable->rowCount()) return;
-
-	AddDistanceToText(detectionID, pTable, detection->trackID, detection->distance,  detection->threatLevel,
-		detection->intensity, detection->velocity, detection->acceleration, detection->timeToCollision,
-		detection->decelerationToStop, detection->probability);
-}
-
-void AWLQtDemo::AddDistanceToText(int detectionID, QTableWidget *pTable,  TrackID trackID, 
-								float distance, 
-								Detection::ThreatLevel threatLevel, 
-								float intensity,
-								float velocity,
-								float acceleration, 
-								float timeToCollision,
-								float decelerationToStop,
-								float probability
-								)
-
-{
-	QString distanceStr;
-	QString trackStr;
-	QString velocityStr;
-	QString intensityStr;
-	QString threatStr;
-	QColor  threatBackgroundColor;
-	QColor  threatTextColor(Qt::white);
-	QColor  threatEmptyColor(0x60, 0x60, 0x60);
-
-	if (detectionID >= pTable->rowCount()) return;
-
-	if ((distance <= 0.0) || isNAN(distance) || trackID == 0)
-	{
-		distanceStr.sprintf("");
-		trackStr.sprintf("");
-		velocityStr.sprintf("");
-		intensityStr.sprintf("");
-		threatStr.sprintf("");
-		threatBackgroundColor = threatEmptyColor;
-	}
-	else
-	{
-		distanceStr.sprintf("%.2f", distance);
-
-		if (trackID > 0) 
-		{
-			trackStr.sprintf("%d", trackID);
-		}
-		else 
-		{
-			trackStr.sprintf("");
-		}
-
-
-		if (!isNAN(velocity)) 
-		{
-			if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS)
-			{
-			velocityStr.sprintf("%.1f", velocity);  // Display velocity in m/s
-			}
-			else
-			{
-			velocityStr.sprintf("%.1f", VelocityToKmH(velocity));  // Display velocity in km/h
-			}
-		}
-		else 
-		{
-			velocityStr.sprintf("");
-		}
-
-		if (!isNAN(intensity))
-		{
-			intensityStr.sprintf("%.0f", intensity * 100);
-		}
-		else 
-		{
-			intensityStr.sprintf("");
-		}
-
-		if (!isNAN(decelerationToStop))
-		{
-			threatStr.sprintf("%.1f", decelerationToStop);
-		}
-		else
-		{
-			threatStr.sprintf("");
-		}
-
-
-		switch(threatLevel)
-		{
-		case Detection::eThreatNone:
-			{
-				threatBackgroundColor = Qt::blue;
-			}
-			break;
-
-		case Detection::eThreatLow:
-			{
-				threatBackgroundColor = Qt::green;
-			}
-			break;
-
-		case Detection::eThreatWarn:
-			{
-				threatBackgroundColor = Qt::yellow;
-				threatTextColor = Qt::black;
-			}
-			break;
-
-		case Detection::eThreatCritical:
-			{
-				threatBackgroundColor = Qt::red;
-			}
-			break;
-
-		default:
-			{
-			}
-		}
-	}
-
-	if (pTable->isVisible())
-	{
-		pTable->item(detectionID, eRealTimeDistanceColumn)->setText(distanceStr);
-		pTable->item(detectionID, eRealTimeVelocityColumn)->setText(velocityStr);
-		pTable->item(detectionID, eRealTimeTrackColumn)->setText(trackStr);
-		pTable->item(detectionID, eRealTimeLevelColumn)->setText(threatStr);
-	
-		pTable->item(detectionID, eRealTimeLevelColumn)->setBackgroundColor(threatBackgroundColor);
-		pTable->item(detectionID, eRealTimeLevelColumn)->setTextColor(threatTextColor);
-	}
-}
 
 void AWLQtDemo::on_view3DActionToggled()
 {
@@ -1878,12 +1745,20 @@ void AWLQtDemo::on_view2DActionToggled()
 		m2DScan->hide();
 }
 
+void AWLQtDemo::on_viewTableViewActionToggled()
+{
+	if (ui.actionTableView->isChecked())
+		mTableView->show();
+	else
+		mTableView->hide();
+}
+
 void AWLQtDemo::on_viewGraphActionToggled()
 {
 	if (ui.actionGraph->isChecked()) 
 	{
 		scopeWindow->show();
-		scopeWindow->start(receiverCapture);
+		scopeWindow->start(receiverCaptures[0]);
 	}
 	else
 	{
@@ -1895,9 +1770,20 @@ void AWLQtDemo::on_viewGraphActionToggled()
 void AWLQtDemo::on_viewCameraActionToggled()
 {
 	if (ui.actionCamera->isChecked())
-		videoViewer->Go();
+	{
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID]) videoViewers[viewerID]->Go();
+		}
+	}
+
 	else
-		videoViewer->Stop();
+	{
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+		}
+	}
 }
 
 void AWLQtDemo::on_view2DClose()
@@ -1905,6 +1791,10 @@ void AWLQtDemo::on_view2DClose()
 	ui.action2D->setChecked(false);
 }
 
+void AWLQtDemo::on_viewTableViewClose()
+{
+	ui.actionTableView->setChecked(false);
+}
 
 void AWLQtDemo::on_viewGraphClose()
 {
@@ -1914,12 +1804,11 @@ void AWLQtDemo::on_viewGraphClose()
 
 void AWLQtDemo::FillFPGAList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->registersFPGA.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersFPGA.size(); i++) 
 	{
-		QString sLabel = settingsPtr->registersFPGA[i].sDescription;
-		sLabel = settingsPtr->registersFPGA[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersFPGA[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->registersFPGA[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersFPGA[i].sDescription.c_str();
 		ui.registerFPGAAddressSetComboBox->addItem(sLabel);
 	}
 
@@ -1936,7 +1825,7 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	if (comboIndex < 0) return;
 
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->registersFPGA[comboIndex].address;
+	registerAddress = settingsPtr->receiverSettings[0].registersFPGA[comboIndex].address;
 
 	sValue = ui.registerFPGAValueSetLineEdit->text();
 	bool ok;
@@ -1954,9 +1843,9 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	ui.registerFPGAValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetFPGARegister(registerAddress, registerValue);
+		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
 	}
 
 }
@@ -1970,27 +1859,26 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 	if (comboIndex < 0) return;
 
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->registersFPGA[comboIndex].address;
+	registerAddress = settingsPtr->receiverSettings[0].registersFPGA[comboIndex].address;
 
 	// Now update user interface
 	ui.registerFPGAAddressGetLineEdit->setText("");
 	ui.registerFPGAValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->QueryFPGARegister(registerAddress);
+		receiverCaptures[0]->QueryFPGARegister(registerAddress);
 	}
 }
 
 void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->registersADC.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersADC.size(); i++) 
 	{
-		QString sLabel = settingsPtr->registersADC[i].sDescription;
-		sLabel = settingsPtr->registersADC[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersADC[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->registersADC[i].sDescription;
+		sLabel += settingsPtr->receiverSettings[0].registersADC[i].sDescription.c_str();
 		ui.registerADCAddressSetComboBox->addItem(sLabel);
 	}
 
@@ -2007,7 +1895,7 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	if (comboIndex < 0) return;
 
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->registersADC[comboIndex].address;
+	registerAddress = settingsPtr->receiverSettings[0].registersADC[comboIndex].address;
 
 	sValue = ui.registerADCValueSetLineEdit->text();
 	bool ok;
@@ -2025,9 +1913,9 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	ui.registerADCValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->SetADCRegister(registerAddress, registerValue);
+		receiverCaptures[0]->SetADCRegister(registerAddress, registerValue);
 	}
 
 }
@@ -2041,29 +1929,28 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 	if (comboIndex < 0) return;
 
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->registersADC[comboIndex].address;
+	registerAddress = settingsPtr->receiverSettings[0].registersADC[comboIndex].address;
 
 	// Now update user interface
 	ui.registerADCAddressGetLineEdit->setText("");
 	ui.registerADCValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCapture) 
+	if (receiverCaptures[0]) 
 	{
-		receiverCapture->QueryADCRegister(registerAddress);
+		receiverCaptures[0]->QueryADCRegister(registerAddress);
 	}
 }
 
 
 void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
-		QString sLabel = settingsPtr->registersGPIO[i].sDescription;
-		sLabel = settingsPtr->registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->registersGPIO[i].sDescription;
-		if (settingsPtr->registersGPIO[i].pendingUpdates)
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
+		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}
@@ -2082,20 +1969,19 @@ void AWLQtDemo::UpdateGPIOList()
 {
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 
-	for (int i = 0; i < settingsPtr->registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
 
-		QString sLabel = settingsPtr->registersGPIO[i].sDescription;
-		sLabel = settingsPtr->registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->registersGPIO[i].sDescription;
-		if (settingsPtr->registersGPIO[i].pendingUpdates)
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
+		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}
 	
-		if (settingsPtr->registersGPIO[i].value) 
+		if (settingsPtr->receiverSettings[0].registersGPIO[i].value) 
 		{
 			listItem->setCheckState(Qt::Checked);
 		}
@@ -2111,9 +1997,9 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < settingsPtr->registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
-		uint16_t registerAddress = settingsPtr->registersGPIO[i].address;
+		uint16_t registerAddress = settingsPtr->receiverSettings[0].registersGPIO[i].address;
 		uint32_t registerValue = 0;
 
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
@@ -2125,17 +2011,16 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 
 
 		// Send the command to the device
-		if (receiverCapture) 
+		if (receiverCaptures[0]) 
 		{
-			receiverCapture->SetGPIORegister(registerAddress, registerValue);
+			receiverCaptures[0]->SetGPIORegister(registerAddress, registerValue);
 		}
 
 		// Update the user interface
-		QString sLabel = settingsPtr->registersGPIO[i].sDescription;
-		sLabel = settingsPtr->registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->registersGPIO[i].sDescription;
-		if (settingsPtr->registersGPIO[i].pendingUpdates)
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
+		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}		
@@ -2149,24 +2034,23 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < settingsPtr->registersGPIO.count(); i++) 
+	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
 	{
-		uint16_t registerAddress = settingsPtr->registersGPIO[i].address;
+		uint16_t registerAddress = settingsPtr->receiverSettings[0].registersGPIO[i].address;
 
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
 	
 		// Send the command to the device
-		if (receiverCapture) 
+		if (receiverCaptures[0]) 
 		{
-			receiverCapture->QueryADCRegister(registerAddress);		
+			receiverCaptures[0]->QueryGPIORegister(registerAddress);		
 		}
 
 		// Update the user interface
-		QString sLabel = settingsPtr->registersGPIO[i].sDescription;
-		sLabel = settingsPtr->registersGPIO[i].sIndex;
+		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->registersGPIO[i].sDescription;
-		if (settingsPtr->registersGPIO[i].pendingUpdates)
+		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
+		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}		
@@ -2177,6 +2061,25 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 
 void AWLQtDemo::closeEvent(QCloseEvent * event)
 {
+	if (fusedCloudViewer) fusedCloudViewer->Stop();
+
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	{
+		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
+	}
+
+
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
+	}
+
+	if (receiver) receiver->Stop();
+	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+	{
+		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+	}
+
 	qApp->closeAllWindows();
 }	
 
