@@ -4,6 +4,8 @@
 #include <vector> 
 
 #ifndef Q_MOC_RUN
+#include <boost/shared_ptr.hpp>
+#include <boost/container/vector.hpp>
 #include <boost/thread/thread.hpp>
 #endif
 
@@ -26,6 +28,7 @@ public:
 	typedef  int SubscriberID;
 
 	typedef boost::shared_ptr<Subscription> Ptr;
+	typedef boost::container::vector<Subscription::Ptr> List;
 
 	Subscription();
 	Subscription::SubscriberID Subscribe();
@@ -46,7 +49,9 @@ public:
 	boost::mutex& GetMutex() {return (mMutex);};
 
 protected:
-	std::vector<int> subscribers;
+
+	// Fir each subscriber, the vector contains the quantity of unpublished news.
+	boost::container::vector<int> subscribers;
 
    boost::mutex mMutex;
 

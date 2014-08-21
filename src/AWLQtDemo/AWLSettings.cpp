@@ -1,21 +1,29 @@
 #include "AWLSettings.h"
 
-using namespace awl;
+#include <string>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+
+
+using namespace awl;
+using namespace std;
+const std::string sDefaultSettingsFileName("AWLDemoSettings.xml");
+
+
+void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up);
+
+void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float&roll);
+void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y);
+
+void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
+void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
 
 AWLSettings *AWLSettings::globalSettings=NULL;
 
-
 AWLSettings::AWLSettings():
-settings("AWLQTDemo.ini", QSettings::IniFormat),
-registersFPGA(),
-registersADC(),
-
-sensorHeight(0.0),
-sensorDepth(0.0),
-displayedRangeMin(0.0),
-displayedRangeMax(0.0),
-rangeOffset(0.0),
+sFileName(sDefaultSettingsFileName),
 targetHintDistance(0.0),
 targetHintAngle(0.0),
 decimation(3),
@@ -23,14 +31,7 @@ pixelSize(1),
 colorStyle(0),
 cameraView(3),
 sLogoFileName(""),
-sIconFileName(""),
-sCANCommPort("COM16"),
-sCANBitRate("S8"),
-msgEnableObstacle(false),
-msgEnableDistance_1_4(true),
-msgEnableDistance_5_8(true),
-msgEnableIntensity_1_4(true),
-msgEnableIntensity_5_8(true)
+sIconFileName("")
 
 {
 	cameraView = 3;
@@ -51,248 +52,308 @@ AWLSettings *AWLSettings::GetGlobalSettings()
 
 bool AWLSettings::ReadSettings()
 {
-	settings.beginGroup("registersAWL");
-	int size = settings.beginReadArray("register");
-	for (int i = 0; i < size; ++i) 
+	// Create an empty property tree object
+    using boost::property_tree::ptree;
+    ptree propTree;
+
+	// Load the XML file into the property tree. If reading fails
+    // (cannot open file, parse error), an exception is thrown.
+    read_xml(sFileName, propTree);
+
+	// Read all FPGA Registers default descriptions
+	BOOST_FOREACH(ptree::value_type &registersFPGANode, propTree.get_child("config.registersFPGA"))
 	{
-		settings.setArrayIndex(i);
-		RegisterSettings registerFPGA;
-		registerFPGA.sIndex = settings.value("index").toString();
-		registerFPGA.address = settings.value("address").toUInt();
-		registerFPGA.sDescription = settings.value("description").toString();
-		registerFPGA.value = 0L;
-		registerFPGA.pendingUpdates = 0;
-		
-		registersFPGA.append(registerFPGA);
-	}
+		if( registersFPGANode.first == "register" ) {
+			boost::property_tree::ptree &registerNode = registersFPGANode.second;
 
-	settings.endArray();
-	settings.endGroup();
+            RegisterSetting registerFPGA;
+            registerFPGA.sIndex = registerNode.get<std::string>("index");
+            registerFPGA.address = registerNode.get<uint16_t>("address");
+		    registerFPGA.sDescription = registerNode.get<std::string>("description");
+			registerFPGA.value = 0L;
+			registerFPGA.pendingUpdates = 0;
 
-	settings.beginGroup("registersADC");
-	size = settings.beginReadArray("register");
-	for (int i = 0; i < size; ++i) 
+			defaultRegistersFPGA.push_back(registerFPGA);
+        }
+    }
+ 
+ 
+	// Read all ADC Registers default descriptions
+	BOOST_FOREACH(ptree::value_type &registersADCNode, propTree.get_child("config.registersADC"))
 	{
-		settings.setArrayIndex(i);
-		RegisterSettings registerADC;
-		registerADC.sIndex = settings.value("index").toString();
-		registerADC.address = settings.value("address").toUInt();
-		registerADC.sDescription = settings.value("description").toString();
-		registerADC.value = 0L;
-		registerADC.pendingUpdates = 0;
-		registersADC.append(registerADC);
+		if( registersADCNode.first == "register" ) 
+		{
+			boost::property_tree::ptree &registerNode = registersADCNode.second;
 
-	}
-	settings.endArray();
-	settings.endGroup();
+            RegisterSetting registerADC;
+            registerADC.sIndex = registerNode.get<std::string>("index");
+            registerADC.address  = registerNode.get<uint16_t>("address");
+		    registerADC.sDescription = registerNode.get<std::string>("description");
+			registerADC.value = 0L;
+			registerADC.pendingUpdates = 0;
 
-	settings.beginGroup("GPIOs");
-	size = settings.beginReadArray("register");
-	for (int i = 0; i < size; ++i) 
+			defaultRegistersADC.push_back(registerADC);
+        }
+    }
+ 
+ 	BOOST_FOREACH(ptree::value_type &registersGPIONode, propTree.get_child("config.GPIOs"))
 	{
-		settings.setArrayIndex(i);
-		RegisterSettings registerGPIO;
-		registerGPIO.sIndex = settings.value("index").toString();
-		registerGPIO.address = settings.value("address").toUInt();
-		registerGPIO.sDescription = settings.value("description").toString();
-		registerGPIO.value = 0L;
-		registerGPIO.pendingUpdates = 0;
-		registersGPIO.append(registerGPIO);
+		if( registersGPIONode.first == "register" ) 
+		{
+			boost::property_tree::ptree &gpioNode = registersGPIONode.second;
 
-	}
-	settings.endArray();
-	settings.endGroup();
+            RegisterSetting registerGPIO;
+            registerGPIO.sIndex = gpioNode.get<std::string>("index");
+            registerGPIO.address  = gpioNode.get<uint16_t>("address");
+		    registerGPIO.sDescription = gpioNode.get<std::string>("description");
+			registerGPIO.value = 0L;
+			registerGPIO.pendingUpdates = 0;
 
-	settings.beginGroup("channelConfig");
-	size = settings.beginReadArray("channelConfig");
-	for (int i = 0; i < size; ++i) 
+			defaultRegistersGPIO.push_back(registerGPIO);
+        }
+    }
+
+	// Load all algorithm parameters for all algorithms and for global parameters
+	defaultParametersAlgos.defaultAlgo = propTree.get<uint16_t>("config.algos.defaultAlgo");
+	BOOST_FOREACH(ptree::value_type &algosNode, propTree.get_child("config.algos"))
 	{
-		settings.setArrayIndex(i);
-		ChannelConfig channelConfig;
-		channelConfig.channelIndex = settings.value("index").toInt();
-		channelConfig.fovX = settings.value("fovX").toFloat();
-		channelConfig.fovY = settings.value("fovY").toFloat();
-		channelConfig.centerX = settings.value("centerX").toFloat();
-		channelConfig.centerY = settings.value("centerY").toFloat();
-		channelConfig.maxRange = settings.value("maxRange").toFloat();
-		channelConfig.sMaskName = settings.value("maskName").toString();
-		channelConfig.sFrameName = settings.value("frameName").toString();
-		channelConfig.displayColorRed = (uint8_t) settings.value("displayColorRed").toUInt();
-		channelConfig.displayColorGreen = (uint8_t) settings.value("displayColorGreen").toUInt();
-		channelConfig.displayColorBlue = (uint8_t) settings.value("displayColorBlue").toUInt();
-		channelsConfig.append(channelConfig);
-	}
-	settings.endArray();
-	settings.endGroup();
+		if (algosNode.first == "algo")
+		{
+			boost::property_tree::ptree &algoNode = algosNode.second;
+			AlgorithmDescription algoDescription;	
+			algoDescription.algoID = algoNode.get<uint16_t>("algoID");
+			algoDescription.sAlgoName = algoNode.get<std::string>("algoName");
+
+			// All channel info for the receiver
+			BOOST_FOREACH(ptree::value_type &parametersNode, algoNode/*.get_child("parameter")*/)
+			{
+#if 1
+				if( parametersNode.first == "parameter" ) 
+				{
+					boost::property_tree::ptree &parameterNode = parametersNode.second;
+					AlgorithmParameter parameter;
+					parameter.sIndex = parameterNode.get<std::string>("index");
+					parameter.address = parameterNode.get<uint16_t>("address");
+					parameter.sDescription = parameterNode.get<std::string>("description");
+					std::string sType = parameterNode.get<std::string>("type");
+					if (!sType.compare("int")) 
+					{
+						parameter.paramType = eAlgoParamInt;
+						parameter.intValue = parameterNode.get<uint32_t>("default");
+						parameter.floatValue = 0.0;
+					}
+					else if (!sType.compare("float")) 
+					{
+						parameter.paramType = eAlgoParamFloat;
+						parameter.intValue = 0;
+						parameter.floatValue = parameterNode.get<float>("default");
+					}
+
+					parameter.pendingUpdates = 0;
+					algoDescription.parameters.push_back(parameter);
+				} // if (parametersNode.first)
+#else
+					boost::property_tree::ptree &parameterNode = parametersNode.second;
+					AlgorithmParameter parameter;
+					parameter.sIndex = parameterNode.get<std::string>("index");
+					parameter.sIndex = parameterNode.get<uint16_t>("address");
+					parameter.sDescription = parameterNode.get<std::string>("description");
+					std::string sType = parameterNode.get<std::string>("type");
+					if (!sType.compare("int")) 
+					{
+						parameter.paramType = eAlgoParamInt;
+						parameter.intValue = parameterNode.get<uint32_t>("default");
+						parameter.floatValue = 0.0;
+					}
+					else if (!sType.compare("float")) 
+					{
+						parameter.paramType = eAlgoParamFloat;
+						parameter.intValue = 0;
+						parameter.floatValue = parameterNode.get<float>("default");
+					}
+
+					parameter.pendingUpdates = 0;
+					algoDescription.parameters.push_back(parameter);
+#endif
+			} // BOOST_FOREACH (parametersNode)
+
+			defaultParametersAlgos.algorithms.push_back(algoDescription);
+		} //		if (algoNode.first == "algo")
+	} // BOOST_FOREACH(algosNode)
+
+
+	// Loop for all Receiver Configurations
+	BOOST_FOREACH(ptree::value_type &receiversNode, propTree.get_child("config.receivers"))
+	{
+		if( receiversNode.first == "receiver" ) 
+		{
+			boost::property_tree::ptree &receiverNode = receiversNode.second;
+			ReceiverSettings receiver;
+
+			receiver.sReceiverType = receiverNode.get<std::string>("receiverType");
+			receiver.receiverChannelMask = receiverNode.get<uint8_t>("channelMask");
+			receiver.receiverFrameRate = receiverNode.get<uint8_t>("frameRate");
+
+			// Communication parameters
+			receiver.sCommPort =  receiverNode.get<std::string>("commPort");
+			receiver.serialPortRate =  receiverNode.get<long>("serialPortRate");
+			receiver.sCANBitRate = receiverNode.get<std::string>("bitRate");
+			receiver.yearOffset = receiverNode.get<uint16_t>("yearOffset");
+			receiver.monthOffset = receiverNode.get<uint16_t>("monthOffset");
+
+			// Messages enabled
+			receiver.msgEnableObstacle = receiverNode.get<bool>("msgEnableObstacle");
+			receiver.msgEnableDistance_1_4 = receiverNode.get<bool>("msgEnableDistance_1_4");
+			receiver.msgEnableDistance_5_8 = receiverNode.get<bool>("msgEnableDistance_5_8");
+			receiver.msgEnableIntensity_1_4 = receiverNode.get<bool>("msgEnableIntensity_1_4");
+			receiver.msgEnableIntensity_5_8 = receiverNode.get<bool>("msgEnableIntensity_5_8");
+
+			// Geometry
+			boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
+			GetGeometry(geometryNode, 
+				        receiver.sensorForward, receiver.sensorLeft, receiver.sensorUp,
+						receiver.sensorPitch, receiver.sensorYaw, receiver.sensorRoll);
+
+			// Display
+			receiver.displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
+			receiver.displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
+			receiver.rangeOffset = receiverNode.get<float>("rangeOffset");
+
+			// All channel info for the receiver
+			BOOST_FOREACH(ptree::value_type &channelsNode, receiverNode)
+			{
+				if( channelsNode.first == "channel" ) 
+				{
+					boost::property_tree::ptree &channelNode = channelsNode.second;
+					ChannelConfig channelConfig;
+
+					channelConfig.channelIndex = channelNode.get<int>("index");
+					Get2DPoint(channelNode.get_child("fov"), channelConfig.fovWidth, channelConfig.fovHeight);
+					float roll;
+					GetOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
+					channelConfig.maxRange = channelNode.get<float>("maxRange");
+					
+					GetColor(channelNode.get_child("displayColor"), 
+						     channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
+
+					receiver.channelsConfig.push_back(channelConfig);
+				}// if( receiversNode.first == "channel"
+			} // BOOST_FOREACH(ptree::value_type &channelsNode
+
+			// Copy default register, adc, GPIO and algo settings into each receiver
+			receiver.registersFPGA = defaultRegistersFPGA;
+			receiver.registersADC = defaultRegistersADC;
+			receiver.registersGPIO = defaultRegistersGPIO;
+			receiver.parametersAlgos = defaultParametersAlgos;
+			// Store
+			receiverSettings.push_back(receiver);
+		} //if ( receiversNode.first == "receiver" 
+	} // BOOST_FOREACH(receiversNode
+
+
+	// Loop for each camera Configurations
+	BOOST_FOREACH(ptree::value_type &camerasNode, propTree.get_child("config.cameras"))
+	{
+		if( camerasNode.first == "camera" ) 
+		{
+			boost::property_tree::ptree &cameraNode = camerasNode.second;
+			CameraSettings camera;
+
+			camera.sCameraName = cameraNode.get<std::string>("cameraName");
+			camera.cameraFlip = cameraNode.get<bool>("cameraFlip");
+			GetGeometry(cameraNode,
+					camera.cameraForward, camera.cameraLeft, camera.cameraUp,
+					camera.cameraPitch, camera.cameraYaw, camera.cameraRoll);
+			Get2DPoint(cameraNode.get_child("fov"), camera.cameraFovWidthDegrees, camera.cameraFovHeightDegrees);
+
+			// Store
+			cameraSettings.push_back(camera);
+		} //if ( receiversNode.first == "receiver" 
+	} // BOOST_FOREACH(receiversNode
 
 
 	// Debug and log file control
-	settings.beginGroup("debug");
-	bWriteDebugFile = settings.value("enableDebugFile").toBool();
-	bWriteLogFile = settings.value("enableLogFile").toBool();
-	settings.endGroup();
-
-	// Default algo
-	settings.beginGroup("algos");
-	defaultAlgo = settings.value("defaultAlgo").toInt();
-	settings.endGroup();
-
-	// Load all algorithm parameters for all algorithms and for global parameters
-	for (int algoIndex = 0; algoIndex <= ALGO_QTY; algoIndex++)
-	{
-		QString sAlgoGroupName;
-		sAlgoGroupName.sprintf("Algo%02d", algoIndex);
-
-		settings.beginGroup(sAlgoGroupName);
-
-		sAlgoNames[algoIndex] = settings.value("algoName").toString();
-
-		size = settings.beginReadArray("parameter");
-		for (int i = 0; i < size; ++i) 
-		{
-			settings.setArrayIndex(i);
-			AlgorithmParameters parameters;
-			parameters.sIndex = settings.value("index").toString();
-			parameters.address = settings.value("address").toUInt();
-			parameters.sDescription = settings.value("description").toString();
-			QString sType = settings.value("type").toString();
-			if (!sType.compare("int")) 
-			{
-				parameters.paramType = eAlgoParamInt;
-				parameters.intValue = settings.value("default").toInt();
-				parameters.floatValue = 0.0;
-			}
-			else if (!sType.compare("float")) 
-			{
-				parameters.paramType = eAlgoParamFloat;
-				parameters.floatValue = 0;
-				parameters.floatValue = settings.value("default").toFloat();
-			}
-
-			parameters.pendingUpdates = 0;
-			parametersAlgos[algoIndex].append(parameters);
-
-		}
-
-		settings.endArray();
-		settings.endGroup();
-	}
+	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile");
+	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile");
 
 	// Other settings
 
-	settings.beginGroup("demoMode");
-	bEnableDemo = settings.value("enableDemo").toBool();
-	this->demoInjectType = settings.value("injectType").toInt();
-	settings.endGroup();
-
-	settings.beginGroup("layout");
-	bDisplay3DWindow = settings.value("display3DWindow").toBool();
-	bDisplay2DWindow = settings.value("display2DWindow").toBool();
-	bDisplayScopeWindow = settings.value("displayScopeWindow").toBool();
-	bDisplayCameraWindow = settings.value("displayCameraWindow").toBool();
-
-	velocityUnits = (VelocityUnits) settings.value("velocityUnits").toInt();
-
-	sLogoFileName = settings.value("logoFileName").toString();
-	sIconFileName = settings.value("iconFileName").toString();
-	settings.endGroup();
-
-	settings.beginGroup("calibration");
-	sensorHeight = settings.value("sensorHeight").toFloat();
-	sensorDepth = settings.value("sensorDepth").toFloat();
-	displayedRangeMin = settings.value("displayedRangeMin").toFloat();
-	displayedRangeMax = settings.value("displayedRangeMax").toFloat();
-	rangeOffset = settings.value("rangeOffset").toFloat();
-	distanceScale = settings.value("distanceScale").toFloat();
-	targetHintDistance = settings.value("targetHintDistance").toFloat();
-	targetHintAngle = settings.value("targetHintAngle").toFloat();
-	settings.endGroup();
-
-	settings.beginGroup("display3D");
-	decimation = settings.value("decimation").toInt();
-	pixelSize = settings.value("pixelSize").toInt();
-	colorStyle =settings.value("colorStyle").toInt();
-	cameraView = settings.value("cameraView").toInt();
-	settings.endGroup();
-
-	settings.beginGroup("display2D");
-	shortRangeDistance = settings.value("shortRangeDistance").toFloat();
-	shortRangeDistanceStartLimited = settings.value("shortRangeDistanceStartLimited").toFloat();
-	shortRangeAngle = settings.value("shortRangeAngle").toFloat();
-	shortRangeAngleStartLimited = settings.value("shortRangeAngleStartLimited").toFloat();
-
-	longRangeDistance = settings.value("longRangeDistance").toFloat();
-	longRangeDistanceStartLimited = settings.value("longRangeDistanceStartLimited").toFloat();
-	longRangeAngle = settings.value("longRangeAngle").toFloat();
-	longRangeAngleStartLimited = settings.value("longRangeAngleStartLimited").toFloat();
-
-	showPalette = settings.value("showPalette").toInt();
-	mergeDisplayMode = settings.value("mergeDisplayMode").toInt();
-	measureMode = settings.value("measureMode").toInt();
-	mergeAcceptance = settings.value("mergeAcceptance").toFloat();
-	colorCode2D = settings.value("colorCode").toInt();
-	maxVelocity2D = settings.value("maxVelocity").toFloat();
-	zeroVelocity = settings.value("zeroVelocity").toFloat();
-	settings.endGroup();
-
-	
-	settings.beginGroup("receiver");
-	sReceiverType = settings.value("receiverType").toString();
-	receiverChannelMask = settings.value("channelMask").toUInt();
-	receiverFrameRate = settings.value("frameRate").toUInt();
-
-	msgEnableObstacle = settings.value("msgEnableObstacle").toBool();
-	msgEnableDistance_1_4 = settings.value("msgEnableDistance_1_4").toBool();
-	msgEnableDistance_5_8 = settings.value("msgEnableDistance_5_8").toBool();
-	msgEnableIntensity_1_4 = settings.value("msgEnableIntensity_1_4").toBool();
-	msgEnableIntensity_5_8 = settings.value("msgEnableIntensity_5_8").toBool();
+	bEnableDemo = propTree.get<bool>("config.demoMode.enableDemo");
+	demoInjectType = propTree.get<int>("config.demoMode.injectType");
 
 
-	settings.endGroup();
+	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow");
+	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow");
+	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow");;
+	bDisplayScopeWindow = propTree.get<bool>("config.layout.displayScopeWindow");
+	bDisplayCameraWindow = propTree.get<bool>("config.layout.displayCameraWindow");
 
-	settings.beginGroup("bareMetalComm");
-	sBareMetalCommPort = settings.value("commPort").toString();
-	serialBareMetalPortRate = settings.value("serialPortRate").toLongLong();
-	settings.endGroup();
+	velocityUnits = (VelocityUnits) propTree.get<int>("config.layout.velocityUnits");
 
-	settings.beginGroup("CAN");
-	sCANCommPort = settings.value("commPort").toString();
-	sCANBitRate = settings.value("bitRate").toString();
-	serialCANPortRate = settings.value("serialPortRate").toLongLong();
-	yearOffsetCAN = settings.value("yearOffset").toUInt();
-	monthOffsetCAN = settings.value("monthOffset").toUInt();
-	settings.endGroup();
+	sLogoFileName = propTree.get<std::string>("config.layout.logoFileName");
+	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
 
-	settings.beginGroup("scope");
-	scopeTimerInterval = settings.value("timerInterval").toInt();
-	bDisplayScopeDistance = settings.value("displayScopeDistance").toBool();
-	bDisplayScopeVelocity = settings.value("displayScopeVelocity").toBool();
-	settings.endGroup();
+	distanceScale =  propTree.get<float>("config.calibration.distanceScale");
+	targetHintDistance = propTree.get<float>("config.calibration.targetHintDistance");
+	targetHintAngle = propTree.get<float>("config.calibration.targetHintAngle");
 
-	settings.beginGroup("dynamicTesting");
-	threatLevelCriticalThreshold = settings.value("threatLevelCriticalThreshold").toFloat();
-	threatLevelWarnThreshold = settings.value("threatLevelWarnThreshold").toFloat();
-	threatLevelLowThreshold = settings.value("threatLevelLowThreshold").toFloat();
+	decimation = propTree.get<int>("config.display3D.decimation");
+	pixelSize = propTree.get<int>("config.display3D.pixelSize");
+	colorStyle =propTree.get<int>("config.display3D.colorStyle");
+	cameraView =propTree.get<int>("config.display3D.cameraView");
+	viewerDepth =  propTree.get<float>("config.display3D.viewerDepth");
+	viewerHeight = propTree.get<float>("config.display3D.viewerHeight");
+	viewerMaxRange =  propTree.get<float>("config.display3D.viewerMaxRange");
 
-	brakingDeceleration = settings.value("brakingDeceleration").toFloat();
-	travelSpeed = settings.value("travelSpeed").toFloat();
-	settings.endGroup();
-	
-	settings.beginGroup("camera");
-	cameraFovXDegrees = settings.value("cameraFovX").toFloat();
-	cameraFovYDegrees = settings.value("cameraFovY").toFloat();
-	settings.endGroup();
+	displayedDetectionsPerChannelInTableView = propTree.get<int>("config.displayTableView.displayedDetectionsPerChannelInTableView");
+
+	carWidth = propTree.get<float>("config.display2D.carWidth");
+	carLength = propTree.get<float>("config.display2D.carLength");
+	carHeight = propTree.get<float>("config.display2D.carHeight");
+	laneWidth = propTree.get<float>("config.display2D.laneWidth");
+	shortRangeDistance = propTree.get<float>("config.display2D.shortRangeDistance");
+	shortRangeDistanceStartLimited = propTree.get<float>("config.display2D.shortRangeDistanceStartLimited");
+	shortRangeAngle = propTree.get<float>("config.display2D.shortRangeAngle");
+	shortRangeAngleStartLimited = propTree.get<float>("config.display2D.shortRangeAngleStartLimited");
+
+	longRangeDistance = propTree.get<float>("config.display2D.longRangeDistance");
+	longRangeDistanceStartLimited = propTree.get<float>("config.display2D.longRangeDistanceStartLimited");
+	longRangeAngle = propTree.get<float>("config.display2D.longRangeAngle");
+	longRangeAngleStartLimited = propTree.get<float>("config.display2D.longRangeAngleStartLimited");
+
+	showPalette = propTree.get<int>("config.display2D.showPalette");
+	mergeDisplayMode = propTree.get<int>("config.display2D.mergeDisplayMode");
+	measureMode = propTree.get<int>("config.display2D.measureMode");
+	Get2DPoint(propTree.get_child("config.display2D.mergeAcceptance"), mergeAcceptanceX, mergeAcceptanceY);
+	colorCode2D = propTree.get<int>("config.display2D.colorCode");
+	maxVelocity2D = propTree.get<float>("config.display2D.maxVelocity");
+	zeroVelocity = propTree.get<float>("config.display2D.zeroVelocity");
+	displayDistanceMode2D = propTree.get<int>("config.display2D.displayDistances");
+
+	scopeTimerInterval = propTree.get<int>("config.scope.timerInterval");
+	bDisplayScopeDistance = propTree.get<bool>("config.scope.displayScopeDistance");
+	bDisplayScopeVelocity = propTree.get<bool>("config.scope.displayScopeVelocity");
+
+
+	threatLevelCriticalThreshold = propTree.get<float>("config.dynamicTesting.threatLevelCriticalThreshold");
+	threatLevelWarnThreshold = propTree.get<float>("config.dynamicTesting.threatLevelWarnThreshold");
+	threatLevelLowThreshold = propTree.get<float>("config.dynamicTesting.threatLevelLowThreshold");
+	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
+	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 
 	return(true);
 }
 
 
-int AWLSettings::FindRegisterFPGAByAddress(uint16_t inAddress)
+int AWLSettings::FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress)
 
 {
-	for (int i = 0; i < registersFPGA.count(); i++) 
+	if (receiverID >= receiverSettings.size()) return(-1);
+
+	const RegisterSet *registersFPGA  = &(receiverSettings.at(receiverID).registersFPGA);
+	for (int i = 0; i < registersFPGA->size(); i++) 
 	{
-		if (registersFPGA[i].address == inAddress)
+		if (registersFPGA->at(i).address == inAddress)
 		{
 			return(i);
 		}
@@ -301,12 +362,15 @@ int AWLSettings::FindRegisterFPGAByAddress(uint16_t inAddress)
 	return(-1);
 }
 
-int AWLSettings::FindRegisterADCByAddress(uint16_t inAddress)
+int AWLSettings::FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress)
 
 {
-	for (int i = 0; i < registersADC.count(); i++) 
+	if (receiverID >= receiverSettings.size()) return(-1);
+
+	const RegisterSet *registersADC  = &(receiverSettings.at(receiverID).registersADC);
+	for (int i = 0; i < registersADC->size(); i++) 
 	{
-		if (registersADC[i].address == inAddress)
+		if (registersADC->at(i).address == inAddress)
 		{
 			return(i);
 		}
@@ -315,12 +379,15 @@ int AWLSettings::FindRegisterADCByAddress(uint16_t inAddress)
 	return(-1);
 }
 
-int AWLSettings::FindRegisterGPIOByAddress(uint16_t inAddress)
+int AWLSettings::FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress)
 
 {
-	for (int i = 0; i < registersGPIO.count(); i++) 
+	if (receiverID >= receiverSettings.size()) return(-1);
+
+	const RegisterSet *registersGPIO  = &(receiverSettings.at(receiverID).registersGPIO);
+	for (int i = 0; i < registersGPIO->size(); i++) 
 	{
-		if (registersGPIO[i].address == inAddress)
+		if (registersGPIO->at(i).address == inAddress)
 		{
 			return(i);
 		}
@@ -329,16 +396,53 @@ int AWLSettings::FindRegisterGPIOByAddress(uint16_t inAddress)
 	return(-1);
 }
 
-int AWLSettings::FindAlgoParamByAddress(QList<AlgorithmParameters>&paramList, uint16_t inAddress)
+AlgorithmParameter * AWLSettings::FindAlgoParamByAddress(int receiverID, int algoID, uint16_t inAddress)
 {
-	for (int i = 0; i < paramList.count(); i++) 
+
+	for (int i = 0; i < receiverSettings[receiverID].parametersAlgos.algorithms[algoID].parameters.size(); i++) 	
 	{
-		if (paramList[i].address == inAddress)
+		if ( receiverSettings[receiverID].parametersAlgos.algorithms[algoID].parameters[i].address == inAddress)
 		{
-			return(i);
+			return(&receiverSettings[receiverID].parametersAlgos.algorithms[algoID].parameters[i]);
 		}
 	}
 
-	return(-1);
+	return(NULL);
 }
+
+void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up)
+{
+	forward = node.get<float>("forward");
+	left = node.get<float>("left");
+	up = node.get<float>("up");
+}
+
+void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float &roll)
+{
+	pitch = node.get<float>("pitch");
+	yaw = node.get<float>("yaw");
+	roll = node.get<float>("roll");
+}
+
+void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y)
+{
+	x = node.get<float>("x");
+	y = node.get<float>("y");
+}
+
+void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll)
+{
+	boost::property_tree::ptree &positionNode = geometryNode.get_child("position");
+	boost::property_tree::ptree &orientationNode = geometryNode.get_child("orientation");
+	GetPosition(positionNode, forward, left, up);
+	GetOrientation(orientationNode, pitch, yaw, roll);
+}
+
+void GetColor(boost::property_tree::ptree &colorNode, uint8_t &red, uint8_t &green, uint8_t &blue)
+{
+	red = colorNode.get<uint8_t>("red");
+	green = colorNode.get<uint8_t>("green");
+	blue = colorNode.get<uint8_t>("blue");
+}
+
 

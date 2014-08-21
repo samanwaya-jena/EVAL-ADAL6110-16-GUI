@@ -1,17 +1,18 @@
+#include <QDesktopWidget>
+#include <QApplication>
+#include <qwt_plot_curve.h>
+#include <qlabel.h>
+#include <qlayout.h>
+
 #include "awlqtscope.h"
 #include "AWLScopePlot.h"
 #include "knob.h"
 #include "wheelbox.h"
 
-#include <QDesktopWidget>
-#include <QApplication>
-#include <qwt_scale_engine.h>
-#include <qwt_plot_curve.h>
-#include <qlabel.h>
-#include <qlayout.h>
-
 #include "AWLSettings.h"
 #include "DebugPrintf.h"
+#include "tracker.h"
+
 
 int timerInterval = 30; // In ms.  So 30FPS
 
@@ -34,16 +35,21 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 	timerInterval = globalSettings->scopeTimerInterval;
 
 	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.isEmpty())
+	if (!globalSettings->sIconFileName.empty())
 	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName));
+		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
 	}
 
 	// In demo mode, change the title of the Window
 	if (globalSettings->bEnableDemo)
 	{
-		this->setWindowTitle(this->windowTitle() + " [DEMO Mode]");
+		this->setWindowTitle(this->windowTitle() + " [DEMO Mode]" + " Scope view");
 	}
+	else 
+	{
+		this->setWindowTitle(this->windowTitle() + " Scope view");
+	}
+
 
 	// Position the widget on the top left corner
 	QRect scr = QApplication::desktop()->screenGeometry();

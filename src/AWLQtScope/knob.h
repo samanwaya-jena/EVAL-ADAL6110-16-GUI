@@ -2,6 +2,7 @@
 #define _KNOB_H_
 
 #include <qwidget.h>
+#include <qvector.h>
 
 class QwtKnob;
 class QLabel;

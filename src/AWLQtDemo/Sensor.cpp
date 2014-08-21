@@ -1,23 +1,17 @@
-#define CV_NO_BACKWARD_COMPATIBILITY
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-
-#include <iostream>
-#include <cstdio>
-
-#include "VideoCapture.h"
-#include "ReceiverCapture.h"
-#include "Sensor.h"
-#include "AWLSettings.h"
+#include <fstream>
 
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
 
+
+#include "Sensor.h"
+#include "VideoCapture.h"
+#include "ReceiverCapture.h"
+#include "AWLSettings.h"
+#include "awlcoord.h"
+
 #include "windows.h"
+
 using namespace std;
 using namespace pcl;
 using namespace awl;
@@ -26,19 +20,17 @@ const int threadSleepDelay = 10;  // Thread sleep time between iterations.
 
 const cv::Vec3b cvBlack(0, 0, 0);
 
-ReceiverChannel::ReceiverChannel(	const int inChannelID, const float inFovX, const float inFovY, 
+ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID, const float inFovWidth, const float inFovHeight, 
 						const float inCenterX, const float inCenterY, const float inRangeMax, 
-						const std::string inMaskName, const std::string inFrameName,
 						bool inDisplayUnderZero, 
 						double inDisplayColorR, double inDisplayColorG, double inDisplayColorB):
+	receiverID(inReceiverID),
 	channelID(inChannelID),
-	fovWidthX(inFovX),
-	fovWidthY(inFovY),
+	fovWidthX(inFovWidth),
+	fovWidthY(inFovHeight),
 	fovCenterX(inCenterX),
 	fovCenterY(inCenterY),
 	rangeMax(inRangeMax), 
-	maskName(inMaskName),
-	frameName(inFrameName),
 	displayColorR(inDisplayColorR),
 	displayColorG(inDisplayColorG),
 	displayColorB(inDisplayColorB),
@@ -51,26 +43,19 @@ ReceiverChannel::ReceiverChannel(	const int inChannelID, const float inFovX, con
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	sensorHeight = globalSettings->sensorHeight;
-	sensorDepth = globalSettings->sensorDepth;
-//	rangeMax = globalSettings->displayedRangeMax;
+	sensorUp = globalSettings->receiverSettings[receiverID].sensorUp;
+	sensorForward = globalSettings->receiverSettings[receiverID].sensorForward;
+	rangeMax = globalSettings->receiverSettings[receiverID].displayedRangeMax;
 
 
 	WCHAR directoryName[255];
 	::GetCurrentDirectoryW(255, directoryName);
-
-	maskImage = cv::imread( maskName, 1 );
-	if( maskImage.empty() )
-	{
-	cerr << "Error: invalid maskImage " << maskName << endl;
-	}
-
-	frameImage = cv::imread( frameName, 1 );
-	if( frameImage.empty() )
-	{
-	cerr << "Error: invalid maskImage" << maskName << endl;
-	}
 } 
+
+ReceiverChannel::~ReceiverChannel()
+{
+
+}
 
 void ReceiverChannel::AddDistancesToCloud()
 {
@@ -82,7 +67,7 @@ void ReceiverChannel::AddDistancesToCloud()
 		if (receiverCapture->GetFrameQty()) 
 		{
 	
-			ChannelFrame::Ptr channelFrame(new ChannelFrame(channelID));
+			ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverCapture->receiverID, channelID));
 
 			// Thread safe
 
@@ -111,13 +96,14 @@ void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)
 	PointXYZRGB newCloudPoint;
 	PointWithRange pointWithRange;
 	cv::Vec3b mask;
-	cv::Vec3b color;
 
 	assert(backgroundPtr!= NULL);
 	assert(colorPtr != NULL);
 
 	int size = maskPoints.size();
 	CvPoint *point = (CvPoint *) maskPoints.data();
+
+	mask.val[0] = 1; mask.val[1] = 1; mask.val[2] = 1;
 
 	for (int i = 0; i < size; i++, point++) 
 	{
@@ -130,10 +116,10 @@ void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)
 
 		if (bIsOnY && bIsOnX)// Display only points that are an even multimple of decimation Y
 		{
-			if (y < maskImage.rows && y < colorPtr->rows && y < backgroundPtr->rows &&
-				x < maskImage.cols && x < colorPtr->cols && x < backgroundPtr->cols) 
+			if (y < colorPtr->rows && y < backgroundPtr->rows &&
+				x < colorPtr->cols && x < backgroundPtr->cols) 
 			{
-				AddDistanceToCloud((const cv::Vec3b &) maskImage.at<cv::Vec3b>(y, x), 
+				AddDistanceToCloud((const cv::Vec3b &) mask, 
 										  (const cv::Vec3b &) colorPtr->at<cv::Vec3b>(y, x), 
 										  (cv::Vec3b &) backgroundPtr->at<cv::Vec3b>(y, x), 
 										   x, y, inDistance, inIntensity);
@@ -158,9 +144,9 @@ void ReceiverChannel::AddDistanceToCloud(const cv::Vec3b &mask,
 		// Define point location
 		float pointX = ((float) xPos);
 		float pointY = imageHeight - (float)yPos;
-		receiverCoordinatesPtr->GetXYZFromRange(pointX, pointY, inDistance, newCloudPoint);
+		viewerCoordinatesPtr->GetXYZFromRange(pointX, pointY, inDistance, newCloudPoint);
 
-		if ((newCloudPoint.y > (-sensorHeight)) || displayUnderZero) {
+		if ((newCloudPoint.y > (-sensorUp)) || displayUnderZero) {
 			newCloudPoint.b = color[0];
 			newCloudPoint.g = color[1];
 			newCloudPoint.r = color[2];
@@ -200,24 +186,22 @@ void ReceiverChannel::AddPointToCloud(float x, float y, float z,
 	currentCloud->points.push_back((pcl::PointXYZRGB) newCloudPoint);
 }
 
-void ReceiverChannel::UpdateReceiverCoordinates(ReceiverCoordinates::Ptr &inReceiverCoordinatesPtr)
+void ReceiverChannel::UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCoordinatesPtr)
 {
-	receiverCoordinatesPtr = inReceiverCoordinatesPtr;
-	imageWidth = receiverCoordinatesPtr->GetWidth();
-	imageHeight = receiverCoordinatesPtr->GetHeight();
-	imageCenterX = imageWidth / 2;
-	imageCenterY = imageHeight / 2;
+	viewerCoordinatesPtr = inViewerCoordinatesPtr;
+	imageWidth = viewerCoordinatesPtr->GetWidth();
+	imageHeight = viewerCoordinatesPtr->GetHeight();
 
 	float x, y;
-	receiverCoordinatesPtr->getImagePointFromAngles(fovCenterX - (fovWidthX/2), 
-											 fovCenterY - (fovWidthY/2),
+	viewerCoordinatesPtr->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
+											 (fovCenterY) - (fovWidthY/2),
 											 x, y);
 	topLeftX = (int) x;
 	bottomRightY = imageHeight - (int) y;  // Y is reversed between video and cloudView!
 
 			
-	receiverCoordinatesPtr->getImagePointFromAngles(fovCenterX + (fovWidthX/2), 
-											 fovCenterY + (fovWidthY/2),
+	viewerCoordinatesPtr->getImagePointFromAngles(-(fovCenterX + (fovWidthX/2)), 
+											 (fovCenterY) + (fovWidthY/2),
 											 x, y);
 	bottomRightX = (int) x;
 	topLeftY = imageHeight - (int) y; // Y is reversed between video and cloudView!
@@ -227,12 +211,17 @@ void ReceiverChannel::UpdateReceiverCoordinates(ReceiverCoordinates::Ptr &inRece
 	if (bottomRightX >= imageWidth) bottomRightX = imageWidth - 1;
 	if (bottomRightY >= imageHeight) bottomRightY = imageHeight - 1;
 
-	topLeftX = 0;
-	topLeftY = 0;
-	bottomRightX = imageWidth-1;
-	bottomRightY = imageHeight- 1;
-
 	BuildPixelMask();
+}
+
+bool IsPtInCircle( CvPoint2D32f pt, CvPoint2D32f center, float radius )
+{
+    double dx = pt.x - center.x;
+    double dy = pt.y - center.y;
+    if (((double)radius*radius - dx*dx - dy*dy) > 0) 
+		return (true);
+	else
+		return(false);
 }
 
 void ReceiverChannel::BuildPixelMask()
@@ -243,12 +232,22 @@ void ReceiverChannel::BuildPixelMask()
 	cv::Vec3b mask;
 	cv::Vec3b color;
 
+	CvPoint2D32f center;
+	center.x = (topLeftX + bottomRightX) /2;
+	center.y = (topLeftY + bottomRightY) / 2;
+	int radius = (bottomRightY - topLeftY) / 2;
+	if (radius < 0) radius = 0;
+
+
 	for (int y = 0; y < imageHeight; y++)
 	{
 		for (int x = 0; x < imageWidth; x++) 
 		{
-			cv::Vec3b mask = maskImage.at<cv::Vec3b>(y, x);
-			if (mask[0] | mask.val[1] | mask.val[2])  
+			CvPoint2D32f thePoint;
+			thePoint.x = x;
+			thePoint.y = y;
+
+			if (IsPtInCircle(thePoint, center, radius))
 			{
 				CvPoint maskPoint;
 				maskPoint.x = x;
@@ -259,24 +258,23 @@ void ReceiverChannel::BuildPixelMask()
 	}
 }
 
-void ReceiverChannel::GetChannelLimits(ReceiverCoordinates::Ptr &inReceiverCoordinates, double &minX, double &minY, double &minZ, 
+void ReceiverChannel::GetChannelLimits(ViewerCoordinates::Ptr &inViewerCoordinates, double &minX, double &minY, double &minZ, 
 		double &maxX, double &maxY, double &maxZ, double &originX, double &originY, double &originZ)
 {
-	imageWidth = inReceiverCoordinates->GetWidth();
-	imageHeight = inReceiverCoordinates->GetHeight();
-	imageCenterX = imageWidth / 2;
-	imageCenterY = imageHeight / 2;
+	imageWidth = inViewerCoordinates->GetWidth();
+	imageHeight = inViewerCoordinates->GetHeight();
+
 	float x, y;
 
-	inReceiverCoordinates->getImagePointFromAngles(fovCenterX - (fovWidthX/2), 
-											 fovCenterY - (fovWidthY/2),
+	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
+											 (fovCenterY) - (fovWidthY/2),
 											 x, y);
 	int topLeftX = (int) x;
 	int bottomRightY = imageHeight - (int) y;  // Y is reversed between video and cloudView!
 
 			
-	inReceiverCoordinates->getImagePointFromAngles(fovCenterX + (fovWidthX/2), 
-											 fovCenterY + (fovWidthY/2),
+	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX + (fovWidthX/2)), 
+											 (fovCenterY) + (fovWidthY/2),
 											 x, y);
 	int bottomRightX = (int) x;
 	int topLeftY = imageHeight - (int) y; // Y is reversed between video and cloudView!
@@ -287,10 +285,10 @@ void ReceiverChannel::GetChannelLimits(ReceiverCoordinates::Ptr &inReceiverCoord
 	if (bottomRightY >= imageHeight) bottomRightY = imageHeight - 1;
 
 	PointXYZRGB topLeftPoint;
-	inReceiverCoordinates->GetXYZFromRange((float)topLeftX, (float)topLeftY, rangeMax, topLeftPoint);
+	inViewerCoordinates->GetXYZFromRange((float)topLeftX, (float)topLeftY, rangeMax, topLeftPoint);
 
 	PointXYZRGB bottomRightPoint;
-	inReceiverCoordinates->GetXYZFromRange((float)bottomRightX, (float)bottomRightY, rangeMax, bottomRightPoint);
+	inViewerCoordinates->GetXYZFromRange((float)bottomRightX, (float)bottomRightY, rangeMax, bottomRightPoint);
 	
 	minX = topLeftPoint.x;
 	minY = topLeftPoint.y;
@@ -300,27 +298,25 @@ void ReceiverChannel::GetChannelLimits(ReceiverCoordinates::Ptr &inReceiverCoord
 	maxZ = bottomRightPoint.z;
 
 	originX = 0;
-	originY = sensorHeight;
-	originZ = sensorDepth;
+	originY = sensorUp;
+	originZ = sensorForward;
 }
 
-void ReceiverChannel::GetChannelRect(ReceiverCoordinates::Ptr &inReceiverCoordinates, int &top, int &left, int &bottom, int &right)
+void ReceiverChannel::GetChannelRect(ViewerCoordinates::Ptr &inViewerCoordinates, int &top, int &left, int &bottom, int &right)
 {
-	imageWidth = inReceiverCoordinates->GetWidth();
-	imageHeight = inReceiverCoordinates->GetHeight();
-	imageCenterX = imageWidth / 2;
-	imageCenterY = imageHeight / 2;
+	imageWidth = inViewerCoordinates->GetWidth();
+	imageHeight = inViewerCoordinates->GetHeight();
 	float x, y;
 
-	inReceiverCoordinates->getImagePointFromAngles(fovCenterX - (fovWidthX/2), 
-											 fovCenterY - (fovWidthY/2),
+	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX - (fovWidthX/2)), 
+											 (fovCenterY) - (fovWidthY/2),
 											 x, y);
 	left = (int) x;
 	bottom = imageHeight - (int) y;  // Y is reversed between video and cloudView!
 
 			
-	inReceiverCoordinates->getImagePointFromAngles(fovCenterX + (fovWidthX/2), 
-											 fovCenterY + (fovWidthY/2),
+	inViewerCoordinates->getImagePointFromAngles(-(fovCenterX + (fovWidthX/2)), 
+											 (fovCenterY) + (fovWidthY/2),
 											 x, y);
 	right = (int) x;
 	top = imageHeight - (int) y; // Y is reversed between video and cloudView!
@@ -381,24 +377,24 @@ void ReceiverChannel::GetDecimation(int &outDecimationX, int &outDecimationY)
 	outDecimationY = decimationY;
 }
 
-void ReceiverChannel::SetSensorHeight(double inSensorHeight)
+void ReceiverChannel::SetSensorUp(double inSensorUp)
 {
-	sensorHeight = inSensorHeight;
+	sensorUp = inSensorUp;
 }
 
-void ReceiverChannel::GetSensorHeight(double &outSensorHeight)
+void ReceiverChannel::GetSensorUp(double &outSensorUp)
 {
-	outSensorHeight = sensorHeight;
+	outSensorUp = sensorUp;
 }
 
-void ReceiverChannel::SetSensorDepth(double inSensorDepth)
+void ReceiverChannel::SetSensorForward(double inSensorForward)
 {
-	sensorDepth = inSensorDepth;
+	sensorForward = inSensorForward;
 }
 
-void ReceiverChannel::GetSensorDepth(double &outSensorDepth)
+void ReceiverChannel::GetSensorForward(double &outSensorForward)
 {
-	outSensorDepth = sensorDepth;
+	outSensorForward = sensorForward;
 }
 
 void ReceiverChannel::SetRangeMax(double inRangeMax)
@@ -448,9 +444,9 @@ currentCloudSubscriptions(new(Subscription))
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	sensorHeight = globalSettings->sensorHeight;
-	sensorDepth = globalSettings->sensorDepth;
-	rangeMax = globalSettings->displayedRangeMax;
+	viewerHeight = globalSettings->viewerHeight;
+	viewerDepth = globalSettings->viewerDepth;
+	rangeMax = globalSettings->viewerMaxRange;
 	decimationX = globalSettings->decimation;
 	decimationY = globalSettings->decimation;
 
@@ -510,11 +506,11 @@ void ReceiverProjector::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	frameHeight = videoCapture->GetFrameHeight();
 	frameRate = videoCapture->GetFrameRate();
 	scale = videoCapture->GetScale();
-	cameraFovX = videoCapture->GetCameraFovX();
-	cameraFovY = videoCapture->GetCameraFovY();
+	cameraFovWidth = videoCapture->GetCameraFovWidth();
+	cameraFovHeight = videoCapture->GetCameraFovHeight();
 
-	mReceiverCoordinatesPtr = ReceiverCoordinates::Ptr(new ReceiverCoordinates(frameWidth, frameHeight, 
-                                                cameraFovX, cameraFovY, sensorHeight, sensorDepth, rangeMax));
+	mViewerCoordinatesPtr = ViewerCoordinates::Ptr(new ViewerCoordinates(frameWidth, frameHeight, 
+                                                cameraFovWidth, cameraFovHeight, viewerHeight, viewerDepth, rangeMax));
 
 	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
 	videoLock.unlock();
@@ -560,7 +556,7 @@ ReceiverChannel::Ptr & ReceiverProjector::GetChannel(int inChannelID)
 
 ReceiverChannel::Ptr &ReceiverProjector::AddChannel(ReceiverChannel::Ptr &inChannelPtr) 
 {
-	inChannelPtr->UpdateReceiverCoordinates(mReceiverCoordinatesPtr);
+	inChannelPtr->UpdateViewerCoordinates(mViewerCoordinatesPtr);
 	receiverChannels.push_back(inChannelPtr);
 
 	return inChannelPtr;
@@ -661,9 +657,6 @@ void ReceiverProjector::AddDistancesToCloud()
 		GetChannel(channelID)->SetCurrentCloud(cloud);
 		GetChannel(channelID)->SetDisplayUnderZero(displayUnderZero);
 		GetChannel(channelID)->SetDecimation(decimationX, decimationY);
-		GetChannel(channelID)->SetSensorHeight(sensorHeight);
-		GetChannel(channelID)->SetSensorDepth(sensorDepth);
-//		GetChannel(channelID)->SetRangeMax(rangeMax);
 		GetChannel(channelID)->SetReceiver(receiverCapture, currentReceiverCaptureSubscriberID );
 	}
 
@@ -679,12 +672,12 @@ void ReceiverProjector::AddDistancesToCloud()
 void ReceiverProjector::GetChannelLimits(int channel, double &minX, double &minY, double &minZ, 
 	double &maxX, double &maxY, double &maxZ, double &originX, double &originY, double &originZ)
 {
-	GetChannel(channel)->GetChannelLimits(mReceiverCoordinatesPtr, minX, minY, minZ, maxX, maxY, maxZ, originX, originY, originZ);
+	GetChannel(channel)->GetChannelLimits(mViewerCoordinatesPtr, minX, minY, minZ, maxX, maxY, maxZ, originX, originY, originZ);
 }
 
 void ReceiverProjector::GetChannelRect(int channel, int &top, int &left, int &bottom, int &right)
 {
-	GetChannel(channel)->GetChannelRect(mReceiverCoordinatesPtr, top, left, bottom, right);
+	GetChannel(channel)->GetChannelRect(mViewerCoordinatesPtr, top, left, bottom, right);
 }
 
 
@@ -710,8 +703,8 @@ void ReceiverProjector::AddBackgroundToCloud()
 	PointWithRange pointWithRange;
 	cv::Vec3b cvColor;
 
-	int width = mReceiverCoordinatesPtr->GetWidth();
-	int height = mReceiverCoordinatesPtr->GetHeight();
+	int width = mViewerCoordinatesPtr->GetWidth();
+	int height = mViewerCoordinatesPtr->GetHeight();
 
 	if (height > backgroundFrame->rows || width > backgroundFrame->cols)
 		return;
@@ -724,7 +717,7 @@ void ReceiverProjector::AddBackgroundToCloud()
 			float pointX = ((float) i);
 			float pointY = height - (float)j;
 
-			mReceiverCoordinatesPtr->GetXYZFromRange(pointX, pointY, 50.0, newCloudPoint);
+			mViewerCoordinatesPtr->GetXYZFromRange(pointX, pointY, 50.0, newCloudPoint);
 
 			cvColor = backgroundFrame->at<cv::Vec3b>(j, i); // extract color from Mat
 
@@ -743,7 +736,7 @@ void ReceiverProjector::AddBackgroundToCloud()
 	
 	// Add a reference point at 0, 0, 0.
 	// This is used as baseline for color scheme of the range display.
-	mReceiverCoordinatesPtr->GetXYZFromRange(0.0, 0.0, 0.0,newCloudPoint);
+	mViewerCoordinatesPtr->GetXYZFromRange(0.0, 0.0, 0.0,newCloudPoint);
 	newCloudPoint.b = newCloudPoint.g = newCloudPoint.b = 0;
 	newCloudPoint.a = 255;
 
@@ -793,38 +786,38 @@ void ReceiverProjector::GetDecimation(int &outDecimationX, int &outDecimationY)
 
 static int entryCount = 0;
 static int lockDepth = 0;
-void ReceiverProjector::SetSensorHeight(double inSensorHeight)
+void ReceiverProjector::SetViewerHeight(double inViewerHeight)
 {
 
 	entryCount++;
 	lockDepth++;
 	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
 
-	sensorHeight = inSensorHeight;
-	mReceiverCoordinatesPtr->SetSensorHeight(inSensorHeight);
+	viewerHeight = inViewerHeight;
+	mViewerCoordinatesPtr->SetViewerHeight(inViewerHeight);
 	cloudLock.unlock();
 	lockDepth--;
 }
 
-void ReceiverProjector::GetSensorHeight(double &outSensorHeight)
+void ReceiverProjector::GetViewerHeight(double &outViewerHeight)
 {
-	outSensorHeight = sensorHeight;
+	outViewerHeight = viewerHeight;
 }
 
-void ReceiverProjector::SetSensorDepth(double inSensorDepth)
+void ReceiverProjector::SetViewerDepth(double inViewerDepth)
 {
 
 	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
 
-	sensorHeight = inSensorDepth;
-	mReceiverCoordinatesPtr->SetSensorHeight(inSensorDepth);
+	viewerDepth = inViewerDepth;
+	mViewerCoordinatesPtr->SetViewerDepth(inViewerDepth);
 	cloudLock.unlock();
 }
 
 
-void ReceiverProjector::GetSensorDepth(double &outSensorDepth)
+void ReceiverProjector::GetViewerDepth(double &outViewerDepth)
 {
-	outSensorDepth = sensorDepth;
+	outViewerDepth = viewerDepth;
 }
 
 void ReceiverProjector::GetRangeMax(double &outRangeMax)
@@ -840,39 +833,39 @@ void ReceiverProjector::SetRangeMax(double inRangeMax)
 	rangeMax = inRangeMax;
 #if 0
 	// There is no management of the range max value in the coordinates ptr
-	mReceiverCoordinatesPtr->SetSensorHeight(inSensorDepth);
+	mViewerCoordinatesPtr->SetSensorUp(inSensorUp);
 #endif
 	cloudLock.unlock();
 }
 
-void ReceiverProjector::SetCameraFovX(double inFovX)
+void ReceiverProjector::SetCameraFovWidth(double inFovWidth)
 {
 
 	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
 
-	cameraFovX = inFovX;
-	mReceiverCoordinatesPtr->SetCameraFovX(inFovX);
+	cameraFovWidth = inFovWidth;
+	mViewerCoordinatesPtr->SetCameraFovWidth(inFovWidth);
 	cloudLock.unlock();
 }
 
-void ReceiverProjector::GetCameraFovY(double &outFovY)
+void ReceiverProjector::GetCameraFovHeight(double &outFovHeight)
 {
-	outFovY = cameraFovY;
+	outFovHeight = cameraFovHeight;
 }
 
-void ReceiverProjector::SetCameraFovY(double inFovY)
+void ReceiverProjector::SetCameraFovHeight(double inFovHeight)
 {
 
 	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
 
-	cameraFovY = inFovY;
-	mReceiverCoordinatesPtr->SetCameraFovY(inFovY);
+	cameraFovHeight = inFovHeight;
+	mViewerCoordinatesPtr->SetCameraFovHeight(inFovHeight);
 	cloudLock.unlock();
 }
 
-void ReceiverProjector::GetCameraFovX(double &outFovX)
+void ReceiverProjector::GetCameraFovWidth(double &outFovWidth)
 {
-	outFovX = cameraFovX;
+	outFovWidth = cameraFovWidth;
 }
 
 void ReceiverProjector::ResetCloud()
@@ -890,30 +883,30 @@ void ReceiverProjector::ResetCloud()
 }
 
 
-ReceiverCoordinates::ReceiverCoordinates(const int inWidth, const int inHeight, const double inFovX, const double inFovY, 
-	const double inSensorHeight, double inSensorDepth, double inRangeMax):
+ViewerCoordinates::ViewerCoordinates(const int inWidth, const int inHeight, const double inFovWidth, const double inFovHeight, 
+	const double inViewerHeight, double inViewerDepth, double inRangeMax):
 pcl::RangeImage(),
 width(inWidth),
 height(inHeight),
-fovX(inFovX),
-fovY(inFovY),
-sensorHeight(inSensorHeight),
-sensorDepth(inSensorDepth),
+fovWidth(inFovWidth),
+fovHeight(inFovHeight),
+viewerHeight(inViewerHeight),
+viewerDepth(inViewerDepth),
 rangeMax(inRangeMax)
 {
    // We now want to create a range image from the above point cloud, with an angular resolution
    // that corresponds to the video resolution
-  float angularResolutionX = float (inFovX / width);
-  float angularResolutionY = float (inFovY / height);
-  float maxAngleWidth     = (float) inFovX;  // 180.0 degree in radians
-  float maxAngleHeight    = (float) inFovY;  // 180.0 degree in radians
+  float angularResolutionX = float (inFovWidth / width);
+  float angularResolutionY = float (inFovHeight / height);
+  float maxAngleWidth     = (float) inFovWidth;  // 180.0 degree in radians
+  float maxAngleHeight    = (float) inFovHeight;  // 180.0 degree in radians
   Eigen::Affine3f sensorPose = (Eigen::Affine3f)Eigen::Translation3f(0.0f, 0.0f, 0.0f);
   pcl::RangeImage::CoordinateFrame coordinateFrame = pcl::RangeImage::CAMERA_FRAME;
 
   pcl::RangeImage::createEmpty(angularResolutionX, angularResolutionY, sensorPose, coordinateFrame, maxAngleWidth,  maxAngleHeight);
 }
 
-void ReceiverCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
+void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
 									PointXYZRGB &ioCloudPoint)
 {
 	float angle_x, angle_y;
@@ -927,51 +920,46 @@ void ReceiverCoordinates::GetXYZFromRange(float inPointX, float inPointY, float 
 	ioCloudPoint.y = inPointZ * sinf (angle_y);
 	ioCloudPoint.z = inPointZ * cosf (angle_x)*cosY;
 
-#if 0
-	// We offset the values to the sensor offset position
-	ioCloudPoint.y += sensorHeight;
-	ioCloudPoint.z += sensorDepth;
-#else
+
 	// We offset the values to the sensor offset position
 	// depth is compensated for at receiver level, so we undo the offset here. 
-	ioCloudPoint.z -= sensorDepth;
-#endif
+	ioCloudPoint.z -= viewerDepth;
 }
 
 	/** \brief Sets   horizontal camera FOV.
-      * \param[in] cameraFovX horizontal FOV of camera in radians.
+      * \param[in] cameraFovWidth horizontal FOV of camera in radians.
 	  */
-void ReceiverCoordinates::SetCameraFovX(double inCameraFovX)
+void ViewerCoordinates::SetCameraFovWidth(double inCameraFovWidth)
 {
-	fovX = inCameraFovX;
+	fovWidth = inCameraFovWidth;
 }
 
 	/** \brief Sets   verticsl camera FOV.
-      * \param[in] cameraFovY vertical FOV of camera in radians.
+      * \param[in] cameraFovHeight vertical FOV of camera in radians.
 	      */
-void ReceiverCoordinates::SetCameraFovY(double inCameraFovY)
+void ViewerCoordinates::SetCameraFovHeight(double inCameraFovHeight)
 {
-	fovY = inCameraFovY;
+	fovHeight = inCameraFovHeight;
 }
 
-void ReceiverCoordinates::SetSensorHeight(double inSensorHeight)
+void ViewerCoordinates::SetViewerHeight(double inViewerHeight)
 {
-	sensorHeight = inSensorHeight;
+	viewerHeight = inViewerHeight;
 }
 
-void ReceiverCoordinates::GetSensorHeight(double &outSensorHeight)
+void ViewerCoordinates::GetViewerHeight(double &outViewerHeight)
 {
-	outSensorHeight = sensorHeight;
+	outViewerHeight = viewerHeight;
 }
 
-void ReceiverCoordinates::SetSensorDepth(double inSensorDepth)
+void ViewerCoordinates::SetViewerDepth(double inViewerDepth)
 {
-	sensorHeight = inSensorDepth;
+	viewerDepth = inViewerDepth;
 }
 
-void ReceiverCoordinates::GetSensorDepth(double &outSensorDepth)
+void ViewerCoordinates::GetViewerDepth(double &outViewerDepth)
 {
-	outSensorDepth = sensorDepth;
+	outViewerDepth = viewerDepth;
 }
 
 

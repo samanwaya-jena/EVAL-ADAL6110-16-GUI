@@ -1,17 +1,10 @@
 #ifndef AWL_RECEIVER_CAN_CAPTURE_H
 #define AWL_RECEIVER_CAN_CAPTURE_H
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
 #include <stdint.h>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/range_image/range_image.h>
-
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
 #endif
@@ -21,8 +14,8 @@
 #include "Subscription.h"
 #include "Tracker.h"
 #include "ReceiverCapture.h"
+
 using namespace std;
-using namespace pcl;
 
 namespace awl
 {
@@ -66,12 +59,12 @@ public:
 public:
 
 	/** \brief ReceiverCANCapture constructor.
+ 	    * \param[in] inReceiverID  unique receiverID
  	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
       */
 
-	ReceiverCANCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannels, int argc, char** argv);
+	ReceiverCANCapture(int receiverID, int inSequenceID, int inReceiverChannelQty);
 
 	/** \brief ReceiverCANCapture Destructor.  Insures that all threads are stopped before destruction.
       */
@@ -188,20 +181,22 @@ public:
 		
 	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue);
 
-		/** \brief Sets algorithm parameters to the value sent as argument. 
+	/** \brief Sets algorithm parameters to the value sent as argument. 
+	  *\param[in] algoID ID of the detection algo affected by the change.
 	  *\param[in] registerAddress Adrress of the parameter to change.
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue);
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the parameter to change.
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
-	virtual bool SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+		
+	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue);
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -243,31 +238,25 @@ public:
 		*/
 	virtual bool QueryGPIORegister(uint16_t registerAddress);
 
-		/** \brief Send an asynchronous query command for an algorithm parameter. 
+	/** \brief Send an asynchronous query command for an algorithm parameter. 
+		  *\param[in] algoID ID of the detection algo for which we want to query.
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
+	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress);
 
 		/** \brief Send an asynchronous query command for a global algorithm parameter. 
+		  *\param[in] algoID ID of the detection algo for which we want to query.
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
-
+	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress);
 // Protected methods
 protected:
-
-	/** \brief Process the command line arguments related to the CAN port.
-	  *        Arguments are :  --bitRate%s  the bitrate command to the canPort, according to EasySync documents.
-	  *                         ("S2" = 50Kbps, "S8" = 1Mbps)
-	  *                         --comPort%s the com port identifier (default is "COM16");.
-	  */
-	virtual void ProcessCommandLineArguments(int argc, char** argv);
 
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
@@ -299,8 +288,6 @@ protected:
  	    * \param[in] inMsg   CAN message contents
       */
 	void ParseChannelDistance(AWLCANMessage &inMsg);
-
-	
 
 
 	/** \brief Read the intensity readings from CAN messages (40-46 50-56)
@@ -387,24 +374,24 @@ protected:
 	  * \remarks Once the port is successfully opened, use the "reader" pointer to access the can data.
 	  *          If opening the port fails, reader is set to NULL.
 	  */
-	bool OpenCANPort();
+	virtual bool OpenCANPort();
 
 
 	/** \brief Closes the CAN port and associated objects.
 	  * \returns true if the port is successfully closed, false otherwise.
 	  */
-	bool CloseCANPort();
+	virtual bool CloseCANPort();
 
 	/** \brief Synchronous write of a sting in the stream 
  	  * \param[in] inString  Message to send
       */
-	void WriteString(std::string inString);
+	virtual void WriteString(std::string inString);
 
 	/** \brief Synchronous write of a CAN message in the stream 
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
       */
-	bool WriteMessage(const AWLCANMessage &inMsg);
+	virtual bool WriteMessage(const AWLCANMessage &inMsg);
 
 	/** \brief Put the current date and time to the CAN port
  	  * \return true iof the function was successful. false otherwise.
@@ -437,6 +424,8 @@ protected:
 		// will time out a read after 500 milliseconds.
 		blocking_reader *reader; 
 
+		// counter in the closeCanPort call, used to avoid reentry iduring thread close
+		int closeCANReentryCount;
 };
 
 } // namespace AWL

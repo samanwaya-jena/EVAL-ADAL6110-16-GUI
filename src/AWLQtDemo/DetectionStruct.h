@@ -1,36 +1,14 @@
 #ifndef DETECTIONSTRUCT_H
 #define DETECTIONSTRUCT_H
 
-#include <QVector>
+#include <boost/container/vector.hpp>
+
 #include "Tracker.h"
 
-
-/** \brief Structure containing detected object information. */
-typedef struct
+namespace awl
 {
-    int id;									// Id of the detected object
-    float distanceRadial;					// Distance from sensor (Radial)
-	float distanceLongitudinal;				// Distance from bumper
-    float angle;							// Angle where the object is detected (Center)
-    float angleWidth;						// Size of the object (in fact, angle width of the sensor)
-	int fromChannel;						// Channel where the object was detected
 
-	/** \brief Velocity, in m/s.  Positive velocity means target is moving away from sensor */
-	float velocity;
-
-	/** \brief acceleration, in m/s squared */
-	float acceleration;
-
-	/** \brief Time to collision, in seconds */
-	float timeToCollision;
-
-	/** \brief Required acceleration to zero speed, in m/s2seconds */
-	float decelerationToStop;
-
-	/** \brief Threat level associated to detection */
-	awl::Detection::ThreatLevel	threatLevel;
-
-}DetectionData;
+typedef boost::container::vector<Detection::Ptr> DetectionDataVect;
 
 /** \brief Structure containing 2D View configuration. */
 typedef struct
@@ -45,10 +23,10 @@ typedef struct
     float longRangeAngle;					// Max angle width for long range sensor (Including limited angle)
     float longRangeAngleStartLimited;		// Limited angle for long range sensor 
 
-    float sensorDepth;				// Sensor distance from bumper 
-    float sensorHeight;				// Sensor distance from ground
+    float spareDepth;				// Sensor distance from bumper 
 }ConfigSensor;
 
-typedef QVector<DetectionData> DetectionDataVect;
 
+
+} // namespace awl
 #endif // DETECTIONSTRUCT_H

@@ -3,12 +3,10 @@
 
 #define CV_NO_BACKWARD_COMPATIBILITY
 
-
-#include <iostream>
+#include <fstream>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
 #endif
 
 using namespace std;
@@ -20,8 +18,6 @@ using namespace std;
 
 #include "subscription.h"
 
-// Frame rate, in frame per seconds
-#define FRAME_RATE	33.0
 
 namespace awl
 {
@@ -38,12 +34,15 @@ public:
 	
 	typedef boost::shared_ptr<VideoCapture> Ptr;
 	typedef boost::shared_ptr<VideoCapture const> ConstPtr;
+	typedef boost::container::vector<VideoCapture::Ptr> List;
+	typedef VideoCapture::List *ListPtr;
 
 	/** \brief Video Capture constructor.
-      * \param[in] argc command-line argument count
-      * \param[in] argv command line argument strings
+      * \param[in] inCameraID index of the camera in the configuration parameters.
+      * \param[in] argc command-line argument count.  Used in OpenCV cvInit() call.
+      * \param[in] argv command line argument strings. Used in OpenCV cvInit() call.
       */
-	VideoCapture(int argc, char** argv);
+	VideoCapture(int inCameraID, int argc, char** argv);
 
 	/** \brief Video Capture destructor.  Insures that the thread is stopped.
 
@@ -62,6 +61,12 @@ public:
       * \return true if the video acquisition thread is stoppped.
       */
 	bool  WasStopped();
+
+	/** \brief Return the camera ID.
+      * \return cameraID (also is the index of the camera in our structures).
+      */
+	double GetCameraID() {return(cameraID);};
+
 
 	/** \brief Return the video frame rate.
       * \return video acquisition frame rate in FPS.
@@ -88,17 +93,12 @@ public:
 	/** \brief Return the  horizontal camera FOV.
       * \return horizontal camera FOV in radians.
       */
-	double GetCameraFovX() {return(cameraFovX);}
+	double GetCameraFovWidth() {return(cameraFovWidth);}
 
 	/** \brief Return the  vertical camera FOV.
       * \return vertical camera FOV in radians.
       */
-	double GetCameraFovY() {return(cameraFovY);}
-
-	/** \brief Return the current frame. 
-      * \return a boost shared pointer to the current frame.
-      */
-	VideoCapture::FramePtr GetCurrentFrame();
+	double GetCameraFovHeight() {return(cameraFovHeight);}
 
 	/** \brief Copy the current frame to the targetFrame.  The current frame is thread-locked during transfer
       * \param[out] targetFrame pointer to the target frame that will get copied to.
@@ -129,11 +129,13 @@ protected:
 
 
 protected:
+	/** \brief Index of the camera in the configuration parameter list */
+	int cameraID;
 	
     /** \brief Local flag indicating a request for termination */
 	volatile bool mStopRequested;
 
-	    /** \brief Local flag indicating the termination of thread loop function. */
+	/** \brief Local flag indicating the termination of thread loop function. */
 	volatile bool mThreadExited;
 
     /** \brief Video acquisition thread . */
@@ -141,7 +143,6 @@ protected:
 
 	/**\brief thread mutex*/
 	boost::mutex mMutex;
-
 
     /** \brief Current video frame width. */
 	int frameWidth;
@@ -156,21 +157,21 @@ protected:
 	double scale;
 
 	/** \brief Horizontal field of view of the camera. */
-	float cameraFovX;
+	float cameraFovWidth;
 	/** \brief Vertical field of view of the camera. */
-	float cameraFovY;
+	float cameraFovHeight;
+
+	/** \brief Set cameraFlip to true for 180 degree rotation of the camera image. */
+	bool bCameraFlip;
 
 	/** \brief Video capture device. */
-	CvCapture* capture;
+	cv::VideoCapture cam;
 
 	/** \brief Captured image. Should be for reference purposes. */
-    boost::shared_ptr<cv::Mat> currentFrame; 
+    cv::Mat currentFrame; 
 
 	/** \brief Captured image-directly from CVCapture. Should be for reference purposes. */
-    boost::shared_ptr<cv::Mat> bufferFrame; 
-
-	/** \brief An image as loaded on file stream.Captured image. Should be for reference purposes. */
-	cv::Mat image;
+    cv::Mat bufferFrame; 
 }; // VideoCapture
 
 } // namespace awl

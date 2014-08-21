@@ -1,25 +1,32 @@
 #ifndef _AWLSettings__H
 #define _AWLSettings__H
 
-#include <QtCore/qlist.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qstringlist.h>
-#include <QSettings>
-
+#include <string>
+#include <boost/container/vector.hpp>
 #include <stdint.h>
+
+#define VelocityToKmH(velocity) (velocity * 3.6)
+
+#define ALGO_QTY 4
+#define GLOBAL_PARAMETERS_INDEX 0
 
 namespace awl
 {
 
-	typedef struct RegisterSettings 
+	typedef int ReceiverID;
+
+	typedef struct RegisterSetting 
 	{
-		QString sIndex;
+		std::string sIndex;
 		uint16_t address;
-		QString sDescription;
+		std::string sDescription;
 		uint32_t value;
 		int pendingUpdates;
 	}
-	RegisterSettings;
+	RegisterSetting;
+	
+	typedef boost::container::vector<RegisterSetting> RegisterSet;
+
 
 	typedef enum  {
 		eAlgoParamInt = 0,
@@ -27,33 +34,51 @@ namespace awl
 	}
 	AlgoParamType;
 
-	typedef struct AlgorithmParameters 
+	typedef struct AlgorithmParameter 
 	{
-		QString sIndex;
+		std::string sIndex;
 		uint16_t address;
-		QString sDescription;
+		std::string sDescription;
 		AlgoParamType paramType;
 		uint32_t intValue;
 		float floatValue;
 		int pendingUpdates;
 	}
-	AlgorithmParameters;
+	AlgorithmParameter;
+	
+	typedef boost::container::vector<AlgorithmParameter> AlgorithmParameterVector;
+
+	typedef struct AlgorithmDescription
+	{
+		std::string sAlgoName;
+		uint16_t	algoID;
+		AlgorithmParameterVector parameters;
+	}
+	AlgorithmDescription;
+
+	typedef struct AlgorithmSet
+	{
+		// Default displayedAlgo
+		int defaultAlgo;
+		boost::container::vector<AlgorithmDescription> algorithms;
+	}
+	AlgorithmSet;
 
 	typedef struct ChannelConfig 
 	{
 		int channelIndex;
-		float fovX;
-		float fovY;
+		float fovWidth;
+		float fovHeight;
 		float centerX;
 		float centerY;
 		float maxRange;
-		QString sMaskName;
-		QString sFrameName;
 		uint8_t displayColorRed;
 		uint8_t displayColorGreen;
 		uint8_t displayColorBlue;
 	}
 	ChannelConfig;
+
+	typedef boost::container::vector<ChannelConfig> ChannelConfigVector;
 
 
 	typedef enum {
@@ -62,15 +87,75 @@ namespace awl
 	}
 	VelocityUnits;
 
+	typedef struct ReceiverSettings
+	{
+	RegisterSet registersFPGA;
+	RegisterSet registersADC;
+	RegisterSet registersGPIO;
 	
-#define VelocityToKmH(velocity) (velocity * 3.6)
+	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
+	AlgorithmSet parametersAlgos;
 
-#define ALGO_QTY 4
-#define GLOBAL_PARAMETERS_INDEX 0
+	// Channel configuration
+	ChannelConfigVector channelsConfig;
+
+	// Receiver
+	std::string sReceiverType;
+	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
+	uint8_t receiverFrameRate;			// Frame rate, in hertz
+
+	// Receiver communications port config
+	std::string sCommPort;       // Default is "COM16"
+	long serialPortRate;		// In bpschannelMask
+	std::string sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
+	uint16_t yearOffset;		   // All sensor Dates are offset from 1900
+	uint16_t monthOffset;		// All sensor months start at 0.  Posix starts aty 1.
+	
+	
+	// Messages enabled
+	bool msgEnableObstacle;
+	bool msgEnableDistance_1_4;
+	bool msgEnableDistance_5_8;
+	bool msgEnableIntensity_1_4;
+	bool msgEnableIntensity_5_8;
+
+	// Calibration parameters
+	float sensorForward;
+	float sensorLeft;
+	float sensorUp;
+
+	float sensorPitch; // In degrees
+	float sensorRoll;  // In degrees
+	float sensorYaw;   // In degrees
+
+	float displayedRangeMin;
+	float displayedRangeMax;
+	float rangeOffset;
+	}
+	ReceiverSettings;
+
+	typedef boost::container::vector<ReceiverSettings> ReceiverSettingsVector;
+
+typedef struct CameraSettings
+	{
+	// Camera
+	std::string sCameraName;
+	bool cameraFlip;
+	float cameraForward;
+	float cameraLeft; 
+	float cameraUp; 
+	float cameraPitch; 
+	float cameraRoll; 
+	float cameraYaw; 
+	float cameraFovWidthDegrees;
+	float cameraFovHeightDegrees;
+	}
+	CameraSettings;
+
+	typedef boost::container::vector<CameraSettings> CameraSettingsVector;
 
 class AWLSettings
 {
-public:
 public:
 	static AWLSettings *InitSettings();
 	static AWLSettings *GetGlobalSettings();
@@ -79,59 +164,64 @@ public:
 	AWLSettings();
 	bool ReadSettings();
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
+	/** \brief Return the index of the FPGA RegisterSetting for the object that
 	           has the address specified.
-    * \param[in] inAddress the register address
+    * \param[in] inReceiver the receiver for which we want the register read
+	* \param[in] inAddress the register address
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
-	int FindRegisterFPGAByAddress(uint16_t inAddress);
+	int FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress);
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
+	/** \brief Return the index of the ADC RegisterSetting for the object that
 	           has the address specified.
-    * \param[in] inAddress the register address
+    * \param[in] inReceiver the receiver for which we want the register read
+	* \param[in] inAddress the register address
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
-	int FindRegisterADCByAddress(uint16_t inAddress);
+	int FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress);
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
+	/** \brief Return the index of the GPIO RegisterSetting for the object that
 	           has the address specified.
-    * \param[in] inAddress the register address
+     * \param[in] inReceiver the receiver for which we want the register read
+	 * \param[in] inAddress the register address
 	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
 
       */
-	int FindRegisterGPIOByAddress(uint16_t inAddress);
+	int FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress);
 
-	/** \brief Return the index of the FPGA RegisterSettings for the object that
-	           has the address specified.
-    * \param[in] inAddress the register address
-	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
+	/** \brief Returna pointer to the Algorithm parameter for the parameter that
+	           has the address specified, on the specified receiver
+     * \param[in] receiverID index of the receiver for which we want the parameter
+	  * \param[in] algoID an algorithm for which we want the parameter description.
+	 * \param[in] inAddress the parameter address
+	* \return pointer to the found parameter in the list. NULL if no parameters match that address.
 
       */
-	int FindAlgoParamByAddress(QList<AlgorithmParameters>&paramList, uint16_t inAddress);
+	AlgorithmParameter *AWLSettings::FindAlgoParamByAddress(int receiverID, int AlgoID, uint16_t inAddress);
 
 public:
-	// Registers
+	// Default register configurations
 
-	QList<RegisterSettings> registersFPGA;
-	QList<RegisterSettings> registersADC;
-	QList<RegisterSettings> registersGPIO;
+	RegisterSet defaultRegistersFPGA;
+	RegisterSet defaultRegistersADC;
+	RegisterSet defaultRegistersGPIO;
 
 	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
-	QList<AlgorithmParameters> parametersAlgos[ALGO_QTY+1];
+	AlgorithmSet defaultParametersAlgos;
 
-	QString sAlgoNames[ALGO_QTY+1];
+	// Receiver configuration
+	ReceiverSettingsVector receiverSettings;
 
-	// Channel Configurations
-	QList<ChannelConfig> channelsConfig;
-	
-	// Default displayedAlgo
-	int defaultAlgo;
+	// Camera configuration
+	CameraSettingsVector cameraSettings;
+
 
 	// Layout
 	bool bDisplay3DWindow;
 	bool bDisplay2DWindow;
+	bool bDisplayTableViewWindow;
 	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
 
@@ -140,30 +230,29 @@ public:
 
 	VelocityUnits velocityUnits; 
 
-	QString sLogoFileName;
-	QString sIconFileName;
+	std::string sLogoFileName;
+	std::string sIconFileName;
 
 	// Demo mode
 	bool bEnableDemo;
 	int  demoInjectType;
 
 	// Calibration parameters
-	float sensorHeight;
-	float sensorDepth;
-	float displayedRangeMin;
-	float displayedRangeMax;
-	float rangeOffset;
 	float distanceScale;
 	float targetHintDistance;
 	float targetHintAngle;
 
-	// 3D display options
-	int decimation;
-	int pixelSize;
-	int colorStyle;
-	int cameraView;
+	
+	// Table view options
+	int displayedDetectionsPerChannelInTableView;
 
 	// 2D display options
+	float carWidth;
+	float carLength;
+	float carHeight;
+
+	float laneWidth;
+
 	float shortRangeDistance;
 	float shortRangeDistanceStartLimited;
 	float shortRangeAngle;
@@ -177,32 +266,24 @@ public:
 	bool showPalette;
 	int mergeDisplayMode;
 	int measureMode;
-	float mergeAcceptance;
+	int displayDistanceMode2D;
+	float mergeAcceptanceX;
+	float mergeAcceptanceY;
 	int colorCode2D;
 	float maxVelocity2D;
 	float zeroVelocity;
 
-	// Receiver
-	QString sReceiverType;
-	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
-	uint8_t receiverFrameRate;			// Frame rate, in hertz
 
-	// CAN Receiver config
-	QString sCANCommPort;       // Default is "COM16"
-	QString sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
-	long serialCANPortRate;		// In bpschannelMask
-	uint16_t yearOffsetCAN;		   // All CAN Dates are offset from 1900
-	uint16_t monthOffsetCAN;		// All CAN months start at 0.  Posix starts aty 1.
-	
-	bool msgEnableObstacle;
-	bool msgEnableDistance_1_4;
-	bool msgEnableDistance_5_8;
-	bool msgEnableIntensity_1_4;
-	bool msgEnableIntensity_5_8;
-		
-	// BareMetal receiverConfig
-	QString sBareMetalCommPort;       // Default is "COM16"
-	long serialBareMetalPortRate;	 // In bps
+	// 3D display options
+	int decimation;
+	int pixelSize;
+	int colorStyle;
+	int cameraView;
+	float viewerDepth; 
+	float viewerHeight;
+	float viewerMaxRange;
+
+
 
 	// Scope
 	int scopeTimerInterval;
@@ -215,20 +296,14 @@ public:
 	float brakingDeceleration;
 	float travelSpeed;
 
-	// Camera
-	float cameraFovXDegrees;
-	float cameraFovYDegrees;
-
 	// Debug
 	bool bWriteDebugFile;
 	bool bWriteLogFile;
 
 
 protected:
-	QSettings settings;
-
+	std::string sFileName;
 	static AWLSettings *globalSettings;
-
 };
 
 } // namespace AWL          

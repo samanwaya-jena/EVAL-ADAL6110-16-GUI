@@ -1,13 +1,13 @@
 #include "AWLScopePlot.h"
 #include "curvedata.h"
 #include "signaldata.h"
+
 #include <qwt_plot_grid.h>
 #include <qwt_plot_layout.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_marker.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_directpainter.h>
-#include <qwt_curve_fitter.h>
 #include <qwt_painter.h>
 #include <QEvent>
 
@@ -61,9 +61,7 @@ AWLScopePlot::AWLScopePlot( QWidget *parent):
     QwtPlot( parent ),
     d_interval( 0.0, 10.0 ),
 	d_channelID(-1),
-	d_lastFrameID(0),
-	d_currentReceiverCaptureSubscriberID(-1)
-
+	d_lastFrameID(0)
 {
 	setupInterface();
 }
@@ -197,7 +195,7 @@ void AWLScopePlot::adjustDisplayedCurves()
 	}
 		
 	// Y Scale for distances
-	setAxisScale(distanceAxis, 0, settings->displayedRangeMax);
+	setAxisScale(distanceAxis, 0, settings->receiverSettings[0].displayedRangeMax);
 	
 	for (int curveIndex = 0; curveIndex < d_velocityCurve.size(); curveIndex++)
 	{
@@ -217,7 +215,6 @@ void AWLScopePlot::start(ReceiverCapture::Ptr inReceiverCapture, int inChannelID
 {
  	d_channelID = inChannelID;
 	d_receiverCapture = inReceiverCapture;
-	d_currentReceiverCaptureSubscriberID = d_receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
 
 	// Update the plot according to the clock;
 	incrementInterval();
@@ -233,7 +230,7 @@ void AWLScopePlot::replot()
 	// If distance is displayed and the maxRange has changed, redo the axes
 	if (settings->bDisplayScopeDistance)
 	{
-		if (abs(settings->displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
+		if (abs(settings->receiverSettings[0].displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
 		{
 			bRescale = true;
 		}
@@ -292,7 +289,6 @@ bool AWLScopePlot::doTimeUpdate()
 	else 
 	{
 		replot();
-//      updateCurve();
 	}
 
 	return(false);
@@ -449,13 +445,3 @@ QwtPlotCurve::CurveStyle AWLScopePlot::setVelocityCurveStyle(QwtPlotCurve::Curve
 	return(inCurveStyle);
 }
 
-#if 0
-QwtPlotCurve::SetDistanceVisible(bool bVisible)
-
-{
-}
-
-QwtPlotCurve::SetVelocityVisible(bool bVisible)
-{
-}
-#endif

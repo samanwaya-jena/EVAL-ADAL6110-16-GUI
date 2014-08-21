@@ -16,8 +16,8 @@ using namespace std;
 using namespace pcl;
 using namespace awl;
 
-ReceiverFileCapture::ReceiverFileCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, std::string inFileName):
-ReceiverCapture(inSequenceID, inReceiverChannelQty, inDetectionsPerChannel)
+ReceiverFileCapture::ReceiverFileCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty, std::string inFileName):
+ReceiverCapture(inReceiverID, inSequenceID, inReceiverChannelQty)
 
 {
 	acquisitionSequence->ReadFile(inFileName, inReceiverChannelQty, inDetectionsPerChannel);

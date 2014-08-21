@@ -1,87 +1,35 @@
 
 
 #include <stdint.h>
-#include <iostream>
-#include <fstream>
 #include <string>
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
+#include <math.h>
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
-
-#include "Tracker.h"
-#include "DebugPrintf.h"
 #include "AWLSettings.h"
+#include "Tracker.h"
+#include "awlcoord.h"
+#include "DebugPrintf.h"
 
 using namespace std;
 using namespace awl;
 
-
-
 const AcquisitionSequence::TrackingMode defaultTrackingMode = AcquisitionSequence::eTrackAllChannels;
 
-
-AcquisitionSequence::AcquisitionSequence(int inSequenceID):
+AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID):
+receiverID(inReceiverID),
 sequenceID(inSequenceID),
 frameID(0)
 
 {
 }
 
-AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty):
-sequenceID(inSequenceID),
-channelQty(inChannelQty),
-detectionQty(inDetectionQty),
-frameID(0)
-
-{
-}
-
-AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, ifstream &inTrackFile):
+AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID, int inChannelQty):
+receiverID(inReceiverID),
 sequenceID(inSequenceID),
 channelQty(inChannelQty),
-detectionQty(inDetectionQty),
 frameID(0)
 
 {
-	ReadFile(inTrackFile, inChannelQty, inDetectionQty);
-}
-
-AcquisitionSequence::AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, std::string trackFileName):
-sequenceID(inSequenceID),
-channelQty(inChannelQty),
-detectionQty(inDetectionQty),
-frameID(0)
-
-{
-	ReadFile(trackFileName,  inChannelQty, inDetectionQty);
-}
-
-void AcquisitionSequence::ReadFile(std::string inFileName, int inChannelQty, int inDetectionQty)
-
-{
-	ifstream trackFile;
-	trackFile.open(inFileName);
-	ReadFile(trackFile, inChannelQty, inDetectionQty);
-}
-
-void AcquisitionSequence::ReadFile(ifstream &inTrackFile, int inChannelQty, int inDetectionQty)
-{
-	if (!inTrackFile.is_open()) return;
-	// read the first  line for display purposes
-	getline(inTrackFile, infoLine);
-	
-	while (!inTrackFile.eof()) 
-	{
-		SensorFrame::Ptr sensorFrame(new SensorFrame(inChannelQty, inDetectionQty, inTrackFile));
-		sensorFrames.push(sensorFrame);
-	}
 }
 
 uint32_t AcquisitionSequence::AllocateFrameID()
@@ -221,8 +169,13 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 {
 	UpdateTrackInfo(currentFrame);
 
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
 	{
+
+	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelIndex];
+
 		uint8_t channelMask = 0x01 << channelIndex;
 
 		int detectionIndex = 0;
@@ -252,16 +205,24 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->timeToCollision = track->timeToCollision;
 				detection->decelerationToStop = track->decelerationToStop;
 				detection->threatLevel = track->threatLevel;
+
+				// Place the coordinates relative to all their respective reference systems
+				TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
+				SphericalCoord sphericalPointInChannel(detection->distance, M_PI_2, 0);
+				detection->relativeToSensorCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+				detection->relativeToVehicleCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+				detection->relativeToWorldCart = receiverCoords[receiverID]->children[channelIndex]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
+
+				detection->relativeToSensorSpherical = detection->relativeToSensorCart;
+				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
+				detection->relativeToWorldSpherical = detection->relativeToWorldCart;
+
 			}  // if (track...
 
 			trackIterator++;
 		} // while (trackIterator...
 	} // for (channelIndex)
 }
-
-
-
-
 
 bool AcquisitionSequence::FindTrack(SensorFrame::Ptr currentFrame, TrackID trackID, Track::Ptr &outTrack)
 {
@@ -295,8 +256,6 @@ Track::Ptr AcquisitionSequence::MakeUniqueTrack(SensorFrame::Ptr currentFrame, T
 
 	return(track);
 }
-
-
 
 bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame)
 {
@@ -356,42 +315,26 @@ ChannelFrame::Ptr & AcquisitionSequence::GetChannelAtIndex(int frameIndex, int c
 }
 
 
-SensorFrame::SensorFrame(uint32_t inFrameID) :
+SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID) :
+receiverID(inReceiverID),
 frameID(inFrameID),
 timeStamp(0)
 {
 }
 
-SensorFrame::SensorFrame(uint32_t inFrameID, int inChannelQty,  int inDetectionQty) :
+SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty) :
+receiverID(inReceiverID),
 frameID(inFrameID),
 timeStamp(0)
 
 {
 	for (int channel = 0; channel < inChannelQty; channel++) 
 	{
-		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(channel));
+		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(receiverID, channel));
 		channelFrames.push_back(myChannelFrame);
 	}
 }
 
-
-SensorFrame::SensorFrame(int inChannelQty,  int inDetectionQty, ifstream &inTrackFile):
-timeStamp(0)
-{
-	if (!inTrackFile.is_open()) return;
-
-	std:string line;
-
-	getline(inTrackFile, line); // Blank line between every frame
-	getline(inTrackFile, line);
-	sscanf(line.c_str(), "T=%d",  &frameID);
-
-	for (int channel = 0; channel < inChannelQty; channel++) 
-	{
-		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(channel, inDetectionQty, inTrackFile));
-		channelFrames.push_back(myChannelFrame);
-	}
-}
 
 Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 
@@ -400,7 +343,7 @@ Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 	bool bExists = channelFrames[channelID]->FindDetection(detectionID, detection);
 	if (!bExists) 
 	{
-		detection = Detection::Ptr(new Detection(channelID, detectionID));
+		detection = Detection::Ptr(new Detection(receiverID, channelID, detectionID));
 		channelFrames[channelID]->detections.push_back(detection);
 	}
 
@@ -408,30 +351,14 @@ Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 }
 
 
-ChannelFrame::ChannelFrame(int inChannelID):
+ChannelFrame::ChannelFrame(int inReceiverID, int inChannelID):
+receiverID(inReceiverID),
 channelID(inChannelID)
 {
 
 }
 
 
-
-ChannelFrame::ChannelFrame(int inChannelID, int inDetectionQty, ifstream &inTrackFile) :
-channelID(inChannelID)
-
-{
-	if (!inTrackFile.is_open()) return;
-	std:string line;
-
-	getline(inTrackFile, line);
-	sscanf(line.c_str(), "sensor %d", &channelID);
-
-	for (int detectionID = 0; detectionID < inDetectionQty; detectionID++) 
-	{
-		Detection::Ptr detection(new Detection(inChannelID, detectionID, inTrackFile));
-		detections.push_back(detection);
-	}
-}
 
 bool ChannelFrame::FindDetection(int inDetectionID, Detection::Ptr &outDetection)
 
@@ -452,10 +379,32 @@ bool ChannelFrame::FindDetection(int inDetectionID, Detection::Ptr &outDetection
 	return(false);
 }
 
+Detection::Detection():
+receiverID(0),
+channelID(0), 
+detectionID(0),
+distance(0.0),
+intensity(0.0),
+velocity(0.0),
+acceleration(0.0),
+timeToCollision(NAN),
+decelerationToStop(NAN),
+probability(0.0),
+timeStamp(0),
+firstTimeStamp(0),
+relativeToSensorCart(),
+relativeToSensorSpherical(),
+relativeToVehicleCart(),
+relativeToVehicleSpherical(),
+relativeToWorldCart(),
+relativeToWorldSpherical()
+{
+}
 
 
 
-Detection::Detection(int inChannelID, int inDetectionID):
+Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID):
+receiverID(inReceiverID),
 channelID(inChannelID), 
 detectionID(inDetectionID),
 distance(0.0),
@@ -467,15 +416,28 @@ decelerationToStop(NAN),
 probability(0.0),
 timeStamp(0),
 firstTimeStamp(0),
-trackID(0),
-threatLevel(eThreatNone) 
-
+relativeToSensorCart(),
+relativeToSensorSpherical(),
+relativeToVehicleCart(),
+relativeToVehicleSpherical(),
+relativeToWorldCart(),
+relativeToWorldSpherical()
 {
+	// Place the coordinates relative to all their respective reference systems
+	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
+	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
+	relativeToSensorCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	relativeToVehicleCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+	relativeToWorldCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
+	relativeToSensorSpherical = relativeToSensorCart;
+	relativeToVehicleSpherical = relativeToVehicleCart;
+	relativeToWorldSpherical = relativeToWorldCart;
 }
 
-Detection::Detection(int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
+Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
 		float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel):
+receiverID(inReceiverID),
 channelID(inChannelID),
 detectionID(inDetectionID),
 distance(inDistance),
@@ -487,40 +449,28 @@ probability(0.0),
 timeStamp(inTimeStamp),
 firstTimeStamp(inFirstTimeStamp),
 trackID(inTrackID),
-threatLevel(inThreatLevel)
+threatLevel(inThreatLevel),
+relativeToSensorCart(),
+relativeToSensorSpherical(),
+relativeToVehicleCart(),
+relativeToVehicleSpherical(),
+relativeToWorldCart(),
+relativeToWorldSpherical()
+
 
 {
+	// Place the coordinates relative to all their respective reference systems
+	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
+	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
+	relativeToSensorCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+	relativeToVehicleCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+	relativeToWorldCart = receiverCoords[receiverID]->children[channelID]->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
+	relativeToSensorSpherical = relativeToSensorCart;
+	relativeToVehicleSpherical = relativeToVehicleCart;
+	relativeToWorldSpherical = relativeToWorldCart;
 }
 
-Detection::Detection(int inChannelID, int inDetectionID, ifstream &inTrackFile) :
-channelID(inChannelID),
-detectionID(inDetectionID)
-
-{
-	std:string line;
-
-	if (inTrackFile.is_open())
-	{
-		uint32_t tmpTimeStamp;
-		uint32_t tmpFirstTimeStamp;
-		detectionID = inDetectionID;
-
-		getline(inTrackFile, line);
-		sscanf(line.c_str(), "%f, %f, %ld, %ld, %ld", 
-			&distance, &velocity,
-			&tmpTimeStamp,
-			&trackID,
-			&tmpFirstTimeStamp);
-
-		timeStamp = tmpTimeStamp;
-		firstTimeStamp = tmpFirstTimeStamp;
-		threatLevel = eThreatNone;
-		acceleration = 0.0;
-		timeToCollision = NAN;
-		probability = 0.0;
-	}
-}
 
 bool Detection::IsValid()
 
@@ -588,3 +538,4 @@ bool Track::IsValid()
 
 	 return(false);
  }
+

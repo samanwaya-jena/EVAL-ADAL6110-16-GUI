@@ -1,17 +1,13 @@
 #ifndef AWL_RECEIVER_CAPTURE_H
 #define AWL_RECEIVER_CAPTURE_H
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
 #include <stdint.h>
+#include <fstream>
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/range_image/range_image.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/container/vector.hpp>
 #endif
 
 #include "Subscription.h"
@@ -19,8 +15,6 @@
 #include "AWLSettings.h"
 
 using namespace std;
-using namespace pcl;
-
 const int maxReceiverFrames = 100;
 
 namespace awl
@@ -194,8 +188,9 @@ ReceiverStatus;
 
 
 
-/** \brief Threaded ReceiverCapture class is used to acquire data from the physical LIDAR unit.
-  *        The receiver capture buffers up a few frames to faciulitae processing afterwards.
+/** \brief ReceiverCapture class is an abstract class for all classes used to acquire data from the physical LIDAR unit.
+  *        The receiver capture buffers up a few frames to facilitate processing afterwards.
+  *        The receiver capture manages optional "logging" of the track and distance data into a local log file on the PC
   * \author Jean-Yves Deschênes
   */
 class ReceiverCapture
@@ -206,6 +201,8 @@ public:
 	static const int maximumSensorFrames;  // Maximum number of frames kept in frame buffer
 	typedef boost::shared_ptr<ReceiverCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCapture> ConstPtr;
+	typedef boost::container::vector<ReceiverCapture::Ptr> List;
+	typedef ReceiverCapture::List *ListPtr;
 
 	typedef enum  
 	{
@@ -219,23 +216,14 @@ public:
 	// public Methods
 public:
 
-	ReceiverCapture() {};
+	ReceiverCapture(int inReceiverID) { receiverID = inReceiverID;};
 
 	/** \brief ReceiverCapture constructor.  Builds an empty sequence.
 	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
-      */
+    */
 
-	ReceiverCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel);
-
-	/** \brief ReceiverCapture constructor.  Builds a sequence from file .
-	    * \param[in] inSequenceID  unique sequence ID (for documentation)
-	    * \param[in] inReceiverChannelQty index of the required channel
- 	    * \param[in] inDetectionsPerChannel number of detections per channel
-		* \param[in] inFileName file with the sequence information
-      */
-	ReceiverCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel, std::string inFileName);
+	ReceiverCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty);
 
 	/** \brief ReceiverCapture Destructor.  Insures that all threads are stopped before destruction.
       */
@@ -300,20 +288,6 @@ public:
       */
 	virtual float SetMaxDistance(int channelIndex, float inMaxDistance);
 
-
-	/** \brief Return the number of receiver channels used for video projection
-      * \return int indicating the number of channels.
-      */
-	virtual int GetDetectionQtyInChannel(int channelID) {return currentFrame->channelFrames[channelID]->detections.size();};
-
-	/** \brief copy the current channel data to to a local copy (thread-safe)
-     * \param[in] inChannelID index of the required channel
-	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
-	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
-     * \return frameID of the current sensorFrame from which the data is taken.
-     */
-	virtual uint32_t CopyCurrentReceiverChannelData(int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID);
-
 	/** \brief copy the channel data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
@@ -322,7 +296,6 @@ public:
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
 	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID);
-
 
 	/** \brief Return the current frame identification number for informational purposes 
      * \return Current frame identification number.
@@ -343,18 +316,6 @@ public:
      * \return Last complete frame identification number.
 	    */
 	virtual uint32_t GetLastFrameID() {return(acquisitionSequence->GetLastFrameID());};
-
-	/** \brief Return the timeStamp of the specified frame 
-      * \param[in] inFrameID frame identificator of the requiested frame
-    * \return timeStamp (elapsed in milliseconds) of specified frame.  Negative value if frame not found
-     */
-	virtual double GetFrameTime(uint32_t inFrameID);
-
-	/** \brief Return the timeStamp of the frame located at index.
-      * \param[in] inFrameIndex index of the requiested frame
-    * \return timeStamp (elapsed in milliseconds) of specified frame.  Negative value if frame not found
-     */
-	virtual double GetFrameTimeAtIndex(int inFrameIndex);
 
 	/** \brief Sets the current frame as the frameID for all user interface snapshots
 	  * \return Current frame identification number.
@@ -377,18 +338,6 @@ public:
 	    \return time in milliseconds since tthe start of thread.
      */
 	 double GetElapsed();
-
-	 /** \brief Sets the sensor depth from bumper, which will be added to distance measurements,
-	  *       The sensor depth is normally negative (ex: -1.75 m on I30)
-      * \param[in] inSensorDepth sensor depth from bumper, typically a negative value.
-      */
-	void SetSensorDepth(double inSensorDepth);
-
-	/** \brief Gets the sensor depth from bumper, which is added to distance measurements,
-      * \param[out] outSensorDepth sensor depth from bumper, typically a negative value.
-      */
-	void GetSensorDepth(double &outSensorDepth);
-
 
 	/** \brief Add an offet to the distance measurements.  This is different from the sensor depth, which is distance from bumper.
       * \param[in] inMeasurementOffset measurementOffset introduced by detection algorithm
@@ -457,7 +406,7 @@ public:
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
+	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask) = 0;
 
 
 	/** \brief Stops any current recording. 
@@ -467,12 +416,12 @@ public:
     */
 	virtual bool StopRecord();
 
-	/** \brief Starts the logging of distance data. 
+	/** \brief Starts the logging of distance data in a local log file. 
       * \return true if success.  false on error
      */
 	virtual bool BeginDistanceLog();
 
-	/** \brief Starts the logging of distance data. 
+	/** \brief Ends the logging of distance data in a local log file. 
       * \return true if success.  false on error
      */
 	virtual bool EndDistanceLog();
@@ -483,7 +432,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetAlgorithm(uint16_t algorithmID);
+	virtual bool SetAlgorithm(uint16_t algorithmID) = 0;
 
 	/** \brief Sets an internal FPGA register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -491,14 +440,14 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets an ADC register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
-	virtual bool SetADCRegister(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetADCRegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets an internal GPIO register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -506,15 +455,16 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets algorithm parameters to the value sent as argument. 
+	  *\param[in] algoID ID of the detection algo affected by the change.
 	  *\param[in] registerAddress Adrress of the parameter to change.
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the parameter to change.
@@ -522,7 +472,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress, uint32_t registerValue);
+	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect the current global setting.
 	* \return true if success.  false on error.
@@ -530,7 +480,6 @@ public:
 	*/
 		
 	virtual bool SetMessageFilters();
-
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -545,7 +494,7 @@ public:
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.
 	*/
-	virtual bool QueryAlgorithm();
+	virtual bool QueryAlgorithm() = 0;
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -553,7 +502,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in globalSettings. 
 		*/
-	virtual bool QueryFPGARegister(uint16_t registerAddress);
+	virtual bool QueryFPGARegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for an ADC register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -561,7 +510,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in globalSettings. 
 		*/
-	virtual bool QueryADCRegister(uint16_t registerAddress);
+	virtual bool QueryADCRegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for a GPIO register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -569,33 +518,36 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryGPIORegister(uint16_t registerAddress);
+	virtual bool QueryGPIORegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for an algorithm parameter. 
+		  *\param[in] algoID ID of the detection algo for which we want to query.
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
+	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress) = 0;
 
 		/** \brief Send an asynchronous query command for a global algorithm parameter. 
+		  *\param[in] algoID ID of the detection algo for which we want to query.
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
-	virtual bool QueryGlobalAlgoParameter(QList<AlgorithmParameters> &parametersList, uint16_t registerAddress);
+	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) = 0;
 
 	// public variables
 public:
+
+	/** \brief Unique receiver ID. Corresponds to the index of receiver in receiverArray
+	*/
+	int receiverID;
+
 	/** \brief Number of receiver channels on the sensor
       */
 	int receiverChannelQty;
-
-	/** \brief Maximum number of detections per channel per frame
-      */
-	int detectionsPerChannel;
 
 	/** \brief Current frame ID being built.
 	    \remark Note that the frameID corresponds to the "incomplete" frame currently being assembled.
@@ -614,7 +566,6 @@ public:
 	  * of the frame data.
       */
 	Subscription::Ptr currentReceiverCaptureSubscriptions;	
-
 		
 	/** \brief Receiver status information 
       */
@@ -694,8 +645,7 @@ protected:
 
 // Protected variables
 protected:
-	protected:
-	
+
     /** \brief Local flag indicating the termination of thread. */
 	volatile bool mStopRequested;
 
@@ -710,29 +660,24 @@ protected:
 	  *        This is determined at run-time on the Go() call.
 	*/
 	bool bIsThreaded;
+
 	/** \brief Minimum distance for objects.  All messages with distance < minDistance are eliminated.
 		\default 3.0;
 	*/
 
 	float minDistance;
-#if 0
 
-	/** \brief Maximum distance for objects.  All messages with distance > maxDistance are eliminated.
-		\default 50.0
+	/** \brief Maximum distance for objects for each channel .  
+	           All messages with distance > maxDistance are eliminated.
+		\default 50.0 meters
 	*/
 
-	float maxDistance;
-#else
-	QList<float> maxDistances;
-#endif
+	boost::container::vector<float> maxDistances;
 
 	/** \brief Time at the start of thread
 	 * \remark Initialized on object creation and evertytime the Go() method is called.
 	*/
 	boost::posix_time::ptime startTime;
-
-	/** \brief  sensor depth from bumper, typically a negative value. */
-	double  sensorDepth;
 
 	/** \brief  measurement offset from sensor, introduced by detection algorithm */
 	double  measurementOffset;
@@ -761,6 +706,19 @@ protected:
 
 	/** \brief  Log file. */
 	ofstream logFile;
+
+	
+	/** \brief  distance used in simulations - distance injection code */
+	double lastDistance;
+	TrackID trackIDGenerator;
+	int lastTransition;
+	int transitionDirection;
+	int directionPacing; /* Every 3 seconds, we move from left to right */
+	int nextElapsedDirection;
+
+	float distanceIncrement;
+	int distancePacing; /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
+	int nextElapsedDistance;
 };
 
 

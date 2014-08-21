@@ -1,24 +1,36 @@
 #include "fov_2dscan.h"
 #include <QPainter>
 #include <QLabel>
-#include <math.h>
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
 
+#include <boost/foreach.hpp>
+
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
+#include <math.h>
+
+#include "awlcoord.h"
+#include "AWLSettings.h"
+
 using namespace awl;
 
-#define PI 3.1416
 
 const int transitionLightness= 160;  // Lightness at which we start to write in ligther shade
 const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
 const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
 const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
 
-const float carWidth = 1.78;	// Car width in meters
-const float laneWidth = 3.7;	// Lane width
+
+// Tricky part of the code:
+// In our coordinate systsem, X axis is depth and Y is lateral (with Y positive towards left)
+// In the display system, X is latereal (positive right) and y is depth....
+// For this reason, when using the CartesianCoordinates class, we recommend using the 
+// "forward, left, up" nomenclature.
+
 
 float logoAspectRatio = 1.0;
+const int paletteWidth = 50;
 
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
@@ -28,32 +40,28 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	mergeDisplayMode = (MergeDisplayMode)globalSettings->mergeDisplayMode;
 	measureMode = (MeasureMode)globalSettings->measureMode;
-	mergeAcceptance = globalSettings->mergeAcceptance;
+	displayDistanceMode = (DisplayDistanceMode) globalSettings->displayDistanceMode2D;
+	mergeAcceptanceX = globalSettings->mergeAcceptanceX;
+	mergeAcceptanceY = globalSettings->mergeAcceptanceX;
 	ShowPalette = globalSettings->showPalette;
 	colorCode = (DisplayColorCode )globalSettings->colorCode2D;
 	maxAbsVelocity = globalSettings->maxVelocity2D;
 	zeroVelocity = globalSettings->zeroVelocity;
+	carWidth = globalSettings->carWidth;
+	carLength = globalSettings->carLength;
+	carHeight = globalSettings->carHeight;
+	laneWidth = globalSettings->laneWidth;
+
 
 	// Position the widget on the top right side
 	setMinimumSize(480,480);
 
 	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.isEmpty())
+	if (!globalSettings->sIconFileName.empty())
 	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName));
+		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
 	}
 
-	
-#if 0
-	int frameWindowWidth = 716;
-	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
-	move(scr.right()-frameWindowWidth, scr.top());
-	QRect frame = frameGeometry();
-	QRect client = geometry();
-	int verticalDecorationsHeight = frame.height() - client.height();
-	int horizontalDecorationsWidth = frame.width() - client.width();
-//	resize(frameWindowWidth-horizontalDecorationsWidth, scr.height() - verticalDecorationsHeight);
-#endif
     rgblongRangeLimited = qRgba(188,205,203,127);
     rgblongRange = qRgba(58,126,209,127);
     rgbshortRangeLimited = qRgba(184,220,175,127);
@@ -68,9 +76,9 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 
 	logoLabel = new QLabel(this);
 	QPixmap *myPix = NULL;
-	if (!globalSettings->sLogoFileName.isEmpty()) 
+	if (!globalSettings->sLogoFileName.empty()) 
 	{
-		myPix = new QPixmap(globalSettings->sLogoFileName);
+		myPix = new QPixmap(globalSettings->sLogoFileName.c_str());
 	}
 	
 	if (myPix && !myPix->isNull())
@@ -194,6 +202,27 @@ void FOV_2DScan::createAction()
 
 	connect(groupColorCode, SIGNAL(triggered(QAction*)), this, SLOT(slotColorCodeAction()));
 
+	//****
+	groupDisplayDistanceMode = new QActionGroup( this );
+	displayDistanceModeShowAction = new QAction("Show Distances", this);
+	displayDistanceModeHideAction = new QAction("Hide Distances", this);
+	
+	displayDistanceModeShowAction->setCheckable(true);
+	displayDistanceModeShowAction->setActionGroup(groupDisplayDistanceMode);
+
+	displayDistanceModeHideAction->setCheckable(true);
+	displayDistanceModeHideAction->setActionGroup(groupDisplayDistanceMode);
+
+	if (displayDistanceMode == eDisplayDistanceModeShow)
+	{
+		displayDistanceModeShowAction->setChecked(true);
+	}
+	else
+	{
+		displayDistanceModeHideAction->setChecked(true);
+	}
+
+	connect(groupDisplayDistanceMode, SIGNAL(triggered(QAction*)), this, SLOT(slotDisplayDistanceModeAction()));
 }
 
 void FOV_2DScan::slotPaletteAction()
@@ -261,46 +290,69 @@ void FOV_2DScan::slotColorCodeAction()
 
 }
 
-void FOV_2DScan::slotConfigChanged(ConfigSensor *pConfig)
+void FOV_2DScan::slotDisplayDistanceModeAction()
 {
-    config = *pConfig;
-    Ratio = 1;
+	if (displayDistanceModeShowAction->isChecked())
+	{
+		 displayDistanceMode = eDisplayDistanceModeShow;
+	}
+	else
+	{
+		 displayDistanceMode = eDisplayDistanceModeHide;
+	}
+}
+
+double zeroY = 0.0;
+double zeroX = 0.0;
+
+void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
+{
+    config = inConfig;
 
 	// All distances reported are relative to bumper
-	double totalDistance = config.longRangeDistance-config.sensorDepth;
+	double totalDistance = config.longRangeDistance+config.spareDepth;
 
-    Ratio = (height()-(height()*0.1)) / totalDistance;
+	// Calculate minimum window size;
+	float minHeight = 240;
+	Ratio = (minHeight-(minHeight*0.1)) / totalDistance;
+ 
+	float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
+	float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
 
-    float angleInRad = degree_to_rad((pConfig->shortRangeAngle/2)+180);
+	int minWidth = (xWidth*2)+125;
+    setMinimumSize(minWidth, minHeight);
 
-    QPoint start(0, (totalDistance*Ratio));
-    QPoint temp;
+	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
+	QRect frame = frameGeometry();
+	QRect client = geometry();
+	int verticalDecorationsHeight = frame.height() - client.height();
+	int horizontalDecorationsWidth = frame.width() - client.width();
 
-    temp = start;
-    start.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));
-    start.setY(temp.y()*cosf(angleInRad) + temp.x()*sinf(angleInRad));
+	float recommendedHeight =  scr.height() - verticalDecorationsHeight;
+	Ratio = (recommendedHeight -(recommendedHeight*0.1)) / totalDistance;
+	xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
+	float recommendedWidth = (xWidth*2)+125;
+	resize(recommendedWidth, recommendedHeight);
+	move(scr.right()-(recommendedWidth + horizontalDecorationsWidth), scr.top());
 
-    setMinimumSize((start.x()*2)+250,480);
+	zeroY = height() - (config.spareDepth * Ratio);
+	zeroX = width()/2;
     update();
 }
 
 void FOV_2DScan::resizeEvent(QResizeEvent * event)
 {
-	double totalDistance = config.longRangeDistance-config.sensorDepth;
+	double totalDistance = config.longRangeDistance+config.spareDepth;
 	Ratio = (height()-(height()*0.1)) / totalDistance;
 
 	int labelWidth = width() * 0.3;
 	int labelHeight = labelWidth / logoAspectRatio;
-#if 0
-	if (labelHeight >= height() *0.1)
-	{
-		labelHeight = height() *0.1;
-		labelWidth = labelHeight *3;
-	}
-#endif
+
 	logoLabel->resize(labelWidth, labelHeight);
 	logoLabel->move(55, height() - labelHeight);
 
+	zeroY = height() - (config.spareDepth * Ratio);
+	zeroX = width()/2;
 }
 
 void FOV_2DScan::paintEvent(QPaintEvent *)
@@ -311,54 +363,51 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
 	// Draw sensor FOVs
 	painter.setPen(Qt::NoPen);
-#if 0
-	painter.setBrush(QBrush(QColor(rgblongRangeLimited)));
-    drawPie(&painter, -config.longRangeAngle/2, config.longRangeAngle, config.longRangeDistance);
 
-    painter.setBrush(QBrush(QColor(rgblongRange)));
-    drawPie(&painter, -config.longRangeAngleStartLimited/2, config.longRangeAngleStartLimited, config.longRangeDistanceStartLimited);
-
-    painter.setBrush(QBrush(QColor(rgbshortRangeLimited)));
-    drawPie(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, config.shortRangeDistance);
-
-    painter.setBrush(QBrush(QColor(rgbshortRange)));
-    drawPie(&painter, -config.shortRangeAngleStartLimited/2, config.shortRangeAngleStartLimited, config.shortRangeDistanceStartLimited);
-#else
-	int channelQty = AWLSettings::GetGlobalSettings()->channelsConfig.size();
-	for (int channelID = 0; channelID < channelQty; channelID++)
+	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		ChannelConfig channelConfig = AWLSettings::GetGlobalSettings()->channelsConfig[channelID];
+		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
+		for (int channelID = 0; channelID < channelQty; channelID++)
+		{
+			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
 
-		QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
-		painter.setBrush(QBrush(channelColor));
-		float startAngle = channelConfig.centerX - (channelConfig.fovX/2);
-		// Angles in drawPie are counter clockwise, our config is clockwise. 
-		// All distances are relative to bumper, subtract the sensor depth  
-		drawPie(&painter, -startAngle, -channelConfig.fovX, channelConfig.maxRange-config.sensorDepth);
+			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
+			painter.setBrush(QBrush(channelColor));
+			float startAngle = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].sensorYaw + 
+				               channelConfig.centerX + (channelConfig.fovWidth/2);
+			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
+			// All distances are relative to bumper, subtract the sensor depth  
+			// Angles are drawn from sensor position add the sensor depth
+			drawPie(&painter, startAngle, -channelConfig.fovWidth, channelConfig.maxRange,
+					-receiverSettings.sensorLeft, -receiverSettings.sensorForward);
+		}
 	}
-#endif
+
     //Angular Ruler
     painter.setPen(QPen(rgbRuler));
 
     for (int i = config.longRangeDistance; i > 0; i-=5)
 	{
-		// All distances are relative to bumper, subtract the sensor depth  
-        drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i-config.sensorDepth);
+		// All distances are relative to bumper  
+        drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
 	}
 
     painter.setPen(QPen(rgbRuler));
     for (int i = config.shortRangeAngle; i >= 0; i-=5)
 	{
-        drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance-config.sensorDepth);
+        drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
 	}
 
     drawAngularRuler(&painter);
+
 
 	//Paint Draw bumper area
 	painter.setBrush(QBrush(rgbBumper));
 	painter.setPen(Qt::NoPen);
 
-	// Draw rect at center with width of car and depth equal to sensorDepth
+	// Draw "car" rect at center with width of car and depth equal to spareDepth
 	// Sensor depth is a negative offset from bumper!
 	int carWidthScreen = (int) (carWidth * Ratio); // Car width in displayUnits. 
 												   // Always should be an odd number to be spread equally across center
@@ -366,18 +415,17 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
 	int centerX = width() / 2;
 
-	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()+(config.sensorDepth*Ratio), carWidthScreen, -config.sensorDepth*Ratio));
+	painter.drawRect(QRect(centerX - (carWidthScreen/2), height()-(config.spareDepth*Ratio), carWidthScreen, carHeight*Ratio));
 
 	// Draw lane markings
-
 	QPen lanePen(rgbLaneMarkings);
 	lanePen.setStyle(Qt::DashLine);
 	lanePen.setWidth(2);
 	painter.setPen(lanePen);
 	int laneWidthScreen = (int) (laneWidth * Ratio); // Car width in displayUnits. 
 
-	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), height()-((config.longRangeDistance-config.sensorDepth)*Ratio));
-	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), height()-((config.longRangeDistance-config.sensorDepth)*Ratio));
+	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), height()-((config.longRangeDistance+config.spareDepth)*Ratio));
+	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), height()-((config.longRangeDistance+config.spareDepth)*Ratio));
 
     if (ShowPalette)
         drawPalette(&painter);
@@ -386,11 +434,10 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
     rightQty = 0;
 
-
 	// Draw the merged indicators, only if there are more than 1 detections in the area
-	// Otherwise, they are displayed as a squate
-	for (int index = 0; index < mergedData.count(); index++)
-		{
+	// Otherwise, they are displayed as a square
+	BOOST_FOREACH(const DetectionDataVect & mergedDataItem, mergedData)
+	{
 			if (mergeDisplayMode == eNoMergeDisplay) 
 			{
 				// No merge display, do nothing
@@ -399,7 +446,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			{
 				// Only draw the bounding rectangle, only if there is more than one detection
 				// We never draw the targe or the legend
-				if (mergedData[index].count() > 1) drawMergedData(&painter, &mergedData[index], true, false, false);
+				if (mergedDataItem.size() > 1) drawMergedData(&painter, mergedDataItem, true, false, false);
 			}
 			else if (mergeDisplayMode == eMergeDistanceDisplay || mergeDisplayMode == eClusteredDistanceDisplay)
 			{
@@ -407,24 +454,23 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 				// Otherwise draw the merged position using the "individual" detections look.
 				bool bDrawBoundingBox = true;
 				bool bDrawTarget = false;
-				bool bDrawLegend = true;
-				if (mergedData[index].count() <= 1) 
+				bool bDrawLegend = (displayDistanceMode == eDisplayDistanceModeShow);
+				if (mergedDataItem.size() <= 1) 
 				{
 					bDrawBoundingBox = false;
 					bDrawTarget = true;
 				}
 
-				drawMergedData(&painter, &mergedData[index], bDrawBoundingBox, bDrawTarget, bDrawLegend); 
+				drawMergedData(&painter, mergedDataItem, bDrawBoundingBox, bDrawTarget, bDrawLegend); 
 			}
 	} // for
 
 	// Draw the individual detections
-	DetectionDataVect::iterator i;
-	for (i = copyData.begin(); i != copyData.end(); ++i)
+	BOOST_FOREACH(const Detection::Ptr &detection, copyData)
 	{
 		if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
 		{
-			drawDetection(&painter, i, i->angle, i->angleWidth, i->distanceRadial, i->distanceLongitudinal ,i->fromChannel, i->id, true, true);
+			drawDetection(&painter, detection, true, (displayDistanceMode == eDisplayDistanceModeShow));
 		}
 		else if (mergeDisplayMode == eMergeDistanceDisplay)
 		{
@@ -433,67 +479,65 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 		else // if (mergeDisplayMode != eClusteredDistanceDisplay)
 		{
 			// Display the individual distance targets in s-scan without accompanying legend
-			drawDetection(&painter, i, i->angle, i->angleWidth, i->distanceRadial, i->distanceLongitudinal ,i->fromChannel, i->id, true, false);
+			drawDetection(&painter, detection, true, false);
 		}
 	} // for
 }
 
-void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
+void FOV_2DScan::drawMergedData(QPainter* p, const DetectionDataVect& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
 {
 	int index;
-	float distanceMin = config.longRangeDistance;
-	float distanceMax = 0;
-	float distanceAverage = 0;
-	float distanceLongitudinalMin = config.longRangeDistance;
-	float distanceLongitudinalMax = 0;
-	float distanceLongitudinalAverage = 0;
+	float sphericalDistanceMin = config.longRangeDistance;
+	float sphericalDistanceMax = 0;
+	float sphericalDistanceAverage = 0;
+
 	float velocityMin = 999;
 
-	float angleMin = config.shortRangeAngle/2;
-	float angleMax = -config.shortRangeAngle/2;
+	float forwardMin = config.longRangeDistance;
+	float forwardMax = -config.longRangeDistance;
+	float distanceForwardAverage = 0;
+	float leftMin = config.longRangeDistance;
+	float leftMax = -config.longRangeDistance;
+
 	QPolygon poly;
 
-    DetectionDataVect::const_iterator i;
-
-    for (i = data->begin(); i != data->end(); ++i)
-    {
-		if (i->angle > angleMax)
-			angleMax = i->angle;
-		if (i->angle < angleMin)
-			angleMin = i->angle;
-
-		if (i->distanceRadial > distanceMax)
-			distanceMax = i->distanceRadial;
-		if (i->distanceRadial < distanceMin)
-			distanceMin = i->distanceRadial;
-
-		distanceAverage += i->distanceRadial;
-
-		if (i->distanceLongitudinal > distanceLongitudinalMax)
-			distanceLongitudinalMax = i->distanceLongitudinal;
-		if (i->distanceLongitudinal < distanceLongitudinalMin)
-			distanceLongitudinalMin = i->distanceLongitudinal;
-		distanceLongitudinalAverage += i->distanceLongitudinal;
-
-		if (i->velocity < velocityMin) velocityMin = i->velocity;
-	}
-
-	if (data->size()) 
+	BOOST_FOREACH(const Detection::Ptr detection, data)
 	{
-		distanceAverage /= data->size(); 
-		distanceLongitudinalAverage /= data->size();
+		if (detection->relativeToVehicleSpherical.rho > sphericalDistanceMax)
+			sphericalDistanceMax = detection->relativeToVehicleSpherical.rho;
+		if (detection->relativeToVehicleSpherical.rho < sphericalDistanceMin)
+			sphericalDistanceMin = detection->relativeToVehicleSpherical.rho;
+		sphericalDistanceAverage += detection->relativeToVehicleSpherical.rho;
+
+		if (detection->relativeToVehicleCart.left > leftMax)
+			leftMax = detection->relativeToVehicleCart.left;
+		if (detection->relativeToVehicleCart.left < leftMin)
+			leftMin = detection->relativeToVehicleCart.left;
+
+
+		if (detection->relativeToVehicleCart.forward > forwardMax)
+			forwardMax = detection->relativeToVehicleCart.forward;
+		if (detection->relativeToVehicleCart.forward < forwardMin)
+			forwardMin = detection->relativeToVehicleCart.forward;
+		distanceForwardAverage += detection->relativeToVehicleCart.forward;
+
+		if (detection->velocity < velocityMin) velocityMin = detection->velocity;
+	} // BOOST_FOREACH (detection)
+
+	if (data.size()) 
+	{
+		sphericalDistanceAverage /= data.size(); 
+		distanceForwardAverage /= data.size();
 	}
-
-
 
 	QString velocityLabel = " m/s";
 	float distanceDisplayed = 0;0;
 	float velocityDisplayed = velocityMin;
 
 	if (measureMode == eMeasureRadial)
-		distanceDisplayed = distanceMin;
+		distanceDisplayed = sphericalDistanceMin;
 	else
-		distanceDisplayed = distanceLongitudinalMin;
+		distanceDisplayed = forwardMin;
 
 	if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS) 
 	{
@@ -506,16 +550,16 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 		velocityDisplayed = VelocityToKmH(velocityMin);
 	}
 
-
 	QColor backColor;
-	
+
 	if (colorCode == eColorCodeVelocity)
 		backColor = getColorFromVelocity(velocityMin);
 	else
 		backColor = getColorFromDistance(distanceDisplayed);
+	p->setBrush(backColor);
 
 	QColor pencolor = backColor.darker(180);
-    p->setPen(pencolor);
+	p->setPen(pencolor);
 
 	// Draw the legend and target, according to the flags
 	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
@@ -534,7 +578,8 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 			pencolor = Qt::black;
 
 		// Draw the detection, but without the legend
-		drawTextDetection(p, data->begin(), (angleMin+angleMax)/2, distanceMin, textToDisplay, pencolor, backColor, drawTarget, drawLegend);
+		const Detection::Ptr detection = data.at(0);
+		drawTextDetection(p, detection, textToDisplay, pencolor, backColor, drawTarget, drawLegend);
 	}
 
 
@@ -544,25 +589,11 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 		pencolor = backColor.darker(180);
 		p->setPen(pencolor);
 
-		float angleMinInRad = degree_to_rad(angleMin+180);
-		float angleMaxInRad = degree_to_rad(angleMax+180);
 
-		QPoint bottomLeft(0, (distanceLongitudinalMin*Ratio));
-		QPoint topRight(0, (distanceLongitudinalMax*Ratio));
+		// Remember coordinate axes X and Y are not in same orientation as QT drawing axes!
+		QPoint bottomLeft(leftMin * Ratio , -(forwardMin+config.spareDepth)*Ratio);
+		QPoint topRight(leftMax* Ratio, -(forwardMax+config.spareDepth)*Ratio);
 		QPoint temp;
-
-		temp = bottomLeft;
-		bottomLeft.setX(temp.x()*cosf(angleMinInRad) - temp.y()*sinf(angleMinInRad));
-		// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
-		// So, subtract the sensorDepth that was initially added in captured data.
-		bottomLeft.setY(-((distanceLongitudinalMin-config.sensorDepth)*Ratio));
-
-		temp = topRight;
-		topRight.setX(temp.x()*cosf(angleMaxInRad) - temp.y()*sinf(angleMaxInRad));
-
-		// JYD Real position of object, from sensor on  the grid is postion + bumperOffset
-		// So, subtract the sensorDepth that was initially added in captured data.
-		topRight.setY(-((distanceLongitudinalMax-config.sensorDepth)*Ratio));
 
 		if (bottomLeft.y() < topRight.y())
 		{
@@ -584,21 +615,24 @@ void FOV_2DScan::drawMergedData(QPainter* p, DetectionDataVect* data, bool drawB
 
 void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
-    p->setPen(QPen(Qt::red));
-	double pos = config.longRangeDistance-config.sensorDepth;
+	p->setPen(QPen(Qt::red));
+#if 0
+	double pos = config.longRangeDistance-config.spareDepth;
+#else
+	double pos = config.longRangeDistance;
+#endif
 
-    drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
-    for (int i = config.shortRangeAngle; i >= 0; i-=5)
-    {
-        drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
+	drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
+	for (int i = config.shortRangeAngle; i >= 0; i-=5)
+	{
+		drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
 
-		// drawText removes the sensorDepthAlready. 
-        drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", Qt::red);
-    }
+		// drawText removes the spareDepthAlready. 
+		drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", Qt::red);
+	}
 }
 
-void FOV_2DScan::drawDetection(QPainter* p, DetectionData *detection, float angle, float width, float distanceRadial, float distanceFromBumper, int channel, int id,
-	                                bool drawTarget, bool drawLegend)
+void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, bool drawTarget, bool drawLegend)
 {
 	QColor backColor;
 	QColor penColor = Qt::black;
@@ -609,9 +643,9 @@ void FOV_2DScan::drawDetection(QPainter* p, DetectionData *detection, float angl
 	QString velocityLabel;
 
 	if (measureMode == eMeasureRadial)
-		distanceToDisplay = distanceRadial;
+		distanceToDisplay = detection->relativeToVehicleSpherical.rho;
 	else
-		distanceToDisplay = distanceFromBumper;
+		distanceToDisplay = detection->relativeToVehicleCart.forward;
 
 	if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS)
 	{
@@ -632,31 +666,24 @@ void FOV_2DScan::drawDetection(QPainter* p, DetectionData *detection, float angl
 		backColor = getColorFromDistance(distanceToDisplay);
 	if (backColor.lightness() < transitionLightness) penColor = Qt::white;
 
-	// JYD; Real distance  is the radial distance, plus bumper offset.
-    drawTextDetection(p, detection, angle, distanceRadial, textToDisplay, penColor,backColor, drawTarget, drawLegend);
+    drawTextDetection(p, detection, textToDisplay, penColor,backColor, drawTarget, drawLegend);
 }
 
-void FOV_2DScan::drawTextDetection(QPainter* p, DetectionData *detection, float angle, float pos, QString text, QColor foregroundColor, QColor backgroundcolor,
+void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor foregroundColor, QColor backgroundcolor,
 	                                bool drawTarget, bool drawLegend)
 {
-
-    float angleInRad = degree_to_rad(angle+180);
-
-	// Real position of object, from sensor on  the grid is postion + bumperOffset.
-	// the sensorDepth was added at the moment of capture, so we have to remove it here.
-	pos -= config.sensorDepth;
-
-    QPoint start(0, (pos*Ratio));
-    QPoint temp;
+	// Our detection Y axis is positive left, so we negate the lateral coordinate.
+ 	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
+    QPoint start(-detection->relativeToVehicleCart.left * Ratio, 
+	             -(detection->relativeToVehicleCart.forward+config.spareDepth) * Ratio);
     QRect tempRect;
     QPolygon poly;
 
-    temp = start;
-    start.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));
-    start.setY(temp.y()*cosf(angleInRad) + temp.x()*sinf(angleInRad));
-
     QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
     rect.setSize(rect.size()+QSize(10,10));
+	int windowWidth = width();
+	int windowHeight = height();
+
     rect.moveTo(start + QPoint((width()/2)-rect.width()/2, height()-rect.height()));
 
 	QColor pencolor = backgroundcolor.darker(180);
@@ -685,7 +712,6 @@ void FOV_2DScan::drawTextDetection(QPainter* p, DetectionData *detection, float 
 		p->drawPolygon(poly);
 
 		// Draw the ellipse around the distance indication text
-//		p->drawEllipse(QPoint(width()-(tempRect.width()/2), tempRect.bottom()-12), tempRect.size().width()/2, tempRect.size().height()/2);
 		p->drawEllipse(QPoint(width()-(tempRect.width()/2)-5, tempRect.bottom()-tempRect.size().height()/2), tempRect.size().width()/2, tempRect.size().height()/2);
 
 		// Write the distance text
@@ -734,15 +760,15 @@ void FOV_2DScan::drawTextDetection(QPainter* p, DetectionData *detection, float 
 
 void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
 {
-	float angleInRad = degree_to_rad(angle+180);
+	float angleInRad = DEG2RAD(angle+180);
 	// Real position of object, from sensor on  the grid is postion + bumperOffset.
-	// the sensorDepth was added at the moment of capture, so we have to remove it here.
-	pos -= config.sensorDepth;
+	// the spareDepth was added at the moment of capture, so we have to remove it here.
+	pos += config.spareDepth;
 
     QPoint start(0, (pos*Ratio));
     QPoint temp;
-
     temp = start;
+
     start.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));
     start.setY(temp.y()*cosf(angleInRad) + temp.x()*sinf(angleInRad));
 
@@ -762,27 +788,49 @@ void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QCol
 
 }
 
-void FOV_2DScan::drawArc(QPainter* p, float angle, float angleWidth, float length)
+void FOV_2DScan::drawArc(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset)
 {
-    QRectF rectangle(width()/2-length*Ratio, height()-length*Ratio, length*Ratio*2, length*Ratio*2);
-    p->drawArc(rectangle, (angle+90)*16, angleWidth*16);
+	// Left is the 
+	float left = zeroX - (radius * Ratio);
+
+	// Bottom
+	float top = zeroY;
+	top -= radius * Ratio;
+	top += yOffset * Ratio;
+
+	float width = radius * Ratio * 2;
+	float height = radius * Ratio * 2;
+
+    QRectF rectangle(left, top, width, height);
+
+    p->drawArc(rectangle, (startAngle+90)*16, angularSpan*16);
 }
 
-void FOV_2DScan::drawPie(QPainter* p, float angle, float angleWidth, float length)
+void FOV_2DScan::drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset)
 {
+	float left = zeroX - (radius * Ratio);
 
-    QRectF rectangle(width()/2-length*Ratio, height()-length*Ratio, length*Ratio*2, length*Ratio*2);
-    p->drawPie(rectangle, (angle+90)*16, angleWidth*16);
+	// Bottom
+	float top = zeroY;
+	top -= radius * Ratio;
+	top += yOffset * Ratio;
+
+	float width = radius * Ratio * 2;
+	float height = radius * Ratio * 2;
+
+    QRectF rectangle(left, top, width, height);
+    p->drawPie(rectangle, (startAngle+90)*16, angularSpan*16);
 }
 
-void FOV_2DScan::drawLine(QPainter* p, float angle, float startLength, float length)
+void FOV_2DScan::drawLine(QPainter* p, float angle, float startRadius, float length)
 {
 
-    float angleInRad = degree_to_rad(angle+180);
+    float angleInRad = DEG2RAD(angle+180);
 
-    QPoint start(0, (startLength*Ratio));
-    QPoint end(0, ((startLength+length)*Ratio));
-    QPoint temp;
+    QPoint start(0, (startRadius*Ratio));
+    QPoint end(0, ((startRadius+length)*Ratio));
+    QPoint zeroPoint(zeroX, zeroY);
+	QPoint temp;
 
     temp = start;
     start.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));
@@ -792,13 +840,7 @@ void FOV_2DScan::drawLine(QPainter* p, float angle, float startLength, float len
     end.setX(temp.x()*cosf(angleInRad) - temp.y()*sinf(angleInRad));
     end.setY(temp.y()*cosf(angleInRad) + temp.x()*sinf(angleInRad));
 
-    p->drawLine(start + QPoint(width()/2, height()), end + QPoint(width()/2, height()));
-
-}
-
-float FOV_2DScan::degree_to_rad (float degrees)
-{
-    return (degrees * PI/ 180.0);
+    p->drawLine(start + zeroPoint, end + zeroPoint);
 }
 
 QColor FOV_2DScan::getColorFromDistance(float distance)
@@ -860,7 +902,7 @@ void FOV_2DScan::drawPalette(QPainter* p)
     myGradient.setFinalStop(width()-40, height()*0.9);
     p->setPen(Qt::black);
     p->setBrush(myGradient);
-    p->drawRect(0, height()*0.1, 50, height()*0.9);
+    p->drawRect(0, height()*0.1, paletteWidth, height()*0.9);
 
 	// Put a legend
 	p->setPen(Qt::white);
@@ -884,46 +926,48 @@ void FOV_2DScan::drawPalette(QPainter* p)
 	}
 }
 
+bool sortDetectionsBottomLeftTopRight (Detection::Ptr &left, Detection::Ptr &right) 
 
-void FOV_2DScan::slotDetectionDataChanged(DetectionDataVect* data)
+{ 
+	// Same X (forward)  position, sort from left to right
+	if (qFuzzyCompare(left->relativeToVehicleCart.forward,  right->relativeToVehicleCart.forward))
+	{
+		// Remember vehicle Y is positive going left, So we reverse the < operator.
+		if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
+		{
+				return(true);
+		}
+		else
+		{
+			return(false);
+		}
+	}
+	// Not same depth, compare forward
+	else if (left->relativeToVehicleCart.forward < right->relativeToVehicleCart.forward)
+	{
+		return(true);
+	}
+	else 
+	{
+		return(false);
+	}
+
+}
+
+void FOV_2DScan::slotDetectionDataChanged(const DetectionDataVect& data)
 {
     DetectionDataVect::const_iterator i;
     int index;
 
+	// Make a copy of the provided DetectionDataVect to work with
     copyData.clear();
+	copyData = data;
+
 
 	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
-    for (i = data->begin(); i != data->end(); ++i)
-    {
-		if (i->distanceRadial > config.longRangeDistance)
-			continue;
+	std::sort(copyData.begin(), copyData.end(), sortDetectionsBottomLeftTopRight);
 
-        for (index = 0; index < copyData.count(); ++index)
-        {
-			if (qFuzzyCompare(copyData[index].distanceLongitudinal, i->distanceLongitudinal))
-			//if (qFuzzyCompare(copyData[index].distanceRadial, i->distanceRadial))
-            {
-				if (i->angle > 0)
-				{
-					if (copyData[index].angle < i->angle)
-						break;
-				}
-				else
-				{
-					if (copyData[index].angle > i->angle)
-						break;
-				}
-            }
-            else if (copyData[index].distanceLongitudinal > i->distanceLongitudinal)
-            {
-                break;
-            }
-
-        }
-
-        copyData.insert(index,*i);
-    }
-
+	//Merge detections according to distance criteria
 	mergeDetection();
     update();
 }
@@ -936,20 +980,20 @@ void FOV_2DScan::mergeDetection()
 	bool found;
 
 	mergedData.clear();
-	for (indexPoint = 0; indexPoint < copyData.count(); ++indexPoint)
+	for (indexPoint = 0; indexPoint < copyData.size(); ++indexPoint)
 	{
 		found = false;
 		indexMerged = 0;
 		if (mergeDetectionMode != eNoMerge)
 		{
 
-			for (indexMerged = 0; indexMerged < mergedData.count(); ++indexMerged)
+			for (indexMerged = 0; indexMerged < mergedData.size(); ++indexMerged)
 			{
-				if (mergedData[indexMerged].count())
+				if (mergedData[indexMerged].size())
 				{
-					for (index = 0; index < mergedData[indexMerged].count(); ++index)
+					for (index = 0; index < mergedData[indexMerged].size(); ++index)
 					{
-						if (isInRange(&copyData[indexPoint],&mergedData[indexMerged][index] ))
+						if (isInRange(copyData[indexPoint], mergedData[indexMerged][index] ))
 						{
 							found = true;
 							break;
@@ -964,44 +1008,34 @@ void FOV_2DScan::mergeDetection()
 
 		if (!found)
 		{
-			mergedData.append(DetectionDataVect());
-			mergedData.last().append(copyData[indexPoint]);
+			mergedData.push_back(DetectionDataVect());
+			mergedData.at(mergedData.size()-1).push_back(copyData[indexPoint]);
 		}
 		else
-			mergedData[indexMerged].append(copyData[indexPoint]);
+			mergedData[indexMerged].push_back(copyData[indexPoint]);
     }
 
 }
 
-bool FOV_2DScan::isInRange(DetectionData* detection1, DetectionData* detection2 )
+bool FOV_2DScan::isInRange(const Detection::Ptr &detection1, const Detection::Ptr &detection2 )
 {
 	bool distInRange = false;
-	bool angleInRange = false;
+	bool lateralInRange = false;
 
-	if (mergeDetectionMode == eRadial)
+	if ((detection1->relativeToVehicleCart.left < (detection2->relativeToVehicleCart.left + mergeAcceptanceX)) && 
+		(detection1->relativeToVehicleCart.left > (detection2->relativeToVehicleCart.left - mergeAcceptanceX)))
 	{
-		if ((detection1->distanceRadial < (detection2->distanceRadial + mergeAcceptance)) && 
-		(detection1->distanceRadial > (detection2->distanceRadial - mergeAcceptance)))
-		{
-			distInRange = true;
-		}
-	}
-	else if (mergeDetectionMode == eLongitudinal)
-	{
-		if ((detection1->distanceLongitudinal < (detection2->distanceLongitudinal + mergeAcceptance)) && 
-		(detection1->distanceLongitudinal > (detection2->distanceLongitudinal - mergeAcceptance)))
-		{
-			distInRange = true;
-		}
+			lateralInRange = true;
 	}
 
-	if (((detection1->angle+(detection1->angleWidth/2)) > (detection2->angle-(detection2->angleWidth/2))) || 
-		((detection2->angle+(detection2->angleWidth/2)) > (detection1->angle-(detection1->angleWidth/2))))
+
+	if ((detection1->relativeToVehicleCart.forward < (detection2->relativeToVehicleCart.forward + mergeAcceptanceY)) && 
+		(detection1->relativeToVehicleCart.forward > (detection2->relativeToVehicleCart.forward - mergeAcceptanceY)))
 	{
-		angleInRange = true;
+		distInRange = true;
 	}
 
-	return (angleInRange && distInRange);
+	return (lateralInRange && distInRange);
 }
 
 void FOV_2DScan::closeEvent(QCloseEvent * event)
@@ -1022,6 +1056,7 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	QMenu* menuMergeDisplay = mainMenu.addMenu("Merge Channels");
 	QMenu* menuMeasureMode = mainMenu.addMenu("Distance calculation");
 	QMenu* menuColorCode = mainMenu.addMenu("Distance vs velocity");
+	QMenu* menuDistanceDisplayMode = mainMenu.addMenu("Distance display");
    
 	//menuMergeDetection->addAction(noMergeAction);
 	//menuMergeDetection->addAction(radialAction);
@@ -1034,6 +1069,9 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 
 	menuMeasureMode->addAction(measureRadialAction);
 	menuMeasureMode->addAction(measureLongitudinalAction);
+
+	menuDistanceDisplayMode->addAction(displayDistanceModeHideAction);
+	menuDistanceDisplayMode->addAction(displayDistanceModeShowAction);
 
 	mainMenu.addAction(showPaletteAction);
 

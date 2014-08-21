@@ -7,13 +7,11 @@
 #include <qwt_plot_curve.h>
 
 #include "curvedata.h"
-
 #include "ReceiverCapture.h"
 
 
 using namespace std;
 using namespace awl;
-
 
 class QwtPlotCurve;
 class QwtPlotMarker;
@@ -83,9 +81,6 @@ private:
 	ReceiverCapture::Ptr d_receiverCapture;
 	int d_channelID;
 	uint32_t d_lastFrameID;
-
-	/** \brief Our subscription identifier to access to lidar data. */
-	Subscription::SubscriberID d_currentReceiverCaptureSubscriberID;
 };
 
 #endif

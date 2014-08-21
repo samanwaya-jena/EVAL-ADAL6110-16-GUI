@@ -4,23 +4,22 @@
 #include <QtWidgets/QMainWindow>
 #include <QTimer>
 
+#ifndef Q_MOC_RUN
+#include <boost/container/vector.hpp>
+#endif
+
 #include "ui_awlqtdemo.h"
 
+#include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
-#include "ReceiverFileCapture.h"
 #include "Sensor.h"
 #include "VideoViewer.h"
 #include "FusedCloudViewer.h"
 #include "FOV_2DScan.h"
-
-#include "AWLSettings.h"
+#include "TableView.h"
 #include "..\awlqtscope\awlqtscope.h"
 
-using namespace pcl;
-
-
-// Not a number
 
 namespace awl
 {
@@ -41,15 +40,6 @@ public:
 	eParameterConfirmColumn = 3
 	}
 	ParameterColumn;
-
-	typedef enum RealTimeColumn
-	{
-		eRealTimeDistanceColumn = 0,
-		eRealTimeVelocityColumn = 1,
-		eRealTimeTrackColumn = 2,
-		eRealTimeLevelColumn = 3
-	};
-
 
 public:
 	AWLQtDemo(int argc, char *argv[]);
@@ -111,10 +101,12 @@ private slots:
 
 	void on_view3DActionToggled();
 	void on_view2DActionToggled();
+	void on_viewTableViewActionToggled();
 	void on_viewGraphActionToggled();
 	void on_viewCameraActionToggled();
 
 	void on_view2DClose();
+	void on_viewTableViewClose();
 	void on_viewGraphClose();
 
 
@@ -123,28 +115,17 @@ private slots:
 	void on_timerTimeout();
 
 protected:
-	void PrepareTableViews();
+	// Adjust the default displayed ranges depending on the sensor capabilities
+	void AdjustDefaultDisplayedRanges();
 
 	void PrepareParametersView();
 	void UpdateParametersView();
 
 	void PrepareGlobalParametersView();
 	void UpdateGlobalParametersView();
-
-	void DisplayReceiverValues();
-	void AddDistanceToText(int detectionID,  QTableWidget *pTable , Detection::Ptr &detection);
-	void AddDistanceToText(int detectionID, QTableWidget *pTable, TrackID trackID = 0, 
-						   float distance = NAN, 
-						   Detection::ThreatLevel level = Detection::eThreatNone, 
-						   float intensity = NAN,
-						   float velocity = NAN,
-						   float acceleration = NAN, 
-						   float timeToCollision = NAN,
-						   float decelerationToStop = NAN,
-						   float probability = 0);
-
 	void DisplayReceiverStatus();
-	void DisplayReceiverValuesTo2DScanView();
+	void DisplayReceiverStatus(int receiverID);
+	void GetLatestDetections(DetectionDataVect &detectionData);
 	void closeEvent(QCloseEvent * event);
 
 	void FillFPGAList(AWLSettings *settingsPtr);
@@ -160,21 +141,25 @@ private:
 	QTimer *myTimer;
 
 	FOV_2DScan* m2DScan;
+	TableView * mTableView;
 	ConfigSensor mCfgSensor;
 	AWLQtScope* scopeWindow;
 
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr baseCloud;
-	VideoCapture::Ptr videoCapture;
 
-	ReceiverCapture::Ptr receiverCapture;
+
+	ReceiverCapture::List receiverCaptures;
+	VideoCapture::List videoCaptures;
+	VideoViewer::List  videoViewers;
 
 	ReceiverProjector::Ptr receiver;
-	VideoViewer::Ptr  videoViewer;
 	FusedCloudViewer::Ptr fusedCloudViewer;
 
+
+
 	/** \brief Our subscription identifier to access to lidar data. */
-	Subscription::SubscriberID receiverCaptureSubscriberID;
+	boost::container::vector<Subscription::SubscriberID> receiverCaptureSubscriberIDs;
 };
 
 } // namespace AWL          

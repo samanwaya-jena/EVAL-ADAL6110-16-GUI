@@ -8,32 +8,21 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #endif
 
 using namespace std;
-using namespace pcl;
 
-#include "sensor.h"
-#include "ReceiverCapture.h"
+#include "DetectionStruct.h"
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
 
-// Frame rate, in frame per seconds
-#define FRAME_RATE	33.0
 
 namespace awl
 {
 /** \brief Threaded Video Display class that also overlays decorations based on lidar acquisition.
   *        The video display thread is based on OpenCV.
-  *		   The VideoViewer takes a VideoCaptureDevice as input.
-  *		   The VideoViewer also takes a ReceiverProjector as input
+  *		   The VideoViewer takes a VideoCaptureDevice as input for image information.
   * \author Jean-Yves Deschênes
   */
 class VideoViewer
@@ -43,14 +32,15 @@ public:
 	
 	typedef boost::shared_ptr<VideoViewer> Ptr;
 	typedef boost::shared_ptr<VideoViewer const> ConstPtr;
+	typedef boost::container::vector<VideoViewer::Ptr> List;
+	typedef VideoViewer::List *ListPtr;
 
 	/** \brief Video Viewer constructor.
       * \param[in] inCameraName string used to identify camera and used as window title
       * \param[in] inVideoCapture videoCaptureDevice we feed image from.
-      * \param[in] inreceiverCapture receiver Capture device that retuns us witha actual dinstance info.
 	  * \param[in] inProjector receiverProjector that supplies us with range info
       */
-	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture, ReceiverProjector::Ptr inProjector);
+	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture);
 
 	/** \brief Video Viewer destructor. Insures that the viewer thread is Stopped()
       */
@@ -68,11 +58,6 @@ public:
       * \return true if the video display thread is stoppped.
       */
 	bool  WasStopped();
-
-	/** \brief Return the video frame rate.
-      * \return video acquisition frame rate in FPS.
-      */
-	double GetFrameRate() {return(frameRate);};
 
 	/** \brief Return the video frame width.
       * \return videoframe width in pixels.
@@ -94,12 +79,12 @@ public:
 	/** \brief Return the  horizontal camera FOV.
       * \return horizontal camera FOV in radians.
       */
-	double GetCameraFovX() {return(cameraFovX);}
+	double GetCameraFovWidth() {return(cameraFovWidth);}
 
 	/** \brief Return the  vertical camera FOV.
       * \return vertical camera FOV in radians.
       */
-	double GetCameraFovY() {return(cameraFovY);}
+	double GetCameraFovHeight() {return(cameraFovHeight);}
 
 	/** \brief Return the work frame.
       * \return a boost shared pointer to the video image.
@@ -125,36 +110,38 @@ public:
 	
 	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
 
-	/** \brief Modify the receiverCapture source.  Thread safe
-      * \param[in] inReceiverCapture receiverCaptureDevice we feed distance from.
-      */
-	
-	void SetReceiverCapture(ReceiverCapture::Ptr inReceiverCapture);
-
-
-	/** \brief Modify the receiverProjector that feeds us with data.  Thread safe
-      * \param[in] inProjector receiverProjector that supplies us with range info
-	  */
-	void VideoViewer::SetReceiverProjector(ReceiverProjector::Ptr inProjector);
-
-	/** \brief Perform a single iteration of the video display thread loop.
-	  *        to be called from within the main event loop.
-      */
-	void VideoViewer::DoThreadIteration();
-
 	/** \brief Move the window at position left, top.
 	  * \remarks implemented for compatibility  with Qt.
       */
 	void move(int left, int top); 
+
+	/** \brief Update the detection positions.
+	  * \remarks Udate is thread safe.
+      */
+	void slotDetectionDataChanged(const DetectionDataVect & data);
 
 protected:
 	/** \brief Perform the video display thread loop
       */
 	void  DoThreadLoop();
 
-	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame);
-	void DisplayTarget(VideoCapture::FramePtr &targetFrame, int channelID,  Detection::Ptr &detection);
+	/** \brief Resize the window to fit the screen.
+	  * \remarks implemented for compatibility  with Qt.
+      */
+	void SizeWindow();
 
+	/** \brief Set the window Icon to the icon specified in the configuration file.
+      */
+	void SetWindowIcon();
+
+	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const DetectionDataVect & data);
+	void DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
+
+protected:
+	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
+	void GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
+    void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight);
+ 
 protected:
 	
     /** \brief Local flag indicating a request for termination of thread. */
@@ -184,16 +171,13 @@ protected:
     /** \brief Current video frame height. */
 	int frameHeight;
 
-	/** \brief Current video stram frame rate in FPS.  For still video, it defaults to 33FPS. */
-	double frameRate;
-
 	/** \brief Video scaling factor, that can be set on the command line. */
 	double scale;
 
 	/** \brief Horizontal field of view of the camera. */
-	float cameraFovX;
+	float cameraFovWidth;
 	/** \brief Vertical field of view of the camera. */
-	float cameraFovY;
+	float cameraFovHeight;
 
 	/** \brief Copy of the captured image. Used for work and transformation. */
     VideoViewer::FramePtr workFrame;
@@ -210,11 +194,11 @@ protected:
 	/** \brief video capture device that supplies the video data */
 	VideoCapture::Ptr videoCapture; 
 
-	/** \brief receiver capture device that supplies the range data */
-	ReceiverCapture::Ptr receiverCapture; 
+	/** \brief Time the object was created.  Used to calculate flashing rates */
+	boost::posix_time::ptime startTime;
 
-	/** \brief receiver projector that supplies the range data */
-	ReceiverProjector::Ptr projector;
+	/** \brief Vector containing the detections to be displayed */
+   DetectionDataVect detectionData;
 }; // VideoViewer
 
 } // namespace awl

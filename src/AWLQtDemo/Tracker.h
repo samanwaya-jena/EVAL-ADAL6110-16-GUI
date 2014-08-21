@@ -3,34 +3,19 @@
 
 
 #include <stdint.h>
-#include <iostream>
-#include <fstream>
 #include <string>
 #include <queue>
-
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
-
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
-
+#include <boost/shared_ptr.hpp>
+#include <boost/container/vector.hpp>
+#include "awlcoord.h"
 
 using namespace std;
 
 namespace awl
 {
 
-#if 0
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *) __nan)
-#else
 const float NAN = std::numeric_limits<float>::quiet_NaN ();
 #define isNAN(val) (val == NAN)
-#endif
-
 
 typedef uint16_t TrackID;
 
@@ -59,6 +44,7 @@ typedef union
 
 } ChannelMask;
 
+
 /** \brief The Detection class corresponds to a single detectio returned by the receiver.
            It holds the distance for the detection, its intensity, threat level
 */
@@ -69,7 +55,7 @@ class Detection
 public:
 	typedef boost::shared_ptr<Detection> Ptr;
     typedef boost::shared_ptr<Detection> ConstPtr;
-	typedef std::vector<Detection::Ptr> Vector;
+	typedef boost::container::vector<Detection::Ptr> Vector;
 
 	typedef enum ThreatLevel {
 		eThreatNone = 0,  // No threat level assigned
@@ -80,13 +66,11 @@ public:
 	ThreatLevel;
 
 public:
+	Detection();
+	Detection(int inReceiverID, int inChannelID, int inDetectionID);
+	Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
+	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel = eThreatNone);
 	
-	Detection(int inChannelID, int inDetectionID);
-	Detection(int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
-	float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel = eThreatNone);
-	
-	Detection::Detection(int inChannelID, int inDetectionID,  ifstream &inTrackFile);
-
 	/** \brief Verify if there is any data in the detection.
 	  *        a detection with distance = 0 is invalid.  it should not be stored.
       * \return bool true if the detection is valid.  False otherwise.
@@ -96,6 +80,9 @@ public:
 	int	GetChannelID() {return(channelID);}
 
 public:
+	/** \brief sensor ID of the sensor where detection origins from */
+	int	  receiverID;
+
 	/** \brief channel ID of the channel where detection origins from */
 	int	  channelID;
 
@@ -132,9 +119,30 @@ public:
 	/** \brief Track ID. */
 	TrackID	trackID;
 
+	/** \brief Coordinates of detection relative to sensor */
+	CartesianCoord relativeToSensorCart;
+	SphericalCoord	   relativeToSensorSpherical;
+
+	/** \brief Coordinates of detection relative to vehicule bumper */
+	CartesianCoord relativeToVehicleCart;
+	SphericalCoord	   relativeToVehicleSpherical;
+
+	/** \brief Coordinates of detection relative to world */
+	CartesianCoord relativeToWorldCart;
+	SphericalCoord	   relativeToWorldSpherical;
+
+	/** \brief AbsoluteYCoordinate. */
+	float absoluteY;
+
+	/** \brief AbsoluteYCoordinate. */
+	float absoluteZ;
+
+
+
 	/** \brief Threat level associated to detection */
 	ThreatLevel	threatLevel;
 };
+
 
 /** \brief A track corresponds to an obstacle tracking based on a singl;e or multiple detections,
            and gives information on the evolution of the detected obstacle across multiple frames
@@ -145,7 +153,7 @@ class Track
 public:
 	typedef boost::shared_ptr<Track> Ptr;
     typedef boost::shared_ptr<Track> ConstPtr;
-	typedef std::vector<Track::Ptr> Vector;
+	typedef boost::container::vector<Track::Ptr> Vector;
 
 	Track(int trackID);
 
@@ -214,19 +222,20 @@ class ChannelFrame
 {
 public:
 	typedef boost::shared_ptr<ChannelFrame> Ptr;
-    typedef boost::shared_ptr<ChannelFrame> ConstPtr;
-	typedef std::vector<ChannelFrame::Ptr> Vector;
+    typedef boost::container::vector<ChannelFrame::Ptr> Vector;
 public:
-	ChannelFrame(int channelID);
-	ChannelFrame(int channelID, int inDetectionQty, ifstream &inTrackFile);
+	ChannelFrame(int inReceiverID, int channelID);
 	virtual ~ChannelFrame() {};
 
 
+	int GetReceiverID() { return(receiverID);}
 	int GetChannelID() { return(channelID);}
 
 	bool FindDetection(int inDetectionID, Detection::Ptr &outDetection);
 
 public:
+	int receiverID;
+
 	int channelID;
 	// Timestamp im milliseconds, elapsed from start of thread.
 	double timeStamp;
@@ -245,16 +254,16 @@ public:
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
 	typedef std::queue<SensorFrame::Ptr> Queue;
 public:
-	SensorFrame(uint32_t inFrameID);
-	SensorFrame(uint32_t inFrameID, int inChannelQty, int inDetectionQty);
-	SensorFrame(int inChannelQty, int inDetectionQty, ifstream &inTrackFile);
+	SensorFrame(int inReceiverID, uint32_t inFrameID);
+	SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty);
 	virtual ~SensorFrame() {};
 
+	int GetReceiverID() { return(receiverID);}
 	uint32_t	GetFrameID() {return(frameID);}
-	
 
 	Detection::Ptr MakeUniqueDetection(int channelID, int detectionID);
 public:
+	int receiverID;
 	uint32_t frameID;
 	ChannelFrame::Vector channelFrames;
 	Track::Vector tracks; 
@@ -282,13 +291,8 @@ public:
 
 
 public:
-	AcquisitionSequence(int inSequenceID);
-	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty);
-	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, ifstream &inTrackFile);
-	AcquisitionSequence(int inSequenceID, int inChannelQty, int inDetectionQty, std::string inFileName);
-
-	void ReadFile(std::string inFileName, int inChannelQty, int inDetectionQty);
-	void ReadFile(ifstream &inTrackFile, int inChannelQty, int inDetectionQty);
+	AcquisitionSequence(int inReceiverID, int inSequenceID);
+	AcquisitionSequence(int inReceiverID, int inSequenceID, int inChannelQty);
 
 //	SensorFrame &operator[](int frameIndex) {return(*(sensorFrames[frameIndex]));}
 
@@ -318,6 +322,7 @@ protected:
 	void UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 
 public: 
+	int receiverID;
 	int sequenceID;
 	int channelQty;
 	int detectionQty;

@@ -25,13 +25,13 @@ using namespace pcl;
 using namespace awl;
 
 
-ReceiverUDPCapture::ReceiverUDPCapture(int inSequenceID, int inReceiverChannelQty, int inDetectionsPerChannel):
-ReceiverCapture(inSequenceID, inReceiverChannelQty, inDetectionsPerChannel),
+ReceiverUDPCapture::ReceiverUDPCapture(int inSequenceID, int inReceiverChannelQtyl):
+ReceiverCapture(inSequenceID, inReceiverChannelQty),
 canHandle(0),
 bitRate("50"),
 acceptanceCode("0x1FFFFFFF"),
 acceptanceMask("0x1FFFFFFF"),
-currentFrame(new SensorFrame(0, inReceiverChannelQty, inDetectionsPerChannel)),
+currentFrame(new SensorFrame(0, inReceiverChannelQty)),
 lastMessageID(0)
 
 {

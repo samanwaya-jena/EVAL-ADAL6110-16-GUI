@@ -8,8 +8,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 
-#include "DebugPrintf.h"
 #include "AWLSettings.h"
+#include "DebugPrintf.h"
 
 using namespace std;
 using namespace awl;
