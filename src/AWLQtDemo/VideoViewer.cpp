@@ -34,12 +34,13 @@ const char *szCameraWindowClassName = NULL;  // Class name for the camera window
 #endif
 const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
+const int  workFrameQty = 3;  // Number of buffers. That may depend on the display lag of the systems.
+
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
-workFrame(new (cv::Mat)),
-displayFrame(new (cv::Mat)),
+cameraFrame(new (cv::Mat)),
+currentWorkFrame(0),
 cameraName(inCameraName),
 videoCapture(inVideoCapture),
-bWindowCreated(false),
 mThread()
 
 {
@@ -48,7 +49,10 @@ mThread()
 	mStopRequested = false;
 	mThreadExited = false;
 
-
+	for (int frameID = 0; frameID < workFrameQty; frameID++)
+	{
+		workFrames.push_back(new (cv::Mat));
+	}
 }
 
 VideoViewer::~VideoViewer()
@@ -62,10 +66,8 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	boost::mutex::scoped_lock updateLock(mMutex);
  
 	videoCapture = inVideoCapture;
-
 	frameWidth = videoCapture->GetFrameWidth();
 	frameHeight = videoCapture->GetFrameHeight();
-	scale = videoCapture->GetScale();
 	cameraFovWidth = videoCapture->GetCameraFovWidth();
 	cameraFovHeight = videoCapture->GetCameraFovHeight();
 
@@ -75,15 +77,14 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 }
 
 void  VideoViewer::Go() 
-{	
+{
 	if (!(mThread && mThread->joinable()))
 	{
-
-		// Create output window
-		if (!bWindowCreated) 
+		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+		// Create output window, only if it does not already exist
+		if (windowPtr == NULL)
 		{
 			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			bWindowCreated = true;
 			SetWindowIcon();
 			SizeWindow();
         
@@ -102,11 +103,9 @@ void  VideoViewer::Stop()
 
 	if (!mThreadExited) 
 	{
-	HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
-	if (window == NULL) bWindowCreated = false;
-	else bWindowCreated = true;
-	
-	if (bWindowCreated) cvDestroyWindow(cameraName.c_str());
+
+	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+	if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
 	}
 
 	if (mThreadExited) 
@@ -130,7 +129,8 @@ void VideoViewer::SetWindowIcon()
 
 {
 	// Set the icon for the window
-	HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
+	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+	HWND window = (HWND) windowPtr;
 	if (window != NULL) 
 	{
 		AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -183,14 +183,6 @@ void VideoViewer::move(int left, int top)
 	cvMoveWindow(cameraName.c_str(), left, top);
 }
 
-
-
-void VideoViewer::CopyWorkFrame(VideoCapture::FramePtr targetFrame) 
-{
-//	boost::mutex::scoped_lock updateLock(mMutex);
- 	workFrame->copyTo(*targetFrame);
-//	updateLock.unlock();
-}
 
 bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right) 
 
@@ -260,26 +252,31 @@ void VideoViewer::DoThreadLoop()
 		if (videoCapture != NULL && videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID)) 
 		{
 			// Copy the contents of the cv::Mat
-			videoCapture->CopyCurrentFrame(workFrame, currentVideoSubscriberID);
+			videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
+
+			// Copy to the working area
+			cameraFrame->copyTo(*workFrames[currentWorkFrame]);
 
 			// Add the lidar range decorations to the video frame
 			boost::mutex::scoped_lock updateLock(mMutex);
-			DisplayReceiverValues(workFrame, detectionData);
+			DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrame], detectionData);
 			updateLock.unlock();
 
-			// Copy to the display (we are double-buffering)
-			workFrame->copyTo(*displayFrame);
+			//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
+			//  In that case, do NOT reopen it.  The thread may be terminating.
+			void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+			// The current work frame becomes the display frame
+			if (windowPtr != NULL) cv::imshow(cameraName, *workFrames[currentWorkFrame]);
 
-			// 
-			HWND window = ::FindWindowA(szCameraWindowClassName, cameraName.c_str());
-			if (window == NULL) bWindowCreated = false;
-			if (bWindowCreated && ::IsWindowVisible(window)) cv::imshow(cameraName, *displayFrame);
+			// And we select a new work frame for later.
+			currentWorkFrame = ++currentWorkFrame % workFrameQty;
 		}
 
 		//Give a break to other threads and wait for next frame
 		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 
-		if((!bWindowCreated))
+		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+		if(windowPtr == NULL)
 		{
 #if 1
 			Stop(); 
@@ -292,17 +289,17 @@ void VideoViewer::DoThreadLoop()
 	mThreadExited = true;
 }
 	
-void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const Detection::Vector & iDetectionData)
+void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & iDetectionData)
 
 {
 	// Draw the individual detections
 	BOOST_FOREACH(const Detection::Ptr &detection, iDetectionData)
 	{
-			DisplayTarget(targetFrame, detection);
+			DisplayTarget(sourceFrame, targetFrame, detection);
 	}
 }
 
-void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection)
+void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection)
 {
 	int top;
 	int left;
@@ -336,8 +333,8 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detec
 	bottomLeft.x += (thickness/2); 
 	bottomRight.x -= (thickness - (thickness/2) -1); // in case thickness is odd
 
-	DrawDetectionLine(targetFrame, topRight, bottomRight, colorEnhance, colorDehance, thickness, 1);
-	DrawDetectionLine(targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(sourceFrame, targetFrame, topRight, bottomRight, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(sourceFrame, targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, thickness, 1);
 
 	// Inset the horizontal lines vertically, to compensate for line height
 	topLeft.y -= thickness/2;
@@ -351,8 +348,8 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detec
 	bottomLeft.x += (thickness - (thickness/2));
 	bottomRight.x -= (thickness/2)+1;
 
-	DrawDetectionLine(targetFrame, topLeft, topRight, colorEnhance, colorDehance, 1, thickness);
-	DrawDetectionLine(targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, targetFrame, topLeft, topRight, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, thickness);
 }
 
 void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness)
@@ -442,7 +439,7 @@ void VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomRightInChannel, bottomRight.x, bottomRight.y);
 }
 
-void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)
+void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)
 {
 	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
 
@@ -459,7 +456,7 @@ void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const C
 			{
 				if (pixelPos.x >= 0 && pixelPos.x < frameWidth && pixelPos.y >= 0 && pixelPos.y < frameHeight)
 				{
-					cv::Vec3b	color = targetFrame->at<cv::Vec3b>(pixelPos);
+					cv::Vec3b	color = sourceFrame->at<cv::Vec3b>(pixelPos);
 
 					int r = (int)color[0]+ (int)colorEnhance[0] - (int)colorDehance[0];
 					int g = (int)color[1] + (int)colorEnhance[1] - (int)colorDehance[1];

@@ -28,6 +28,7 @@ class VideoViewer
 {
 public:
 	typedef boost::shared_ptr<cv::Mat> FramePtr;
+	typedef boost::container::vector<FramePtr> FrameList;
 	
 	typedef boost::shared_ptr<VideoViewer> Ptr;
 	typedef boost::shared_ptr<VideoViewer const> ConstPtr;
@@ -68,13 +69,6 @@ public:
       */
 	int	   GetFrameHeight() {return(frameHeight);}
 
-
-	/** \brief Return the image scale.
-      * \return image scaling factor.
-      */
-	double GetScale() { return(scale);}
-
-
 	/** \brief Return the  horizontal camera FOV.
       * \return horizontal camera FOV in radians.
       */
@@ -84,18 +78,6 @@ public:
       * \return vertical camera FOV in radians.
       */
 	double GetCameraFovHeight() {return(cameraFovHeight);}
-
-	/** \brief Return the work frame.
-      * \return a boost shared pointer to the video image.
-      */
-	VideoViewer::FramePtr GetWorkFrame() {return(workFrame);}
-
-#if 1	
-	/** \brief Copy the work frame to the targetFrame.  The current frame is thread-locked during transfer
-      * \note Locking of the target frame is under the responsibility of the calling thread.
-      */
-	void CopyWorkFrame(VideoViewer::FramePtr targetFrame);
-#endif
 			
 	/** \brief Return the mutex of the video  viewer objects.
       * \return a boost mutex for the object.
@@ -110,7 +92,7 @@ public:
 	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
 
 	/** \brief Move the window at position left, top.
-	  * \remarks implemented for compatibility  with Qt.
+	  * \remarks implemented for compatibility  with Qt (hence name convention).
       */
 	void move(int left, int top); 
 
@@ -133,13 +115,25 @@ protected:
       */
 	void SetWindowIcon();
 
-	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const Detection::Vector & data);
-	void DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
+	void DisplayReceiverValues(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & data);
+
+
+	void DisplayTarget(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
 
 protected:
 	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
 	void GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
-    void DrawDetectionLine(VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight);
+
+	/** \brief Draw an "enhanced" detection line over the target frame.
+	           We take the original background from the source frame.  
+			   This way, we avoid a "pile-up" of enhancements that can be confusing.
+			   Since the detections are sorted in order of threatLevel, this insures that the most menacing threats 
+			   are always displayed correctly.
+      */
+    void DrawDetectionLine(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, 
+						 const CvPoint &startPoint, const CvPoint &endPoint,  
+						 const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, 
+						 int iWidth, int iHeight);
  
 protected:
 	
@@ -155,9 +149,6 @@ protected:
 	/** \brief Data sharing mutex. */
     boost::mutex mMutex;
 
-	/** \brief indicator of the display window.  True if window exists */
-	bool bWindowCreated;
-
 	/** \brief Sunscriber identification to the video feed. */
 	Subscription::SubscriberID currentVideoSubscriberID;
 	
@@ -170,22 +161,24 @@ protected:
     /** \brief Current video frame height. */
 	int frameHeight;
 
-	/** \brief Video scaling factor, that can be set on the command line. */
-	double scale;
-
 	/** \brief Horizontal field of view of the camera. */
 	float cameraFovWidth;
+
 	/** \brief Vertical field of view of the camera. */
 	float cameraFovHeight;
 
-	/** \brief Copy of the captured image. Used for work and transformation. */
-    VideoViewer::FramePtr workFrame;
+	/** \brief Copy of the captured image. */
+    VideoViewer::FramePtr cameraFrame;
 
-	/** \brief Copy of the work image. Used for display (we are double-buffering). */
-    VideoViewer::FramePtr displayFrame;
+	/** \brief Frames used for painting and display. 
+	           As we are double-buffering, the displayed frame is
+			   never the one that is being painted on.
+	*/
+	FrameList workFrames;
 
-	/** \brief An image as loaded on file stream.Captured image. Should be for reference purposes only. */
-	cv::Mat image;
+	/** \brief Index of frame currently being used for work, previous to display
+	*/
+	int currentWorkFrame;
 
 	/** \brief Camera name, also used as the window title */
 	std::string cameraName;
