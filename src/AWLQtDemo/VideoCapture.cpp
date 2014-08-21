@@ -120,17 +120,28 @@ currentFrameSubscriptions(new(Subscription))
 		// If we are using the Ximea driver, set the downsampling for a 640x480 image
 		if (pref == CV_CAP_XIAPI)
 		{
+			HANDLE ximeaHandle = ((VideoCaptureDummy *)&cam)->cap; 
 
 			// Capture format for Ximea is RGB32.  Preferable over RGB24 for performance reasons, according to Ximea documentation.
 			cam.set(CV_CAP_PROP_XI_DATA_FORMAT, XI_RGB32 );
 			// Downsampling: Prefer XI_SKIPPING over XI_BINNING for performance reasons.
-			xiSetParamInt(((VideoCaptureDummy *)&cam)->cap, XI_PRM_DOWNSAMPLING_TYPE, XI_SKIPPING);
-//			xiSetParamInt(((VideoCaptureDummy *)&cam)->cap, XI_PRM_SHUTTER_TYPE, XI_SHUTTER_GLOBAL);
+			xiSetParamInt(ximeaHandle, XI_PRM_DOWNSAMPLING_TYPE, XI_SKIPPING);
+//			xiSetParamInt(ximeaHandle, XI_PRM_SHUTTER_TYPE, XI_SHUTTER_GLOBAL);
 
 			// Set the amount of downsampling to get decent frame rate.
 			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
 			// Always get the most recent frame.
-			xiSetParamInt(((VideoCaptureDummy *)&cam)->cap, XI_PRM_RECENT_FRAME, XI_ON);
+			xiSetParamInt(ximeaHandle, XI_PRM_RECENT_FRAME, XI_ON);
+
+		    // use minimum possible transport buffer size to optimize frame rate
+			int transportBufferSize;
+		    XI_RETURN stat = xiGetParamInt(ximeaHandle, XI_PRM_ACQ_TRANSPORT_BUFFER_SIZE XI_PRM_INFO_MIN, &transportBufferSize);
+			stat = xiSetParamInt(ximeaHandle, XI_PRM_ACQ_TRANSPORT_BUFFER_SIZE, transportBufferSize);
+
+			// set maximum number of queue
+			int numberOfFieldBuffers = 0;
+			stat = xiGetParamInt(ximeaHandle, XI_PRM_BUFFERS_QUEUE_SIZE XI_PRM_INFO_MAX, &numberOfFieldBuffers);
+			stat = xiSetParamInt(ximeaHandle, XI_PRM_BUFFERS_QUEUE_SIZE, numberOfFieldBuffers);
 		}
 
 		frameWidth = (int) cam.get(CV_CAP_PROP_FRAME_WIDTH);
