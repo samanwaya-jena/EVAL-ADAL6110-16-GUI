@@ -27,7 +27,7 @@ using namespace awl;
 
 // Text update rate, in frame per seconds
 #if 1
-#define LOOP_RATE	30	
+#define LOOP_RATE	20	
 #else
 #define LOOP_RATE	20
 #endif
