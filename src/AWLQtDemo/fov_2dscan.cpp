@@ -481,7 +481,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			// Display the individual distance targets in s-scan without accompanying legend
 			drawDetection(&painter, detection, true, false);
 		}
-	} // for
+	} // BOOST_FOREACH(const Detection::Ptr
 }
 
 void FOV_2DScan::drawMergedData(QPainter* p, const DetectionDataVect& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
