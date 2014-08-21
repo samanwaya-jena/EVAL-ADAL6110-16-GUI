@@ -511,31 +511,4 @@ bool Track::IsValid()
 	return(false);
 }
 
- bool Track::Contains(Detection::Ptr & inDetectionPtr)
- {
-	 int detectionQty = detections.size();
-	 for (int detectionIndex = 0; detectionIndex < detectionQty; detectionIndex++) 
-	 {
-		 if (detections.at(detectionIndex) == inDetectionPtr) 
-		 {
-			 return(true);
-		 }
-	 }
-
-	 return(false);
- }
-
- bool Track::Contains(int channelID)
- {
-	 int detectionQty = detections.size();
-	 for (int detectionIndex = 0; detectionIndex < detectionQty; detectionIndex++) 
-	 {
-		 if (detections.at(detectionIndex)->channelID == channelID) 
-		 {
-			 return(true);
-		 }
-	 }
-
-	 return(false);
- }
-
+ 

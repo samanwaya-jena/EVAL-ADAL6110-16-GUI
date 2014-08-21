@@ -23,26 +23,6 @@ class SensorFrame;
 class ChannelFrame;
 class Detection;
 
-/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
-  *        and communications
-  * \author Jean-Yves Deschênes
-  */
-
-typedef union 
-{
-	uint8_t byteData;
-	struct  {
-		bool channel0	: 1;
-		bool channel1	: 1;
-		bool channel2	: 1;
-		bool channel3	: 1;
-		bool channel4	: 1;
-		bool channel5	: 1;
-		bool channel6	: 1;
-		bool unused		: 1;
-	} bitFieldData;
-
-} ChannelMask;
 
 
 /** \brief The Detection class corresponds to a single detectio returned by the receiver.
@@ -161,9 +141,6 @@ public:
 
 	int	GetTrackID() {return(trackID);}
 
-	bool Contains(Detection::Ptr & inDetectionPtr);
-	bool Contains(int channelID);
-
 	// A track is built from 2 message sections.  Make sure both parts are entered before a track is completed.
 	bool IsComplete() { return (part1Entered && part2Entered && part3Entered && part4Entered); };
 
@@ -203,8 +180,6 @@ public:
 
 	/** \brief Channels in which detections were made for the track **/
 	uint8_t channels;
-
-	Detection::Vector detections; 
 
 	// A track is built from up to 4 message sections (in CAN).  Make sure both parts are entered before a track is completed.
 

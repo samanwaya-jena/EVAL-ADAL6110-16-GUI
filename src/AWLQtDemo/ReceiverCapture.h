@@ -20,6 +20,27 @@ const int maxReceiverFrames = 100;
 namespace awl
 {
 
+/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
+  *        and communications
+  * \author Jean-Yves Deschênes
+  */
+
+typedef union 
+{
+	uint8_t byteData;
+	struct  {
+		bool channel0	: 1;
+		bool channel1	: 1;
+		bool channel2	: 1;
+		bool channel3	: 1;
+		bool channel4	: 1;
+		bool channel5	: 1;
+		bool channel6	: 1;
+		bool unused		: 1;
+	} bitFieldData;
+
+} ChannelMask;
+
  /** \brief MessageMask struct describes receiver message groups that can be toggled on/off 
   *        for customized operations or to preserve bandwidth  
   *        and communications
