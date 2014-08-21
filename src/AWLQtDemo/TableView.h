@@ -6,9 +6,8 @@
 #include <QActionGroup>
 
 #include "ui_TableView.h"
+#include "Tracker.h"
 #include <boost/container/vector.hpp>
-
-#include "DetectionStruct.h"
 
 namespace awl
 {
@@ -42,7 +41,7 @@ public slots:
 	void ShowContextMenu(const QPoint& pos);
 	void slotDetectionsPerChannelAction();
     void slotConfigChanged();
-    void slotDetectionDataChanged(const DetectionDataVect &data);
+    void slotDetectionDataChanged(const Detection::Vector &data);
 
 protected :
 	void closeEvent(QCloseEvent * event);
@@ -50,7 +49,7 @@ protected :
 
 private:
 	void PrepareTableViews();
-	void DisplayReceiverValues(const DetectionDataVect &data);
+	void DisplayReceiverValues(const Detection::Vector &data);
 	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,
 						   int receiverID,

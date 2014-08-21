@@ -8,7 +8,7 @@
 
 #include "AWLSettings.h"
 #include "TableView.h"
-#include "DetectionStruct.h"
+#include "Tracker.h"
 
 using namespace std;
 using namespace awl;
@@ -110,7 +110,7 @@ void TableView::slotConfigChanged()
 	PrepareTableViews();
 }
 
-void TableView::slotDetectionDataChanged(const DetectionDataVect &data)
+void TableView::slotDetectionDataChanged(const Detection::Vector &data)
 
 {
 	DisplayReceiverValues(data);
@@ -240,7 +240,7 @@ void TableView::PrepareTableViews()
 }
 
 
-void TableView::DisplayReceiverValues(const DetectionDataVect &data)
+void TableView::DisplayReceiverValues(const Detection::Vector &data)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 

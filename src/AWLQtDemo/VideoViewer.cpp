@@ -8,6 +8,7 @@
 #include "AWLCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
+#include "Tracker.h"
 
 #include <boost/foreach.hpp>
 
@@ -236,10 +237,10 @@ bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right)
 
 }
 
-void VideoViewer::slotDetectionDataChanged(const DetectionDataVect& data)
+void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
 {
 	boost::mutex::scoped_lock updateLock(mMutex);
-	// Make a copy of the provided DetectionDataVect to work with
+	// Make a copy of the provided Detection::Vector to work with
     detectionData.clear();
 	detectionData = data;
 
@@ -291,7 +292,7 @@ void VideoViewer::DoThreadLoop()
 	mThreadExited = true;
 }
 	
-void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const DetectionDataVect & iDetectionData)
+void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const Detection::Vector & iDetectionData)
 
 {
 	// Draw the individual detections

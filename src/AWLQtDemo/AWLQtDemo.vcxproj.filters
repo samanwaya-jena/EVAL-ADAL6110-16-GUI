@@ -246,9 +246,6 @@
     <ClInclude Include="AWLSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DetectionStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h">
       <Filter>Generated Files</Filter>
     </ClInclude>

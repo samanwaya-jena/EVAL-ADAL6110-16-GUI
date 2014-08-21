@@ -208,7 +208,6 @@
     <ClInclude Include="AWLSettings.h" />
     <ClInclude Include="BlockingReader.h" />
     <ClInclude Include="DebugPrintf.h" />
-    <ClInclude Include="DetectionStruct.h" />
     <CustomBuild Include="fov_2dscan.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing fov_2dscan.h...</Message>

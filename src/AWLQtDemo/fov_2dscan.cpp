@@ -1,4 +1,6 @@
 #include "fov_2dscan.h"
+#include "Tracker.h"
+
 #include <QPainter>
 #include <QLabel>
 #include <QMenu>
@@ -436,7 +438,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 
 	// Draw the merged indicators, only if there are more than 1 detections in the area
 	// Otherwise, they are displayed as a square
-	BOOST_FOREACH(const DetectionDataVect & mergedDataItem, mergedData)
+	BOOST_FOREACH(const Detection::Vector & mergedDataItem, mergedData)
 	{
 			if (mergeDisplayMode == eNoMergeDisplay) 
 			{
@@ -484,7 +486,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	} // BOOST_FOREACH(const Detection::Ptr
 }
 
-void FOV_2DScan::drawMergedData(QPainter* p, const DetectionDataVect& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
+void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
 {
 	int index;
 	float sphericalDistanceMin = config.longRangeDistance;
@@ -954,12 +956,12 @@ bool sortDetectionsBottomLeftTopRight (Detection::Ptr &left, Detection::Ptr &rig
 
 }
 
-void FOV_2DScan::slotDetectionDataChanged(const DetectionDataVect& data)
+void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
 {
-    DetectionDataVect::const_iterator i;
+    Detection::Vector::const_iterator i;
     int index;
 
-	// Make a copy of the provided DetectionDataVect to work with
+	// Make a copy of the provided Detection::Vector to work with
     copyData.clear();
 	copyData = data;
 
@@ -1008,7 +1010,7 @@ void FOV_2DScan::mergeDetection()
 
 		if (!found)
 		{
-			mergedData.push_back(DetectionDataVect());
+			mergedData.push_back(Detection::Vector());
 			mergedData.at(mergedData.size()-1).push_back(copyData[indexPoint]);
 		}
 		else

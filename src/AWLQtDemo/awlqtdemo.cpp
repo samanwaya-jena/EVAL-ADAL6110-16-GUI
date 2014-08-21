@@ -16,7 +16,6 @@
 #include "FusedCloudViewer.h"
 #include "DebugPrintf.h"
 #include "AWLSettings.h"
-#include "DetectionStruct.h"
 #include "tableview.h"
 
 #include "..\awlqtscope\awlqtscope.h"
@@ -986,7 +985,7 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue) 
 	{
-		DetectionDataVect detectionData;
+		Detection::Vector detectionData;
 		GetLatestDetections(detectionData);
 
 		// Update the 2D view
@@ -1028,7 +1027,7 @@ void AWLQtDemo::on_timerTimeout()
 	}
 }
 
-void AWLQtDemo::GetLatestDetections(DetectionDataVect &detectionData)
+void AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 

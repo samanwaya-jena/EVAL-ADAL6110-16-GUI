@@ -12,11 +12,10 @@
 
 using namespace std;
 
-#include "DetectionStruct.h"
-
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
 
+#include "Tracker.h"
 
 namespace awl
 {
@@ -118,7 +117,7 @@ public:
 	/** \brief Update the detection positions.
 	  * \remarks Udate is thread safe.
       */
-	void slotDetectionDataChanged(const DetectionDataVect & data);
+	void slotDetectionDataChanged(const Detection::Vector & data);
 
 protected:
 	/** \brief Perform the video display thread loop
@@ -134,7 +133,7 @@ protected:
       */
 	void SetWindowIcon();
 
-	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const DetectionDataVect & data);
+	void DisplayReceiverValues(VideoCapture::FramePtr &targetFrame, const Detection::Vector & data);
 	void DisplayTarget(VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
 
 protected:
@@ -198,7 +197,7 @@ protected:
 	boost::posix_time::ptime startTime;
 
 	/** \brief Vector containing the detections to be displayed */
-   DetectionDataVect detectionData;
+   Detection::Vector detectionData;
 }; // VideoViewer
 
 } // namespace awl

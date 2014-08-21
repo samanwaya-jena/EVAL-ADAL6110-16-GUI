@@ -125,7 +125,7 @@ protected:
 	void UpdateGlobalParametersView();
 	void DisplayReceiverStatus();
 	void DisplayReceiverStatus(int receiverID);
-	void GetLatestDetections(DetectionDataVect &detectionData);
+	void GetLatestDetections(Detection::Vector &detectionData);
 	void closeEvent(QCloseEvent * event);
 
 	void FillFPGAList(AWLSettings *settingsPtr);
