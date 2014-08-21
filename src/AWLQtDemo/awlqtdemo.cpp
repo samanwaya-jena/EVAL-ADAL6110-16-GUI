@@ -37,7 +37,7 @@ using namespace pcl;
 
 // Text update rate, in frame per seconds
 #if 1
-#define LOOP_RATE	30	
+#define LOOP_RATE	20	
 #else
 #define LOOP_RATE	20
 #endif
@@ -1680,7 +1680,7 @@ void AWLQtDemo::DisplayReceiverValues()
 	tableWidgets[6] = ui.distanceTable7;
 
 	// Use the frame snapped by the main display timer as the current frame
-	// display will «
+	// display will ï¿½
 	uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
 
 	for (int channelID = 0; channelID < channelQty; channelID++) 
