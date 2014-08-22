@@ -1,8 +1,4 @@
 
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
-
 #include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "AWLCoord.h"
@@ -23,6 +19,7 @@
 using namespace std;
 using namespace awl;
 
+#include <windows.h>
 
 const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
@@ -33,16 +30,14 @@ const int maxWindowHeight = 480;
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
 cameraFrame(new (cv::Mat)),
-currentWorkFrame(0),
+currentWorkFrameIndex(0),
 cameraName(inCameraName),
-videoCapture(inVideoCapture),
-mThread()
+videoCapture(inVideoCapture)
 
 {
 	startTime = boost::posix_time::microsec_clock::local_time();
 	SetVideoCapture(videoCapture);
 	mStopRequested = false;
-	mThreadExited = false;
 
 	for (int frameID = 0; frameID < workFrameQty; frameID++)
 	{
@@ -58,35 +53,26 @@ VideoViewer::~VideoViewer()
 
 void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
-	boost::mutex::scoped_lock updateLock(mMutex);
- 
 	videoCapture = inVideoCapture;
 	frameWidth = videoCapture->GetFrameWidth();
 	frameHeight = videoCapture->GetFrameHeight();
 	cameraFovWidth = videoCapture->GetCameraFovWidth();
 	cameraFovHeight = videoCapture->GetCameraFovHeight();
 
-	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
-
-	updateLock.unlock();
+	// Subscribe to the video capture's image feed to get information
+	// on when new frames are available
+ 	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
 }
 
 void  VideoViewer::Go() 
 {
-	if (!(mThread && mThread->joinable()))
+	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+	// Create output window, only if it does not already exist
+	if (windowPtr == NULL)
 	{
-		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-		// Create output window, only if it does not already exist
-		if (windowPtr == NULL)
-		{
-			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			SizeWindow();
-        
+		cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		SizeWindow();
 		mStopRequested = false;
-		mThreadExited = false;
-
-		mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoViewer::DoThreadLoop, this)));
-		}
 	}
 }
  
@@ -95,25 +81,15 @@ void  VideoViewer::Stop()
 	if (mStopRequested) return;
 	mStopRequested = true;
 
-	if (!mThreadExited) 
-	{
-		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-		if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
-	}
-
-	if (mThreadExited) 
-	{
-		mThreadExited=false;
-		assert(mThread);
-		mThread->join();
-	}
-
-
+	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+	if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
 }
 
 bool  VideoViewer::WasStopped()
 {
-	if (mStopRequested || mThreadExited) return(true);
+	if (mStopRequested) return(true);
+	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+	if (windowPtr == NULL) return(true);
 
 	return(false);
 }
@@ -197,12 +173,10 @@ bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right)
 	{
 		return(false);
 	}
-
 }
 
 void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
 {
-	boost::mutex::scoped_lock updateLock(mMutex);
 	// Make a copy of the provided Detection::Vector to work with
     detectionData.clear();
 	detectionData = data;
@@ -210,59 +184,35 @@ void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
 	// Sort the detection DataVect in threatLevel order
 	// This insures that most urgent threats are displayed last.
 	std::sort(detectionData.begin(), detectionData.end(), SortDetectionsInThreatLevel);
-
-	updateLock.unlock();
 }
 
-void VideoViewer::DoThreadLoop()
+void VideoViewer::DoLoopIteration()
 
 {
-	while (!WasStopped())
+	if (WasStopped()) return;
+
+	// Update the video frame
+	if (videoCapture != NULL && videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID)) 
 	{
-		// Update the video frame
-		if (videoCapture != NULL && videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID)) 
-		{
-			// Copy the contents of the cv::Mat
-			videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
+		// Copy the contents of the cv::Mat
+		videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
 
-			// Copy to the working area
-			cameraFrame->copyTo(*workFrames[currentWorkFrame]);
+		// Copy to the working area
+		cameraFrame->copyTo(*workFrames[currentWorkFrameIndex]);
 
-			// Add the lidar range decorations to the video frame
-			boost::mutex::scoped_lock updateLock(mMutex);
-			DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrame], detectionData);
-			updateLock.unlock();
+		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
 
-			//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
-			//  In that case, do NOT reopen it.  The thread may be terminating.
-			void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-			// The current work frame becomes the display frame
-			if (windowPtr != NULL) cv::imshow(cameraName, *workFrames[currentWorkFrame]);
-
-			// And we select a new work frame for later.
-			currentWorkFrame = ++currentWorkFrame % workFrameQty;
-		}
-
-		//Give a break to other threads and wait for next frame
-		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
-
+		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
+		//  In that case, do NOT reopen it.  The thread may be terminating.
 		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-		if(windowPtr == NULL)
-		{
-#if 1
-			Stop(); 
+		// The current work frame becomes the display frame
+		if (windowPtr != NULL) cv::imshow(cameraName, *workFrames[currentWorkFrameIndex]);
 
-			break;
-#endif
-		}
-	} // while (!WasStoppped)
-
-	//Give a break to other threads and wait for next frame
-	boost::this_thread::sleep(boost::posix_time::milliseconds(300));
-
-	mThreadExited = true;
+		// And we select a new work frame for later.
+		currentWorkFrameIndex = ++currentWorkFrameIndex % workFrameQty;
+	}
 }
-	
+
 void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & iDetectionData)
 
 {

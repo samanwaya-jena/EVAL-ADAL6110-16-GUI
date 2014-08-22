@@ -1003,6 +1003,13 @@ void AWLQtDemo::on_timerTimeout()
 		if (mTableView) mTableView->slotDetectionDataChanged(detectionData);
 	}
 
+	if (bContinue) 
+	{
+		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		{
+			if (videoViewers[viewerID] && !videoViewers[viewerID]->WasStopped()) videoViewers[viewerID]->DoLoopIteration();
+		}
+	}
 
 	if (bContinue && fusedCloudViewer && !fusedCloudViewer->WasStopped()) 
 	{

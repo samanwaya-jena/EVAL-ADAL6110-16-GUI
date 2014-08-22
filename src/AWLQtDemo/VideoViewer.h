@@ -6,9 +6,7 @@
 
 #include <iostream>
 
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
+
 
 using namespace std;
 
@@ -19,9 +17,9 @@ using namespace std;
 
 namespace awl
 {
-/** \brief Threaded Video Display class that also overlays decorations based on lidar acquisition.
-  *        The video display thread is based on OpenCV.
-  *		   The VideoViewer takes a VideoCaptureDevice as input for image information.
+/** \brief The VideoViewer class displays an image taken from a VideoCapture
+           and overlays "decorations" based on the Detections provided.
+  *        The video display class is a non-threaded class based on OpenCV.
   * \author Jean-Yves Deschênes
   */
 class VideoViewer
@@ -54,6 +52,10 @@ public:
       */
 	void  Stop(); 
 
+	/** \brief Perform the video display update
+      */
+	void DoLoopIteration();
+
 	/** \brief Return the video display thread status
       * \return true if the video display thread is stoppped.
       */
@@ -79,17 +81,6 @@ public:
       */
 	double GetCameraFovHeight() {return(cameraFovHeight);}
 			
-	/** \brief Return the mutex of the video  viewer objects.
-      * \return a boost mutex for the object.
-      */
-	boost::mutex& GetMutex() {return (mMutex);} 
-
-	/** \brief Modify the videoCapture source.  Thread safe
-	           Update the internal video format description variables to reflect the new source.
-      * \param[in] inVideoCapture videoCaptureDevice we feed image from
-      */
-	
-	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
 
 	/** \brief Move the window at position left, top.
 	  * \remarks implemented for compatibility  with Qt (hence name convention).
@@ -102,9 +93,13 @@ public:
 	void slotDetectionDataChanged(const Detection::Vector & data);
 
 protected:
-	/** \brief Perform the video display thread loop
+	/** \brief Modify the videoCapture source.  Thread safe
+	           Update the internal video format description variables to reflect the new source.
+      * \param[in] inVideoCapture videoCaptureDevice we feed image from
       */
-	void  DoThreadLoop();
+	
+	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
+
 
 	/** \brief Resize the window to fit the screen.
 	  * \remarks implemented for compatibility  with Qt.
@@ -136,21 +131,9 @@ protected:
     /** \brief Local flag indicating a request for termination of thread. */
 	volatile bool mStopRequested;
 
-	/** \brief Local flag indicating the termination of thread. */
-	volatile bool mThreadExited;
-
-    /** \brief Video acquisition thread . */
-    boost::shared_ptr<boost::thread> mThread;
-
-	/** \brief Data sharing mutex. */
-    boost::mutex mMutex;
-
-	/** \brief Sunscriber identification to the video feed. */
+ 	/** \brief Sunscriber identification to the video feed. */
 	Subscription::SubscriberID currentVideoSubscriberID;
 	
-	/** \brief Sunscriber identification to the range data feed. */
-	Subscription::SubscriberID currentReceiverSubscriberID;
-
     /** \brief Current video frame width. */
 	int frameWidth;
 
@@ -174,7 +157,7 @@ protected:
 
 	/** \brief Index of frame currently being used for work, previous to display
 	*/
-	int currentWorkFrame;
+	int currentWorkFrameIndex;
 
 	/** \brief Camera name, also used as the window title */
 	std::string cameraName;
