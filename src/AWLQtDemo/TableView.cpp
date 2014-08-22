@@ -17,15 +17,10 @@ TableView::TableView(QWidget *parent) :
     QFrame(parent)
 {
 	ui.setupUi(this);
+	setWindowIcon(QApplication::windowIcon());
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	displayedDetectionsPerChannel = globalSettings->displayedDetectionsPerChannelInTableView;
-
-	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.empty())
-	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
-	}
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));

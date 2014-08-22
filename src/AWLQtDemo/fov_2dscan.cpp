@@ -58,12 +58,6 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	// Position the widget on the top right side
 	setMinimumSize(480,480);
 
-	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.empty())
-	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
-	}
-
     rgblongRangeLimited = qRgba(188,205,203,127);
     rgblongRange = qRgba(58,126,209,127);
     rgbshortRangeLimited = qRgba(184,220,175,127);

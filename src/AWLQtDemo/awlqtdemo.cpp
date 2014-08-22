@@ -26,7 +26,7 @@ using namespace awl;
 
 // Text update rate, in frame per seconds
 #if 1
-#define LOOP_RATE	20	
+#define LOOP_RATE	30
 #else
 #define LOOP_RATE	20
 #endif
@@ -41,6 +41,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
+
+	// Change the window icon if there is an override in the INI file
+	if (!globalSettings->sIconFileName.empty())
+	{
+		QIcon icon(globalSettings->sIconFileName.c_str());
+		QApplication::setWindowIcon(icon);
+		setWindowIcon(icon);
+	}
 
 	// Build a reference coodinate system from the settings
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
@@ -68,12 +76,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	FillFPGAList(globalSettings);
 	FillADCList(globalSettings);
 	FillGPIOList(globalSettings);
-
-	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.empty())
-	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
-	}
 
 	// Position the main widget on the top left corner
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());

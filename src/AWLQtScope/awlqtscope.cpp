@@ -34,12 +34,6 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	timerInterval = globalSettings->scopeTimerInterval;
 
-	// Change the window icon if there is an override in the INI file
-	if (!globalSettings->sIconFileName.empty())
-	{
-		setWindowIcon(QIcon(globalSettings->sIconFileName.c_str()));
-	}
-
 	// In demo mode, change the title of the Window
 	if (globalSettings->bEnableDemo)
 	{

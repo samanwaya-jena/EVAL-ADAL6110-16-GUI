@@ -20,21 +20,16 @@
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "windows.h"
-
 using namespace std;
 using namespace awl;
 
-#if 0
-const char *szCameraWindowClassName = "Main HighGUI class";  // Class name for the camera windows created by OpenCV
-															// We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
-#else
-const char *szCameraWindowClassName = NULL;  // Class name for the camera windows created by OpenCV
-											 // We set NULL, as the default name of the class under Qt and under straight OpenCv is not the same.
-#endif
+
 const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
 const int  workFrameQty = 3;  // Number of buffers. That may depend on the display lag of the systems.
+
+const int maxWindowWidth = 640;
+const int maxWindowHeight = 480;
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
 cameraFrame(new (cv::Mat)),
@@ -85,7 +80,6 @@ void  VideoViewer::Go()
 		if (windowPtr == NULL)
 		{
 			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			SetWindowIcon();
 			SizeWindow();
         
 		mStopRequested = false;
@@ -103,9 +97,8 @@ void  VideoViewer::Stop()
 
 	if (!mThreadExited) 
 	{
-
-	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-	if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
+		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+		if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
 	}
 
 	if (mThreadExited) 
@@ -125,34 +118,13 @@ bool  VideoViewer::WasStopped()
 	return(false);
 }
 
-void VideoViewer::SetWindowIcon()
-
-{
-	// Set the icon for the window
-	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-	HWND window = (HWND) windowPtr;
-	if (window != NULL) 
-	{
-		AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-		if (!globalSettings->sIconFileName.empty())
-		{
-			HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.c_str(), IMAGE_ICON,
-				GetSystemMetrics(SM_CXSMICON), 
-				GetSystemMetrics(SM_CYSMICON),
-				LR_LOADFROMFILE);
-
-			::SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
-		}
-	}
-}
-
 
 void VideoViewer::SizeWindow()
 
 {
-		// Size the window to fit the screen
-		const long nScreenWidth  = GetSystemMetrics(SM_CXSCREEN);
-		const long nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+		// Size the window to fit the maximum width specified
+		const long nScreenWidth  = maxWindowWidth;
+		const long nScreenHeight = maxWindowHeight;
 
 		int height = 0, width = 0;
 		if(frameWidth > nScreenWidth || frameHeight >nScreenHeight)
@@ -175,7 +147,6 @@ void VideoViewer::SizeWindow()
 		}
 
 		cvResizeWindow(cameraName.c_str(), width, height);
-
 }
 
 void VideoViewer::move(int left, int top)
@@ -285,6 +256,9 @@ void VideoViewer::DoThreadLoop()
 #endif
 		}
 	} // while (!WasStoppped)
+
+	//Give a break to other threads and wait for next frame
+	boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 
 	mThreadExited = true;
 }

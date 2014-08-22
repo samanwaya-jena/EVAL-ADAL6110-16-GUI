@@ -10,8 +10,6 @@
 #include "AWLSettings.h"
 #include "awlcoord.h"
 
-#include "windows.h"
-
 using namespace std;
 using namespace pcl;
 using namespace awl;
@@ -46,10 +44,6 @@ ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID,
 	sensorUp = globalSettings->receiverSettings[receiverID].sensorUp;
 	sensorForward = globalSettings->receiverSettings[receiverID].sensorForward;
 	rangeMax = globalSettings->receiverSettings[receiverID].displayedRangeMax;
-
-
-	WCHAR directoryName[255];
-	::GetCurrentDirectoryW(255, directoryName);
 } 
 
 ReceiverChannel::~ReceiverChannel()

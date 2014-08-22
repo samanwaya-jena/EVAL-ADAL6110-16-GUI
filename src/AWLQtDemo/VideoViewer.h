@@ -111,10 +111,6 @@ protected:
       */
 	void SizeWindow();
 
-	/** \brief Set the window Icon to the icon specified in the configuration file.
-      */
-	void SetWindowIcon();
-
 	void DisplayReceiverValues(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & data);
 
 
