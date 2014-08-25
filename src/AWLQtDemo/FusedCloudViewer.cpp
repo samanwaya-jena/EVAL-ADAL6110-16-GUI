@@ -39,8 +39,7 @@ cloudName(inCloudName),
 handler_rgb(cloud),
 handler_z (cloud, "z"),
 currentHandlerType(inColorHandlerType),
-mStopRequested(false),
-mThread()
+mStopRequested(false)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -107,9 +106,7 @@ CloudViewerWin::SetSourceProjector(ReceiverProjector::Ptr inSourceProjector)
 
 void CloudViewerWin::Go() 
 {
-	assert(!mThread);
 	mStopRequested = false;
-//	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(& CloudViewerWin::DoThreadLoop, this)));
 }
  
 
@@ -119,14 +116,6 @@ void   CloudViewerWin::Stop()
 	mStopRequested = true;
 
 #if 0
-	if (mThread) 
-	{
-		assert(mThread);
-		mThread->join();
-		m_thread = NULL;
-	}
-#endif
-
 	// We should close the window following this strange sequence.
 	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
 	// finalizes the application
@@ -138,6 +127,59 @@ void   CloudViewerWin::Stop()
 	viewer.reset();
 
 	if (viewerWnd) DestroyWindow(viewerWnd);
+#else
+#if 0
+	// We should close the window following this strange sequence.
+	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
+	// finalizes the application
+//	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
+//	vtkRenderWindowInteractor* interactor = viewer->getRenderWindow()->GetInteractor();
+//	interactor->GetRenderWindow()->Finalize();
+//	viewer->getRenderWindow()->SetWindowId(0);
+
+//	viewer.reset();
+
+//	if (viewerWnd) DestroyWindow(viewerWnd);
+
+	
+	vtkSmartPointer<vtkRenderWindow> renderWin = viewer->getRenderWindow();
+	HWND viewerWnd = NULL;
+
+	if (renderWin)
+	{
+		viewerWnd = (HWND) renderWin->GetGenericWindowId();
+		if (viewerWnd)
+		{
+			vtkRenderWindowInteractor* interactor = renderWin->GetInteractor();
+			if (interactor) 
+			{
+				vtkRenderWindow  *interactorRenderWin = interactor->GetRenderWindow();
+				if (interactorRenderWin) 
+				{
+					interactorRenderWin->Finalize();
+					::Sleep(100);
+				}
+			}
+
+		}
+	}
+
+	renderWin = viewer->getRenderWindow();
+	if (renderWin)
+	{
+		renderWin->SetWindowId(0);
+	}
+
+	viewer.reset();
+	if (viewerWnd != NULL)
+	{
+		DestroyWindow(viewerWnd); 
+	}
+#else
+//	viewer->close();
+#endif
+
+#endif
 
 }
 
@@ -157,6 +199,13 @@ bool  CloudViewerWin::WasStopped()
 		return(true);
 	}
 
+	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
+	if (!viewerWnd || sourceProjector->WasStopped())
+	{
+		Stop();
+		return(true);
+	}
+
 	return(false);
 }
 
@@ -166,15 +215,7 @@ void CloudViewerWin::SpinOnce(int time, bool forceRedraw)
 	viewer->spinOnce(time, forceRedraw);
 }
 
-void  CloudViewerWin::DoThreadLoop()
-{
-	while (!WasStopped())
-	{
-		DoThreadIteration();
-	}
-}
-
-void  CloudViewerWin::DoThreadIteration()
+void  CloudViewerWin::DoLoopIteration()
 {
 	if (!WasStopped())
 	{

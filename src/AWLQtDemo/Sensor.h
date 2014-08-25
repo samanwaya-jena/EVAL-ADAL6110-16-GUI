@@ -7,6 +7,7 @@
 #include <pcl/range_image/range_image.h>
 #endif
 
+#include "Publisher.h"
 #include "Subscription.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
@@ -335,6 +336,11 @@ public:
       */
 	bool  WasStopped();
 
+	/** \brief Update the display from the application's main loop or timer.
+      */
+	void DoLoopIteration();
+
+
 	/** \brief Return the number of receiver channels used for video projection
       * \return int indicating the number of channels.
       */
@@ -504,17 +510,8 @@ public:
       */
 	Subscription::Ptr currentCloudSubscriptions;	
 
-	/** \brief Do one iteration of the thread loop.
-      */
-	void DoThreadIteration();
-
 // Protected methods
 protected:
-	/** \brief Return the lidar data rendering thread status
-      * \return true if the lidar data rendering thread is stoppped.
-      */
-	void  DoThreadLoop();
-
 	/** \brief Place the background image at a preset distance in the cloud.
      */
 	void AddBackgroundToCloud();
@@ -529,12 +526,6 @@ protected:
 	
     /** \brief Local flag indicating the termination of thread. */
 	volatile bool mStopRequested;
-
-    /** \brief Video acquisition thread . */
-    boost::shared_ptr<boost::thread> mThread;
-
-	/** \brief Data sharing mutex. */
-    boost::mutex mMutex;
 
 	/** \brief Object used to support coordinate conversion */
 	ViewerCoordinates::Ptr mViewerCoordinatesPtr;
@@ -591,7 +582,7 @@ protected:
 	float cameraFovHeight;
 
 	/** \brief Our subscription identifier to access to video frame. */
-	Subscription::SubscriberID currentVideoSubscriberID;
+	Publisher::SubscriberID currentVideoSubscriberID;
 	
 	/** \brief Our subscription identifier to access to lidar data. */
 	Subscription::SubscriberID currentReceiverCaptureSubscriberID;

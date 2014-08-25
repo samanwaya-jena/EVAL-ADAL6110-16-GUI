@@ -367,7 +367,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.actionCamera->toggle();
 		// Position the video viewer.
 		// This has to be done agfter the Go(), to make sure the window is created
-//		videoViewer->move(scr.left(), scr.top()); 
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 		    videoViewers[viewerID]->move(scr.left()+(viewerID*10), scr.top()+95+(viewerID*10));
@@ -979,7 +978,7 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue && receiver) 
 	{
-		receiver->DoThreadIteration();
+		receiver->DoLoopIteration();
 
 	if (receiver->WasStopped()) bContinue = false;
 	}
@@ -1007,7 +1006,7 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
-			if (videoViewers[viewerID] && !videoViewers[viewerID]->WasStopped()) videoViewers[viewerID]->DoLoopIteration();
+			if (videoViewers[viewerID] && !videoViewers[viewerID]->WasStopped()) videoViewers[viewerID]->SpinOnce();
 		}
 	}
 
@@ -1015,7 +1014,7 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		if (fusedCloudViewer->viewers.size()>=1) 
 		{
-			fusedCloudViewer->viewers[0]->DoThreadIteration();
+			fusedCloudViewer->viewers[0]->DoLoopIteration();
 		}
 	}
 
@@ -1103,8 +1102,6 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		bEnableButtons = true;
 
 		boost::mutex::scoped_lock rawLock(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->GetMutex());
-
-
 		receiverCaptures[receiverID]->receiverStatus.bUpdated = false;
 		ReceiverStatus status = receiverCaptures[receiverID]->receiverStatus;
 		rawLock.unlock();
@@ -1741,7 +1738,8 @@ void AWLQtDemo::on_view3DActionToggled()
 
 		// For some reason, the closing of the 3D window messes up with our timer.
 		//Restart it
-		myTimer->start(LOOP_RATE);
+//		Sleep(100);
+//		myTimer->start(LOOP_RATE);
 	}
 }
 
@@ -2083,6 +2081,7 @@ void AWLQtDemo::closeEvent(QCloseEvent * event)
 	}
 
 	if (receiver) receiver->Stop();
+
 	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 	{
 		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();

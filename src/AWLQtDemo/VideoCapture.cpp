@@ -17,7 +17,6 @@
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-
 #include "xiapi.h"
 
 using namespace std;
@@ -84,13 +83,13 @@ public:
 };
 
 VideoCapture::VideoCapture(int inCameraID, int argc, char** argv):
-cameraID(inCameraID),
-currentFrameSubscriptions(new(Subscription))
+ThreadedWorker(),
+Publisher(), 
+cameraID(inCameraID)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	mStopRequested = false;
-	mThreadExited = false;
 
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
@@ -233,56 +232,26 @@ currentFrameSubscriptions(new(Subscription))
 VideoCapture:: ~VideoCapture()
 
 {
-
-	boost::mutex::scoped_lock threadLock(GetMutex());
-	Stop();
-	threadLock.unlock();
+	if (!WasStopped()) Stop();
 }
 
 void  VideoCapture::Go() 
 {
 	assert(!mThread);
-    mStopRequested = false;
-
-	mThreadExited = false;
+    mWorkerRunning = true;
 
 	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
 }
  
-
-void  VideoCapture::Stop() 
+void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID inSubscriberID) 
 {
-	if (mStopRequested) return;
-	mStopRequested = true;
-
-	if (mStopRequested || mThreadExited) 
+	if (LockNews(inSubscriberID)) 
 	{
-		mThreadExited=false;
-		assert(mThread);
-		mThread->join();
-	}	
-}
-
-
-bool  VideoCapture::WasStopped()
-{
-	if (mStopRequested || mThreadExited) return(true);
-
-	return(false);
-}
-
-void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame,  Subscription::SubscriberID inSubscriberID) 
-{
-	boost::mutex::scoped_lock updateLock(currentFrameSubscriptions->GetMutex());
-#if 0
- 	*targetFrame = currentFrame.clone();
-#else
-	//Instead of simply cloning, make sure the target comes out as a 3 channel BGR image.
-	targetFrame->create(currentFrame.rows, currentFrame.cols, CV_8UC3);
-	cv::cvtColor(currentFrame, *targetFrame, CV_BGRA2BGR);
-#endif
-	currentFrameSubscriptions->GetNews(inSubscriberID);
-	updateLock.unlock();
+		//Instead of simply cloning, make sure the target comes out as a 3 channel BGR image.
+		targetFrame->create(currentFrame.rows, currentFrame.cols, CV_8UC3);
+		cv::cvtColor(currentFrame, *targetFrame, CV_BGRA2BGR);
+		UnlockNews(inSubscriberID);
+	}
 };
 
 
@@ -311,8 +280,6 @@ void VideoCapture::DoThreadLoop()
 		cam.release();
 	}
 	threadLock.unlock();
-
-	mThreadExited = true;
 }
 
 
@@ -343,7 +310,7 @@ void VideoCapture::DoThreadIteration()
 #endif
 
 
-			boost::mutex::scoped_lock currentLock(currentFrameSubscriptions->GetMutex());
+			boost::mutex::scoped_lock currentLock(GetMutex());
 			if (bCameraFlip) 
 			{
 				cv::flip(bufferFrame, currentFrame, -1);
@@ -352,8 +319,9 @@ void VideoCapture::DoThreadIteration()
 			{
 				bufferFrame.copyTo(currentFrame);
 			}
-			currentFrameSubscriptions->PutNews();
 			currentLock.unlock();
+			PutNews();
+
 		} // if (!bufferFrame.empty()) 
 
 

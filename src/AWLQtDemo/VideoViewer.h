@@ -13,6 +13,8 @@ using namespace std;
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
 
+#include "LoopedWorker.h"
+#include "VideoCapture.h"
 #include "Tracker.h"
 
 namespace awl
@@ -22,7 +24,7 @@ namespace awl
   *        The video display class is a non-threaded class based on OpenCV.
   * \author Jean-Yves Deschênes
   */
-class VideoViewer
+class VideoViewer: public LoopedWorker 
 {
 public:
 	typedef boost::shared_ptr<cv::Mat> FramePtr;
@@ -40,26 +42,26 @@ public:
       */
 	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture);
 
-	/** \brief Video Viewer destructor. Insures that the viewer thread is Stopped()
+	/** \brief Video Viewer destructor. Insures that the viewer is Stopped()
       */
 	virtual VideoViewer::~VideoViewer();
 
-	/** \brief Start the video display thread
+	/** \brief Prepare the video display for the display loop.  Creates the display window.
       */
 	void  Go(); 
 
-	/** \brief Stop the video display thread
+	/** \brief Stop the video display. Destroys the display window.
       */
 	void  Stop(); 
 
-	/** \brief Perform the video display update
-      */
-	void DoLoopIteration();
-
-	/** \brief Return the video display thread status
-      * \return true if the video display thread is stoppped.
+	/** \brief Return the video display status
+      * \return true if the video display is stoppped (the display Window is not available).
       */
 	bool  WasStopped();
+
+	/** \brief Perform the video display update
+      */
+	void SpinOnce();
 
 	/** \brief Return the video frame width.
       * \return videoframe width in pixels.
@@ -88,14 +90,13 @@ public:
 	void move(int left, int top); 
 
 	/** \brief Update the detection positions.
-	  * \remarks Udate is thread safe.
       */
 	void slotDetectionDataChanged(const Detection::Vector & data);
 
 protected:
-	/** \brief Modify the videoCapture source.  Thread safe
-	           Update the internal video format description variables to reflect the new source.
-      * \param[in] inVideoCapture videoCaptureDevice we feed image from
+	/** \brief Modify the videoCapture source. 
+			   Update the internal video format description variables to reflect the new source.
+      * \param[in] inVideoCapture videoCaptureDevice we feed the image from
       */
 	
 	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
@@ -127,14 +128,7 @@ protected:
 						 int iWidth, int iHeight);
  
 protected:
-	
-    /** \brief Local flag indicating a request for termination of thread. */
-	volatile bool mStopRequested;
-
- 	/** \brief Sunscriber identification to the video feed. */
-	Subscription::SubscriberID currentVideoSubscriberID;
-	
-    /** \brief Current video frame width. */
+     /** \brief Current video frame width. */
 	int frameWidth;
 
     /** \brief Current video frame height. */
@@ -164,6 +158,9 @@ protected:
 
 	/** \brief video capture device that supplies the video data */
 	VideoCapture::Ptr videoCapture; 
+
+	/** \brief Sunscriber identification to the video feed. */
+	Publisher::SubscriberID currentVideoSubscriberID;
 
 	/** \brief Time the object was created.  Used to calculate flashing rates */
 	boost::posix_time::ptime startTime;

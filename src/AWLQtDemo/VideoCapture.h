@@ -5,10 +5,6 @@
 
 #include <fstream>
 
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#endif
-
 using namespace std;
 
 #include "opencv2/core/core_c.h"
@@ -16,7 +12,8 @@ using namespace std;
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
 
-#include "subscription.h"
+#include "publisher.h"
+#include "ThreadedWorker.h"
 
 
 namespace awl
@@ -27,7 +24,7 @@ namespace awl
   *        The video capture thread is based on OpenCV.
   * \author Jean-Yves Deschênes
   */
-class VideoCapture
+class VideoCapture: public ThreadedWorker, public Publisher
 {
 public:
 	typedef boost::shared_ptr<cv::Mat> FramePtr;
@@ -52,15 +49,6 @@ public:
 	/** \brief Start the video acquisition thread
       */
 	void  Go(); 
-
-	/** \brief Stop the video acquisition thread
-      */
-	void  Stop(); 
-
-	/** \brief Return the video acquisition thread status
-      * \return true if the video acquisition thread is stoppped.
-      */
-	bool  WasStopped();
 
 	/** \brief Return the camera ID.
       * \return cameraID (also is the index of the camera in our structures).
@@ -104,16 +92,7 @@ public:
       * \param[out] targetFrame pointer to the target frame that will get copied to.
       * \note Locking of the target frame is under the responsibility of the calling thread.
       */
-	void CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Subscription::SubscriberID subscriberID = -1);
-
-	/** \brief A public subscription checkpoint infrastructure for the currentFrame.
-      */
-	Subscription::Ptr currentFrameSubscriptions;	
-
-	/** \brief Do a single iteration of the video capture loop.
-	           (for calls from within the main event loop)
-      */
-	void  DoThreadIteration();
+	void CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID subscriberID = -1);
 
 
 protected:
@@ -122,11 +101,10 @@ protected:
       */
 	void  DoThreadLoop();
 
-	/** \brief Gets the mutex used to protect the thread
-      * \return mutex used to protect the thread activities
+	/** \brief Do a single iteration of the video capture loop.
+	           (for calls from within the main event loop)
       */
-	boost::mutex& GetMutex() {return (mMutex);};
-
+	void  DoThreadIteration();
 
 protected:
 	/** \brief Index of the camera in the configuration parameter list */
@@ -134,15 +112,6 @@ protected:
 	
     /** \brief Local flag indicating a request for termination */
 	volatile bool mStopRequested;
-
-	/** \brief Local flag indicating the termination of thread loop function. */
-	volatile bool mThreadExited;
-
-    /** \brief Video acquisition thread . */
-    boost::shared_ptr<boost::thread> mThread;
-
-	/**\brief thread mutex*/
-	boost::mutex mMutex;
 
     /** \brief Current video frame width. */
 	int frameWidth;

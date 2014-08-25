@@ -29,15 +29,14 @@ const int maxWindowWidth = 640;
 const int maxWindowHeight = 480;
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
+LoopedWorker(),
 cameraFrame(new (cv::Mat)),
 currentWorkFrameIndex(0),
 cameraName(inCameraName),
 videoCapture(inVideoCapture)
 
 {
-	startTime = boost::posix_time::microsec_clock::local_time();
 	SetVideoCapture(videoCapture);
-	mStopRequested = false;
 
 	for (int frameID = 0; frameID < workFrameQty; frameID++)
 	{
@@ -61,37 +60,71 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 
 	// Subscribe to the video capture's image feed to get information
 	// on when new frames are available
- 	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
+ 	currentVideoSubscriberID = videoCapture->Subscribe();
 }
 
 void  VideoViewer::Go() 
 {
-	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-	// Create output window, only if it does not already exist
-	if (windowPtr == NULL)
+	if (WasStopped())
 	{
-		cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-		SizeWindow();
-		mStopRequested = false;
+		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+		// Create output window, only if it does not already exist
+		if (windowPtr == NULL)
+		{
+			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			SizeWindow();
+		}
+
+		startTime = boost::posix_time::microsec_clock::local_time();
+		LoopedWorker::Go();
 	}
 }
  
 void  VideoViewer::Stop() 
 {
-	if (mStopRequested) return;
-	mStopRequested = true;
+	if (WasStopped()) return;
 
 	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
 	if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
+
+	LoopedWorker::Stop();
 }
 
 bool  VideoViewer::WasStopped()
 {
-	if (mStopRequested) return(true);
+	if (LoopedWorker::WasStopped()) return (true);
 	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
 	if (windowPtr == NULL) return(true);
 
 	return(false);
+}
+
+
+void VideoViewer::SpinOnce()
+
+{
+	if (WasStopped()) return;
+
+	// Update the video frame
+	if (videoCapture != NULL && videoCapture->HasNews(currentVideoSubscriberID)) 
+	{
+		// Copy the contents of the cv::Mat
+		videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
+
+		// Copy to the working area
+		cameraFrame->copyTo(*workFrames[currentWorkFrameIndex]);
+
+		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
+
+		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
+		//  In that case, do NOT reopen it.  The thread may be terminating.
+		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
+		// The current work frame becomes the display frame
+		if (windowPtr != NULL) cv::imshow(cameraName, *workFrames[currentWorkFrameIndex]);
+
+		// And we select a new work frame for later.
+		currentWorkFrameIndex = ++currentWorkFrameIndex % workFrameQty;
+	}
 }
 
 
@@ -186,32 +219,6 @@ void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
 	std::sort(detectionData.begin(), detectionData.end(), SortDetectionsInThreatLevel);
 }
 
-void VideoViewer::DoLoopIteration()
-
-{
-	if (WasStopped()) return;
-
-	// Update the video frame
-	if (videoCapture != NULL && videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID)) 
-	{
-		// Copy the contents of the cv::Mat
-		videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
-
-		// Copy to the working area
-		cameraFrame->copyTo(*workFrames[currentWorkFrameIndex]);
-
-		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
-
-		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
-		//  In that case, do NOT reopen it.  The thread may be terminating.
-		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-		// The current work frame becomes the display frame
-		if (windowPtr != NULL) cv::imshow(cameraName, *workFrames[currentWorkFrameIndex]);
-
-		// And we select a new work frame for later.
-		currentWorkFrameIndex = ++currentWorkFrameIndex % workFrameQty;
-	}
-}
 
 void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & iDetectionData)
 

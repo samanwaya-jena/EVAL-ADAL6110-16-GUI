@@ -27,10 +27,9 @@ using namespace pcl;
 namespace awl
 {
 
-/** \brief Threaded Point-Cloud display class.
+/** \brief Point-Cloud display class.
   *        The VieweDesciptor creates a local copy of the point-cloud and a 
   *        pcl::visualization::PCLVisualizer viewing windo to display it.
-  *		   The PointCloudColorHandler of the viewer can be modified while the thread runs.
   * \author Jean-Yves Deschênes
   */
 class  CloudViewerWin
@@ -61,7 +60,7 @@ public:
 // Public methods
 public:
 	/** \brief Constructor for the CloudViewerWin object
-	           The construction instantiates the viewer window and viewer thread.
+	           The construction instantiates the viewer window.
 	  * \param[in] inSourceProjector ReceiverProjector used as a point-cloud source
 	  * \param[in] inColorHandlerType identifier for the initial color handler
       * \param[in] inWindowName title of the viewer display  window.
@@ -74,27 +73,29 @@ public:
 					const std::string &inCloudName);
 
 	/** \brief Destructor for the CloudViewerWin object
-	           Insures that thread is stopped.
     */
  virtual ~CloudViewerWin();
 
 
-	/** \brief Start the viewer thread
-	    \note In the current implementation, the threads start running continuously.
-		      There does not seem to be a way of stopping them.
+	/** \brief Initialize the variables needed by the display loop
+	    \note The current implementation is not threaded.
       */
 	void  Go(); 
 
-	/** \brief Stop the vewer thread thread
+	/** \brief Stop the viewer's internal thread
       */
 	void  Stop(); 
 
-	/** \brief Return theviewer thread status
+	/** \brief Return theviewer status
       * \return true if the viewer thread is stoppped.
       */
 	bool  WasStopped();
 
-	/** \brief Allow the viewer to go through the vent loop.
+	/** \brief Go once through the display loop, to be called by main thread or timer event
+      */
+	void  DoLoopIteration();
+
+	/** \brief Allow the viewer to go through the VTK / PCL event loop.
 	  * \param[in] time delay for which the viewer waits for events
       * \param[in] bForceRedraw  true to force immediate redraw of the viewer window.
       */
@@ -242,16 +243,6 @@ public:
       */
 	boost::mutex& GetMutex() {return (mMutex);} 
 
-	/** \brief Go once through the thread loop, to be called by main thread
-      */
-	void  DoThreadIteration();
-
-protected:
-	/** \briefDo the thread's update and display loop
-      * \return true if the video display thread is stoppped.
-      */
-	void  DoThreadLoop();
-
 protected:
     /** \brief Pixel size holder. 
 	    \remark  pixel size is not stored by the underlying VTK object  until 
@@ -259,11 +250,8 @@ protected:
 	*/
 	int pixelSize;
 
-    /** \brief Local flag indicating the termination of thread. */
+    /** \brief Local flag indicating the termination of display window. */
 	volatile bool mStopRequested;
-
-    /** \brief Point-Cloud Viewer thread . */
-    boost::shared_ptr<boost::thread> mThread;
 
 	/** \brief Data sharing mutex. */
     boost::mutex mMutex;
@@ -311,16 +299,19 @@ public:
 	FusedCloudViewer(std::string inWindowName,  boost::shared_ptr<awl::ReceiverProjector> inReceiver);
 	~FusedCloudViewer() {};
 
-    // Create the thread and start work
+    // Create the ViewerWindow and prepare for main loop
     void Go(); 
  
     void Stop(); // Note 1
 	bool WasStopped();
 
 
+	/** \brief Allow the viewer to go through the VTK / PCL event loop.
+	  * \param[in] time delay for which the viewer waits for events
+      * \param[in] bForceRedraw  true to force immediate redraw of the viewer window.
+      */
 	void SpinOnce(int time=1, bool forceRedraw = false);
-	void SpinSingleOnce(int viewerIndex, int time, bool forceRedraw=false);
-
+	
 	/** \brief Modify the viewer's height parameter.
       * \param[in] inViewerHeight sensor height, in meters
       */

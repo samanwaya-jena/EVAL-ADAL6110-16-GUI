@@ -457,9 +457,7 @@ ReceiverProjector::~ReceiverProjector()
 
 void  ReceiverProjector::Go() 
 {
-	assert(!mThread);
     mStopRequested = false;
-//	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverProjector::DoThreadLoop, this)));
 }
  
 
@@ -467,10 +465,6 @@ void  ReceiverProjector::Stop()
 {
 	if (mStopRequested) return;
     mStopRequested = true;
-#if 0
-	assert(mThread);
-	mThread->join();
-#endif
 }
 
 bool  ReceiverProjector::WasStopped()
@@ -493,9 +487,6 @@ void ReceiverProjector::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
 	videoCapture = inVideoCapture;
 
-	boost::mutex::scoped_lock updateLock(mMutex);
-	boost::mutex::scoped_lock videoLock(videoCapture->currentFrameSubscriptions->GetMutex());
-
 	frameWidth = videoCapture->GetFrameWidth();
 	frameHeight = videoCapture->GetFrameHeight();
 	frameRate = videoCapture->GetFrameRate();
@@ -506,40 +497,27 @@ void ReceiverProjector::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	mViewerCoordinatesPtr = ViewerCoordinates::Ptr(new ViewerCoordinates(frameWidth, frameHeight, 
                                                 cameraFovWidth, cameraFovHeight, viewerHeight, viewerDepth, rangeMax));
 
-	currentVideoSubscriberID = videoCapture->currentFrameSubscriptions->Subscribe();
-	videoLock.unlock();
-	updateLock.unlock();
+	currentVideoSubscriberID = videoCapture->Subscribe();
 }
 
 void ReceiverProjector::SetReceiverCapture( ReceiverCapture::Ptr inReceiverCapture)
 {
 	receiverCapture = inReceiverCapture;
 
-	boost::mutex::scoped_lock updateLock(mMutex);
 	boost::mutex::scoped_lock receiverLock(receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
-
 	currentReceiverCaptureSubscriberID = receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
 	receiverLock.unlock();
-	updateLock.unlock();
 }
 
 void ReceiverProjector::SetCloud( pcl::PointCloud<pcl::PointXYZRGB>::Ptr & inCloud)
 {
-	boost::mutex::scoped_lock updateLock(mMutex);
- 	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());
-
-	cloud = inCloud;
- 
-	cloudLock.unlock();
-	updateLock.unlock();
+ 	cloud = inCloud;
 }
 
 void ReceiverProjector::CopyCurrentCloud( pcl::PointCloud<pcl::PointXYZRGB>::Ptr & outCloud, Subscription::SubscriberID inSubscriberID)
 {
-	boost::mutex::scoped_lock updateLock(currentCloudSubscriptions->GetMutex());
  	pcl::copyPointCloud(*cloud, *outCloud);
 	currentCloudSubscriptions->GetNews(inSubscriberID);
-	updateLock.unlock();
 }
 
 
@@ -556,58 +534,17 @@ ReceiverChannel::Ptr &ReceiverProjector::AddChannel(ReceiverChannel::Ptr &inChan
 	return inChannelPtr;
 }
 
-void ReceiverProjector::DoThreadLoop()
-
-{
-	while (!WasStopped())
-    {
-		boost::mutex::scoped_lock updateLock(mMutex);
-		bool bUpdate = false;
-
-		// Update the video frame before we build the point-cloud
-		// if there is a video frame available.
-
-		if (videoCapture != NULL && (videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID))) 
-		{
-			// Copy the contents of the working frame, if is is updated
-			videoCapture->CopyCurrentFrame(currentFrame, currentVideoSubscriberID);
-			bUpdate = true;
-		}
-
-		// Update the point-cloud data.
-		// Right now, we pace ourselves with the video frames
-		if (true) 
-		{
-			boost::mutex::scoped_lock cloudlock(currentCloudSubscriptions->GetMutex());
-
-			AddDistancesToCloud();
-			currentCloudSubscriptions->PutNews();
-
-			cloudlock.unlock();
-
-			// Make sure we leave time for other threads to follow
-			boost::this_thread::sleep(boost::posix_time::milliseconds(threadSleepDelay));
-		}
-	
-		updateLock.unlock();
-
-
-	} // while (!WasStoppped)
-
-}
-
-void ReceiverProjector::DoThreadIteration()
+void ReceiverProjector::DoLoopIteration()
 
 {
 	if (!WasStopped())
     {
-		boost::mutex::scoped_lock updateLock(mMutex);
 		bool bUpdate = false;
 
 		// Update the video frame before we build the point-cloud
 		// if there is a video frame available.
 
-		if (videoCapture != NULL && (videoCapture->currentFrameSubscriptions->HasNews(currentVideoSubscriberID))) 
+		if (videoCapture != NULL && (videoCapture->HasNews(currentVideoSubscriberID))) 
 		{
 			// Copy the contents of the working frame, if is is updated
 			videoCapture->CopyCurrentFrame(currentFrame, currentVideoSubscriberID);
@@ -618,17 +555,9 @@ void ReceiverProjector::DoThreadIteration()
 		// Right now, we pace ourselves with the video frames
 		if (true) 
 		{
-			boost::mutex::scoped_lock cloudlock(currentCloudSubscriptions->GetMutex());
-
 			AddDistancesToCloud();
 			currentCloudSubscriptions->PutNews();
-
-			cloudlock.unlock();
 		}
-	
-		updateLock.unlock();
-
-
 	} // while (!WasStoppped)
 
 }
@@ -742,13 +671,7 @@ bool ReceiverProjector::SetDisplayUnderZero(bool inDisplayUnderZero)
 {
 	// Update the displayStyle.
 
-	boost::mutex::scoped_lock cloudlock(currentCloudSubscriptions->GetMutex());	
-
 	displayUnderZero = inDisplayUnderZero;
-
-
-	cloudlock.unlock();
-
 	return (displayUnderZero);
 }
 
@@ -763,12 +686,8 @@ void ReceiverProjector::SetDecimation(int inDecimationX, int inDecimationY)
 {
 	// Update the decimation values.
 
-	boost::mutex::scoped_lock cloudlock(currentCloudSubscriptions->GetMutex());	
-
 	decimationX = inDecimationX;
 	decimationY = inDecimationY;
-
-	cloudlock.unlock();
 }
 
 
@@ -778,19 +697,11 @@ void ReceiverProjector::GetDecimation(int &outDecimationX, int &outDecimationY)
 	outDecimationY = decimationY;
 }
 
-static int entryCount = 0;
-static int lockDepth = 0;
 void ReceiverProjector::SetViewerHeight(double inViewerHeight)
 {
 
-	entryCount++;
-	lockDepth++;
-	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
-
 	viewerHeight = inViewerHeight;
 	mViewerCoordinatesPtr->SetViewerHeight(inViewerHeight);
-	cloudLock.unlock();
-	lockDepth--;
 }
 
 void ReceiverProjector::GetViewerHeight(double &outViewerHeight)
@@ -800,12 +711,8 @@ void ReceiverProjector::GetViewerHeight(double &outViewerHeight)
 
 void ReceiverProjector::SetViewerDepth(double inViewerDepth)
 {
-
-	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
-
 	viewerDepth = inViewerDepth;
 	mViewerCoordinatesPtr->SetViewerDepth(inViewerDepth);
-	cloudLock.unlock();
 }
 
 
@@ -821,25 +728,17 @@ void ReceiverProjector::GetRangeMax(double &outRangeMax)
 
 void ReceiverProjector::SetRangeMax(double inRangeMax)
 {
-
-	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
-
 	rangeMax = inRangeMax;
 #if 0
 	// There is no management of the range max value in the coordinates ptr
 	mViewerCoordinatesPtr->SetSensorUp(inSensorUp);
 #endif
-	cloudLock.unlock();
 }
 
 void ReceiverProjector::SetCameraFovWidth(double inFovWidth)
 {
-
-	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
-
 	cameraFovWidth = inFovWidth;
 	mViewerCoordinatesPtr->SetCameraFovWidth(inFovWidth);
-	cloudLock.unlock();
 }
 
 void ReceiverProjector::GetCameraFovHeight(double &outFovHeight)
@@ -849,12 +748,8 @@ void ReceiverProjector::GetCameraFovHeight(double &outFovHeight)
 
 void ReceiverProjector::SetCameraFovHeight(double inFovHeight)
 {
-
-	boost::mutex::scoped_lock cloudLock(currentCloudSubscriptions->GetMutex());	
-
 	cameraFovHeight = inFovHeight;
 	mViewerCoordinatesPtr->SetCameraFovHeight(inFovHeight);
-	cloudLock.unlock();
 }
 
 void ReceiverProjector::GetCameraFovWidth(double &outFovWidth)
