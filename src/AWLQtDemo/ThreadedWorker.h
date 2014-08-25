@@ -1,5 +1,5 @@
 #ifndef _THREADEDWORKER_H
-#define _THREADERWORKER_H
+#define _THREADEDWORKER_H
 
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
