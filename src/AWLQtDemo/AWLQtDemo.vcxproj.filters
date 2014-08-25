@@ -161,6 +161,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadedWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoopedWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Publisher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -257,6 +266,15 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_TableView.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadedWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoopedWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Publisher.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
