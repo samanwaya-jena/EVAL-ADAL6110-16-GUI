@@ -35,16 +35,18 @@ public:
       */
 	virtual ~LoopedWorker();
 
-/** \brief Start the worker thread.  Initialize all objects before thread start.
+	/** \brief Initialize the worker loop, before loop start.
       */
 	virtual void  Go();
 
-	/** \brief Stop worker thread. Free all objects created during the thread.
+	/** \brief Stop worker. Free all objects created during for or during the loop.
+	  * \notes  To avoid recursion, Stop() shoudl never call WasStopped().
+	  *         Descendants should always use the mWorkerRunning member directly, when in the Stop() method.
       */
 	virtual void  Stop(); 
 
-	/** \brief Return worker thread  running status
-      * \return true if the thread is stopped.
+	/** \brief Return worker loop  running status. The loop may Stop() if there are workin ellements mission or Stop()ped. 
+      * \return true if the loop is stopped.
       */
 	virtual bool  WasStopped();
 

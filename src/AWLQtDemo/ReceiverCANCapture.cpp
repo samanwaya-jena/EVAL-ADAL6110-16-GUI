@@ -51,22 +51,64 @@ closeCANReentryCount(0)
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
 
+	acquisitionSequence->Clear();
+}
+
+ReceiverCANCapture::~ReceiverCANCapture()
+{
+	CloseDebugFile(debugFile);
+	EndDistanceLog();
+	Stop(); // Stop the thread
+}
+
+void  ReceiverCANCapture::Go() 
+	
+{
+ 	assert(!mThread);
+
+	
 	if (OpenCANPort())
 	{
 		WriteCurrentDateTime();
 		ReceiverCapture::SetMessageFilters();
 	}
 
-	acquisitionSequence->Clear();
+	mWorkerRunning = true;
+	startTime = boost::posix_time::microsec_clock::local_time();
+
+	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverCANCapture::DoThreadLoop, this)));
+#if 1
+	// Set the priority under windows.  This is the most critical display thread 
+	// for user interaction
+	
+
+	 HANDLE th = mThread->native_handle();
+	 SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
+	//   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+#endif
+
+}
+ 
+
+void  ReceiverCANCapture::Stop() 
+{
+	
+	if (mWorkerRunning) 
+	{
+		CloseCANPort();
+	}
+	ReceiverCapture::Stop();
 }
 
-ReceiverCANCapture::~ReceiverCANCapture()
+
+void ReceiverCANCapture::DoThreadLoop()
+
 {
 
-	CloseCANPort();
-	CloseDebugFile(debugFile);
-	EndDistanceLog();
-	Stop(); // Stop the thread
+	while (!WasStopped())
+    {
+		DoOneThreadIteration();
+	} // while (!WasStoppped)
 }
 
 bool  ReceiverCANCapture::OpenCANPort()
@@ -149,70 +191,7 @@ bool  ReceiverCANCapture::CloseCANPort()
 		return(true);
 }
 
-void  ReceiverCANCapture::Go(bool inIsThreaded) 
-	
-{
-	bIsThreaded = inIsThreaded;
-	assert(!mThread);
-    mStopRequested = false;
 
-	startTime = boost::posix_time::microsec_clock::local_time();
-
-
-	if (bIsThreaded) 
-	{
-		mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverCANCapture::DoThreadLoop, this)));
-#if 1
-		// Set the priority under windows.  This is the most critical display thread 
-		// for user interaction
-	
-
-		 HANDLE th = mThread->native_handle();
-		 SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
-		//   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
-#endif
-
-	}
-}
- 
-
-void  ReceiverCANCapture::Stop() 
-{
-	if (mStopRequested) return;
-    mStopRequested = true;
-	if (bIsThreaded) 
-	{
-		bIsThreaded = false;
-		assert(mThread);
-		mThread->join();
-	}
-}
-
-
-bool  ReceiverCANCapture::WasStopped()
-{
-	if (mStopRequested) return(true);
-	return(false);
-}
-
-void ReceiverCANCapture::DoThreadLoop()
-
-{
-
-	while (!WasStopped())
-    {
-		DoOneThreadIteration();
-	} // while (!WasStoppped)
-}
-
-void ReceiverCANCapture::DoThreadIteration()
-
-{
-	if (!bIsThreaded)
-    {
-		DoOneThreadIteration();
-	} // while (!WasStoppped)
-}
 
 void ReceiverCANCapture::DoOneThreadIteration()
 
@@ -531,7 +510,7 @@ void ReceiverCANCapture::ParseSensorStatus(AWLCANMessage &inMsg)
 
 	if (inMsg.id != 1) return;
 
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	int iTemperature = intDataPtr[0];
 	receiverStatus.temperature =  iTemperature / 10.0;
@@ -565,7 +544,7 @@ void ReceiverCANCapture::ParseSensorBoot(AWLCANMessage &inMsg)
 
 	if (inMsg.id != 2) return;
 
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	receiverStatus.version.major =  byteDataPtr[0];
 	receiverStatus.version.minor =  byteDataPtr[1];
@@ -606,7 +585,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 
 	if (channel >= 0) 
 	{
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 		float distance = (float)(distancePtr[0]);
 		distance *= distanceScale;
 		distance /= 100;
@@ -706,7 +685,7 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 		channel = inMsg.id - 40;
 	}
 
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	float intensity = ((float) intensityPtr[0]) / maxIntensity;
 	int detectionIndex = 0+detectOffset;
 	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
@@ -744,7 +723,7 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
@@ -764,7 +743,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
@@ -792,7 +771,7 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
 
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
@@ -814,7 +793,7 @@ void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseObstacleAngularPosition(AWLCANMessage &inMsg)
 
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
@@ -985,7 +964,7 @@ void ReceiverCANCapture::ParseParameterAlgoParameterResponse(AWLCANMessage &inMs
 	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, receiverStatus.currentAlgo, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.fpgaRegisterAddressRead = registerAddress;
 	receiverStatus.fpgaRegisterValueRead = registerValue;
 
@@ -1009,7 +988,7 @@ void ReceiverCANCapture::ParseParameterFPGARegisterResponse(AWLCANMessage &inMsg
 	int index = globalSettings->FindRegisterFPGAByAddress(receiverID, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.fpgaRegisterAddressRead = registerAddress;
 	receiverStatus.fpgaRegisterValueRead = registerValue;
 
@@ -1040,7 +1019,7 @@ void ReceiverCANCapture::ParseParameterADCRegisterResponse(AWLCANMessage &inMsg)
 	int index = globalSettings->FindRegisterADCByAddress(receiverID, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.adcRegisterAddressRead = registerAddress;
 	receiverStatus.adcRegisterValueRead = registerValue;
 
@@ -1073,7 +1052,7 @@ void ReceiverCANCapture::ParseParameterGlobalParameterResponse(AWLCANMessage &in
 	AlgorithmParameter *parameter = globalSettings->FindAlgoParamByAddress(receiverID, GLOBAL_PARAMETERS_INDEX, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.fpgaRegisterAddressRead = registerAddress;
 	receiverStatus.fpgaRegisterValueRead = registerValue;
 
@@ -1097,7 +1076,7 @@ void ReceiverCANCapture::ParseParameterGPIORegisterResponse(AWLCANMessage &inMsg
 	int index = globalSettings->FindRegisterGPIOByAddress(receiverID, registerAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.gpioRegisterAddressRead = registerAddress;
 	receiverStatus.gpioRegisterValueRead = registerValue;
 
@@ -1138,7 +1117,7 @@ void ReceiverCANCapture::ParseParameterPlaybackResponse(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 {
 	// Everything went well when we changed or queried the register. Note the new value.
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1147,7 +1126,7 @@ void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterAlgoParameterError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1156,7 +1135,7 @@ void ReceiverCANCapture::ParseParameterAlgoParameterError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterFPGARegisterError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1165,7 +1144,7 @@ void ReceiverCANCapture::ParseParameterFPGARegisterError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterBiasError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1174,7 +1153,7 @@ void ReceiverCANCapture::ParseParameterBiasError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterADCRegisterError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1183,7 +1162,7 @@ void ReceiverCANCapture::ParseParameterADCRegisterError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterPresetError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1192,7 +1171,7 @@ void ReceiverCANCapture::ParseParameterPresetError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterGlobalParameterError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1201,7 +1180,7 @@ void ReceiverCANCapture::ParseParameterGlobalParameterError(AWLCANMessage &inMsg
 
 void ReceiverCANCapture::ParseParameterGPIORegisterError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1210,7 +1189,7 @@ void ReceiverCANCapture::ParseParameterGPIORegisterError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterDateTimeError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1219,7 +1198,7 @@ void ReceiverCANCapture::ParseParameterDateTimeError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterRecordError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();
@@ -1228,7 +1207,7 @@ void ReceiverCANCapture::ParseParameterRecordError(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterPlaybackError(AWLCANMessage &inMsg)
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
 	receiverStatus.lastCommandError = inMsg.data[1];
 	rawLock.unlock();

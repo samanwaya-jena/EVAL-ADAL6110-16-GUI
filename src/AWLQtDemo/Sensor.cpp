@@ -420,7 +420,7 @@ void ReceiverChannel::SetCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &in
 }
 
 void ReceiverChannel::SetReceiver(ReceiverCapture::Ptr inReceiver, 
-	Subscription::SubscriberID inCurrentReceiverCaptureSubscriberID)
+	Publisher::SubscriberID inCurrentReceiverCaptureSubscriberID)
 {
 	receiverCapture = inReceiver;
 	receiverCaptureSubscriberID = inCurrentReceiverCaptureSubscriberID;
@@ -431,10 +431,11 @@ void ReceiverChannel::SetReceiver(ReceiverCapture::Ptr inReceiver,
 
 ReceiverProjector::ReceiverProjector(VideoCapture::Ptr videoCapture, pcl::PointCloud<pcl::PointXYZRGB>::Ptr & inCloud, 
 	ReceiverCapture::Ptr receiverCapture):
+LoopedWorker(),
+Publisher(),
 displayUnderZero(true),
 currentFrame(new (cv::Mat)),
-backgroundFrame(new (cv::Mat)),
-currentCloudSubscriptions(new(Subscription))
+backgroundFrame(new (cv::Mat))
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -455,21 +456,9 @@ ReceiverProjector::~ReceiverProjector()
 	Stop();
 }
 
-void  ReceiverProjector::Go() 
-{
-    mStopRequested = false;
-}
- 
-
-void  ReceiverProjector::Stop() 
-{
-	if (mStopRequested) return;
-    mStopRequested = true;
-}
-
 bool  ReceiverProjector::WasStopped()
 {
-	if (mStopRequested) return(true);
+	if (LoopedWorker::WasStopped()) return(true);
 	if (videoCapture->WasStopped()) {
 		Stop();
 		return(true);
@@ -504,9 +493,7 @@ void ReceiverProjector::SetReceiverCapture( ReceiverCapture::Ptr inReceiverCaptu
 {
 	receiverCapture = inReceiverCapture;
 
-	boost::mutex::scoped_lock receiverLock(receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
-	currentReceiverCaptureSubscriberID = receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
-	receiverLock.unlock();
+	currentReceiverCaptureSubscriberID = receiverCapture->Subscribe();
 }
 
 void ReceiverProjector::SetCloud( pcl::PointCloud<pcl::PointXYZRGB>::Ptr & inCloud)
@@ -514,10 +501,13 @@ void ReceiverProjector::SetCloud( pcl::PointCloud<pcl::PointXYZRGB>::Ptr & inClo
  	cloud = inCloud;
 }
 
-void ReceiverProjector::CopyCurrentCloud( pcl::PointCloud<pcl::PointXYZRGB>::Ptr & outCloud, Subscription::SubscriberID inSubscriberID)
+void ReceiverProjector::CopyCurrentCloud( pcl::PointCloud<pcl::PointXYZRGB>::Ptr & outCloud, Publisher::SubscriberID inSubscriberID)
 {
- 	pcl::copyPointCloud(*cloud, *outCloud);
-	currentCloudSubscriptions->GetNews(inSubscriberID);
+	if (LockNews(inSubscriberID))
+	{
+	 	pcl::copyPointCloud(*cloud, *outCloud);
+		UnlockNews(inSubscriberID);
+	}
 }
 
 
@@ -534,13 +524,11 @@ ReceiverChannel::Ptr &ReceiverProjector::AddChannel(ReceiverChannel::Ptr &inChan
 	return inChannelPtr;
 }
 
-void ReceiverProjector::DoLoopIteration()
+void ReceiverProjector::SpinOnce()
 
 {
 	if (!WasStopped())
     {
-		bool bUpdate = false;
-
 		// Update the video frame before we build the point-cloud
 		// if there is a video frame available.
 
@@ -548,15 +536,11 @@ void ReceiverProjector::DoLoopIteration()
 		{
 			// Copy the contents of the working frame, if is is updated
 			videoCapture->CopyCurrentFrame(currentFrame, currentVideoSubscriberID);
-			bUpdate = true;
-		}
-
-		// Update the point-cloud data.
-		// Right now, we pace ourselves with the video frames
-		if (true) 
-		{
+			
+			// Update the point-cloud data.
+			// Right now, we pace ourselves with the video frames
 			AddDistancesToCloud();
-			currentCloudSubscriptions->PutNews();
+			PutNews();
 		}
 	} // while (!WasStoppped)
 

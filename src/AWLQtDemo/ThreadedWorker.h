@@ -42,6 +42,8 @@ public:
 	virtual void  Go();
 
 	/** \brief Stop worker thread. Free all objects created during the thread.
+	  * \notes  To avoid recursion, Stop() shoudl never call WasStopped().
+	  *         Descendants should always use the mWorkerRunning member directly, when in the Stop() method.
       */
 	virtual void  Stop(); 
 

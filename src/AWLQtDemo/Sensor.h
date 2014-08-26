@@ -3,12 +3,11 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/container/vector.hpp>
-#include <boost/thread/thread.hpp>
 #include <pcl/range_image/range_image.h>
 #endif
 
 #include "Publisher.h"
-#include "Subscription.h"
+#include "LoopedWorker.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
 
@@ -158,7 +157,7 @@ protected:
 	/** \brief The lidar data capture device. */
 	ReceiverCapture::Ptr receiverCapture;
 	/** \brief Our subscription identifier to access to lidar data. */
-	Subscription::SubscriberID receiverCaptureSubscriberID;
+	Publisher::SubscriberID receiverCaptureSubscriberID;
 
 	// public variables
 public:
@@ -285,21 +284,21 @@ public:
 	/** \brief Modify the viewer'sreceiver.
       * \param[in] inReceiver pointer to receiver
       */
-	void SetReceiver(ReceiverCapture::Ptr receiver, Subscription::SubscriberID inCurrentReceiverCaptureSubscriberID);
+	void SetReceiver(ReceiverCapture::Ptr receiver, Publisher::SubscriberID inCurrentReceiverCaptureSubscriberID);
 
 	void SetBackgroundPtr(ReceiverChannel::FramePtr inBackgroundPtr);
 	void SetColorPtr(ReceiverChannel::FramePtr inColorPtr);
 	void SetCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &inCurrentCloud); 
 }; // class ReceiverChannel
 
-/** \brief Threaded ReceiverProjector class is used to control the projection of 3D data acquired from ReceiverChannels
+/** \brief ReceiverProjector class is used to control the projection of 3D data acquired from ReceiverChannels
   *        onto a point cloud, after adequate coordinate tranformation.  The projection also maps video RGB data to the
   *        individual points of the point-cloud.
   *		   The ReceiverProjector uses a VideoCaptureDevice as input.
   *		   The ReceiverProjector aslo used a PointCloud<XYZRGB>  as input
   * \author Jean-Yves Deschênes
   */
-class ReceiverProjector
+class ReceiverProjector: public LoopedWorker, public Publisher 
 {
 // Public types
 public:
@@ -323,22 +322,14 @@ public:
       */
 	virtual ~ReceiverProjector();
 
-	/** \brief Start the lidar Data Projection  thread
-      */
-	void  Go(); 
-
-	/** \brief Stop the lidar data projection thread
-      */
-	void  Stop(); 
-
 	/** \brief Return the video acquisition thread status
       * \return true if the video acquisition thread is stoppped.
       */
-	bool  WasStopped();
+	virtual bool  WasStopped();
 
 	/** \brief Update the display from the application's main loop or timer.
       */
-	void DoLoopIteration();
+	virtual void SpinOnce();
 
 
 	/** \brief Return the number of receiver channels used for video projection
@@ -461,7 +452,7 @@ public:
        * \param[in] inSubscriberID identification iof the subscriber getting the cloud.  Default -1 (none).
 	   * \note Locking of the target point-cloud is under the responsibility of the calling thread.
       */
-	void CopyCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &outCloud, Subscription::SubscriberID inSubscriberID = -1);
+	void CopyCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &outCloud, Publisher::SubscriberID inSubscriberID = -1);
 
 	/** \brief Return the video frame width.
       * \return videoframe width in pixels.
@@ -505,10 +496,6 @@ public:
 
 	/** \brief Vector holding each of the individual lidar channels. */
 	boost::container::vector<ReceiverChannel::Ptr> receiverChannels;
-
-	/** \brief A public subscription checkpoint infrastructure for the output  currentFrame.
-      */
-	Subscription::Ptr currentCloudSubscriptions;	
 
 // Protected methods
 protected:
@@ -585,7 +572,7 @@ protected:
 	Publisher::SubscriberID currentVideoSubscriberID;
 	
 	/** \brief Our subscription identifier to access to lidar data. */
-	Subscription::SubscriberID currentReceiverCaptureSubscriberID;
+	Publisher::SubscriberID currentReceiverCaptureSubscriberID;
 };
 
 

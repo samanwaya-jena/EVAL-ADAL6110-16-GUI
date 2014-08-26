@@ -7,7 +7,6 @@
 #include <iostream>
 
 #ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
 #include <boost/container/vector.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/features/normal_3d.h>
@@ -18,7 +17,8 @@
 #endif
 
 #include "sensor.h"
-#include "Subscription.h"
+#include "Publisher.h"
+#include "LoopedWorker.h"
 
 using namespace std;
 using namespace pcl;
@@ -32,7 +32,7 @@ namespace awl
   *        pcl::visualization::PCLVisualizer viewing windo to display it.
   * \author Jean-Yves Deschênes
   */
-class  CloudViewerWin
+class  CloudViewerWin: public LoopedWorker
 {
 	
 // Public types
@@ -74,17 +74,8 @@ public:
 
 	/** \brief Destructor for the CloudViewerWin object
     */
- virtual ~CloudViewerWin();
+	virtual ~CloudViewerWin();
 
-
-	/** \brief Initialize the variables needed by the display loop
-	    \note The current implementation is not threaded.
-      */
-	void  Go(); 
-
-	/** \brief Stop the viewer's internal thread
-      */
-	void  Stop(); 
 
 	/** \brief Return theviewer status
       * \return true if the viewer thread is stoppped.
@@ -93,14 +84,7 @@ public:
 
 	/** \brief Go once through the display loop, to be called by main thread or timer event
       */
-	void  DoLoopIteration();
-
-	/** \brief Allow the viewer to go through the VTK / PCL event loop.
-	  * \param[in] time delay for which the viewer waits for events
-      * \param[in] bForceRedraw  true to force immediate redraw of the viewer window.
-      */
-	void SpinOnce(int time=1, bool forceRedraw = false);
-
+	void  SpinOnce();
 
 	/** \brief Modify the color handker thread for the viewer
       * \param[in] inColorHandlerType  enumerated value indicating the color handler used for rendering.
@@ -137,43 +121,7 @@ public:
 	void GetPixelSize(int &outPixelSize);
 
 	void SetSourceProjector(ReceiverProjector::Ptr inSourceProjector);
-
-
-// Public variables
-public:
-    /** \brief PCLVisualizer object that creates the viewing window. */
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-
-    /** \brief Point-Cloud object that is used to display the cloud. */
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;
-
-    /** \brief Unique identifier for the point-cloud object. */
-	std::string cloudName;
-
-    /** \brief Title of the window used to display the cloud. */
-	std::string windowName;
-
-    /** \brief ColorHandlerType enumerated value identifying the current colorHandler. */
-
-	ColorHandlerType currentHandlerType;
-
-	/** \brief Pointer to the colorHandler currently used for display. 
-      */
-	pcl::visualization::PCLVisualizer::ColorHandler *currentColorHandlerPtr;
-
-   /** \brief RGB colorHandler. 
-     *        These are created at viewer instantiation and are kept along for all of the life of the 
-	 *        view.
-     */
-	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler_rgb;
-
-	/** \brief RGB colorHandler. 
-      *        These are created at viewer instantiation and are kept along for all of the life of the 
-	  *        view.
-      */
-	pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZRGB> handler_z;
-
-	/** \brief Modify the camera view angle on the viewer.
+		/** \brief Modify the camera view angle on the viewer.
       * \param[in] inAngle  enumerated identifier of the camera angle.
       */
 	void SetCameraView(CloudViewerWin::CameraView inAngle);
@@ -237,11 +185,41 @@ public:
       */
 	void GetRangeMax(double &outRangeMax);
 
+// Public variables
+public:
+    /** \brief PCLVisualizer object that creates the viewing window. */
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 
-	/** \brief Return the mutex for internal data.
-      * \return a boost mutex for the object.
+    /** \brief Point-Cloud object that is used to display the cloud. */
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;
+
+    /** \brief Unique identifier for the point-cloud object. */
+	std::string cloudName;
+
+    /** \brief Title of the window used to display the cloud. */
+	std::string windowName;
+
+    /** \brief ColorHandlerType enumerated value identifying the current colorHandler. */
+
+	ColorHandlerType currentHandlerType;
+
+	/** \brief Pointer to the colorHandler currently used for display. 
       */
-	boost::mutex& GetMutex() {return (mMutex);} 
+	pcl::visualization::PCLVisualizer::ColorHandler *currentColorHandlerPtr;
+
+   /** \brief RGB colorHandler. 
+     *        These are created at viewer instantiation and are kept along for all of the life of the 
+	 *        view.
+     */
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler_rgb;
+
+	/** \brief RGB colorHandler. 
+      *        These are created at viewer instantiation and are kept along for all of the life of the 
+	  *        view.
+      */
+	pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZRGB> handler_z;
+
+
 
 protected:
     /** \brief Pixel size holder. 
@@ -250,67 +228,44 @@ protected:
 	*/
 	int pixelSize;
 
-    /** \brief Local flag indicating the termination of display window. */
-	volatile bool mStopRequested;
-
-	/** \brief Data sharing mutex. */
-    boost::mutex mMutex;
-
 	/** \brief the source projector used as a sinmk */
 	ReceiverProjector::Ptr sourceProjector;
 
 	/** \brief Our subscription identifier to access to the clud produced by projector. */
-	Subscription::SubscriberID currentCloudSubscriberID;
+	Publisher::SubscriberID currentCloudSubscriberID;
 };
 
 
 
-class FusedCloudViewer
+class FusedCloudViewer: public LoopedWorker
 {
-
-protected:
-
-    volatile bool mStopRequested;
-
 public:
 	typedef boost::shared_ptr<FusedCloudViewer> Ptr;
     typedef boost::shared_ptr<FusedCloudViewer> ConstPtr;
-
-	boost::container::vector<CloudViewerWin::Ptr> viewers;
-
-	/** \brief the source projector used as a sinmk */
-	ReceiverProjector::Ptr sourceProjector;
  
-protected:
-	void DrawGrid();
-
-	void CreateViewerView();
-
-	void AddViewerLines(const PointXYZRGB &startPoint, const PointXYZRGB &endPoint, 
-		double r, double g, double b,
-		const std::string &inLineName); 
-
-	void AddViewerLines(float startX, float startY, float startZ,
-					  float endX, float endY, float endZ,
-					  double r, double g, double b,
-					  const std::string &inLineName, int lineID=0); 
 public:
 
 	FusedCloudViewer(std::string inWindowName,  boost::shared_ptr<awl::ReceiverProjector> inReceiver);
-	~FusedCloudViewer() {};
+	~FusedCloudViewer();
 
-    // Create the ViewerWindow and prepare for main loop
-    void Go(); 
- 
-    void Stop(); // Note 1
-	bool WasStopped();
+	/** \brief Initialize the variables needed by the display loop
+	    \note The current implementation is not threaded.
+		      Creates the CloudViewerWindows and calls their Go().
+      */
+	void  Go(); 
+
+	/** \brief Stop worker. Stop all cloudViewerWindows started.
+      */
+	virtual void  Stop(); 
 
 
+	virtual bool WasStopped();
+	
 	/** \brief Allow the viewer to go through the VTK / PCL event loop.
 	  * \param[in] time delay for which the viewer waits for events
       * \param[in] bForceRedraw  true to force immediate redraw of the viewer window.
       */
-	void SpinOnce(int time=1, bool forceRedraw = false);
+	virtual void SpinOnce();
 	
 	/** \brief Modify the viewer's height parameter.
       * \param[in] inViewerHeight sensor height, in meters
@@ -343,6 +298,25 @@ public:
       */
 	void GetRangeMax(double &outRangeMax);
 
+protected:
+	void DrawGrid();
+
+	void CreateViewerView();
+
+	void AddViewerLines(const PointXYZRGB &startPoint, const PointXYZRGB &endPoint, 
+		double r, double g, double b,
+		const std::string &inLineName); 
+
+	void AddViewerLines(float startX, float startY, float startZ,
+					  float endX, float endY, float endZ,
+					  double r, double g, double b,
+					  const std::string &inLineName, int lineID=0); 
+
+public:	
+	boost::container::vector<CloudViewerWin::Ptr> viewers;
+
+	/** \brief the source projector used as a sink */
+	ReceiverProjector::Ptr sourceProjector;
 
 protected:
 	double sensorHeight;

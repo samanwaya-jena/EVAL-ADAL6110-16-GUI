@@ -129,7 +129,7 @@ AWLQtScope::~AWLQtScope()
 void AWLQtScope::start(ReceiverCapture::Ptr inReceiverCapture)
 {
 	d_receiverCapture = inReceiverCapture;
-	d_receiverCaptureSubscriberID = d_receiverCapture->currentReceiverCaptureSubscriptions->Subscribe();
+	d_receiverCaptureSubscriberID = d_receiverCapture->Subscribe();
 
 	for (int i = 0; i < d_plot.size(); i++) 
 	{
@@ -177,7 +177,7 @@ void AWLQtScope::updateCurveDataRaw()
 {
 	if (!d_receiverCapture->GetFrameQty()) return;   // No frame yet produced
 
-	boost::mutex::scoped_lock updateLock( d_receiverCapture->currentReceiverCaptureSubscriptions->GetMutex());
+	if (!d_receiverCapture->LockNews(d_receiverCaptureSubscriberID)) return;
 
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	
@@ -252,7 +252,8 @@ void AWLQtScope::updateCurveDataRaw()
 		} // for channelID
 	} // For frameIndex
 
-	updateLock.unlock();
+	d_receiverCapture->UnlockNews(d_receiverCaptureSubscriberID);
+
 }
 
 void AWLQtScope::on_scopeCurveStyleDots_setChecked(bool bChecked)

@@ -74,7 +74,7 @@ private:
 
 	ReceiverCapture::Ptr d_receiverCapture;
 	/** \brief Our subscription identifier to access to lidar data. */
-	Subscription::SubscriberID d_receiverCaptureSubscriberID;
+	Publisher::SubscriberID d_receiverCaptureSubscriberID;
 	uint32_t d_lastFrameID;
 };
 

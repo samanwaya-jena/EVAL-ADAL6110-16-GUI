@@ -5,12 +5,12 @@
 #include <fstream>
 
 #ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/container/vector.hpp>
 #endif
 
-#include "Subscription.h"
+#include "Publisher.h"
+#include "ThreadedWorker.h"
 #include "Tracker.h"
 #include "AWLSettings.h"
 
@@ -214,7 +214,7 @@ ReceiverStatus;
   *        The receiver capture manages optional "logging" of the track and distance data into a local log file on the PC
   * \author Jean-Yves Deschênes
   */
-class ReceiverCapture
+class ReceiverCapture: public ThreadedWorker, public Publisher
 {
 // Public types and constants
 public:
@@ -252,16 +252,8 @@ public:
 
 	/** \brief Start the lidar Data Projection  thread
       */
-	virtual void  Go(bool inIsThreaded = false); 
+	virtual void  Go(); 
 
-	/** \brief Stop the lidar data projection thread
-      */
-	virtual void  Stop(); 
-
-	/** \brief Return the video acquisition thread status
-      * \return true if the video acquisition thread is stoppped.
-      */
-	virtual bool  WasStopped();
 
 	/** \brief Return the number of frames acquired
       * \return int indicating the number of frames.
@@ -316,7 +308,16 @@ public:
 	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
-	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID);
+	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Publisher::SubscriberID inSubscriberID);
+
+	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
+     * \param[in] inFrameID frame identificator of the requiested frame
+     * \param[in] inChannelID index of the required channel
+	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
+	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
+     * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
+     */
+	virtual bool CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID);
 
 	/** \brief Return the current frame identification number for informational purposes 
      * \return Current frame identification number.
@@ -582,25 +583,17 @@ public:
 
 	/** \brief Structure holding the frame data accumulation */
 	AcquisitionSequence::Ptr acquisitionSequence;
-
-	/** \brief A public subscription checkpoint infrastructure for the output 
-	  * of the frame data.
-      */
-	Subscription::Ptr currentReceiverCaptureSubscriptions;	
 		
 	/** \brief Receiver status information 
       */
 	ReceiverStatus	receiverStatus;
 
-
-	/** \brief Do one iteration of the thread loop.
-      */
-	virtual void DoThreadIteration();
-
-
-
 // Protected methods
 protected:
+	/** \brief Return the lidar data rendering thread status
+      * \return true if the lidar data rendering thread is stoppped.
+      */
+	virtual void  DoThreadLoop();
 	
 	/** \brief Once all distances have been acquired in the current frame,
 	  *        push that frame into the frame buffer.
@@ -650,10 +643,6 @@ protected:
       */
 	void FakeChannelTrackSlowMove(int channel);
 
-	/** \brief Return the lidar data rendering thread status
-      * \return true if the lidar data rendering thread is stoppped.
-      */
-	void  DoThreadLoop();
 
 	/** \brief Do one iteration of the thread loop.
       */
@@ -666,22 +655,6 @@ protected:
 
 // Protected variables
 protected:
-
-    /** \brief Local flag indicating the termination of thread. */
-	volatile bool mStopRequested;
-
-    /** \brief Video acquisition thread . */
-    boost::shared_ptr<boost::thread> mThread;
-	
-	/** \brief Data sharing mutex. */
-    boost::mutex mMutex;
-
-	/** \brief Indicates if the object is threaded, or if it is fed using the internal 
-	  *        loop.
-	  *        This is determined at run-time on the Go() call.
-	*/
-	bool bIsThreaded;
-
 	/** \brief Minimum distance for objects.  All messages with distance < minDistance are eliminated.
 		\default 3.0;
 	*/

@@ -105,7 +105,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
 		}
 
-		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->Subscribe());
+		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
 	}
 
 	// Create the video capture objects
@@ -121,7 +121,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Create the ReceiverProjector.
 	// The projector feeds from the videoCapture and feeds from the base cloud
-	receiver = ReceiverProjector::Ptr(new ReceiverProjector(videoCaptures[0], baseCloud, receiverCaptures[0]));
+	receiver3DProjector = ReceiverProjector::Ptr(new ReceiverProjector(videoCaptures[0], baseCloud, receiverCaptures[0]));
 
 	// Add the channels to the point-cloud projector. 
 	ReceiverChannel::Ptr channelPtr;
@@ -141,7 +141,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorGreen / 255.0,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorBlue / 255.0));
 
-			channelPtr = receiver->AddChannel(receiverChannel);
+			channelPtr = receiver3DProjector->AddChannel(receiverChannel);
 		}
 	}
 
@@ -150,7 +150,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// All point cloud updates feed from the receiver's point-cloud data.
 	// The fused Viewer also uses the receiver configuration info to build the background decorations  
 	// used in point-cloud
-	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString() + " 3D View", receiver));
+	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString() + " 3D View", receiver3DProjector));
 
 #endif
 
@@ -320,7 +320,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Start the threads for background  receiver capture objects
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
 	{ 
-		receiverCaptures[receiverID]->Go(true);
+		receiverCaptures[receiverID]->Go();
 	}
 
 
@@ -331,7 +331,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 
-	if (receiver) receiver->Go();
+	if (receiver3DProjector) receiver3DProjector->Go();
 
 	// Create a timer to keep the UI objects spinning
      myTimer = new QTimer(this);
@@ -464,7 +464,7 @@ void AWLQtDemo::on_destroy()
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
 
-	if (receiver) receiver->Stop();
+	if (receiver3DProjector) receiver3DProjector->Stop();
 
 	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 	{
@@ -689,9 +689,9 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	QApplication::processEvents();
 
 	// Process
-	if (receiver) 
+	if (receiver3DProjector) 
 	{	
-		receiver->SetViewerHeight(height);
+		receiver3DProjector->SetViewerHeight(height);
 	}
 
 	if (receiverCaptures[0]) 
@@ -722,9 +722,9 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 	// Process
 
-	if (receiver) 
+	if (receiver3DProjector) 
 	{	
-		receiver->SetViewerDepth(forward);
+		receiver3DProjector->SetViewerDepth(forward);
 	}
 
 	if (fusedCloudViewer) 
@@ -779,9 +779,9 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 
 	// Update user interface parts
-	if (receiver) 
+	if (receiver3DProjector) 
 	{
-		ReceiverChannel::Ptr receiverChannel = receiver->GetChannel(channelID);
+		ReceiverChannel::Ptr receiverChannel = receiver3DProjector->GetChannel(channelID);
 		if (receiverChannel) receiverChannel->SetRangeMax(range);
 	}
 
@@ -948,7 +948,7 @@ void AWLQtDemo::on_timerTimeout()
 		}
 	}
 
-	if (receiver && receiver->WasStopped())
+	if (receiver3DProjector && receiver3DProjector->WasStopped())
 	{
 		bContinue = false;
 	}
@@ -976,20 +976,18 @@ void AWLQtDemo::on_timerTimeout()
 
 	// Uopdate the 3D display
 
-	if (bContinue && receiver) 
+	if (bContinue && receiver3DProjector) 
 	{
-		receiver->DoLoopIteration();
+		receiver3DProjector->SpinOnce();
 
-	if (receiver->WasStopped()) bContinue = false;
+	if (receiver3DProjector->WasStopped()) bContinue = false;
 	}
 
 
 	if (bContinue) 
 	{
 		Detection::Vector detectionData;
-		GetLatestDetections(detectionData);
-
-		// Update the 2D view
+		GetLatestDetections(detectionData);		// Update the 2D view
 		if (m2DScan) m2DScan->slotDetectionDataChanged(detectionData);
 
 		// Update the camera views
@@ -1012,10 +1010,7 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue && fusedCloudViewer && !fusedCloudViewer->WasStopped()) 
 	{
-		if (fusedCloudViewer->viewers.size()>=1) 
-		{
-			fusedCloudViewer->viewers[0]->DoLoopIteration();
-		}
+		fusedCloudViewer->SpinOnce();
 	}
 
 	// Update the menus for the 3D view and camera view, since we do not get any notifiocation from them
@@ -1049,7 +1044,7 @@ void AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 		int channelQty = receiver->GetChannelQty();
 		for (int channelID = 0; channelID < channelQty; channelID++) 
 		{
-			if (receiverCaptures[receiverID]->GetFrameQty()) 
+			if (receiverCaptures[receiverID]->GetFrameQty() /* && receiverCaptures[receiverID]->HasNews(receiverCaptureSubscriberIDs[receiverID])*/) 
 			{
 
 				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverID, channelID));
@@ -1101,11 +1096,9 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 	{
 		bEnableButtons = true;
 
-		boost::mutex::scoped_lock rawLock(receiverCaptures[receiverID]->currentReceiverCaptureSubscriptions->GetMutex());
-		receiverCaptures[receiverID]->receiverStatus.bUpdated = false;
-		ReceiverStatus status = receiverCaptures[receiverID]->receiverStatus;
-		rawLock.unlock();
-
+		ReceiverStatus status;
+		receiverCaptures[receiverID]->CopyReceiverStatusData(status, receiverCaptureSubscriberIDs[receiverID]);
+		
 		QString formattedString;
 		formattedString.sprintf("%d.%d", status.version.major, status.version.minor);
 		ui.versionEdit->setText(formattedString);
@@ -2080,7 +2073,7 @@ void AWLQtDemo::closeEvent(QCloseEvent * event)
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
 
-	if (receiver) receiver->Stop();
+	if (receiver3DProjector) receiver3DProjector->Stop();
 
 	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 	{

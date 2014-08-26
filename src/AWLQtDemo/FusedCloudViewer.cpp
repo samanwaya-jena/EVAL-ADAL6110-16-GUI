@@ -1,6 +1,7 @@
 #include <iostream>
 
 
+
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp> 
 #include <pcl/common/common_headers.h>
@@ -31,6 +32,7 @@ CloudViewerWin::CloudViewerWin(ReceiverProjector::Ptr &inSourceProjector,
 					const ColorHandlerType inColorHandlerType,
 					const std::string &inWindowName,
 					const std::string &inCloudName ):
+LoopedWorker(), 
 sourceProjector(inSourceProjector),
 cloud(new pcl::PointCloud<pcl::PointXYZRGB>),
 viewer(new pcl::visualization::PCLVisualizer (inWindowName)),
@@ -38,8 +40,7 @@ windowName(inWindowName),
 cloudName(inCloudName),
 handler_rgb(cloud),
 handler_z (cloud, "z"),
-currentHandlerType(inColorHandlerType),
-mStopRequested(false)
+currentHandlerType(inColorHandlerType)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -57,9 +58,62 @@ mStopRequested(false)
 CloudViewerWin::~CloudViewerWin()
 
 {
-	if (!WasStopped()) Stop();
+	if (mWorkerRunning) Stop();
 }
 
+
+bool  CloudViewerWin::WasStopped()
+{
+	if (LoopedWorker::WasStopped()) return(true);
+
+	if (viewer->wasStopped())
+	{
+		Stop();
+		return(true);
+	}
+
+	if (sourceProjector->WasStopped())
+	{
+		Stop();
+		return(true);
+	}
+
+	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
+	if (!viewerWnd || sourceProjector->WasStopped())
+	{
+		Stop();
+		return(true);
+	}
+
+	return(false);
+}
+
+void  CloudViewerWin::SpinOnce()
+{
+	if (!WasStopped())
+	{
+		// Note: Check for update
+		if (sourceProjector != NULL && sourceProjector->HasNews(currentCloudSubscriberID)) 
+		{
+			sourceProjector->CopyCurrentCloud(cloud, currentCloudSubscriberID);
+			if (!viewer->updatePointCloud(cloud,
+					(pcl::visualization::PointCloudColorHandler <PointXYZRGB> &) *(currentColorHandlerPtr), 
+					cloudName)) 
+			{
+				viewer->addPointCloud(cloud,
+					(pcl::visualization::PointCloudColorHandler <PointXYZRGB> &) *(currentColorHandlerPtr), 
+					cloudName);
+
+				// Set the pixel size only once the cloud is added.
+				SetPixelSize(pixelSize);
+			}
+
+			
+		//Allow the viewer to go through the VTK / PCL event loop.
+	  	viewer->spinOnce(cloudViewerSpinTime, false);
+		}
+	}
+}
 pcl::visualization::PCLVisualizer::ColorHandler * 
 CloudViewerWin::SetCurrentColorHandlerType(ColorHandlerType inColorHandlerType)
 {
@@ -95,153 +149,11 @@ CloudViewerWin::GetCurrentColorHandler()
 void 
 CloudViewerWin::SetSourceProjector(ReceiverProjector::Ptr inSourceProjector)
 {
-	boost::mutex::scoped_lock updateLock(mMutex);
- 
 	sourceProjector = inSourceProjector;
-	currentCloudSubscriberID = sourceProjector->currentCloudSubscriptions->Subscribe();
-
-
-	updateLock.unlock();
+	currentCloudSubscriberID = sourceProjector->Subscribe();
 }
 
-void CloudViewerWin::Go() 
-{
-	mStopRequested = false;
-}
- 
 
-void   CloudViewerWin::Stop() 
-{
-	if (mStopRequested) return;
-	mStopRequested = true;
-
-#if 0
-	// We should close the window following this strange sequence.
-	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
-	// finalizes the application
-	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
-	vtkRenderWindowInteractor* interactor = viewer->getRenderWindow()->GetInteractor();
-	interactor->GetRenderWindow()->Finalize();
-	viewer->getRenderWindow()->SetWindowId(0);
-
-	viewer.reset();
-
-	if (viewerWnd) DestroyWindow(viewerWnd);
-#else
-#if 0
-	// We should close the window following this strange sequence.
-	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
-	// finalizes the application
-//	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
-//	vtkRenderWindowInteractor* interactor = viewer->getRenderWindow()->GetInteractor();
-//	interactor->GetRenderWindow()->Finalize();
-//	viewer->getRenderWindow()->SetWindowId(0);
-
-//	viewer.reset();
-
-//	if (viewerWnd) DestroyWindow(viewerWnd);
-
-	
-	vtkSmartPointer<vtkRenderWindow> renderWin = viewer->getRenderWindow();
-	HWND viewerWnd = NULL;
-
-	if (renderWin)
-	{
-		viewerWnd = (HWND) renderWin->GetGenericWindowId();
-		if (viewerWnd)
-		{
-			vtkRenderWindowInteractor* interactor = renderWin->GetInteractor();
-			if (interactor) 
-			{
-				vtkRenderWindow  *interactorRenderWin = interactor->GetRenderWindow();
-				if (interactorRenderWin) 
-				{
-					interactorRenderWin->Finalize();
-					::Sleep(100);
-				}
-			}
-
-		}
-	}
-
-	renderWin = viewer->getRenderWindow();
-	if (renderWin)
-	{
-		renderWin->SetWindowId(0);
-	}
-
-	viewer.reset();
-	if (viewerWnd != NULL)
-	{
-		DestroyWindow(viewerWnd); 
-	}
-#else
-//	viewer->close();
-#endif
-
-#endif
-
-}
-
-bool  CloudViewerWin::WasStopped()
-{
-	if (mStopRequested) return(true);
-
-	if (viewer->wasStopped())
-	{
-		Stop();
-		return(true);
-	}
-
-	if (sourceProjector->WasStopped())
-	{
-		Stop();
-		return(true);
-	}
-
-	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
-	if (!viewerWnd || sourceProjector->WasStopped())
-	{
-		Stop();
-		return(true);
-	}
-
-	return(false);
-}
-
-void CloudViewerWin::SpinOnce(int time, bool forceRedraw)
-
-{
-	viewer->spinOnce(time, forceRedraw);
-}
-
-void  CloudViewerWin::DoLoopIteration()
-{
-	if (!WasStopped())
-	{
-		// Note: Check for update
-		if (sourceProjector != NULL && sourceProjector->currentCloudSubscriptions->HasNews(currentCloudSubscriberID)) 
-		{
-			boost::mutex::scoped_lock updateLock(mMutex);
-			sourceProjector->CopyCurrentCloud(cloud, currentCloudSubscriberID);
-			if (!viewer->updatePointCloud(cloud,
-					(pcl::visualization::PointCloudColorHandler <PointXYZRGB> &) *(currentColorHandlerPtr), 
-					cloudName)) 
-			{
-				viewer->addPointCloud(cloud,
-					(pcl::visualization::PointCloudColorHandler <PointXYZRGB> &) *(currentColorHandlerPtr), 
-					cloudName);
-
-				// Set the pixel size only once the cloud is added.
-				SetPixelSize(pixelSize);
-			}
-
-			updateLock.unlock();
-
-			SpinOnce(cloudViewerSpinTime);
-		}
-	}
-}
 
 void CloudViewerWin::SetCameraView(CloudViewerWin::CameraView inAngle)
 {
@@ -430,14 +342,80 @@ void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
 }
 
-FusedCloudViewer::FusedCloudViewer(std::string inWindowName, boost::shared_ptr<awl::ReceiverProjector> inReceiver)
-:
-mStopRequested(false),
+FusedCloudViewer::FusedCloudViewer(std::string inWindowName, boost::shared_ptr<awl::ReceiverProjector> inReceiver):
+LoopedWorker(),
 sourceProjector(inReceiver),
 windowName(inWindowName),
 viewers()
 {
   
+}
+
+FusedCloudViewer::~FusedCloudViewer()
+{
+	if (!WasStopped()) Stop();
+}
+
+
+void  FusedCloudViewer::Go() 
+{
+
+	int viewerQty(viewers.size());
+	if (!viewerQty)
+	{
+		CreateViewerView();
+	}
+
+	viewerQty = viewers.size();
+
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		viewers[i]->Go();
+	}
+
+	LoopedWorker::Go();
+}
+ 
+
+void  FusedCloudViewer::Stop() 
+{
+	if (!mWorkerRunning) return;
+
+	int viewerQty(viewers.size());
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		viewers[i]->Stop();
+	}
+
+	viewers.clear();
+	LoopedWorker::Stop();
+}
+	
+bool  FusedCloudViewer::WasStopped()
+{
+	if (LoopedWorker::WasStopped()) return(true);
+
+	int viewerQty(viewers.size());
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		if (viewers[i]->viewer->wasStopped())
+		{
+			Stop();
+			return(true);
+		}
+	}
+
+	return(false);
+}
+
+void FusedCloudViewer::SpinOnce()
+
+{	
+	int viewerQty(viewers.size());
+	for (int i = 0; i < viewerQty; i++) 
+	{
+		viewers[i]->SpinOnce();
+	}
 }
 
 void FusedCloudViewer::CreateViewerView()
@@ -605,71 +583,9 @@ void FusedCloudViewer::DrawGrid()
 	}
 }
 
-void  FusedCloudViewer::Go() 
-{
-
-	int viewerQty(viewers.size());
-	if (!viewerQty)
-	{
-		CreateViewerView();
-	}
-
-	viewerQty = viewers.size();
-
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->Go();
-	}
-
-	mStopRequested = false;
-}
- 
-
-void  FusedCloudViewer::Stop() 
-{
-	if (mStopRequested) return;
-
-    mStopRequested = true;
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->Stop();
-	}
-
-	viewers.clear();
-}
-	
-bool  FusedCloudViewer::WasStopped()
-{
-	if (mStopRequested) return(true);
-
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		if (viewers[i]->viewer->wasStopped())
-		{
-			Stop();
-			return(true);
-		}
-	}
-
-	return(false);
-}
-
-void FusedCloudViewer::SpinOnce(int time, bool forceRedraw)
-
-{	
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->SpinOnce(time, forceRedraw);
-	}
-}
-
-
 void  FusedCloudViewer::SetViewerHeight(double inSensorHeight) 
 {
-	if (mStopRequested) return;
+	if (WasStopped()) return;
 
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
@@ -682,7 +598,7 @@ void  FusedCloudViewer::SetViewerHeight(double inSensorHeight)
 
 void  FusedCloudViewer::SetViewerDepth(double inSensorDepth) 
 {
-	if (mStopRequested) return;
+	if (WasStopped()) return;
 
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 
@@ -695,7 +611,7 @@ void  FusedCloudViewer::SetViewerDepth(double inSensorDepth)
 
 void  FusedCloudViewer::SetRangeMax(double inRangeMax) 
 {
-	if (mStopRequested) return;
+	if (WasStopped()) return;
 
 	int viewerQty(viewers.size());
 	for (int i = 0; i < viewerQty; i++) 

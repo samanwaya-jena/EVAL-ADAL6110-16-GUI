@@ -6,8 +6,10 @@
 #include <fstream>
 
 #include "AWLSettings.h"
-#include "tracker.h"
+#include "Publisher.h"
+#include "ThreadedWorker.h"
 #include "ReceiverCapture.h"
+#include "Tracker.h"
 #include "DebugPrintf.h"
 
 using namespace std;
@@ -35,14 +37,14 @@ const int channelTransitions[channelTransitionQty][2] =
 };
 
 ReceiverCapture::ReceiverCapture(int inReceiverID, int sequenceID, int inReceiverChannelQty):
+ThreadedWorker(),
+Publisher(),
 receiverID(inReceiverID),
 receiverChannelQty(inReceiverChannelQty),
 acquisitionSequence(new AcquisitionSequence(inReceiverID, sequenceID, inReceiverChannelQty)),
 frameID(0),
 snapshotFrameID(0),
 currentFrame(new SensorFrame(inReceiverID, 0, inReceiverChannelQty)),
-currentReceiverCaptureSubscriptions(new(Subscription)),
-bIsThreaded(false),
 bSimulatedDataEnabled(false),
 bEnableDemo(false),
 injectType(eInjectRamp),
@@ -73,8 +75,6 @@ nextElapsedDistance(0)
 		maxDistances.push_back(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange); 
 	}
 
-	startTime = boost::posix_time::microsec_clock::local_time();
-	
 	SetMessageFilters();
 	InitStatus();
 }
@@ -82,7 +82,24 @@ nextElapsedDistance(0)
 ReceiverCapture::~ReceiverCapture()
 {
 	EndDistanceLog();
-	Stop();
+	if (!WasStopped()) Stop();
+}
+
+void  ReceiverCapture::Go() 
+{
+ 	assert(!mThread);
+	mWorkerRunning = true;
+	startTime = boost::posix_time::microsec_clock::local_time();
+	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverCapture::DoThreadLoop, this)));
+}
+
+void ReceiverCapture::DoThreadLoop()
+
+{
+	while (!WasStopped())
+    {
+		DoOneThreadIteration();
+	} // while (!WasStoppped)
 }
 
 void ReceiverCapture::InitStatus()
@@ -129,40 +146,10 @@ float ReceiverCapture::SetMaxDistance(int channelIndex, float inMaxDistance)
 }
 
 
-void  ReceiverCapture::Go(bool inIsThreaded) 
-{
-	bIsThreaded = inIsThreaded;
-	assert(!mThread);
-    mStopRequested = false;
-	startTime = boost::posix_time::microsec_clock::local_time();
-
-	if (bIsThreaded) 
-		{
-			mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverCapture::DoThreadLoop, this)));
-	}
-}
- 
-
-void  ReceiverCapture::Stop() 
-{
-	if (mStopRequested) return;
-    mStopRequested = true;
-	if (bIsThreaded) {
-		bIsThreaded = false;
-		assert(mThread);
-		mThread->join();
-	}
-}
-
-bool  ReceiverCapture::WasStopped()
-{
-	if (mStopRequested) return(true);
-	return(false);
-}
 
 uint32_t ReceiverCapture::SnapSnapshotFrameID() 
 {
-	boost::mutex::scoped_lock updateLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock updateLock(GetMutex());
 
 	snapshotFrameID = acquisitionSequence->GetLastFrameID();
 
@@ -179,14 +166,14 @@ int ReceiverCapture::GetFrameQty()
 }
 
 
-bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Subscription::SubscriberID inSubscriberID)
+bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Publisher::SubscriberID inSubscriberID)
 {
-	boost::mutex::scoped_lock updateLock(currentReceiverCaptureSubscriptions->GetMutex());
-
+	if (!LockNews(inSubscriberID)) return(false);
 
 	SensorFrame::Ptr sensorFrame;
 	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
-	if (bFound) { 
+	if (bFound) 
+	{ 
 		ChannelFrame::Ptr sourceChannelFrame =  sensorFrame->channelFrames[inChannelID];
 		outChannelFrame->detections.clear();
 
@@ -199,15 +186,23 @@ bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelI
 		outChannelFrame->channelID = sourceChannelFrame->channelID;
 	}
 
-	currentReceiverCaptureSubscriptions->GetNews(inSubscriberID);
-
-	updateLock.unlock();
+	UnlockNews(inSubscriberID);
 	return(bFound);
 };
 
+bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID)
+{
+	boost::mutex::scoped_lock updateLock(GetMutex()); 
+
+	outStatus = receiverStatus;
+	receiverStatus.bUpdated = false;
+	updateLock.unlock();
+	return(true);
+}
+
 uint32_t ReceiverCapture::GetFrameID(int  inFrameIndex)
 {
-	boost::mutex::scoped_lock updateLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock updateLock(GetMutex());
 	uint32_t frameID;
 
 	if (inFrameIndex > acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
@@ -296,24 +291,6 @@ bool ReceiverCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMa
    return(true);
 }
 
-void ReceiverCapture::DoThreadLoop()
-
-{
-	while (!WasStopped())
-    {
-		DoOneThreadIteration();
-	} // while (!WasStoppped)
-}
-
-void ReceiverCapture::DoThreadIteration()
-
-{
-	if (!bIsThreaded)
-    {
-		DoOneThreadIteration();
-	} // while (!WasStoppped)
-}
-
 
 void ReceiverCapture::DoOneThreadIteration()
 
@@ -321,13 +298,11 @@ void ReceiverCapture::DoOneThreadIteration()
 	// As the ReceiverCapture class is a virtual class, The code below means nothing.
 	if (!WasStopped())
     {
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 		frameID++;
-		currentReceiverCaptureSubscriptions->PutNews();
-
 		rawLock.unlock();
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+			boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 	} // while (!WasStoppped)
 }
 
@@ -343,7 +318,7 @@ double ReceiverCapture::GetElapsed()
 void ReceiverCapture::ProcessCompletedFrame()
 
 {
-	boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	// timestamp the currentFrame
 	double elapsed = GetElapsed();
@@ -374,14 +349,14 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	// Push the current frame in the frame buffer
 	acquisitionSequence->sensorFrames.push(currentFrame);
-	currentReceiverCaptureSubscriptions->PutNews();
-
+	
 	// Make sure we do not keep too many of those frames around.
 	// Remove the older frame if we exceed the buffer capacity
 	if (acquisitionSequence->sensorFrames.size() > maximumSensorFrames) 
 	{
 		acquisitionSequence->sensorFrames.pop();
 	}
+
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
 	int channelsRequired = acquisitionSequence->channelQty;
@@ -391,6 +366,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	rawLock.unlock();
 
+	PutNews();
 	DebugFilePrintf(debugFile, "FrameID- %lu", frameID);
 }
 
@@ -513,7 +489,7 @@ void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 	if (channel >= 0) 
 	{
 
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 		int elapsed = (int) GetElapsed();
 		float distance = elapsed % 4000 ;
 		distance /= 100;
@@ -593,7 +569,7 @@ void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
 	if (channel == 0) 
 	{
 
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 		int elapsed = (int) GetElapsed();
 
 		double distance = simulatedDistance1; 
@@ -720,7 +696,7 @@ void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
 		int channelA = channelTransitions[lastTransition][0];
 		int channelB = channelTransitions[lastTransition][1];
 
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 
 		// Short range channels don't display at more than their maxDistance
 		if (lastDistance < maxDistances[channelA])
@@ -790,7 +766,7 @@ void ReceiverCapture::FakeChannelDistanceConstant(int channel)
 
 		currentFrame->channelFrames[channel]->timeStamp = elapsed;
 
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 
 		// Short range channels don't display at more than shortRangeMax.
 		for (int channel = 0; channel < receiverChannelQty; channel++) 
@@ -896,7 +872,7 @@ void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
 		int channelA = channelTransitions[lastTransition][0];
 		int channelB = channelTransitions[lastTransition][1];
 
-		boost::mutex::scoped_lock rawLock(currentReceiverCaptureSubscriptions->GetMutex());
+		boost::mutex::scoped_lock rawLock(GetMutex());
 
 		// Short range channels don't display at more than shortRangeMax.
 		if (lastDistance < maxDistances[channelA]) 

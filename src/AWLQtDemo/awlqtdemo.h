@@ -153,13 +153,13 @@ private:
 	VideoCapture::List videoCaptures;
 	VideoViewer::List  videoViewers;
 
-	ReceiverProjector::Ptr receiver;
+	ReceiverProjector::Ptr receiver3DProjector;
 	FusedCloudViewer::Ptr fusedCloudViewer;
 
 
 
 	/** \brief Our subscription identifier to access to lidar data. */
-	boost::container::vector<Subscription::SubscriberID> receiverCaptureSubscriberIDs;
+	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;
 };
 
 } // namespace AWL          

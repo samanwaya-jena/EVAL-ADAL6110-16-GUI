@@ -82,7 +82,7 @@ void  VideoViewer::Go()
  
 void  VideoViewer::Stop() 
 {
-	if (WasStopped()) return;
+	if (!mWorkerRunning) return;
 
 	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
 	if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());

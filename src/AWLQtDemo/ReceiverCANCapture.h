@@ -4,14 +4,14 @@
 #include <stdint.h>
 
 #ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
 #endif
 
 #include "BlockingReader.h"
 
-#include "Subscription.h"
+#include "Publisher.h"
+#include "ThreadedWorker.h"
 #include "Tracker.h"
 #include "ReceiverCapture.h"
 
@@ -72,24 +72,13 @@ public:
 
 	/** \brief Start the lidar Data Projection  thread
       */
-	virtual void  Go(bool inIsThreaded = false); 
+	virtual void  Go(); 
 
 	/** \brief Stop the lidar data projection thread
       */
 	virtual void  Stop(); 
 
-	/** \brief Return the video acquisition thread status
-      * \return true if the video acquisition thread is stoppped.
-      */
-	virtual bool  WasStopped();
-
-	// public variables
 public:
-
-	/** \brief Do one iteration of the thread loop.
-      */
-	virtual void DoThreadIteration();
-
 	/** \brief Parse the CAN messages and call the appropriate processing function 
  	    * \param[in] inMsg  CAN message contents
       */
@@ -261,7 +250,7 @@ protected:
 	/** \brief Return the lidar data rendering thread status
       * \return true if the lidar data rendering thread is stoppped.
       */
-	void  DoThreadLoop();
+	virtual void  DoThreadLoop();
 
 	/** \brief Do one iteration of the thread loop.
       */
@@ -408,7 +397,7 @@ protected:
 		std::string sCommPort;
 		long serialPortRate;
 		uint16_t yearOffset;		   // All CAN Dates are offset from 1900
-		uint16_t monthOffset;			// All CAN months start at 0.  Posix starts aty 1.
+		uint16_t monthOffset;			// All CAN months start at 0.  Posix starts at 1.
 
 
 		boost::posix_time::ptime reconnectTime;

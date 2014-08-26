@@ -12,7 +12,7 @@ using namespace std;
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/highgui/highgui.hpp"
 
-#include "publisher.h"
+#include "Publisher.h"
 #include "ThreadedWorker.h"
 
 
