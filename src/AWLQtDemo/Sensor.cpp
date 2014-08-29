@@ -439,8 +439,14 @@ backgroundFrame(new (cv::Mat))
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	viewerHeight = globalSettings->viewerHeight;
-	viewerDepth = globalSettings->viewerDepth;
+		AWLCoordinates *globalCoord = AWLCoordinates::GetGlobalCoordinates();
+		int receiverID = receiverCapture->GetReceiverID();
+	CartesianCoord relativeCoord(0, 0, 0);
+	CartesianCoord worldCoord(0,0,0);
+	worldCoord = globalCoord->GetReceiver(receiverID)->ToReferenceCoord(eSensorToWorldCoord, relativeCoord);
+	
+	up = worldCoord.up;
+	forward = worldCoord.forward;
 	rangeMax = globalSettings->viewerMaxRange;
 	decimationX = globalSettings->decimation;
 	decimationY = globalSettings->decimation;
@@ -484,7 +490,7 @@ void ReceiverProjector::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	cameraFovHeight = videoCapture->GetCameraFovHeight();
 
 	mViewerCoordinatesPtr = ViewerCoordinates::Ptr(new ViewerCoordinates(frameWidth, frameHeight, 
-                                                cameraFovWidth, cameraFovHeight, viewerHeight, viewerDepth, rangeMax));
+                                                cameraFovWidth, cameraFovHeight, up, forward, rangeMax));
 
 	currentVideoSubscriberID = videoCapture->Subscribe();
 }
@@ -681,28 +687,40 @@ void ReceiverProjector::GetDecimation(int &outDecimationX, int &outDecimationY)
 	outDecimationY = decimationY;
 }
 
-void ReceiverProjector::SetViewerHeight(double inViewerHeight)
+void ReceiverProjector::SetPositionUp(double inUp)
 {
 
-	viewerHeight = inViewerHeight;
-	mViewerCoordinatesPtr->SetViewerHeight(inViewerHeight);
+	up = inUp;
+	mViewerCoordinatesPtr->SetPositionUp(up);
+	int channelQty = receiverChannels.size();
+	// For each of the channels, update local information
+	for (int channelID = 0; channelID < channelQty; channelID++) 
+	{
+		GetChannel(channelID)->SetSensorUp(up);
+	}
 }
 
-void ReceiverProjector::GetViewerHeight(double &outViewerHeight)
+void ReceiverProjector::GetPositionUp(double &outUp)
 {
-	outViewerHeight = viewerHeight;
+	outUp = up;
 }
 
-void ReceiverProjector::SetViewerDepth(double inViewerDepth)
+void ReceiverProjector::SetPositionForward(double inForward)
 {
-	viewerDepth = inViewerDepth;
-	mViewerCoordinatesPtr->SetViewerDepth(inViewerDepth);
+	forward = inForward;
+	mViewerCoordinatesPtr->SetPositionForward(inForward);
+	int channelQty = receiverChannels.size();
+	// For each of the channels, update local information
+	for (int channelID = 0; channelID < channelQty; channelID++) 
+	{
+		GetChannel(channelID)->SetSensorForward(forward);
+	}
 }
 
 
-void ReceiverProjector::GetViewerDepth(double &outViewerDepth)
+void ReceiverProjector::GetPositionForward(double &outForward)
 {
-	outViewerDepth = viewerDepth;
+	outForward = forward;
 }
 
 void ReceiverProjector::GetRangeMax(double &outRangeMax)
@@ -713,6 +731,8 @@ void ReceiverProjector::GetRangeMax(double &outRangeMax)
 void ReceiverProjector::SetRangeMax(double inRangeMax)
 {
 	rangeMax = inRangeMax;
+	int channelQty = receiverChannels.size();
+
 #if 0
 	// There is no management of the range max value in the coordinates ptr
 	mViewerCoordinatesPtr->SetSensorUp(inSensorUp);
@@ -757,14 +777,14 @@ void ReceiverProjector::ResetCloud()
 
 
 ViewerCoordinates::ViewerCoordinates(const int inWidth, const int inHeight, const double inFovWidth, const double inFovHeight, 
-	const double inViewerHeight, double inViewerDepth, double inRangeMax):
+	const double inUp, double inForward, double inRangeMax):
 pcl::RangeImage(),
 width(inWidth),
 height(inHeight),
 fovWidth(inFovWidth),
 fovHeight(inFovHeight),
-viewerHeight(inViewerHeight),
-viewerDepth(inViewerDepth),
+up(inUp),
+forward(inForward),
 rangeMax(inRangeMax)
 {
    // We now want to create a range image from the above point cloud, with an angular resolution
@@ -796,7 +816,7 @@ void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float in
 
 	// We offset the values to the sensor offset position
 	// depth is compensated for at receiver level, so we undo the offset here. 
-	ioCloudPoint.z -= viewerDepth;
+	ioCloudPoint.z -= forward;
 }
 
 	/** \brief Sets   horizontal camera FOV.
@@ -815,24 +835,25 @@ void ViewerCoordinates::SetCameraFovHeight(double inCameraFovHeight)
 	fovHeight = inCameraFovHeight;
 }
 
-void ViewerCoordinates::SetViewerHeight(double inViewerHeight)
+void ViewerCoordinates::SetPositionUp(double inUp)
 {
-	viewerHeight = inViewerHeight;
+	up = inUp;
+
 }
 
-void ViewerCoordinates::GetViewerHeight(double &outViewerHeight)
+void ViewerCoordinates::GetPositionUp(double &outUp)
 {
-	outViewerHeight = viewerHeight;
+	outUp = up;
 }
 
-void ViewerCoordinates::SetViewerDepth(double inViewerDepth)
+void ViewerCoordinates::SetPositionForward(double inForward)
 {
-	viewerDepth = inViewerDepth;
+	forward = inForward;
 }
 
-void ViewerCoordinates::GetViewerDepth(double &outViewerDepth)
+void ViewerCoordinates::GetPositionForward(double &outForward)
 {
-	outViewerDepth = viewerDepth;
+	outForward = forward;
 }
 
 

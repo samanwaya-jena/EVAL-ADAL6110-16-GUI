@@ -29,15 +29,21 @@ public:
 
 // protected variables
 protected:
+
+	/** \brief  width in pixels */
 	int width;
+	/** \brief  height in pixels */
 	int height;
 
+	/** \brief  FOV Width in radians */
 	double fovWidth;
+	/** \brief  FOV Height in radians */
 	double fovHeight;
-	/** \brief  sensor height to ground */
-	double  viewerHeight;
-	/** \brief  sensor depth from bumper (ideally, should be negative)*/
-	double  viewerDepth;
+
+	/** \brief  position from ground */
+	double  up;
+	/** \brief  forward position from bumper (ideally, should be negative)*/
+	double  forward;
 	/** \brief  diplay plane for max range*/
 	double rangeMax;
 
@@ -47,7 +53,7 @@ public:
 
 // public functions
 public:
-	ViewerCoordinates(const int inWidth, const int inHeight, const double inFovWidth, const double inFovHeight, const double inViewerHeight, double inViewerDepth, double iRangeMax);
+	ViewerCoordinates(const int inWidth, const int inHeight, const double inFovWidth, const double inFovHeight, const double inUp, double inForward, double iRangeMax);
 
 	void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float inPointZ, 
 									PointXYZRGB &ioCloudPoint);
@@ -56,25 +62,26 @@ public:
 	int GetWidth() {return (width);};
 	int	GetHeight() {return(height);};
 
-	/** \brief Modify the viewer's viewer height parameter.
-      * \param[in] inViewerrHeight viewer height, in meters
-      */
-	void SetViewerHeight(double inViewerHeight);
+	/** \brief Modify the viewer's sensor upwards position parameter.
+      * \param[in] inUp sensor upwards position, in meters
+       */
+	void SetPositionUp(double inUp);
 
-	/** \brief Get the viewer's viewer height in meters.
-      * \param[out] outViewerHeight viewer height.
+	/** \brief Get the viewer's sensor upwards position in meters.
+      * \param[out] outSensorHeight sensor height.
       */
-	void GetViewerHeight(double &outViewerHeight);
+	void GetPositionUp(double &outUp);
 
-	/** \brief Modify the viewer's viewer depth parameter (depth from bumper).
-      * \param[in] inViewerDepth viewer depth, in meters (normally negative)
+	/** \brief Modify the viewer's sensor forward position.
+      * \param[in] inForward sensor forward position, in meters
       */
-	void SetViewerDepth(double inViewerDepth);
 
-	/** \brief Get the viewer's viewer depth in meters.
-      * \param[out] outViewerDepth viewer depth.
+	void SetPositionForward(double inForward);
+
+	/** \brief Get the viewer's sensor forward position, in meters.
+      * \param[out] outSensorForward sensor depth.
       */
-	void GetViewerDepth(double &outViewerDepth);
+	void GetPositionForward(double &outForward);
 
 	/** \brief Sets   horizontal camera FOV.
       * \param[in] cameraFovWidth horizontal FOV of camera in radians.
@@ -400,25 +407,26 @@ public:
 	void SetDecimation(int inDecimationX, int inDecimationY);
 	void GetDecimation(int &outDecimationX, int &outDecimationY);
 
-	/** \brief Modify the viewer's viewer height parameter.
-      * \param[in] inViewerHeight viewer height, in meters
+	/** \brief Modify the viewer's sensor upwards position parameter.
+      * \param[in] inUp sensor upwards position, in meters
       */
-	void SetViewerHeight(double inViewerHeight);
+	void SetPositionUp(double inUp);
 
-	/** \brief Get the viewer's viewer height in meters.
-      * \param[out] outViewerHeight sensor height.
+	/** \brief Get the viewer's sensor upwards position in meters.
+      * \param[out] outSensorHeight sensor height.
       */
-	void GetViewerHeight(double &viewerHeight);
+	void GetPositionUp(double &outUp);
 
-	/** \brief Modify the viewer's viewer depth parameter (depth from bumper).
-      * \param[in] inViewerDepth viewer depth, in meters (normally negative)
+	/** \brief Modify the viewer's sensor forward position.
+      * \param[in] inForward sensor forward position, in meters
       */
-	void SetViewerDepth(double inViewerDepth);
 
-	/** \brief Get the viewer's  depth in meters.
-      * \param[out] outViewerDepth viewer depth.
+	void SetPositionForward(double inForward);
+
+	/** \brief Get the viewer's sensor forward position, in meters.
+      * \param[out] outSensorForward sensor depth.
       */
-	void GetViewerDepth(double &viewerDepth);
+	void GetPositionForward(double &outForward);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters
@@ -543,10 +551,10 @@ protected:
 	int		decimationY;
 	/** \brief Boolean indicates if we display lidar points that are below the ground line. */
 	bool	displayUnderZero;
-	/** \brief  viewer height to ground */
-	double  viewerHeight;
-	/** \brief  viewer depth from bumper (ideally, should be negative)*/
-	double  viewerDepth;
+	/** \brief  position from ground */
+	double  up;
+	/** \brief  forward position from bumper (ideally, should be negative)*/
+	double  forward;
 	/** \brief  maximum range (which is also distance at whick we project image place)*/
 	double  rangeMax;
 

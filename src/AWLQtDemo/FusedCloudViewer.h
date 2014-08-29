@@ -62,20 +62,26 @@ public:
 	/** \brief Constructor for the CloudViewerWin object
 	           The construction instantiates the viewer window.
 	  * \param[in] inSourceProjector ReceiverProjector used as a point-cloud source
-	  * \param[in] inColorHandlerType identifier for the initial color handler
-      * \param[in] inWindowName title of the viewer display  window.
-      * \param[in] inCloudName title of the viewer display  window.
+      * \param[in] inWindowName title of the viewer display  window (should be unique).
 	  *
       */
-	 CloudViewerWin(ReceiverProjector::Ptr &inSourceProjector,
-					const ColorHandlerType inColorHandlerType,
-					const std::string &inWindowName,
-					const std::string &inCloudName);
+	 CloudViewerWin(VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture,
+					const std::string &inWindowName);
 
 	/** \brief Destructor for the CloudViewerWin object
     */
 	virtual ~CloudViewerWin();
 
+	/** \brief Initialize the variables needed by the display loop
+	    \note The current implementation is not threaded.
+		      Installs the callvbacks in the viewer window.
+      */
+	virtual void  Go(); 
+
+	/** \brief Stop worker.
+	  *        Clear the callbacks on the viewer window (avoids crashing the app).
+      */
+	virtual void  Stop(); 
 
 	/** \brief Return theviewer status
       * \return true if the viewer thread is stoppped.
@@ -121,7 +127,7 @@ public:
 	void GetPixelSize(int &outPixelSize);
 
 	void SetSourceProjector(ReceiverProjector::Ptr inSourceProjector);
-		/** \brief Modify the camera view angle on the viewer.
+	/** \brief Modify the camera view angle on the viewer.
       * \param[in] inAngle  enumerated identifier of the camera angle.
       */
 	void SetCameraView(CloudViewerWin::CameraView inAngle);
@@ -137,58 +143,69 @@ public:
       */
 	void GetDecimation(int &outDecimation);
 
-	/** \brief Modify the camera view angle on the viewer.
-	           The camera takes a viewer pointer, in order to be called during callbacks. Static is used for same purpose.
-      * \param[in] viewer pointer to the PCL vidualizer.
-      * \param[in] inAngle  enumerated identifier of the camera angle.
-      */
-	static void SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisualizer> inViewer, CloudViewerWin::CameraView inAngle);
 
 	/** \brief Modify the viewer display so as to hide/show all voxels under ground.
-      * \param[in] bDisplayUnderZero If false, values under "-sensorHeight"  not be displayed.  Displayed if true.
+      * \param[in] bInDisplayUnderZero If false, values under "-sensorHeight"  not be displayed.  Displayed if true.
       */
-	void SetDisplayUnderZero(bool bDisplayUnderZero);
+	void SetDisplayUnderZero(bool bInDisplayUnderZero);
 
 	/** \brief Get the value of the displayUnderZero display mode.
-      * \param[out] bDisplayUnderZero If false, values under "-sensorHeight"  are not be displayed.  Displayed if true.
+      * \param[out] bOutDisplayUnderZero If false, values under "-sensorHeight"  are not be displayed.  Displayed if true.
       */
-	void GetDisplayUnderZero(bool &bDisplayUnderZero);
+	void GetDisplayUnderZero(bool &bOutDisplayUnderZero);
 
-	/** \brief Modify the viewer's sensor height parameter.
-      * \param[in] inSensorHeight sensor height, in meters
+	/** \brief Modify the viewer's sensor upwards position parameter.
+      * \param[in] inUp sensor upwards position, in meters
+      * \param[in] bRedraw true to force redraw of the Window's grid and decorations
       */
-	void SetViewerHeight(double inSensorHeight);
+	void SetPositionUp(double inUp, bool bRedraw = true);
 
-	/** \brief Get the viewer's sensor height in meters.
+	/** \brief Get the viewer's sensor upwards position in meters.
       * \param[out] outSensorHeight sensor height.
       */
-	void GetViewerHeight(double &sensorHeight);
+	void GetPositionUp(double &outUp);
 
-	/** \brief Modify the viewer's sensor depth parameter.
-      * \param[in] inSensorDepth sensor depth, in meters
+	/** \brief Modify the viewer's sensor forward position.
+      * \param[in] inForward sensor forward position, in meters
+      * \param[in] bRedraw true to force redraw of the Window's grid and decorations
       */
 
-	void SetViewerDepth(double inSensorDepth);
+	void SetPositionForward(double inForward, bool bRedraw = true);
 
-	/** \brief Get the viewer's sensor depth in meters.
-      * \param[out] outSensorDepth sensor depth.
+	/** \brief Get the viewer's sensor forward position, in meters.
+      * \param[out] outSensorForward sensor depth.
       */
-	void GetViewerDepth(double &sensorDepth);
+	void GetPositionForward(double &outForward);
 
 	/** \brief Modify the viewer's maximum display range.
       * \param[in] inRangeMax maximum range of the sensor, in meters
+      * \param[in] bRedraw true to force redraw of the Window's grid and decorations
       */
-	void SetRangeMax(double inRangeMax);
+	void SetRangeMax(double inRangeMax , bool bRedraw = true);
 
 	/** \brief Get the viewer's maximum display range.
       * \param[out] outRangeMax maximum range of the sensor, in meters
       */
 	void GetRangeMax(double &outRangeMax);
 
+	/** \brief Upfate the ranges and positions from the global configuration and 
+	  * coordinate classes.
+      */
+	void UpdateFromGlobalConfig();
+
 // Public variables
 public:
+	/** \brief video capture device that supplies the video data */
+	VideoCapture::Ptr videoCapture; 
+
+	/** \brief receiever capture device that supplies the lidar data */
+	ReceiverCapture::Ptr receiverCapture; 
+
     /** \brief PCLVisualizer object that creates the viewing window. */
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+
+    /** \brief Point-Cloud object that is used to project the camera data prior to display. */
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr baseCloud;
 
     /** \brief Point-Cloud object that is used to display the cloud. */
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;
@@ -219,113 +236,96 @@ public:
       */
 	pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZRGB> handler_z;
 
-
-
 protected:
-    /** \brief Pixel size holder. 
+	/** \brief Initialize the PCL Viewer Window
+	*/
+	void CreateView();
+
+	/** \brief Initialize the PCL Viewer Window
+	*/
+	void CloudViewerWin::CreateReceiverProjector(VideoCapture::Ptr videoCapture, ReceiverCapture::Ptr receiverCapture);
+
+	/** \brief  Draw the reverence grid on the PCL display point cloud.
+	*/
+
+	void DrawGrid();
+
+	/** \brief Add a viewer line to the background
+	*/
+	void AddViewerLine(const PointXYZRGB &startPoint, const PointXYZRGB &endPoint, 
+		double r, double g, double b,
+		const std::string &inLineName); 
+
+	/** \brief Add a viewer line to the background
+	*/
+	void AddViewerLine(float startX, float startY, float startZ,
+					  float endX, float endY, float endZ,
+					  double r, double g, double b,
+					  const std::string &inLineName, int lineID=0); 
+
+	/** \brief Modify the camera view angle on the viewer, from withing keyboard and mouse callbacks
+	  *         The camera takes a viewer pointer, in order to be called during callbacks. Static is used for same purpose.
+      * \param[in] viewer pointer to the PCL vidualizer.
+      * \param[in] inAngle  enumerated identifier of the camera angle.
+      */
+	static void SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisualizer> inViewer, CloudViewerWin::CameraView inAngle);
+
+	
+	/** \brief Process the keyboard callback from the pcl window.
+	  *		   Adds the functionality of the view angle keys
+	  * \Notes: Current keys are:
+	  *\        "d" rear view, "t" topView, "s" side view, "i" isometric view (3/4 rear), "z" zoomed view.
+      */
+	static void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* viewer_void);
+
+	/** \brief Process the mouse callback from the pcl window. Placeholder for now.
+      */
+	static void mouseEventOccurred (const pcl::visualization::MouseEvent &event, void* viewer_void);
+	
+	/** \brief Modify the videoCapture source.  Thread safe
+               Update the internal video format description variables to reflect the new source.
+ 	  * \param[in] inVideoCapture safe pointer to the video capture device.
+     */
+	void SetVideoCapture(VideoCapture::Ptr inVideoCapture);
+
+	/** \brief Modify the receiver capture source.  Thread safe
+               	  * \param[in] inVideoCapture safe pointer to the video capture device.
+     */
+	void SetReceiverCapture( ReceiverCapture::Ptr inReceiverCapture);
+	
+	/** \brief Pixel size holder. 
 	    \remark  pixel size is not stored by the underlying VTK object  until 
 		         AddPointCloud is performed.  This is why we store locally.
 	*/
 	int pixelSize;
+
+	/** \brief Current CameraView angle
+	*/
+	CameraView cameraView;
 
 	/** \brief the source projector used as a sinmk */
 	ReceiverProjector::Ptr sourceProjector;
 
 	/** \brief Our subscription identifier to access to the clud produced by projector. */
 	Publisher::SubscriberID currentCloudSubscriberID;
-};
 
+	/** \brief Decimation of the columns to accelerate point-cloud display. */
+	int		decimationX;
+	/** \brief Decimation of the rows to accelerate point-cloud display. */
+	int		decimationY;
+	/** \brief Boolean indicates if we display lidar points that are below the ground line. */
+	bool	bDisplayUnderZero;
+	/** \brief  position from ground */
+	double  up;
+	/** \brief  forward position from bumper (ideally, should be negative)*/
+	double  forward;
+	/** \brief  maximum range (which is also distance at whick we project image place)*/
+	double  rangeMax;
 
-
-class FusedCloudViewer: public LoopedWorker
-{
-public:
-	typedef boost::shared_ptr<FusedCloudViewer> Ptr;
-    typedef boost::shared_ptr<FusedCloudViewer> ConstPtr;
- 
-public:
-
-	FusedCloudViewer(std::string inWindowName,  boost::shared_ptr<awl::ReceiverProjector> inReceiver);
-	~FusedCloudViewer();
-
-	/** \brief Initialize the variables needed by the display loop
-	    \note The current implementation is not threaded.
-		      Creates the CloudViewerWindows and calls their Go().
-      */
-	void  Go(); 
-
-	/** \brief Stop worker. Stop all cloudViewerWindows started.
-      */
-	virtual void  Stop(); 
-
-
-	virtual bool WasStopped();
-	
-	/** \brief Allow the viewer to go through the VTK / PCL event loop.
-	  * \param[in] time delay for which the viewer waits for events
-      * \param[in] bForceRedraw  true to force immediate redraw of the viewer window.
-      */
-	virtual void SpinOnce();
-	
-	/** \brief Modify the viewer's height parameter.
-      * \param[in] inViewerHeight sensor height, in meters
-      */
-	void SetViewerHeight(double inViewerHeight);
-
-	/** \brief Get the viewer's  height in meters.
-      * \param[out] outSensorHeight sensor height.
-      */
-	void GetViewerHeight(double &ViewerHeight);
-
-		/** \brief Modify the viewer's  depth parameter.
-      * \param[in] inSensorDepth  depth, in meters
-      */
-
-	void SetViewerDepth(double inViewerDepth);
-
-	/** \brief Get the viewer's sensor depth in meters.
-      * \param[out] outSensorDepth sensor depth.
-      */
-	void GetViewerDepth(double &viewerDepth);
-
-	/** \brief Modify the viewer's maximum display range.
-      * \param[in] inRangeMax maximum range of the sensor, in meters
-      */
-	void SetRangeMax(double inRangeMax);
-
-	/** \brief Get the viewer's maximum display range.
-      * \param[out] outRangeMax maximum range of the sensor, in meters
-      */
-	void GetRangeMax(double &outRangeMax);
-
-protected:
-	void DrawGrid();
-
-	void CreateViewerView();
-
-	void AddViewerLines(const PointXYZRGB &startPoint, const PointXYZRGB &endPoint, 
-		double r, double g, double b,
-		const std::string &inLineName); 
-
-	void AddViewerLines(float startX, float startY, float startZ,
-					  float endX, float endY, float endZ,
-					  double r, double g, double b,
-					  const std::string &inLineName, int lineID=0); 
-
-public:	
-	boost::container::vector<CloudViewerWin::Ptr> viewers;
-
-	/** \brief the source projector used as a sink */
-	ReceiverProjector::Ptr sourceProjector;
-
-protected:
-	double sensorHeight;
-	double sensorDepth;
-	double rangeMax;
-
-	int	   pixelSize;
-   /** \brief Title of the window used to display the cloud. */
-	std::string windowName;
+	/** \brief Horizontal field of view of the camera. */
+	float cameraFovWidth;
+	/** \brief Vertical field of view of the camera. */
+	float cameraFovHeight;
 };
 
 }; // namespace awl

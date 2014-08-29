@@ -115,44 +115,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv)));
 	}
 
-#if 1
-	// Create a common point-cloud object that will be "projected" upon
-	baseCloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
-
-	// Create the ReceiverProjector.
-	// The projector feeds from the videoCapture and feeds from the base cloud
-	receiver3DProjector = ReceiverProjector::Ptr(new ReceiverProjector(videoCaptures[0], baseCloud, receiverCaptures[0]));
-
-	// Add the channels to the point-cloud projector. 
-	ReceiverChannel::Ptr channelPtr;
-
-	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
-	{
-		for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.size(); channelID++)
-		{
-			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovWidth),
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovHeight),
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
-				false,
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorRed / 255.0,
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorGreen / 255.0,
-				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorBlue / 255.0));
-
-			channelPtr = receiver3DProjector->AddChannel(receiverChannel);
-		}
-	}
-
-	
-	//  Create the fused viewer, that will instantiate all the point-cloud views.
-	// All point cloud updates feed from the receiver's point-cloud data.
-	// The fused Viewer also uses the receiver configuration info to build the background decorations  
-	// used in point-cloud
-	fusedCloudViewer = FusedCloudViewer::Ptr(new FusedCloudViewer(this->windowTitle().toStdString() + " 3D View", receiver3DProjector));
-
-#endif
+	// Create the 3Dviewer.
+	cloudViewer = CloudViewerWin::Ptr(new CloudViewerWin(videoCaptures[0], receiverCaptures[0], this->windowTitle().toStdString() + " 3D View"));
 
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
@@ -330,9 +294,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoCaptures[cameraID]->Go();
 	}
 
-
-	if (receiver3DProjector) receiver3DProjector->Go();
-
 	// Create a timer to keep the UI objects spinning
      myTimer = new QTimer(this);
      connect(myTimer, SIGNAL(timeout()), this, SLOT(on_timerTimeout()));
@@ -453,7 +414,7 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 
 void AWLQtDemo::on_destroy()
 {
-	if (fusedCloudViewer) fusedCloudViewer->Stop();
+	if (cloudViewer) cloudViewer->Stop();
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
@@ -463,8 +424,6 @@ void AWLQtDemo::on_destroy()
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
-
-	if (receiver3DProjector) receiver3DProjector->Stop();
 
 	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 	{
@@ -479,24 +438,18 @@ void AWLQtDemo::on_destroy()
 
 void AWLQtDemo::on_colorImageRadioButton_setChecked(bool bChecked)
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCurrentColorHandlerType(CloudViewerWin::eHandlerRGB);
-		}
+		cloudViewer->SetCurrentColorHandlerType(CloudViewerWin::eHandlerRGB);
 	}
 }
 
 
 void AWLQtDemo::on_rangeImageRadioButton_setChecked(bool bChecked)
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCurrentColorHandlerType(CloudViewerWin::eHandlerZ);
-		}
+		cloudViewer->SetCurrentColorHandlerType(CloudViewerWin::eHandlerZ);
 	}
 }
 
@@ -518,60 +471,45 @@ void AWLQtDemo::on_simulatedDataInjectCheckBox_setChecked(bool  bChecked)
 
 void AWLQtDemo::on_viewSidePushButton_pressed()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCameraView(CloudViewerWin::eCameraSide);
-		}
+		cloudViewer->SetCameraView(CloudViewerWin::eCameraSide);
 	}
 }
 
 
 void AWLQtDemo::on_viewTopPushButton_pressed()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCameraView(CloudViewerWin::eCameraTop);
-		}
+		cloudViewer->SetCameraView(CloudViewerWin::eCameraTop);
 	}
 }
 
 
 void AWLQtDemo::on_viewZoomPushButton_pressed()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCameraView(CloudViewerWin::eCameraZoom);
-		}
+		cloudViewer->SetCameraView(CloudViewerWin::eCameraZoom);
 	}
 }
 
 
 void AWLQtDemo::on_viewFrontPushButton_pressed()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCameraView(CloudViewerWin::eCameraFront);
-		}
+		cloudViewer->SetCameraView(CloudViewerWin::eCameraFront);
 	}
 }
 
 
 void AWLQtDemo::on_viewIsoPushButton_pressed()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-		fusedCloudViewer->viewers[0]->SetCameraView(CloudViewerWin::eCameraIsometric);
-		}
+		cloudViewer->SetCameraView(CloudViewerWin::eCameraIsometric);
 	}
 }
 
@@ -654,26 +592,20 @@ void AWLQtDemo::on_stopPushButton_clicked()
 
 void AWLQtDemo::on_decimationSpin_editingFinished()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
-			int decimation = ui.decimationSpinBox->value();
-			fusedCloudViewer->viewers[0]->SetDecimation(decimation);
-		}
+		int decimation = ui.decimationSpinBox->value();
+		cloudViewer->SetDecimation(decimation);
 	}
 }
 
 
 void AWLQtDemo::on_pixelSizeSpin_editingFinished()
 {
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		if (fusedCloudViewer->viewers.size() >= 1) 
-		{
 		int pixelSize =ui.pixelSizeSpinBox->value();
-		fusedCloudViewer->viewers[0]->SetPixelSize(pixelSize);
-		}
+		cloudViewer->SetPixelSize(pixelSize);
 	}
 }
 
@@ -684,25 +616,18 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	if (abs(height-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp) < 0.001) return;
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp = height;
 
+	// Update all the coordinates system
+	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->relativePosition.position.up = height;
+	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->RefreshGlobal();
+
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
 	// Process
-	if (receiver3DProjector) 
-	{	
-		receiver3DProjector->SetViewerHeight(height);
-	}
-
-	if (receiverCaptures[0]) 
+	if (cloudViewer) 
 	{
-	//	receiverCaptures[0]->SetSensorHeight(height);
-	}
-
-
-	if (fusedCloudViewer) 
-	{
-		fusedCloudViewer->SetViewerHeight(height);
+		cloudViewer->SetPositionUp(height);
 	}
 
 	// Restore the wait cursor
@@ -716,20 +641,18 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 	if (abs(forward-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward) < 0.001) return;
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward = forward;
 
+	// Update all the coordinates system
+	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->relativePosition.position.forward = forward;
+	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->RefreshGlobal();
+
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
 
 	// Process
-
-	if (receiver3DProjector) 
-	{	
-		receiver3DProjector->SetViewerDepth(forward);
-	}
-
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		fusedCloudViewer->SetViewerDepth(forward);
+		cloudViewer->SetPositionForward(forward);
 	}
 
 	if (m2DScan && !m2DScan->isHidden())
@@ -778,21 +701,16 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRange;
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 
-	// Update user interface parts
-	if (receiver3DProjector) 
-	{
-		ReceiverChannel::Ptr receiverChannel = receiver3DProjector->GetChannel(channelID);
-		if (receiverChannel) receiverChannel->SetRangeMax(range);
-	}
 
+	// Update user interface parts
 	if (receiverCaptures[0]) 
 	{
 		receiverCaptures[0]->SetMaxDistance(channelID, range);
 	}
 
-	if (fusedCloudViewer) 
+	if (cloudViewer) 
 	{
-		fusedCloudViewer->SetRangeMax(absoluteMaxRange);	
+		cloudViewer->UpdateFromGlobalConfig();	
 	}
 
 	
@@ -948,11 +866,7 @@ void AWLQtDemo::on_timerTimeout()
 		}
 	}
 
-	if (receiver3DProjector && receiver3DProjector->WasStopped())
-	{
-		bContinue = false;
-	}
-
+	
 	if (bContinue)
 	{
 		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
@@ -973,16 +887,6 @@ void AWLQtDemo::on_timerTimeout()
 			}
 		}// For
 	}
-
-	// Uopdate the 3D display
-
-	if (bContinue && receiver3DProjector) 
-	{
-		receiver3DProjector->SpinOnce();
-
-	if (receiver3DProjector->WasStopped()) bContinue = false;
-	}
-
 
 	if (bContinue) 
 	{
@@ -1008,13 +912,13 @@ void AWLQtDemo::on_timerTimeout()
 		}
 	}
 
-	if (bContinue && fusedCloudViewer && !fusedCloudViewer->WasStopped()) 
+	if (bContinue && cloudViewer && !cloudViewer->WasStopped()) 
 	{
-		fusedCloudViewer->SpinOnce();
+		cloudViewer->SpinOnce();
 	}
 
 	// Update the menus for the 3D view and camera view, since we do not get any notifiocation from them
-	if (ui.action3D_View->isChecked() && (!fusedCloudViewer || fusedCloudViewer->WasStopped())) 
+	if (ui.action3D_View->isChecked() && (!cloudViewer || cloudViewer->WasStopped())) 
 	{
 		ui.action3D_View->toggle();
 	}
@@ -1724,10 +1628,10 @@ void AWLQtDemo::on_view3DActionToggled()
 {
 
 	if (ui.action3D_View->isChecked())
-		fusedCloudViewer->Go();
+		cloudViewer->Go();
 	else
 	{
-		fusedCloudViewer->Stop();
+		cloudViewer->Stop();
 
 		// For some reason, the closing of the 3D window messes up with our timer.
 		//Restart it
@@ -2060,7 +1964,7 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 
 void AWLQtDemo::closeEvent(QCloseEvent * event)
 {
-	if (fusedCloudViewer) fusedCloudViewer->Stop();
+	if (cloudViewer) cloudViewer->Stop();
 
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
@@ -2072,8 +1976,6 @@ void AWLQtDemo::closeEvent(QCloseEvent * event)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
-
-	if (receiver3DProjector) receiver3DProjector->Stop();
 
 	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 	{

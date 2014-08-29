@@ -12,6 +12,7 @@
 #endif
 
 #include "AWLSettings.h"
+#include "awlcoord.h"
 #include "sensor.h"
 #include "FusedCloudViewer.h"
 
@@ -21,57 +22,123 @@ using namespace std;
 using namespace pcl;
 using namespace awl;
 
-void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* viewer_void);
-void mouseEventOccurred (const pcl::visualization::MouseEvent &event, void* viewer_void);
 
 const int cloudViewerSpinTime = 100;
 const float interactorStillUpdateRate = 0.1;
 const float interactorDesiredUpdateRate = 10;
 
-CloudViewerWin::CloudViewerWin(ReceiverProjector::Ptr &inSourceProjector,
-					const ColorHandlerType inColorHandlerType,
-					const std::string &inWindowName,
-					const std::string &inCloudName ):
+CloudViewerWin::CloudViewerWin(VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture,
+					const std::string &inWindowName):
 LoopedWorker(), 
-sourceProjector(inSourceProjector),
+videoCapture(inVideoCapture),
+receiverCapture(inReceiverCapture),
+sourceProjector(),
 cloud(new pcl::PointCloud<pcl::PointXYZRGB>),
-viewer(new pcl::visualization::PCLVisualizer (inWindowName)),
+viewer(),
 windowName(inWindowName),
-cloudName(inCloudName),
+cloudName(inWindowName),
 handler_rgb(cloud),
 handler_z (cloud, "z"),
-currentHandlerType(inColorHandlerType)
+currentHandlerType(CloudViewerWin::eHandlerRGB),
+bDisplayUnderZero(true)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	AWLCoordinates *globalCoord = AWLCoordinates::GetGlobalCoordinates();
 	pixelSize = globalSettings->pixelSize;
 
-	SetSourceProjector(sourceProjector);
-
 	SetCurrentColorHandlerType(currentHandlerType);
+
+	int receiverID = receiverCapture->GetReceiverID();
+	CartesianCoord relativeCoord(0, 0, 0);
+	CartesianCoord worldCoord(0,0,0);
+	worldCoord = globalCoord->GetReceiver(receiverID)->ToReferenceCoord(eSensorToWorldCoord, relativeCoord);
 	
-	// Set callbacks for viewer
-	viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewer);
-	viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewer);
+	up = worldCoord.up;
+	forward = worldCoord.forward;
+	rangeMax = globalSettings->viewerMaxRange;
+	decimationX = globalSettings->decimation;
+	decimationY = globalSettings->decimation;
+
+
+	SetVideoCapture(videoCapture);
+	SetReceiverCapture(receiverCapture);
+
  }
 
 CloudViewerWin::~CloudViewerWin()
 
 {
-	if (mWorkerRunning) Stop();
+	Stop();
+}
+
+void CloudViewerWin::Go()
+
+{
+	// Instanciate the projector
+	CreateReceiverProjector(videoCapture, receiverCapture);
+	sourceProjector->Go();
+
+
+	// Instanciate viewer, and set default operation mode.
+	viewer = boost::shared_ptr<pcl::visualization::PCLVisualizer>(new pcl::visualization::PCLVisualizer(windowName));
+	CreateView();
+
+	// Set callbacks for viewer
+	viewer->registerKeyboardCallback (CloudViewerWin::keyboardEventOccurred, (void*)&viewer);
+	viewer->registerMouseCallback (CloudViewerWin::mouseEventOccurred, (void*)&viewer);
+	LoopedWorker::Go();
+}
+
+void CloudViewerWin::Stop()
+
+{
+	if (!mWorkerRunning) return;
+	if (!viewer.get())	return;
+
+	if (sourceProjector.get()) sourceProjector->Stop();
+	//Allow the viewer to go through the VTK / PCL event loop one last time, 
+	//to clearspurious messaging.
+  	if (!viewer->wasStopped()) 
+	{
+		viewer->spinOnce(cloudViewerSpinTime, false);
+		// Clear the callbacks from the window
+		viewer->registerKeyboardCallback (NULL, (void*)&viewer);
+		viewer->registerMouseCallback (NULL, (void*)&viewer);
+	}
+
+#if 0
+	// We should close the window following this strange sequence.
+	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
+	// finalizes the application
+	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
+	vtkRenderWindowInteractor* interactor = viewer->getRenderWindow()->GetInteractor();
+	interactor->GetRenderWindow()->Finalize();
+	viewer->getRenderWindow()->SetWindowId(0);
+
+	viewer.reset();
+
+	if (viewerWnd) DestroyWindow(viewerWnd);
+#else
+	viewer.reset();
+#endif
+
+	sourceProjector.reset();
+	LoopedWorker::Stop();
 }
 
 
 bool  CloudViewerWin::WasStopped()
 {
 	if (LoopedWorker::WasStopped()) return(true);
-
+	if (!viewer.get()) return(true);
 	if (viewer->wasStopped())
 	{
 		Stop();
 		return(true);
 	}
 
+	if (!sourceProjector.get()) return(true);
 	if (sourceProjector->WasStopped())
 	{
 		Stop();
@@ -93,7 +160,12 @@ void  CloudViewerWin::SpinOnce()
 	if (!WasStopped())
 	{
 		// Note: Check for update
-		if (sourceProjector != NULL && sourceProjector->HasNews(currentCloudSubscriberID)) 
+		if (sourceProjector.get())
+		{
+			sourceProjector->SpinOnce();
+		}
+
+		if (sourceProjector.get() && sourceProjector->HasNews(currentCloudSubscriberID)) 
 		{
 			sourceProjector->CopyCurrentCloud(cloud, currentCloudSubscriberID);
 			if (!viewer->updatePointCloud(cloud,
@@ -107,13 +179,13 @@ void  CloudViewerWin::SpinOnce()
 				// Set the pixel size only once the cloud is added.
 				SetPixelSize(pixelSize);
 			}
+		}
 
-			
 		//Allow the viewer to go through the VTK / PCL event loop.
 	  	viewer->spinOnce(cloudViewerSpinTime, false);
-		}
 	}
 }
+
 pcl::visualization::PCLVisualizer::ColorHandler * 
 CloudViewerWin::SetCurrentColorHandlerType(ColorHandlerType inColorHandlerType)
 {
@@ -146,47 +218,34 @@ CloudViewerWin::GetCurrentColorHandler()
 	return(currentColorHandlerPtr);
 }
 
-void 
-CloudViewerWin::SetSourceProjector(ReceiverProjector::Ptr inSourceProjector)
-{
-	sourceProjector = inSourceProjector;
-	currentCloudSubscriberID = sourceProjector->Subscribe();
-}
-
-
-
 void CloudViewerWin::SetCameraView(CloudViewerWin::CameraView inAngle)
 {
-	SetCameraView(viewer, inAngle);
+	cameraView = inAngle;
+	if (viewer.get()) SetCameraView(viewer, inAngle);
 }
 
 void CloudViewerWin::SetDecimation(int inDecimation)
 {
 	if (inDecimation < 1) inDecimation = 1;
-
-	sourceProjector->SetDecimation(inDecimation, inDecimation);
+	decimationX = inDecimation;
+	decimationY = inDecimation;
+	if (sourceProjector.get()) sourceProjector->SetDecimation(decimationX, decimationY);
 }
 
 void CloudViewerWin::GetDecimation(int &outDecimation)
 {
-	int decimationX;
-	int decimationY;
-
-	sourceProjector->GetDecimation(decimationX, decimationY);
 	outDecimation = decimationX;
 }
 
-void CloudViewerWin::SetDisplayUnderZero(bool bDisplayUnderZero)
+void CloudViewerWin::SetDisplayUnderZero(bool bInDisplayUnderZero)
 {
-	sourceProjector->SetDisplayUnderZero(bDisplayUnderZero);
+	bDisplayUnderZero = bInDisplayUnderZero;
+	if (sourceProjector.get()) sourceProjector->SetDisplayUnderZero(bDisplayUnderZero);
 }
 
-void CloudViewerWin::GetDisplayUnderZero(bool &bDisplayUnderZero)
+void CloudViewerWin::GetDisplayUnderZero(bool &bOutDisplayUnderZero)
 {
-	int decimationX;
-	int decimationY;
-
-	bDisplayUnderZero = sourceProjector->GetDisplayUnderZero();
+	bOutDisplayUnderZero = bDisplayUnderZero;
 }
 
 void CloudViewerWin::SetPixelSize(int inPixelSize)
@@ -196,7 +255,7 @@ void CloudViewerWin::SetPixelSize(int inPixelSize)
 
 	// Note that the pixelSize is not set correctly in pcl object until addPointCloud is called.
 	// This is why we also keep pixelize in a member variable.
-	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, dSize, cloudName);
+	if (viewer.get()) viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, dSize, cloudName);
 }
 
 void CloudViewerWin::GetPixelSize(int &outPixelSize)
@@ -216,43 +275,224 @@ void CloudViewerWin::GetPixelSize(int &outPixelSize)
 	}
 }
 
-void CloudViewerWin::SetViewerHeight(double inSensorHeight)
+void CloudViewerWin::SetPositionUp(double inUp, bool bRedraw)
 {
-	sourceProjector->SetViewerHeight(inSensorHeight);
+	up = inUp;
+	if (sourceProjector.get()) sourceProjector->SetPositionUp(inUp);
+	if (bRedraw) DrawGrid();
 }
 
-void CloudViewerWin::GetViewerHeight(double &outSensorHeight)
+void CloudViewerWin::GetPositionUp(double &outUp)
 {
-	double  decimationX;
-	int decimationY;
-
-	sourceProjector->GetViewerHeight(outSensorHeight);
+	outUp = up;
 }
 
-void CloudViewerWin::SetViewerDepth(double inSensorDepth)
+void CloudViewerWin::SetPositionForward(double inForward, bool bRedraw)
 {
-	sourceProjector->SetViewerDepth(inSensorDepth);
+	forward = inForward;
+	if (sourceProjector.get()) sourceProjector->SetPositionForward(forward);
+	if (bRedraw) DrawGrid();
 }
 
-void CloudViewerWin::GetViewerDepth(double &outSensorDepth)
+void CloudViewerWin::GetPositionForward(double &outForward)
 {
-	double  decimationX;
-	int decimationY;
-
-	sourceProjector->GetViewerDepth(outSensorDepth);
+	outForward = forward;
 }
 
 
-void CloudViewerWin::SetRangeMax(double inRangeMax)
+void CloudViewerWin::SetRangeMax(double inRangeMax, bool bRedraw)
 {
-	sourceProjector->SetRangeMax(inRangeMax);
+	rangeMax = inRangeMax;
+	if (sourceProjector.get()) sourceProjector->SetRangeMax(inRangeMax);
+	if (bRedraw) DrawGrid();
 }
 
 void CloudViewerWin::GetRangeMax(double &outRangeMax)
 {
-	sourceProjector->GetRangeMax(outRangeMax);
+	outRangeMax = rangeMax;
 }
 
+void CloudViewerWin::UpdateFromGlobalConfig()
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	AWLCoordinates *globalCoord = AWLCoordinates::GetGlobalCoordinates();
+
+	int receiverID = receiverCapture->GetReceiverID();
+	CartesianCoord relativeCoord(0, 0, 0);
+	CartesianCoord worldCoord(0,0,0);
+	worldCoord = globalCoord->GetReceiver(receiverID)->ToReferenceCoord(eSensorToWorldCoord, relativeCoord);
+
+	SetPositionForward(worldCoord.up, false);
+	SetPositionUp(worldCoord.forward, false);
+	SetRangeMax(globalSettings->receiverSettings[receiverID].displayedRangeMax , false);
+	SetDecimation(globalSettings->decimation);
+	SetDisplayUnderZero(bDisplayUnderZero);
+
+	// Update the ReceiverChannel ranges
+	int channelQty = sourceProjector->GetChannelQty();
+	for (int channelID = 0; channelID < channelQty; channelID++)
+	{
+		sourceProjector->GetChannel(channelID)->SetRangeMax(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange);
+	}
+
+	DrawGrid();
+}
+
+
+
+
+void CloudViewerWin::CreateView()
+
+{
+  AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+  // Do not stay here if the viewer has not been instanciated.
+  if (!viewer.get()) return;
+
+  viewer->setBackgroundColor(0.3, 0.3, 0.3);
+  viewer->addText("Top View", 10, 10, "v1 text");
+  SetPixelSize(AWLSettings::GetGlobalSettings()->pixelSize);
+
+  // Set Camera for isometric view
+  viewer->initCameraParameters();
+  pcl::visualization::Camera *camera = &viewer->camera_;
+  double cameraFovHeight;
+  sourceProjector->GetCameraFovHeight(cameraFovHeight);
+  camera->fovy = cameraFovHeight;
+  SetCameraView(CloudViewerWin::eCameraIsometric); 
+  
+   //Size the window
+  vtkSmartPointer<vtkRenderWindow> window = viewer->getRenderWindow ();
+  window->SetPosition(0, 0);
+  window->SetSize(600, 300);
+
+  // Set Window Icon if specified in INI file
+
+  if (!globalSettings->sIconFileName.empty())
+  {
+	  HWND hWnd = (HWND) window->GetGenericWindowId(); // retrieve vtk window Id
+
+	  HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.c_str(), IMAGE_ICON,
+		  GetSystemMetrics(SM_CXSMICON), 
+		  GetSystemMetrics(SM_CYSMICON),
+		  LR_LOADFROMFILE);
+
+	  ::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+  }
+
+  window->GetInteractor()->SetStillUpdateRate(interactorStillUpdateRate);
+  window->GetInteractor()->SetDesiredUpdateRate(interactorDesiredUpdateRate);
+
+  // Draw the reference grid on windows
+  DrawGrid();
+}
+  
+void CloudViewerWin::AddViewerLine(const PointXYZRGB &startPoint, const PointXYZRGB &endPoint, 
+		double r, double g, double b,
+		const std::string &inLineName) 
+{
+	if (!viewer.get()) return;
+	viewer->addLine<PointXYZRGB, PointXYZRGB>(startPoint, endPoint, r, g, b, inLineName);
+}
+
+void CloudViewerWin::AddViewerLine(float startX, float startY, float startZ,
+									  float endX, float endY, float endZ,
+									  double r, double g, double b,
+									  const std::string &inLineName, int lineID) 
+{
+	if (!viewer.get()) return;
+
+	PointXYZRGB startPoint;
+	startPoint.x = startX;
+	startPoint.y = startY;
+	startPoint.z = startZ;
+
+	PointXYZRGB endPoint;
+	endPoint.x = endX;
+	endPoint.y = endY;
+	endPoint.z = endZ;
+
+	std::string lineName = inLineName + "_" + std::to_string((_Longlong)lineID);
+
+	AddViewerLine(startPoint, endPoint, r, g, b, lineName);
+}
+
+void CloudViewerWin::DrawGrid()
+{
+	if (!viewer.get()) return;
+
+	// In case we are called twice, avoid duplication of shapes
+	viewer->removeAllShapes();
+
+	// Add our shapes
+	double originX = 0.0;
+	double originY = 0.0;
+	double originZ = 0.0;
+	sourceProjector->GetPositionUp(originY);
+	sourceProjector->GetPositionForward(originZ);
+
+	double rangeMax = 0.0;
+	sourceProjector->GetRangeMax(rangeMax);
+
+	// draw a grid to correspond to sensor FOV 
+	int channelQty = sourceProjector->GetChannelQty();
+
+	for (int channelIndex =  0; channelIndex < channelQty; channelIndex++)  
+	{
+		double minX;
+		double minY;
+		double minZ;
+		double maxX;
+		double maxY;
+		double maxZ;
+
+		sourceProjector->GetChannelLimits(channelIndex, minX, minY, minZ, maxX, maxY, maxZ, originX, originY, originZ);
+		double displayZ = maxZ;
+		if (minZ > maxZ) displayZ = minZ;
+
+		double r;
+		double g;
+		double b;
+		sourceProjector->GetDisplayColor(channelIndex, r, g, b);
+
+		AddViewerLine(0, 0, 0, minX, -minY, displayZ, r, g, b, "Receiver1", channelIndex);
+
+		AddViewerLine(0, 0, 0, minX, -maxY, displayZ, r, g, b, "Receiver2", channelIndex);
+
+		AddViewerLine(0, 0, 0, maxX, -minY, displayZ, r, g, b, "Receiver3", channelIndex);
+	
+		AddViewerLine(0, 0, 0, maxX, -maxY, displayZ, r, g, b, "Receiver4", channelIndex);
+
+		AddViewerLine(minX, -minY, displayZ, maxX, -minY, displayZ, r, g, b, "Receiver5", channelIndex);
+
+		AddViewerLine(minX, -maxY, displayZ, maxX, -maxY, displayZ, r, g, b, "Receiver6", channelIndex);
+
+		AddViewerLine(minX, -minY, displayZ, minX, -maxY, displayZ, r, g, b, "Receiver7", channelIndex);
+
+		AddViewerLine(maxX, -minY, displayZ, maxX, -maxY, displayZ, r, g, b, "Receiver8", channelIndex);
+	}
+
+
+		// draw a block grid to the ground 
+	    // The ground is at negative offset from the sensor's position.
+		// The sensor is always considered at 0, 0, 0.
+	    // This is a cheat, but it will work for now.
+
+
+	for (double x = (-10.0-originX); x <= (10.0-originX); x += 2.0)  
+	{
+		AddViewerLine(x, -originY, -originZ, x, -originY, rangeMax-originZ, 0, 0, 0, "GroundLineX", (int) x);
+	}
+
+
+	for (double z= 0.0-originZ; z <= rangeMax-originZ; z += 2.0)  
+	{
+		double shade =  z*3.0/255.0;
+		AddViewerLine(-10.0-originX, -originY, z, 10-originX, -originY , z, shade, shade, shade, "GroundLineZ", (int) z);
+	}
+}
+
+// Static method
 void CloudViewerWin::SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisualizer> inViewer, CloudViewerWin::CameraView inAngle)
 {
 	double topView[11] = {55, 115, 0, -8, 25, -1.35, 82, 25, 1.0, 0, 0};
@@ -262,8 +502,6 @@ void CloudViewerWin::SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisu
 	double zoomView[11] = {-2, 120, 0, -8, 5, -1.35, 24, 5, 1.0, 0, 0};
 
 	double *viewData = topView;
-
-	pcl::visualization::Camera *camera = &inViewer->camera_;
 
 	switch(inAngle) 
 	{
@@ -292,6 +530,9 @@ void CloudViewerWin::SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisu
 		break;
 	}
 
+	if(inViewer.get())
+	{
+	pcl::visualization::Camera *camera = &inViewer->camera_;
 	camera->clip[0]= viewData[0];
 	camera->clip[1]= viewData[1];
 	camera->focal[0] = viewData[2];
@@ -305,13 +546,15 @@ void CloudViewerWin::SetCameraView(boost::shared_ptr<pcl::visualization::PCLVisu
 	camera->view[2] = viewData[10];
 
 	inViewer->updateCamera();
+	}
 }
 
-unsigned int text_id = 0;
-void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
+void CloudViewerWin::keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
 	void* viewer_void)
 {
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+	// Make sure that the viewer actually exists befor doing anything.
+		if (!viewer.get()) return;
 
 	if (event.getKeySym () == "d" && event.keyDown ()) 
 	{
@@ -336,288 +579,62 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
 	}
 }
 
-void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
+void CloudViewerWin::mouseEventOccurred (const pcl::visualization::MouseEvent &event,
                          void* viewer_void)
 {
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
 }
 
-FusedCloudViewer::FusedCloudViewer(std::string inWindowName, boost::shared_ptr<awl::ReceiverProjector> inReceiver):
-LoopedWorker(),
-sourceProjector(inReceiver),
-windowName(inWindowName),
-viewers()
+void CloudViewerWin::CreateReceiverProjector(VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture)
 {
-  
-}
-
-FusedCloudViewer::~FusedCloudViewer()
-{
-	if (!WasStopped()) Stop();
-}
-
-
-void  FusedCloudViewer::Go() 
-{
-
-	int viewerQty(viewers.size());
-	if (!viewerQty)
-	{
-		CreateViewerView();
-	}
-
-	viewerQty = viewers.size();
-
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->Go();
-	}
-
-	LoopedWorker::Go();
-}
- 
-
-void  FusedCloudViewer::Stop() 
-{
-	if (!mWorkerRunning) return;
-
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->Stop();
-	}
-
-	viewers.clear();
-	LoopedWorker::Stop();
-}
-	
-bool  FusedCloudViewer::WasStopped()
-{
-	if (LoopedWorker::WasStopped()) return(true);
-
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		if (viewers[i]->viewer->wasStopped())
-		{
-			Stop();
-			return(true);
-		}
-	}
-
-	return(false);
-}
-
-void FusedCloudViewer::SpinOnce()
-
-{	
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->SpinOnce();
-	}
-}
-
-void FusedCloudViewer::CreateViewerView()
-
-{
-  CloudViewerWin::Ptr viewerPtr(new CloudViewerWin(sourceProjector, CloudViewerWin::eHandlerRGB, windowName, "Fused Cloud"));
-  viewers.push_back(viewerPtr);
-
-  viewerPtr->viewer->setBackgroundColor(0.3, 0.3, 0.3);
-  viewerPtr->viewer->addText("Top View", 10, 10, "v1 text");
-  viewerPtr->viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5,viewerPtr->cloudName);
-
-  // Set Camera for isometric view
-  viewerPtr->viewer->initCameraParameters();
-
-  pcl::visualization::Camera *camera = &viewerPtr->viewer->camera_;
-
-  camera->fovy = ((float) DEG2RAD(40));
-  viewerPtr->SetCameraView(CloudViewerWin::eCameraIsometric); 
-  
- // Set callback for viewer
-  viewerPtr->viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewerPtr->viewer);
-  viewerPtr->viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewerPtr->viewer);
-  
-   //Size the window
-  vtkSmartPointer<vtkRenderWindow> window = viewerPtr->viewer->getRenderWindow ();
-  window->SetPosition(0, 0);
-  window->SetSize(600, 300);
-#if 1
-
-  // Set Window Icon if specified in INI file
   AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
-  if (!globalSettings->sIconFileName.empty())
-  {
-	  HWND hWnd = (HWND) window->GetGenericWindowId(); // retrieve vtk window Id
 
-	  HICON hIcon = (HICON)::LoadImageA(NULL, globalSettings->sIconFileName.c_str(), IMAGE_ICON,
-		  GetSystemMetrics(SM_CXSMICON), 
-		  GetSystemMetrics(SM_CYSMICON),
-		  LR_LOADFROMFILE);
+	// Create a common point-cloud object that will be "projected" upon
+	baseCloud = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
 
-	  ::SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
-  }
+	// Create the ReceiverProjector.
+	// The projector feeds from the videoCapture and feeds from the base cloud
+	sourceProjector = ReceiverProjector::Ptr(new ReceiverProjector(videoCapture, baseCloud, receiverCapture));
+	currentCloudSubscriberID = sourceProjector->Subscribe();
 
-#endif
+	// Add the channels to the point-cloud projector. 
+	ReceiverChannel::Ptr channelPtr;
+	int receiverID = receiverCapture->GetReceiverID();
 
-
-  window->GetInteractor()->SetStillUpdateRate(interactorStillUpdateRate);
-  window->GetInteractor()->SetDesiredUpdateRate(interactorDesiredUpdateRate);
-
-  // Draw the reference grid on both windows
-  DrawGrid();
-
-    // Set the pixelSize
-  viewerPtr->SetPixelSize(AWLSettings::GetGlobalSettings()->pixelSize);
-}
-
-void FusedCloudViewer::AddViewerLines(const PointXYZRGB &startPoint, const PointXYZRGB &endPoint, 
-		double r, double g, double b,
-		const std::string &inLineName) 
-{
-	int viewerQty(viewers.size());	
-	for (int i = 0; i < viewerQty; i++) 
+	for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.size(); channelID++)
 	{
-		viewers[i]->viewer->addLine<PointXYZRGB, PointXYZRGB>(startPoint, endPoint, r, g, b, inLineName);
-	}
-}
+			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovWidth),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovHeight),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
+				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
+				false,
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorRed / 255.0,
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorGreen / 255.0,
+				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorBlue / 255.0));
 
-void FusedCloudViewer::AddViewerLines(float startX, float startY, float startZ,
-									  float endX, float endY, float endZ,
-									  double r, double g, double b,
-									  const std::string &inLineName, int lineID) 
-{
-	PointXYZRGB startPoint;
-	startPoint.x = startX;
-	startPoint.y = startY;
-	startPoint.z = startZ;
-
-	PointXYZRGB endPoint;
-	endPoint.x = endX;
-	endPoint.y = endY;
-	endPoint.z = endZ;
-
-	std::string lineName = inLineName + "_" + std::to_string((_Longlong)lineID);
-
-	AddViewerLines(startPoint, endPoint, r, g, b, lineName);
-}
-
-void FusedCloudViewer::DrawGrid()
-{
-	// In case we are called twice, avoid duplication of shapes
-	int viewerQty(viewers.size());	
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->viewer->removeAllShapes();
+			channelPtr = sourceProjector->AddChannel(receiverChannel);
 	}
 
-
-	// Add our shapes
-	double originX = 0.0;
-	double originY = 0.0;
-	double originZ = 0.0;
-	sourceProjector->GetViewerHeight(originY);
-	sourceProjector->GetViewerDepth(originZ);
-
-	double rangeMax = 0.0;
-	sourceProjector->GetRangeMax(rangeMax);
-
-	// draw a grid to correspond to sensor FOV 
-	int channelQty = sourceProjector->GetChannelQty();
-
-	for (int channelIndex =  0; channelIndex < channelQty; channelIndex++)  
-	{
-		double minX;
-		double minY;
-		double minZ;
-		double maxX;
-		double maxY;
-		double maxZ;
-
-		sourceProjector->GetChannelLimits(channelIndex, minX, minY, minZ, maxX, maxY, maxZ, originX, originY, originZ);
-		double displayZ = maxZ;
-		if (minZ > maxZ) displayZ = minZ;
-
-		double r;
-		double g;
-		double b;
-		sourceProjector->GetDisplayColor(channelIndex, r, g, b);
-
-		AddViewerLines(0, 0, 0, minX, -minY, displayZ, r, g, b, "Receiver1", channelIndex);
-
-		AddViewerLines(0, 0, 0, minX, -maxY, displayZ, r, g, b, "Receiver2", channelIndex);
-
-		AddViewerLines(0, 0, 0, maxX, -minY, displayZ, r, g, b, "Receiver3", channelIndex);
-	
-		AddViewerLines(0, 0, 0, maxX, -maxY, displayZ, r, g, b, "Receiver4", channelIndex);
-
-		AddViewerLines(minX, -minY, displayZ, maxX, -minY, displayZ, r, g, b, "Receiver5", channelIndex);
-
-		AddViewerLines(minX, -maxY, displayZ, maxX, -maxY, displayZ, r, g, b, "Receiver6", channelIndex);
-
-		AddViewerLines(minX, -minY, displayZ, minX, -maxY, displayZ, r, g, b, "Receiver7", channelIndex);
-
-		AddViewerLines(maxX, -minY, displayZ, maxX, -maxY, displayZ, r, g, b, "Receiver8", channelIndex);
-	}
-
-
-		// draw a block grid to the ground 
-	    // The ground is at negative offset from the sensor's position.
-		// The sensor is always considered at 0, 0, 0.
-	    // This is a cheat, but it will work for now.
-
-
-	for (double x = (-10.0-originX); x <= (10.0-originX); x += 2.0)  
-	{
-		AddViewerLines(x, -originY, -originZ, x, -originY, rangeMax-originZ, 0, 0, 0, "GroundLineX", (int) x);
-	}
-
-
-	for (double z= 0.0-originZ; z <= rangeMax-originZ; z += 2.0)  
-	{
-		double shade =  z*3.0/255.0;
-		AddViewerLines(-10.0-originX, -originY, z, 10-originX, -originY , z, shade, shade, shade, "GroundLineZ", (int) z);
-	}
-}
-
-void  FusedCloudViewer::SetViewerHeight(double inSensorHeight) 
-{
-	if (WasStopped()) return;
-
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->SetViewerHeight(inSensorHeight);
-	}
-	
+	// Update all of our parameters that are related to the projector
+	SetDecimation(decimationX);
+	SetDisplayUnderZero(bDisplayUnderZero);
+	SetPositionUp(up, false);
+	SetPositionForward(forward, false);
+	SetRangeMax(rangeMax, false);
 	DrawGrid();
 }
 
-void  FusedCloudViewer::SetViewerDepth(double inSensorDepth) 
+void CloudViewerWin::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
-	if (WasStopped()) return;
-
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->SetViewerDepth(inSensorDepth);
-	}
-	
-	DrawGrid();
+	videoCapture = inVideoCapture;
+	cameraFovWidth = videoCapture->GetCameraFovWidth();
+	cameraFovHeight = videoCapture->GetCameraFovHeight();
 }
 
-void  FusedCloudViewer::SetRangeMax(double inRangeMax) 
+void CloudViewerWin::SetReceiverCapture( ReceiverCapture::Ptr inReceiverCapture)
 {
-	if (WasStopped()) return;
-
-	int viewerQty(viewers.size());
-	for (int i = 0; i < viewerQty; i++) 
-	{
-		viewers[i]->SetRangeMax(inRangeMax);
-	}
-
-	DrawGrid();
+	receiverCapture = inReceiverCapture;
 }

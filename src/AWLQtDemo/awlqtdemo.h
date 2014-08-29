@@ -13,7 +13,6 @@
 #include "AWLSettings.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
-#include "Sensor.h"
 #include "VideoViewer.h"
 #include "FusedCloudViewer.h"
 #include "FOV_2DScan.h"
@@ -145,18 +144,11 @@ private:
 	ConfigSensor mCfgSensor;
 	AWLQtScope* scopeWindow;
 
-
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr baseCloud;
-
-
 	ReceiverCapture::List receiverCaptures;
 	VideoCapture::List videoCaptures;
 	VideoViewer::List  videoViewers;
 
-	ReceiverProjector::Ptr receiver3DProjector;
-	FusedCloudViewer::Ptr fusedCloudViewer;
-
-
+	CloudViewerWin::Ptr cloudViewer;
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;
