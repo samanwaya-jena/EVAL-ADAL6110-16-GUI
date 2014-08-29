@@ -730,7 +730,7 @@ bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID,
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 	// Channel description pointer
-	TransformationNode::Ptr channelCoords = AWLCoordinates::GetReceivers()[receiverID]->children[channelID];
+	TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelID);
 	
 	// Camera FOV description
 	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
