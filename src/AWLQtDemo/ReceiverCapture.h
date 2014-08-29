@@ -254,6 +254,10 @@ public:
       */
 	virtual void  Go(); 
 
+	/** \brief Return the receiver ID.
+      * \return receiverID used for other system structures.
+      */
+	int  GetReceiverID() {return receiverID;};
 
 	/** \brief Return the number of frames acquired
       * \return int indicating the number of frames.
