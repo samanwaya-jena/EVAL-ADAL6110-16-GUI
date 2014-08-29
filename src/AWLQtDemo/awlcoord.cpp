@@ -710,6 +710,16 @@ TransformationNode::List AWLCoordinates::GetReceivers()
 	return(globalCoordinates->receivers);
 }
 
+TransformationNode::Ptr AWLCoordinates::GetReceiver(int receiverID)
+{
+	return(globalCoordinates->receivers[receiverID]);
+}
+
+TransformationNode::Ptr AWLCoordinates::GetChannel(int receiverID, int channelID)
+{
+	return(globalCoordinates->receivers[receiverID]->children[channelID]);
+}
+
 TransformationNode::List AWLCoordinates::GetCameras()
 {
 	return(globalCoordinates->cameras);
@@ -745,7 +755,11 @@ bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID,
 bool AWLCoordinates::BuildCoordinatesFromSettings()
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	
+
+	// If the firstNode was already created, cler it so that we can rebuild the whole coordinate tree.
+
+	if (firstNode.get()) firstNode.reset();
+
 	firstNode  = TransformationNode::Ptr(new TransformationNode(CartesianCoord(0, 0, 0), Orientation(0, 0, 0)));
 
 	// Build a transformation matrix for each of the pixels in each of the receivers

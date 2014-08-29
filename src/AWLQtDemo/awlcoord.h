@@ -349,6 +349,8 @@ public:
 	static AWLCoordinates *GetGlobalCoordinates();
 	static TransformationNode::Ptr GetFirstNode();
 	static TransformationNode::List GetReceivers();
+	static TransformationNode::Ptr GetReceiver(int receiverID);
+	static TransformationNode::Ptr GetChannel(int receiverID, int channelID);
 	static TransformationNode::List GetCameras();
 	// Constructor
 	AWLCoordinates();
