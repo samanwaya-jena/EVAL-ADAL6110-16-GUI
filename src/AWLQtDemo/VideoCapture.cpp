@@ -134,19 +134,19 @@ cameraID(inCameraID)
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AE_MAX_LIMIT, 80000); // Maximum exposure time, in microsec
 #if 1
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AG_MAX_LIMIT, 10.0); // Maximum limit of gain in AEAG procedure(dB).
-			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AEAG_LEVEL, 20);  //Average intensity of output signal AEAG should achieve(in %).
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_EXP_PRIORITY, 0.6);  // Priority Gain VS exposure. 0.0: Gain <------> 1.0 Exposure
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAY, 0.6); // Luminosity gamma. Range: 0.3 (highest correction); 1 (no correction)
+			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AEAG_LEVEL, 10);  //Average intensity of output signal AEAG should achieve(in %).
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_EXP_PRIORITY, 0.8);  // Priority Gain VS exposure. 0.0: Gain <------> 1.0 Exposure
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAY, 0.5); // Luminosity gamma. Range: 0.3 (highest correction); 1 (no correction)
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAC, 80.0/100.0); // Chromaticity gamma. Default: 0.8
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_SHARPNESS, 0.0);  //Sharpness Strength. The range is -4 (less sharp) to +4 (more sharp). Default: 0.0 (neutral)
 #endif
-			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AUTO_WB, 1);  // Auto white balance
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KR, 1.11);
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KG, 1.0);
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KB, 1.64);
+			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AUTO_WB, 0);  // Auto white balance
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KR, 1.0);
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KG, 1.20);
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KB, 2.0);
 
 
-			float saturation  = (float)0.4;
+			float saturation  = (float)0.5;
 
 			float colorCorrectionMatrix[4][4];
 			colorCorrectionMatrix[0][0] = (float)(1.0+2*saturation);
