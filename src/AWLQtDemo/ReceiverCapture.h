@@ -342,23 +342,6 @@ public:
 	    */
 	virtual uint32_t GetLastFrameID() {return(acquisitionSequence->GetLastFrameID());};
 
-	/** \brief Sets the current frame as the frameID for all user interface snapshots
-	  * \return Current frame identification number.
-	    \return frameID of the common snapshotFrame.
-		\remark This is provided as a user interface utility. As many threaded objects use the 
-		        frame information for display asynchonously, this allows some degree of "pacing" to
-				insure information is coherent along all users of the frame information.
-     */
-	virtual uint32_t SnapSnapshotFrameID();
-
-	/** \brief Get the common frameID for user interface snapshots
-	    \return frameID of the common snapshotFrame.
-		\remark This is provided as a user interface utility. As many threaded objects use the 
-		        frame information for display asynchonously, this allows some degree of "pacing" to
-				insure information is coherent along all users of the frame information.
-     */
-	 virtual uint32_t GetSnapshotFrameID() { return (snapshotFrameID);};
-
 	/** \brief Return the time elapsed, in milliseconds, since the start of thread.
 	    \return time in milliseconds since tthe start of thread.
      */

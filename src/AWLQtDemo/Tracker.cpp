@@ -14,7 +14,7 @@ using namespace std;
 using namespace awl;
 
 AcquisitionSequence::AcquisitionSequence():
-frameID(0)
+frameID(1)
 
 {
 }
@@ -252,20 +252,6 @@ bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &ou
 	}
 
 	return(false);
-}
-
-int AcquisitionSequence::FindIndexOfFrame(uint32_t frameID)
-{
-	for (int i = 0; i < sensorFrames.size(); i++) 
-	{
-		SensorFrame::Ptr sensorFrame = sensorFrames._Get_container().at(i);
-		if (sensorFrame->GetFrameID() == frameID) 
-		{
-			return(i);
-		}
-	}
-
-	return(-1);
 }
 
 

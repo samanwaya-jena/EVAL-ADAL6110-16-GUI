@@ -145,20 +145,6 @@ float ReceiverCapture::SetMaxDistance(int channelIndex, float inMaxDistance)
 	return(inMaxDistance);
 }
 
-
-
-uint32_t ReceiverCapture::SnapSnapshotFrameID() 
-{
-	boost::mutex::scoped_lock updateLock(GetMutex());
-
-	snapshotFrameID = acquisitionSequence->GetLastFrameID();
-
-	updateLock.unlock();
-
-	return(snapshotFrameID);
-};
-
-
 int ReceiverCapture::GetFrameQty()
 
 {
@@ -349,6 +335,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	// Push the current frame in the frame buffer
 	acquisitionSequence->sensorFrames.push(currentFrame);
+	uint32_t completedFrameID = currentFrame->GetFrameID();
 	
 	// Make sure we do not keep too many of those frames around.
 	// Remove the older frame if we exceed the buffer capacity
@@ -363,7 +350,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	rawLock.unlock();
 
-	PutNews();
+	PutNews(completedFrameID);
 	DebugFilePrintf(debugFile, "FrameID- %lu", frameID);
 }
 

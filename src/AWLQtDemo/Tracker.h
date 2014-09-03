@@ -264,7 +264,6 @@ public:
 	Track::Ptr MakeUniqueTrack(SensorFrame::Ptr currentFrame,TrackID trackID);
 
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
-	int FindIndexOfFrame(uint32_t frameID);
 
 	// Build detections from the current track set.
 	void BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);

@@ -881,9 +881,6 @@ void AWLQtDemo::on_timerTimeout()
 				bContinue = false;
 				break;
 			}
-			// Use the frame snapped by the  as the current frame
-			// all displays will reference to.
-			uint32_t lastDisplayedFrame = receiverCaptures[receiverID]->SnapSnapshotFrameID();
 
 			// Update the status information
 			if (receiverCaptures[receiverID]->receiverStatus.bUpdated) 
@@ -901,27 +898,31 @@ void AWLQtDemo::on_timerTimeout()
 	if (bContinue) 
 	{
 		Detection::Vector detectionData;
-		GetLatestDetections(detectionData);		// Update the 2D view
-		if (m2DScan) m2DScan->slotDetectionDataChanged(detectionData);
+		bool bNewDetections = GetLatestDetections(detectionData);		
+		
+		// Update the 2D view only if there is new data.
+		if (m2DScan && bNewDetections) m2DScan->slotDetectionDataChanged(detectionData);
 
-		// Update the camera views
+		// Update the data for the camera views. Only if detections have changed have changed.
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
-			if (videoViewers[viewerID]) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
+			if (videoViewers[viewerID] && bNewDetections) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
 		}
 
-		// Update the table views
-		if (mTableView) mTableView->slotDetectionDataChanged(detectionData);
+		// Update the table views only if there is new data
+		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
 	}
 
 	if (bContinue) 
 	{
+		// Always spin the video viewers.
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID] && !videoViewers[viewerID]->WasStopped()) videoViewers[viewerID]->SpinOnce();
 		}
 	}
 
+		// Always spin the cloud viewer.
 	if (bContinue && cloudViewer && !cloudViewer->WasStopped()) 
 	{
 		cloudViewer->SpinOnce();
@@ -944,37 +945,44 @@ void AWLQtDemo::on_timerTimeout()
 	}
 }
 
-void AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
+bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+	bool bNew = false;
 
 	// Build the list of detections that need to be updated
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		// Use the frame snapped by the main display timer as the current frame
-		uint32_t lastDisplayedFrame = receiver->GetSnapshotFrameID();
+		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
+
+		uint32_t lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
+
+		if (receiver->HasNews(subscriberID))
+		{
+			bNew = true;	
+		}
+
 
 		int channelQty = receiver->GetChannelQty();
 		for (int channelID = 0; channelID < channelQty; channelID++) 
 		{
-			if (receiverCaptures[receiverID]->GetFrameQty() /* && receiverCaptures[receiverID]->HasNews(receiverCaptureSubscriberIDs[receiverID])*/) 
+			if (receiver->GetFrameQty()) 
 			{
-
 				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverID, channelID));
 
 				// Thread safe
 				// The UI thread "Snaps" the frame ID for all other interface objects to display
-				if (receiverCaptures[receiverID]->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberIDs[receiverID])) 
+				if (receiver->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, subscriberID)) 
 				{
-
 					int detectionQty = channelFrame->detections.size();
 					int detectionIndex = 0;
 					for (int i = 0; i < detectionQty; i++)
 					{
 						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= receiverCaptures[receiverID]->GetMinDistance()) && 
-							(detection->distance <= receiverCaptures[receiverID]->GetMaxDistance(channelID))) 
+						if ((detection->distance >= receiver->GetMinDistance()) && 
+							(detection->distance <= receiver->GetMaxDistance(channelID))) 
 						{
 							Detection::Ptr storedDetection = detection;
 							detectionData.push_back(storedDetection);
@@ -985,6 +993,7 @@ void AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 			}
 		}
 	}
+	return(bNew);
 }
 
 

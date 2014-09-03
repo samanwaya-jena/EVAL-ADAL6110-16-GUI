@@ -9,40 +9,54 @@ using namespace awl;
 
 Publisher::Publisher()
 {
-	subscribers.clear();
-}
+	currentPublications.clear();
+	consumedPublications.clear();}
 
 Publisher::SubscriberID Publisher::Subscribe()
 {
-	int publicationQty = 0;
-	subscribers.push_back(publicationQty);
-	
+	IssueID IssueID = 0;
+	currentPublications.push_back(IssueID);
+	consumedPublications.push_back(IssueID);	
+
 	// The subscriberID is actually the index in the subscriber array
-	return ((SubscriberID) subscribers.size()-1);
+	return ((SubscriberID) currentPublications.size()-1);
 }
 
-int Publisher::HasNews(SubscriberID inSubscriber)
+bool Publisher::HasNews(SubscriberID inSubscriber)
 
 {
-	if (inSubscriber < 0 || inSubscriber >= (int) subscribers.size())
+	if (inSubscriber < 0 || inSubscriber >= (int) currentPublications.size())
 	{
-		return(0);
+		return(false);
 	}
 	else
 	{
-		return(subscribers.at(inSubscriber));                           
+		return(currentPublications.at(inSubscriber)!= consumedPublications.at(inSubscriber));                           
 	}
 }
 
 bool Publisher::LockNews(SubscriberID inSubscriber)
 
 {
-	if (inSubscriber < 0 || inSubscriber >= (int) subscribers.size())
+	if (inSubscriber < 0 || inSubscriber >= (int) currentPublications.size())
 	{
 		return(false);
 	}
 
-	subscribers.at(inSubscriber) = 0;
+	consumedPublications.at(inSubscriber) = currentPublications.at(inSubscriber);
+	mMutex.lock();
+	return(true);
+}
+
+bool Publisher::LockNews(SubscriberID inSubscriber, IssueID inIssueID)
+
+{
+	if (inSubscriber < 0 || inSubscriber >= (int) currentPublications.size())
+	{
+		return(false);
+	}
+
+	consumedPublications.at(inSubscriber) = inIssueID;
 	mMutex.lock();
 	return(true);
 }
@@ -50,7 +64,7 @@ bool Publisher::LockNews(SubscriberID inSubscriber)
 void Publisher::UnlockNews(SubscriberID inSubscriber)
 
 {
-	if (inSubscriber < 0 || inSubscriber >= (int) subscribers.size())
+	if (inSubscriber < 0 || inSubscriber >= (int) currentPublications.size())
 	{
 		return;
 	}
@@ -61,13 +75,45 @@ void Publisher::UnlockNews(SubscriberID inSubscriber)
 
 void Publisher::PutNews()
 {
-	int subscriberQty = subscribers.size();
+	int subscriberQty = currentPublications.size();
 	for (int i = 0; i < subscriberQty; i++) 
 	{
 		mMutex.lock();
-		int publications = subscribers.at(i);
-		publications++;
-		subscribers.at(i) = publications;
+		IssueID issueID = currentPublications.at(i);
+		issueID++;
+		currentPublications.at(i) = issueID;
 		mMutex.unlock();
 	}
+}
+
+void Publisher::PutNews(IssueID inIssueID)
+{
+	int subscriberQty = currentPublications.size();
+	for (int i = 0; i < subscriberQty; i++) 
+	{
+		mMutex.lock();
+		currentPublications.at(i) = inIssueID;
+		mMutex.unlock();
+	}
+}
+
+Publisher::IssueID Publisher::GetCurrentIssueID(SubscriberID inSubscriber)
+
+{
+	if (inSubscriber < 0 || inSubscriber >= (int) currentPublications.size())
+	{
+		return(0);
+	}
+
+	return(currentPublications.at(inSubscriber));
+}
+
+Publisher::IssueID Publisher::GetConsumedIssueID(SubscriberID inSubscriber)
+{
+	if (inSubscriber < 0 || inSubscriber >= (int) currentPublications.size())
+	{
+		return(0);
+	}
+
+	return(consumedPublications.at(inSubscriber));
 }

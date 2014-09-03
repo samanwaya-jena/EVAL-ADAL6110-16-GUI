@@ -473,7 +473,7 @@ void ReceiverCANCapture::ProcessCompletedFrame()
 	
 	// Push the current frame in the frame buffer
 	acquisitionSequence->sensorFrames.push(currentFrame);
-	currentReceiverCaptureSubscriptions->PutNews();
+	currentReceiverCaptureSubscriptions->PutNews(currentFrame->frameID);
 
 	// Make sure we do not keep too many of those frames around.
 	// Remove the older frame if we exceed the buffer capacity

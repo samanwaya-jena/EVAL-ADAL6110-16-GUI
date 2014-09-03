@@ -22,7 +22,6 @@ const double intervalLength = 15.0; // seconds
 
 AWLQtScope::AWLQtScope(QWidget *parent)
 	: QWidget(parent),
-	d_lastFrameID(0),
 	d_timerId(0),
 	curveStyle(defaultCurveStyle)
 {
@@ -174,83 +173,75 @@ void AWLQtScope::updateCurveDataRaw()
 {
 	if (!d_receiverCapture->GetFrameQty()) return;   // No frame yet produced
 
-	if (!d_receiverCapture->LockNews(d_receiverCaptureSubscriberID)) return;
+	if (!d_receiverCapture->HasNews(d_receiverCaptureSubscriberID)) return;
+
 
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-	
-	// Get the pointer to the acquisitionSequence
-	AcquisitionSequence::Ptr acquisitionSequence = d_receiverCapture->acquisitionSequence;
-
-	// Determine which frames need to be updated
-	int startFrame = acquisitionSequence->FindIndexOfFrame(d_lastFrameID)+1;
-	// If the first frame was flushed, use the first in the row.
-	if (startFrame == -1) startFrame = 0;
-	int lastFrame = d_receiverCapture->GetFrameQty()-1;
-	d_lastFrameID = d_receiverCapture->GetLastFrameID();  // Mark the last frame for posterity
-
 	// y Scale for velocities
 	float maxVelocity =  settings->maxVelocity2D;
 	if (settings->velocityUnits != eVelocityUnitsMS)
 		maxVelocity = VelocityToKmH(maxVelocity);
 
-	// Add the data from all the new frames to the scope
-	for (int frameIndex = startFrame; frameIndex <= lastFrame; frameIndex++) 
+	// Get the pointer to the acquisitionSequence
+	AcquisitionSequence::Ptr acquisitionSequence = d_receiverCapture->acquisitionSequence;
+
+	// Determine which frames need to be updated
+	Publisher::IssueID requestedFrameID = d_receiverCapture->GetConsumedIssueID(d_receiverCaptureSubscriberID);
+	Publisher::IssueID lastFrameID = d_receiverCapture->GetCurrentIssueID(d_receiverCaptureSubscriberID);
+
+	// Process all of the back issues 
+	do 
 	{
-		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(frameIndex);
-
-		// Get the frame time
-		// Note that elapsed in in millisec and our curves expect seconds.
-		double elapsed = sensorFrame->timeStamp;
-		elapsed /= 1000;
-
-		int channelQty = d_distanceCurveDataArray.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
+		requestedFrameID++;  // Request the next issue.
+		if (d_receiverCapture->LockNews(d_receiverCaptureSubscriberID, requestedFrameID)) // Informs the publisher and locks the mutex; 
 		{
-			ChannelFrame::Ptr channelFrame = sensorFrame->channelFrames.at(channelID);
-
-			// Thread safe
-			int detectionQty = channelFrame->detections.size();
-			int detectionIndex = 0;
-			int maxDetections = d_distanceCurveDataArray[channelID]->size();
-
-			for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
+			SensorFrame::Ptr sensorFrame;
+			if (acquisitionSequence->FindSensorFrame(requestedFrameID, sensorFrame))
 			{
-				Detection::Ptr detection = channelFrame->detections.at(i);
-				if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
-					(detection->distance <= d_receiverCapture->GetMaxDistance(channelID))) 
+
+				// Get the frame time
+				// Note that elapsed in in millisec and our curves expect seconds.
+				double elapsed = sensorFrame->timeStamp;
+				elapsed /= 1000;
+
+				int channelQty = d_distanceCurveDataArray.size();
+				for (int channelID = 0; channelID < channelQty; channelID++)
 				{
-					// Replace the new point to the end, with detected value
-					const QPointF distancePoint(elapsed,  detection->distance);
-					d_distanceCurveDataArray[channelID]->at(detectionIndex++)->addValue(distancePoint);
+					ChannelFrame::Ptr channelFrame = sensorFrame->channelFrames.at(channelID);
 
-					float velocity = detection->velocity;
-					if (settings->velocityUnits != eVelocityUnitsMS)
-						velocity = VelocityToKmH(velocity);
+					// Thread safe
+					int detectionQty = channelFrame->detections.size();
+					int detectionIndex = 0;
+					int maxDetections = d_distanceCurveDataArray[channelID]->size();
 
-					if (velocity > maxVelocity) velocity = maxVelocity;
-					if (velocity < -maxVelocity) velocity = -maxVelocity;
+					for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
+					{
+						Detection::Ptr detection = channelFrame->detections.at(i);
+						if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
+							(detection->distance <= d_receiverCapture->GetMaxDistance(channelID))) 
+						{
+							// Replace the new point to the end, with detected value
+							const QPointF distancePoint(elapsed,  detection->distance);
+							d_distanceCurveDataArray[channelID]->at(detectionIndex++)->addValue(distancePoint);
 
-					const QPointF velocityPoint(elapsed,  velocity);
-					d_velocityCurveDataArray[channelID]->at(detectionIndex++)->addValue(velocityPoint);
-				} 
-			} // For i;
-#if 0
+							float velocity = detection->velocity;
+							if (settings->velocityUnits != eVelocityUnitsMS)
+								velocity = VelocityToKmH(velocity);
 
-			// Add empty values to the remaining empty tracks
-			for  (int i = detectionIndex; i < maxDetections; i++) 
-			{
-				const QPointF distancePoint(elapsed, 0.0);
-				d_distanceCurveDataArray[channelID]->at(i)->addValue(distancePoint);
+							if (velocity > maxVelocity) velocity = maxVelocity;
+							if (velocity < -maxVelocity) velocity = -maxVelocity;
 
-				const QPointF velocityPoint(elapsed, -maxVelocity);
-				d_velocityCurveDataArray[channelID]->at(i)->addValue(velocityPoint);
-			} // For i;
-#endif		
-		} // for channelID
-	} // For frameIndex
+							const QPointF velocityPoint(elapsed,  velocity);
+							d_velocityCurveDataArray[channelID]->at(detectionIndex++)->addValue(velocityPoint);
+						} // If  
+					} // For i;
+				} // for channelID
+			} // if (acquisitionSequence->FindSensorFrame
 
-	d_receiverCapture->UnlockNews(d_receiverCaptureSubscriberID);
+			d_receiverCapture->UnlockNews(d_receiverCaptureSubscriberID);
+		} //  if (d_receiverCapture->LockNews
 
+	} while (requestedFrameID!= lastFrameID);
 }
 
 void AWLQtScope::on_scopeCurveStyleDots_setChecked(bool bChecked)

@@ -73,7 +73,6 @@ private:
 	ReceiverCapture::Ptr d_receiverCapture;
 	/** \brief Our subscription identifier to access to lidar data. */
 	Publisher::SubscriberID d_receiverCaptureSubscriberID;
-	uint32_t d_lastFrameID;
 };
 
 #endif // AWLQTSCOPE_H

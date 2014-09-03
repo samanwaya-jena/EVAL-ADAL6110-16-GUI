@@ -65,7 +65,7 @@ void ReceiverChannel::AddDistancesToCloud()
 
 			// Thread safe
 
-			uint32_t lastDisplayedFrame = receiverCapture->GetSnapshotFrameID();
+			uint32_t lastDisplayedFrame = receiverCapture->GetCurrentIssueID(receiverCaptureSubscriberID);
 			if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberID))
 			{
 

@@ -15,17 +15,50 @@ using namespace std;
   * other objects of changes to its contents..
   * Just helps determine when a Publisher has an updated "publication" in store for 
   * a given subscriber.
+  * A Publisher keeps track of its current publication number, and also keeps track of the 
+  * latest issue that was consumed (Locked) by the subscriber.
+  * This way, it can tell the subscriber which issue was the last consumed.
+  *
   * \Notes:
-  *    To use the class, a subscriber does:
+  *    For a simple use of the class, a subscriber does:
+  *        PublisherDerivateClass publisher();
   *        Publisher::SubscriberID subscriberID= publisher->Subscribe();  // Subscribe to a publisher
+  *        // In application event loop
   *        if (publisher->HasNews(subscriberID))
   *        {
   *            if (publisher->LockNews(subscriberID));  // Informs the publisher and locks the mutex; 
   *			   {
   *                ... // Process the publisher news
-  *			       publisher->FreeNews(subscriberID);  // Frees the lock on the news.
+  *                publisher->GetIssueDerivateClassMethod(latestIssueNumber);
+  *			       publisher->UnlockNews(subscriberID);  // Frees the lock on the news.
   *            }
   *        }
+  *
+  *    Since some publishers also have non-incremental Publication ID, a more complex subscriber could:
+  *        PublisherDerivateClass publisher();
+  *        Publisher::SubscriberID subscriberID= publisher->Subscribe();  // Subscribe to a publisher
+  *
+  *        // In application event loop
+  *        if (publisher->HasNews())
+  *        {
+  *            Publisher::IssueID latestIssue = publisher->GetCurrentIssueID();
+  *            Publisher::IssueID issueOnHand =  publisher->GetConsumedIssueID();             
+  *            Publisher::IssueID issueRequested =  issueOnHand;             
+  *            ... // Process all of the back issues 
+  *            do 
+  *			   {
+  *                issueRequested++;  // Request the next issue.
+  *                if (publisher->LockNews(subscriberID, issueRequested);  // Informs the publisher and locks the mutex; 
+  *			       {
+  *                     publisher->GetIssueDerivateClassMethod(issueRequested);
+  *			            publisher->UnlockNews(subscriberID);  // Frees the lock on the news.
+  *				   }
+  *            } while (issueRequested != lastIssue);
+  *        }
+  *
+  *        ....
+  *        // You may reuse the IssueID to request a re-issue from the publisher.
+  *        publisher->GetIssueDerivateClassMethod(issueOnHandNumber);
   * \author Jean-Yves Deschênes
   */
 
@@ -37,6 +70,7 @@ class Publisher
 {
 public:
 	typedef  int SubscriberID;
+	typedef  uint32_t IssueID;
 
 	typedef boost::shared_ptr<Publisher> Ptr;
 	typedef boost::container::vector<Publisher::Ptr> List;
@@ -44,29 +78,49 @@ public:
 	Publisher();
 	Publisher::SubscriberID Subscribe();
 
-	// Returns the number of publications issued since.
+	// Returns true if the current publication ID is differerent from the latest accessed.
 	// Note that the publications are not kept in store
-	// the qty is for informational purposes.
 
-	int HasNews(SubscriberID inSubscriber);
+	bool HasNews(SubscriberID inSubscriber);
 	
 	// Locks the publisher's mutex for accessing the news.
-	// and clears the number of publications missed for the given subscriber
+	// and marks the current publication ID as consumed for the given subscriber
 	// \return Returns true if successfully locked.  Otherwise returns false.
 	//         (Lock may fail if subscriber ID is invalid).
 	bool LockNews(SubscriberID inSubscriber);
 
+	// Locks the publisher's mutex for accessing the news.
+	// and marks the provided publication ID as the last consumed for the given subscriber
+	// \return Returns true if successfully locked.  Otherwise returns false.
+	//         (Lock may fail if subscriber ID is invalid).
+	bool LockNews(SubscriberID inSubscriber, IssueID inIssueID);
+
 	// Unlocks the publisher's mutex for accessing the news.
 	void UnlockNews(SubscriberID inSubscriber);
 
+	// Get the current publication ID for this subscriber
+	IssueID GetCurrentIssueID(SubscriberID inSubscriber);
+
+	// Get the publication ID of the latest issue that was Locked()
+	IssueID GetConsumedIssueID(SubscriberID inSubscriber);
+
 protected:
-	// Increments the publications counter for all subscribers
+	// Increments the publications number for all subscribers
 	void PutNews();
+
+	// Sets the latest publication number for all subscribers
+	void PutNews(IssueID newPublication);
 
 	boost::mutex &GetMutex() {return(mMutex);};
 
-	// Fir each subscriber, the vector contains the quantity of unpublished news.
-	boost::container::vector<int> subscribers;
+	// For each subscriber, the vector contains the issue number of latest news.
+	// Note: There is no guarantee from the publisher that the IssueIDs will be consecutive.
+	//       The only guarantee is that consecutive publications will not have the same number for a reasonable amoount of time.
+	//       (For example, there may be wraparound of the IssueIDs)
+	boost::container::vector<IssueID> currentPublications;
+
+	// For each subscriber, the vector contains the issue number last Locked() news.
+	boost::container::vector<IssueID> consumedPublications;
 
    boost::mutex mMutex;
 
