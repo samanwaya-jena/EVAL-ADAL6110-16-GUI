@@ -28,8 +28,8 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports 
 
 #define ConvertIntensityToSNR(v) (((v)/2.0) - 21.0)
 
-ReceiverCANCapture::ReceiverCANCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty):
-ReceiverCapture(inReceiverID, inSequenceID, inReceiverChannelQty),
+ReceiverCANCapture::ReceiverCANCapture(int inReceiverID, int inReceiverChannelQty):
+ReceiverCapture(inReceiverID, inReceiverChannelQty),
 port(NULL),
 reader(NULL),
 lastMessageID(0),
@@ -50,8 +50,6 @@ closeCANReentryCount(0)
 	OpenDebugFile(debugFile, "CanBusLog.dat");
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
-
-	acquisitionSequence->Clear();
 }
 
 ReceiverCANCapture::~ReceiverCANCapture()

@@ -51,11 +51,7 @@ public:
 	Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
 	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel = eThreatNone);
 	
-	/** \brief Verify if there is any data in the detection.
-	  *        a detection with distance = 0 is invalid.  it should not be stored.
-      * \return bool true if the detection is valid.  False otherwise.
-      */
-	bool IsValid();
+	int	GetReceiverID() {return(receiverID);}	
 	int	GetDetectionID() {return(detectionID);}
 	int	GetChannelID() {return(channelID);}
 
@@ -96,7 +92,7 @@ public:
 	/** \brief First time stamp at which the target was acquired. */
 	float firstTimeStamp;
 
-	/** \brief Track ID. */
+	/** \brief Track ID from which the detection was generated, if that is the case. */
 	TrackID	trackID;
 
 	/** \brief Coordinates of detection relative to sensor */
@@ -110,14 +106,6 @@ public:
 	/** \brief Coordinates of detection relative to world */
 	CartesianCoord relativeToWorldCart;
 	SphericalCoord	   relativeToWorldSpherical;
-
-	/** \brief AbsoluteYCoordinate. */
-	float absoluteY;
-
-	/** \brief AbsoluteYCoordinate. */
-	float absoluteZ;
-
-
 
 	/** \brief Threat level associated to detection */
 	ThreatLevel	threatLevel;
@@ -137,11 +125,9 @@ public:
 
 	Track(int trackID);
 
-	bool IsValid();
-
 	int	GetTrackID() {return(trackID);}
 
-	// A track is built from 2 message sections.  Make sure both parts are entered before a track is completed.
+	// A track is built from 4 distinct CAN message sections.  Make sure all parts are entered before a track is completed.
 	bool IsComplete() { return (part1Entered && part2Entered && part3Entered && part4Entered); };
 
 public:
@@ -181,7 +167,7 @@ public:
 	/** \brief Channels in which detections were made for the track **/
 	uint8_t channels;
 
-	// A track is built from up to 4 message sections (in CAN).  Make sure both parts are entered before a track is completed.
+	// A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed.
 
 	bool part1Entered;
 	bool part2Entered;
@@ -212,9 +198,11 @@ public:
 	int receiverID;
 
 	int channelID;
-	// Timestamp im milliseconds, elapsed from start of thread.
-	double timeStamp;
 
+	 /** \brief Timestamp im milliseconds, elapsed from start of thread. */
+	double timeStamp;
+	
+	/** \brief Vector holding all the detections within that channel, in the time frame */ 
 	Detection::Vector detections;
 };
 
@@ -258,27 +246,17 @@ public:
 	typedef boost::shared_ptr<AcquisitionSequence> Ptr;
     typedef boost::shared_ptr<AcquisitionSequence> ConstPtr;
 
-	typedef	enum TrackingMode 
-	{
-		eTrackSingleChannel,
-		eTrackAllChannels
-	};
-
 
 public:
-	AcquisitionSequence(int inReceiverID, int inSequenceID);
-	AcquisitionSequence(int inReceiverID, int inSequenceID, int inChannelQty);
+	AcquisitionSequence();
 
 //	SensorFrame &operator[](int frameIndex) {return(*(sensorFrames[frameIndex]));}
 
 	virtual ~AcquisitionSequence() {};
-	int	GetID() {return(sequenceID);}
 	
 	/** \brief Get the frameID of the last complete frame
 	*/
 	uint32_t	GetLastFrameID();
-
-	void Clear();
 
 	uint32_t AllocateFrameID();
 
@@ -286,10 +264,7 @@ public:
 	Track::Ptr MakeUniqueTrack(SensorFrame::Ptr currentFrame,TrackID trackID);
 
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
-	ChannelFrame::Ptr & GetChannelAtIndex(int frameIndex, int channelIndex);
-
-	int FindFrameIndex(uint32_t frameID);
-	int GetLastFrameIndex();
+	int FindIndexOfFrame(uint32_t frameID);
 
 	// Build detections from the current track set.
 	void BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
@@ -297,14 +272,12 @@ protected:
 	void UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 
 public: 
-	int receiverID;
-	int sequenceID;
-	int channelQty;
-	int detectionQty;
+	// Queue of the stored sensor frames.
+	// The acquisitionSequence stores multiple frames, in support of asynchonous operations,
+	// as well as to support tracking algorithms
 	SensorFrame::Queue sensorFrames;
 	
-	std::string infoLine;
-
+	// Frame ID counter.  Each SensorFrame within an acquisition sequence has a unique frame ID.
 	uint32_t frameID;
 };
 

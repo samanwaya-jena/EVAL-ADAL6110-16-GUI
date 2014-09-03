@@ -13,20 +13,7 @@
 using namespace std;
 using namespace awl;
 
-const AcquisitionSequence::TrackingMode defaultTrackingMode = AcquisitionSequence::eTrackAllChannels;
-
-AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID):
-receiverID(inReceiverID),
-sequenceID(inSequenceID),
-frameID(0)
-
-{
-}
-
-AcquisitionSequence::AcquisitionSequence(int inReceiverID, int inSequenceID, int inChannelQty):
-receiverID(inReceiverID),
-sequenceID(inSequenceID),
-channelQty(inChannelQty),
+AcquisitionSequence::AcquisitionSequence():
 frameID(0)
 
 {
@@ -45,12 +32,6 @@ uint32_t	AcquisitionSequence::GetLastFrameID()
 	
 	return(sensorFrames.back()->GetFrameID());
 
-}
-
-void AcquisitionSequence::Clear()
-
-{
-	while (sensorFrames.size()) sensorFrames.pop();
 }
 
 
@@ -152,7 +133,7 @@ void AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
 			// Deceleration to stop should eventually include track->acceleration, but right now,
 			// that information is judged unreliable.  
 			// Will need adjustement later
-			track->decelerationToStop = -CalculateAccelerationToStop(track->distance, track->velocity, 0);
+			track->decelerationToStop = -	CalculateAccelerationToStop(track->distance, track->velocity, 0);
 
 			if (track->decelerationToStop > settings->threatLevelCriticalThreshold)  track->threatLevel = Detection::eThreatCritical;
 			else if (track->decelerationToStop > settings->threatLevelWarnThreshold) track->threatLevel = Detection::eThreatWarn;
@@ -170,11 +151,12 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 	UpdateTrackInfo(currentFrame);
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	ReceiverSettings receiverSettings = globalSettings->receiverSettings[receiverID];
+	ReceiverSettings receiverSettings = globalSettings->receiverSettings[currentFrame->GetReceiverID()];
+	int channelQty = receiverSettings.channelsConfig.size();
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
 	{
 
-	ChannelConfig channelConfig = receiverSettings.channelsConfig[channelIndex];
+		ChannelConfig channelConfig = receiverSettings.channelsConfig[channelIndex];
 
 		uint8_t channelMask = 0x01 << channelIndex;
 
@@ -207,7 +189,7 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->threatLevel = track->threatLevel;
 
 				// Place the coordinates relative to all their respective reference systems
-				TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelIndex);
+				TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(detection->receiverID, channelIndex);
 				SphericalCoord sphericalPointInChannel(detection->distance, M_PI_2, 0);
 				detection->relativeToSensorCart = channelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
 				detection->relativeToVehicleCart = channelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
@@ -272,7 +254,7 @@ bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &ou
 	return(false);
 }
 
-int AcquisitionSequence::FindFrameIndex(uint32_t frameID)
+int AcquisitionSequence::FindIndexOfFrame(uint32_t frameID)
 {
 	for (int i = 0; i < sensorFrames.size(); i++) 
 	{
@@ -284,34 +266,6 @@ int AcquisitionSequence::FindFrameIndex(uint32_t frameID)
 	}
 
 	return(-1);
-}
-
-int AcquisitionSequence::GetLastFrameIndex()
-{
-	return(sensorFrames.size()- 1); 
-}
-
-ChannelFrame::Ptr & AcquisitionSequence::GetChannelAtIndex(int frameIndex, int channelIndex)
-
-{
-	SensorFrame::Ptr sensorFrame;
-	if (frameIndex < sensorFrames.size()) 
-	{
-		sensorFrame = sensorFrames._Get_container().at(frameIndex);
-	}
-	else 
-	{
-		// Frame does not exist.  use the last frame
-		sensorFrame = sensorFrames.back();
-	}
-	
-	if (channelIndex >= sensorFrame->channelFrames.size()) 
-	{
-		// Channel does not exist. Return channel 0.
-		channelIndex = 0;
-	}
-
-	return(sensorFrame->channelFrames.at(channelIndex));
 }
 
 
@@ -472,16 +426,6 @@ relativeToWorldSpherical()
 }
 
 
-bool Detection::IsValid()
-
-{
-	if (distance != 0.0) 
-		return(true);
-	
-	return(false);
-}
-
-
 Track::Track(int inTrackID):
 distance(0.0f),
 velocity(NAN),
@@ -502,13 +446,5 @@ part4Entered(false)
 }
 
 
-bool Track::IsValid()
-
-{
-	if (distance != 0.0) 
-		return(true);
-	
-	return(false);
-}
 
  

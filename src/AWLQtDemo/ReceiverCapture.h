@@ -240,11 +240,10 @@ public:
 	ReceiverCapture(int inReceiverID) { receiverID = inReceiverID;};
 
 	/** \brief ReceiverCapture constructor.  Builds an empty sequence.
-	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
     */
 
-	ReceiverCapture(int inReceiverID, int inSequenceID, int inReceiverChannelQty);
+	ReceiverCapture(int inReceiverID, int inReceiverChannelQty);
 
 	/** \brief ReceiverCapture Destructor.  Insures that all threads are stopped before destruction.
       */

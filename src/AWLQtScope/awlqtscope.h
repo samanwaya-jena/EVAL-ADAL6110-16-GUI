@@ -60,8 +60,6 @@ protected:
 
 private:
 	QwtPlotCurve::CurveStyle curveStyle;
-	AcquisitionSequence::TrackingMode trackingMode;
-
 
 	Ui::AWLQtScopeClass ui; 
 

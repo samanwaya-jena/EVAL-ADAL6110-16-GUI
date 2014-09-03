@@ -102,7 +102,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file, and by default
-			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
+			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
 		}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
@@ -856,7 +856,9 @@ void AWLQtDemo::on_timerTimeout()
 	myTimer->stop();
 
 	bool bContinue = true;
-			
+	
+
+	// Check that the cameras are still working.  Otherwise Stop everyting
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
 		if (videoCaptures[cameraID]->WasStopped()) 
@@ -867,6 +869,9 @@ void AWLQtDemo::on_timerTimeout()
 	}
 
 	
+	// For each receiver. Take a note of the "current" frame ID (by calling SnapSnapShotFrameID).
+	// Then display the status flags.
+
 	if (bContinue)
 	{
 		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
@@ -888,6 +893,11 @@ void AWLQtDemo::on_timerTimeout()
 		}// For
 	}
 
+	// Copy all of the current detection data into a Detection data vector.
+	// Update display for:
+	//     - The 2 view (pie chart)
+	//     - The camera views
+	//     - The table views
 	if (bContinue) 
 	{
 		Detection::Vector detectionData;

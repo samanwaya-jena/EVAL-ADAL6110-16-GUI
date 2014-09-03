@@ -17,8 +17,6 @@
 int timerInterval = 30; // In ms.  So 30FPS
 
 const QwtPlotCurve::CurveStyle defaultCurveStyle = QwtPlotCurve::Dots;
-const AcquisitionSequence::TrackingMode defaultTrackingMode = AcquisitionSequence::eTrackAllChannels;
-
 
 const double intervalLength = 15.0; // seconds
 
@@ -26,8 +24,7 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 	: QWidget(parent),
 	d_lastFrameID(0),
 	d_timerId(0),
-	curveStyle(defaultCurveStyle),
-	trackingMode(defaultTrackingMode)
+	curveStyle(defaultCurveStyle)
 {
 	ui.setupUi(this);
 
@@ -185,7 +182,7 @@ void AWLQtScope::updateCurveDataRaw()
 	AcquisitionSequence::Ptr acquisitionSequence = d_receiverCapture->acquisitionSequence;
 
 	// Determine which frames need to be updated
-	int startFrame = acquisitionSequence->FindFrameIndex(d_lastFrameID)+1;
+	int startFrame = acquisitionSequence->FindIndexOfFrame(d_lastFrameID)+1;
 	// If the first frame was flushed, use the first in the row.
 	if (startFrame == -1) startFrame = 0;
 	int lastFrame = d_receiverCapture->GetFrameQty()-1;

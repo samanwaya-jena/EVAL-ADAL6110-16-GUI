@@ -25,8 +25,8 @@ using namespace pcl;
 using namespace awl;
 
 
-ReceiverUDPCapture::ReceiverUDPCapture(int inSequenceID, int inReceiverChannelQtyl):
-ReceiverCapture(inSequenceID, inReceiverChannelQty),
+ReceiverUDPCapture::ReceiverUDPCapture(int inReceiverChannelQtyl):
+ReceiverCapture(inReceiverChannelQty),
 canHandle(0),
 bitRate("50"),
 acceptanceCode("0x1FFFFFFF"),
@@ -43,9 +43,6 @@ lastMessageID(0)
 
 	// initialize the UDP port
 	InitUDPSocket(serverIP, serverUDPPort, int *receiveFD, sendData, servAddr)
-
-	// Reset the acquisitionSequence
-	acquisitionSequence->Clear();
 }
 
 ReceiverUDPCapture::~ReceiverUDPCapture()
@@ -487,11 +484,8 @@ void ReceiverCANCapture::ProcessCompletedFrame()
 
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
-	int channelQty = acquisitionSequence->channelQty;
-	int detectionQty = acquisitionSequence->detectionQty;
 
-
-	currentFrame = SensorFrame::Ptr(new SensorFrame(frameID, channelQty, detectionQty));
+	currentFrame = SensorFrame::Ptr(new SensorFrame(frameID, receiverChannelQty));
 
 	rawLock.unlock();
 }

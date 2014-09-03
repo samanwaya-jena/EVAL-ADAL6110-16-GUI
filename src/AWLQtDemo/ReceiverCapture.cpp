@@ -36,12 +36,12 @@ const int channelTransitions[channelTransitionQty][2] =
 	{3, -1}
 };
 
-ReceiverCapture::ReceiverCapture(int inReceiverID, int sequenceID, int inReceiverChannelQty):
+ReceiverCapture::ReceiverCapture(int inReceiverID, int inReceiverChannelQty):
 ThreadedWorker(),
 Publisher(),
 receiverID(inReceiverID),
 receiverChannelQty(inReceiverChannelQty),
-acquisitionSequence(new AcquisitionSequence(inReceiverID, sequenceID, inReceiverChannelQty)),
+acquisitionSequence(new AcquisitionSequence()),
 frameID(0),
 snapshotFrameID(0),
 currentFrame(new SensorFrame(inReceiverID, 0, inReceiverChannelQty)),
@@ -359,10 +359,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
-	int channelsRequired = acquisitionSequence->channelQty;
-	int detectionsRequired = acquisitionSequence->detectionQty;
-	
-	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, frameID, channelsRequired));
+	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, frameID, receiverChannelQty));
 
 	rawLock.unlock();
 
@@ -382,7 +379,7 @@ bool ReceiverCapture::BeginDistanceLog()
 	LogFilePrintf(logFile, "Start distance log");
 	// Title Line
 	LogFilePrintf(logFile, "Track Description:;Track;trackID;_;__;___;Expected;expectDistance;expectAngle;Val;distance;____;velocity;acceleration;ttc;decelerationToStop;probability;ThreatLevel;Ch.0;Ch.1;Ch.2;Ch.3;Ch.4;Ch.5;Ch.6;");
-	LogFilePrintf(logFile, "Distance Description:;Dist;_;__;Channel;DetectionID;Expected;expectDistance;expectAngle;Val;distance;intensity;velocity;acceletation;ttc;decelerationToStop;probability;ThreatLevel");
+	LogFilePrintf(logFile, "Distance Description:;Dist;_;__;Channel;DetectionID;Expected;expectDistance;expectAngle;Val;distance;intensity;velocity;acceleration;ttc;decelerationToStop;probability;ThreatLevel");
 	
 	return(true);
 }

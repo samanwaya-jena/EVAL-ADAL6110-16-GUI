@@ -60,11 +60,10 @@ public:
 
 	/** \brief ReceiverCANCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
- 	    * \param[in] inSequenceID  unique sequence ID (for documentation)
 	    * \param[in] inReceiverChannelQty index of the required channel
       */
 
-	ReceiverCANCapture(int receiverID, int inSequenceID, int inReceiverChannelQty);
+	ReceiverCANCapture(int receiverID, int inReceiverChannelQty);
 
 	/** \brief ReceiverCANCapture Destructor.  Insures that all threads are stopped before destruction.
       */
