@@ -130,33 +130,38 @@ cameraID(inCameraID)
 
 			// Set color stuff
 
-			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AUTO_WB, 1);  // Auto white balance
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AEAG, 1);  // Automatic exposure/gain enable
-			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AE_MAX_LIMIT, 200000); // Maximum exposure time, in microsec
+			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AE_MAX_LIMIT, 80000); // Maximum exposure time, in microsec
 #if 1
-			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AG_MAX_LIMIT, 25.0); // Maximum limit of gain in AEAG procedure(dB).
+			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AG_MAX_LIMIT, 10.0); // Maximum limit of gain in AEAG procedure(dB).
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AEAG_LEVEL, 20);  //Average intensity of output signal AEAG should achieve(in %).
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_EXP_PRIORITY, 0.8);  // Priority Gain VS exposure. 0.0: Gain <------> 1.0 Exposure
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAY, 1.0); // Luminosity gamma. Range: 0.3 (highest correction); 1 (no correction)
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAC, 50.0/100); // Chromaticity gamma. Default: 0.8
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_EXP_PRIORITY, 0.6);  // Priority Gain VS exposure. 0.0: Gain <------> 1.0 Exposure
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAY, 0.6); // Luminosity gamma. Range: 0.3 (highest correction); 1 (no correction)
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAC, 80.0/100.0); // Chromaticity gamma. Default: 0.8
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_SHARPNESS, 0.0);  //Sharpness Strength. The range is -4 (less sharp) to +4 (more sharp). Default: 0.0 (neutral)
 #endif
-			float saturation  = (float)0.7;
+			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AUTO_WB, 1);  // Auto white balance
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KR, 1.11);
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KG, 1.0);
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KB, 1.64);
+
+
+			float saturation  = (float)0.4;
 
 			float colorCorrectionMatrix[4][4];
-			colorCorrectionMatrix[0][0] = (float)(1.+2*saturation);
+			colorCorrectionMatrix[0][0] = (float)(1.0+2*saturation);
 			colorCorrectionMatrix[0][1] = -saturation;
 			colorCorrectionMatrix[0][2] = -saturation;
 			colorCorrectionMatrix[0][3] = 0.0;
 
 			colorCorrectionMatrix[1][0] = -saturation;
-			colorCorrectionMatrix[1][1] = (float)(1.+2*saturation);
+			colorCorrectionMatrix[1][1] = (float)(1.0+2*saturation);
 			colorCorrectionMatrix[1][2] = -saturation;
 			colorCorrectionMatrix[1][3] = 0.0;
 
 			colorCorrectionMatrix[2][0] = -saturation;
 			colorCorrectionMatrix[2][1] = -saturation;
-			colorCorrectionMatrix[2][2] = (float)(1.+2*saturation);
+			colorCorrectionMatrix[2][2] = (float)(1.0+2*saturation);
 			colorCorrectionMatrix[2][3] = 0.0;
 
 			colorCorrectionMatrix[3][0] = 0.0;
