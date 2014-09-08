@@ -14,7 +14,7 @@ using namespace std;
 /** \brief Simple threaded subscription management class.
   * Just helps determine when an object has an updated "publication" in store for 
   * a given subscriber.
-  * A subscribet
+  * A subscriber just 
   * \author Jean-Yves Deschênes
   */
 
@@ -56,6 +56,5 @@ protected:
    boost::mutex mMutex;
 
 }; // Subscription
-
 } // namespace awl
 #endif

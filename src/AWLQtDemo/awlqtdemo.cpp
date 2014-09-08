@@ -869,7 +869,7 @@ void AWLQtDemo::on_timerTimeout()
 	}
 
 	
-	// For each receiver. Take a note of the "current" frame ID (by calling SnapSnapShotFrameID).
+	// For each receiver. Validate that the receiver exists.
 	// Then display the status flags.
 
 	if (bContinue)
@@ -956,7 +956,6 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		// Use the frame snapped by the main display timer as the current frame
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
-
 		uint32_t lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
 
 		if (receiver->HasNews(subscriberID))
