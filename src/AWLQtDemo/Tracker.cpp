@@ -8,7 +8,6 @@
 #include "AWLSettings.h"
 #include "Tracker.h"
 #include "awlcoord.h"
-#include "DebugPrintf.h"
 
 using namespace std;
 using namespace awl;
@@ -113,8 +112,9 @@ float PredictTTC(float distance, float speed, float acceleration, float time)  /
 }
 
 
-void AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
+bool AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
 {
+	bool bAllTracksComplete = true;
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 
 	// Update the coaslesced tracks
@@ -140,14 +140,23 @@ void AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
 			else if (track->decelerationToStop > settings->threatLevelLowThreshold)  track->threatLevel = Detection::eThreatLow;
 			else track->threatLevel = Detection::eThreatNone;
 		}  // if (track...
+		else 
+		{
+			bAllTracksComplete = false;
+		}
+
 
 		trackIterator++;
 	} // while (trackIterator...
+
+	return (bAllTracksComplete);
 } 
 
 
-void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame)
+bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame)
 {
+	bool bAllTracksComplete = true;
+
 	UpdateTrackInfo(currentFrame);
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -172,6 +181,8 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 			Track::Ptr track = *trackIterator;
 			if (track->IsComplete() && (track->channels & channelMask)) 
 			{
+				if ((track->distance > receiverSettings.displayedRangeMin) && (track->distance <= channelConfig.maxRange))
+				{
 				int detectionIndex = currentFrame->channelFrames[channelIndex]->detections.size();
 				Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelIndex, detectionIndex);
 				detection->channelID = channelIndex;
@@ -198,12 +209,18 @@ void AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->relativeToSensorSpherical = detection->relativeToSensorCart;
 				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
 				detection->relativeToWorldSpherical = detection->relativeToWorldCart;
-
+				}
 			}  // if (track...
+			else if (!track->IsComplete() || (track->channels == 0))
+			{
+				bAllTracksComplete = false;
+			}
 
 			trackIterator++;
 		} // while (trackIterator...
 	} // for (channelIndex)
+
+	return (bAllTracksComplete);
 }
 
 bool AcquisitionSequence::FindTrack(SensorFrame::Ptr currentFrame, TrackID trackID, Track::Ptr &outTrack)

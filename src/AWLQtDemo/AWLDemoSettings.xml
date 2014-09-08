@@ -30,7 +30,7 @@
     <!-- enableDemo:  
 	       when set to true, inject at startup and
 	       enable simulated feedback for common commands such as set/get registers -->
-    <enableDemo>true</enableDemo>
+    <enableDemo>false</enableDemo>
 
     <!-- injectType:
 	       0: ramp
@@ -62,7 +62,7 @@
       <channelMask>127</channelMask>
 
       <!-- Frame rate, in Hertz -->
-      <frameRate>30</frameRate>
+      <frameRate>50</frameRate>
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -83,11 +83,11 @@
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0.0</forward>
+          <forward>0</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0.0</up>
+          <up>0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -112,7 +112,7 @@
           <roll>0.0</roll>
           <yaw>15</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -132,7 +132,7 @@
           <roll>0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -152,7 +152,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -172,7 +172,7 @@
           <roll>0.0</roll>
           <yaw>-15</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -192,7 +192,7 @@
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>40</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -212,7 +212,7 @@
           <roll>0.0</roll>
           <yaw>0</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>40</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -232,7 +232,7 @@
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>40</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -307,12 +307,13 @@
 
       <!-- Webcam -->
       <fov>
-        <x>42.0</x>
-        <y>27.0</y>
+        <x>45.0</x>
+        <y>39.0</y>
       </fov>
     </camera>
 
-    <camera>
+
+    <cameraDummy>
       <!-- cameraName:
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
@@ -330,24 +331,27 @@
         <!-- positionFromBumper -->
         <forward>0</forward>
         <!-- lateral offet -->
-        <left>1.0</left>
+        <left>0.0</left>
         <!-- height -->
         <up>0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
         <roll>0.0</roll>
-        <yaw>-60</yaw>
+        <yaw>0.0</yaw>
       </orientation>
 
-      <!-- XIMEA with 3.6mm lensing -->
+      <!-- XIMEA with 3.6mm lensing. F1.8 -->
       <fov>
         <x>96.75</x>
         <y>72.5</y>
       </fov>
-    </camera>
-  </cameras>
+    </cameraDummy>
 
+  </cameras>
+  
+
+  
   <displayTableView>
     <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
   </displayTableView>
@@ -384,7 +388,7 @@
 	     0:		eNoMerge - don't merge targets
 	     1: 		eRadial - According to radial distance
 	     2:		eLongitudinal - According to bumper distance -->
-    <mergeDetectionMode>0</mergeDetectionMode>
+    <mergeDetectionMode>2</mergeDetectionMode>
 
     <!-- mergeDisplayMode 
 	     0: NONE
@@ -392,7 +396,7 @@
 	        (Still display distance individually)
 	     2: Rectangle without detection, display only one distance
 	     3: Rectangle with detections, but only one distance -->
-    <mergeDisplayMode>0</mergeDisplayMode>
+    <mergeDisplayMode>3</mergeDisplayMode>
 
     <!-- measureMode
 	     0: Radial
@@ -748,7 +752,7 @@
   </GPIOs>
 
   <algos>
-    <defaultAlgo>3</defaultAlgo>
+    <defaultAlgo>4</defaultAlgo>
 
     <algo>
       <!-- Algo 00 -->

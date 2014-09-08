@@ -266,9 +266,14 @@ public:
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
 
 	// Build detections from the current track set.
-	void BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
+	// Return true if all tracks have been intepreted correctly.
+	// Return false if we have found incomplete tracks or invalid channel info.
+	bool BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
+
 protected:
-	void UpdateTrackInfo(SensorFrame::Ptr currentFrame);
+	// Return true if all tracks have been intepreted correctly.
+	// Return false if we have found incomplete tracks or invalid channel info.
+	bool UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 
 public: 
 	// Queue of the stored sensor frames.

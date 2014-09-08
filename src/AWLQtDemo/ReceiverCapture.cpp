@@ -57,7 +57,8 @@ directionPacing(5000/channelTransitionQty),  /* Every 3 seconds, we move from le
 nextElapsedDirection(0),
 distanceIncrement(0.1),
 distancePacing(120), /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
-nextElapsedDistance(0)
+nextElapsedDistance(0),
+bFrameInvalidated(false)
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -300,6 +301,12 @@ double ReceiverCapture::GetElapsed()
     return(msdiff.total_microseconds() / 1000.0);
 }
 
+void ReceiverCapture::InvalidateFrame()
+{
+	boost::mutex::scoped_lock rawLock(GetMutex());
+	bFrameInvalidated = true;
+	rawLock.unlock();
+}
 
 void ReceiverCapture::ProcessCompletedFrame()
 
@@ -312,8 +319,11 @@ void ReceiverCapture::ProcessCompletedFrame()
 	currentFrame->timeStamp = GetElapsed();
 
 	// Build distances from the tracks that were accumulated during the frame
-	acquisitionSequence->BuildDetectionsFromTracks(currentFrame);
-
+	if (!acquisitionSequence->BuildDetectionsFromTracks(currentFrame))
+	{
+		DebugFilePrintf(debugFile, "Incomplete frame- %lu", frameID);
+		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
+	}
 
 	// Log the tracks or distance, depending on options selected
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -333,25 +343,40 @@ void ReceiverCapture::ProcessCompletedFrame()
 		LogDistances(logFile, currentFrame);
 	}
 
-	// Push the current frame in the frame buffer
-	acquisitionSequence->sensorFrames.push(currentFrame);
 	uint32_t completedFrameID = currentFrame->GetFrameID();
-	
-	// Make sure we do not keep too many of those frames around.
-	// Remove the older frame if we exceed the buffer capacity
-	if (acquisitionSequence->sensorFrames.size() > maximumSensorFrames) 
+	bool bFrameToBePublished = false;
+	if (!bFrameInvalidated)
 	{
-		acquisitionSequence->sensorFrames.pop();
-	}
+		// Push the current frame in the frame buffer
+		acquisitionSequence->sensorFrames.push(currentFrame);
+	
+		// Make sure we do not keep too many of those frames around.
+		// Remove the older frame if we exceed the buffer capacity
+		if (acquisitionSequence->sensorFrames.size() > maximumSensorFrames) 
+		{
+			acquisitionSequence->sensorFrames.pop();
+		}
 
+		bFrameToBePublished = true;
+	}
+	
 	// Create a new current frame.
 	uint32_t frameID = acquisitionSequence->AllocateFrameID();
 	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, frameID, receiverChannelQty));
+	bFrameInvalidated = false;
 
 	rawLock.unlock();
 
-	PutNews(completedFrameID);
-	DebugFilePrintf(debugFile, "FrameID- %lu", frameID);
+	if (bFrameToBePublished) 
+	{
+		PutNews(completedFrameID);
+		DebugFilePrintf(debugFile, "FrameID- %lu", completedFrameID);
+	}
+	else 
+	{
+		DebugFilePrintf(debugFile, "FrameIDUnpublished- %lu", completedFrameID);
+	}
+
 }
 
 

@@ -581,6 +581,12 @@ protected:
       */
 	virtual void  DoThreadLoop();
 	
+	
+	/** \brief Mark the  current frame as invalid after a parse error of the CAN contents.
+	           This will prevent the frame from being stored and processed.
+      */
+	void InvalidateFrame();
+
 	/** \brief Once all distances have been acquired in the current frame,
 	  *        push that frame into the frame buffer.
 	  *         Make sure the frameBuffer does not exceed the maximum number of frames
@@ -641,6 +647,13 @@ protected:
 
 // Protected variables
 protected:
+
+	/** \brief Marker indicating that current frame as invalid after a parse error of the CAN contents.
+	           This will prevent the frame from being stored and processed.
+			   Reset after call of ProcessCompletedFrame();
+     */
+	bool bFrameInvalidated;
+
 	/** \brief Minimum distance for objects.  All messages with distance < minDistance are eliminated.
 		\default 3.0;
 	*/

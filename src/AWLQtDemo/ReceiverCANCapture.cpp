@@ -37,7 +37,6 @@ io(),
 responseString(""),
 closeCANReentryCount(0)
 
-
 {
 	// Update settings from application
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -164,6 +163,7 @@ bool  ReceiverCANCapture::OpenCANPort()
 		return(false);
 	}
 
+	bFrameInvalidated = false;
 }
 
 bool  ReceiverCANCapture::CloseCANPort()
@@ -188,7 +188,6 @@ bool  ReceiverCANCapture::CloseCANPort()
 	    closeCANReentryCount--;
 		return(true);
 }
-
 
 
 void ReceiverCANCapture::DoOneThreadIteration()
@@ -274,6 +273,7 @@ void ReceiverCANCapture::DoOneThreadIteration()
 				else if (c == 0x07) // BELL 
 				{
 					DebugFilePrintf(debugFile, "CanLine error: %s\n", responseString.c_str());
+					InvalidateFrame();
 					responseString.clear();
 				}
 
@@ -338,6 +338,7 @@ bool ReceiverCANCapture::GetDataByte(std::string &inResponse, uint8_t &outByte, 
 		else 
 		{
 			DebugFilePrintf(debugFile, "CanLine error - Invalid char: %s-%c", inResponse.c_str(), theChar);
+			InvalidateFrame();
 			return(false);
 		}
 	}
@@ -372,6 +373,7 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 	if (inResponse.length() < 2) 
 	{
 		DebugFilePrintf(debugFile, "CanLine empty %s", inResponse.c_str());
+		InvalidateFrame();
 		return bResult;
 	}
 
@@ -383,6 +385,7 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 	else if (inResponse[0] != 't') 
 	{
 		DebugFilePrintf(debugFile, "CanLine bad: %s\n", inResponse.c_str());
+		InvalidateFrame();
 		return (bResult);
 	}
 
@@ -390,26 +393,31 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 	if (inResponse.length() < 6) 
 	{
 		DebugFilePrintf(debugFile, "CanFrame incomplete %s",  inResponse.c_str());
+		InvalidateFrame();
 		return (bResult);
 	}
 
 	if (!GetStandardID(inResponse, outMsg.id, 1))
 	{
+		InvalidateFrame();
 		return(bResult);
 	}
 
 	if (!GetDataByte(inResponse, outMsg.len, 4, 1)) 
 	{
+		InvalidateFrame();
 		return(bResult);
 	}
 
 	if (inResponse.length() < (6 + outMsg.len))
 	{
+		InvalidateFrame();
 		return(bResult);
 	}
 
 	if (outMsg.len > 8) 
 	{
+		InvalidateFrame();
 		return(bResult);
 	}
 
@@ -417,7 +425,8 @@ bool ReceiverCANCapture::ParseLine(std::string inResponse, AWLCANMessage &outMsg
 	{
 		if (!GetDataByte(inResponse, outMsg.data[i], 5+ (i*2), 2))
 		{
-			return bResult;
+		InvalidateFrame();
+		return bResult;
 		}
 	}
 
@@ -482,10 +491,6 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelIntensity(inMsg);
 		lastMessageID = msgID;
-#if 0
-		// On the last distance message, notify send the sensor frame to the application.
-		if (msgID == 56) ProcessCompletedFrame();
-#endif
 	}
 	else if (msgID == 80) /* Command */
 	{
@@ -494,6 +499,7 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	else
 	{
 		DebugFilePrintf(debugFile, "UnknownMessage %d", msgID);
+		InvalidateFrame();
 		lastMessageID = msgID;
 	}
 }
@@ -595,7 +601,10 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		float frameDelay  =  1.0/AWLSettings::GetGlobalSettings()->receiverFrameRate;
 		currentFrame->channelFrames[channel]->timeStamp = (currentFrame->frameID  *  frameDelay);  // How many frames since start of unit
 #endif
-		if (distance < minDistance  || distance > maxDistances[channel]) distance = 0.0;
+		if (distance < minDistance  || distance > maxDistances[channel]) 
+		{
+			distance = 0.0;
+		}
 
 		int detectionIndex = 0+detectOffset;
 		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
