@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>316</height>
+    <height>315</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -569,7 +569,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>5</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -3839,7 +3839,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>193</x>
-     <y>310</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3855,7 +3855,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>327</x>
-     <y>310</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3903,7 +3903,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>297</x>
-     <y>310</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3919,7 +3919,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>560</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3935,7 +3935,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>890</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3951,7 +3951,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3967,7 +3967,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3983,7 +3983,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -3999,7 +3999,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>690</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4015,7 +4015,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4031,7 +4031,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>72</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4047,7 +4047,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4063,7 +4063,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>538</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4095,7 +4095,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4111,7 +4111,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>325</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4127,7 +4127,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4143,7 +4143,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>117</x>
-     <y>298</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4159,7 +4159,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>152</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4175,7 +4175,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>201</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4191,7 +4191,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>840</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4207,7 +4207,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>127</x>
-     <y>296</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4223,7 +4223,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>340</x>
-     <y>310</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4239,7 +4239,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>927</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4255,7 +4255,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>943</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4271,7 +4271,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>867</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4287,7 +4287,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>599</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4303,7 +4303,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>460</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4319,7 +4319,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4335,7 +4335,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>481</x>
-     <y>298</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4351,7 +4351,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>415</x>
-     <y>307</y>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4367,7 +4367,23 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>520</x>
-     <y>307</y>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algo4RadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algo4RadioButton_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>177</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>120</x>
+     <y>291</y>
     </hint>
    </hints>
   </connection>
@@ -4415,5 +4431,7 @@ color: rgb(255,255,255);</string>
   <slot>on_calibrationRangeMax4Spin_editingFinished()</slot>
   <slot>on_calibrationRangeMax5Spin_editingFinished()</slot>
   <slot>on_calibrationRangeMax6Spin_editingFinished()</slot>
+  <slot>on_algo4RadioButton_setChecked(bool)</slot>
+  <slot>slot1()</slot>
  </slots>
 </ui>
