@@ -44,7 +44,7 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	measureMode = (MeasureMode)globalSettings->measureMode;
 	displayDistanceMode = (DisplayDistanceMode) globalSettings->displayDistanceMode2D;
 	mergeAcceptanceX = globalSettings->mergeAcceptanceX;
-	mergeAcceptanceY = globalSettings->mergeAcceptanceX;
+	mergeAcceptanceY = globalSettings->mergeAcceptanceY;
 	ShowPalette = globalSettings->showPalette;
 	colorCode = (DisplayColorCode )globalSettings->colorCode2D;
 	maxAbsVelocity = globalSettings->maxVelocity2D;
@@ -587,8 +587,8 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 
 
 		// Remember coordinate axes X and Y are not in same orientation as QT drawing axes!
-		QPoint bottomLeft(leftMin * Ratio , -(forwardMin+config.spareDepth)*Ratio);
-		QPoint topRight(leftMax* Ratio, -(forwardMax+config.spareDepth)*Ratio);
+		QPoint bottomLeft(-leftMax * Ratio , -(forwardMin+config.spareDepth)*Ratio);
+		QPoint topRight(-leftMin* Ratio, -(forwardMax+config.spareDepth)*Ratio);
 		QPoint temp;
 
 		if (bottomLeft.y() < topRight.y())
