@@ -123,7 +123,7 @@ void CloudViewerWin::Stop()
 	viewer.reset();
 #endif
 
-	sourceProjector.reset();
+	if (sourceProjector.get()) sourceProjector.reset();
 	LoopedWorker::Stop();
 }
 
@@ -329,7 +329,8 @@ void CloudViewerWin::UpdateFromGlobalConfig()
 	SetDisplayUnderZero(bDisplayUnderZero);
 
 	// Update the ReceiverChannel ranges
-	int channelQty = sourceProjector->GetChannelQty();
+	int channelQty = 0;
+	if (sourceProjector.get()) channelQty = sourceProjector->GetChannelQty();
 	for (int channelID = 0; channelID < channelQty; channelID++)
 	{
 		sourceProjector->GetChannel(channelID)->SetRangeMax(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange);
