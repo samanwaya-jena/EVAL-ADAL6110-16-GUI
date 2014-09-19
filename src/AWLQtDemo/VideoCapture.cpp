@@ -129,10 +129,10 @@ cameraID(inCameraID)
 //			xiSetParamInt(ximeaHandle, XI_PRM_SHUTTER_TYPE, XI_SHUTTER_GLOBAL);
 
 			// Set color stuff
-
+#if 0
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AEAG, 1);  // Automatic exposure/gain enable
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AE_MAX_LIMIT, 80000); // Maximum exposure time, in microsec
-#if 1
+
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AG_MAX_LIMIT, 10.0); // Maximum limit of gain in AEAG procedure(dB).
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AEAG_LEVEL, 10);  //Average intensity of output signal AEAG should achieve(in %).
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_EXP_PRIORITY, 0.8);  // Priority Gain VS exposure. 0.0: Gain <------> 1.0 Exposure
@@ -140,11 +140,14 @@ cameraID(inCameraID)
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_GAMMAC, 80.0/100.0); // Chromaticity gamma. Default: 0.8
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_SHARPNESS, 0.0);  //Sharpness Strength. The range is -4 (less sharp) to +4 (more sharp). Default: 0.0 (neutral)
 #endif
+#if 0
 			xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AUTO_WB, 0);  // Auto white balance
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KR, 1.0);
 			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KG, 1.20);
-			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KB, 2.0);
-
+			xiRet = xiSetParamFloat(ximeaHandle, XI_PRM_WB_KB, 1.0);
+#else
+					xiRet = xiSetParamInt(ximeaHandle, XI_PRM_AUTO_WB, 1);  // Auto white balance
+#endif
 
 			float saturation  = (float)0.5;
 
@@ -169,7 +172,7 @@ cameraID(inCameraID)
 			colorCorrectionMatrix[3][2] = 1.0;
 			colorCorrectionMatrix[3][3] = 0.0;
 
-
+#if 1
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_00, colorCorrectionMatrix[0][0]);
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_01, colorCorrectionMatrix[0][1]);
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_02, colorCorrectionMatrix[0][2]);
@@ -189,11 +192,11 @@ cameraID(inCameraID)
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_31, colorCorrectionMatrix[3][1]);
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_32, colorCorrectionMatrix[3][2]);
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_33, colorCorrectionMatrix[3][3]);
-
-
+#endif
+#if 0
 			// Disable color management for performance reasons
 			xiSetParamInt(ximeaHandle, XI_PRM_CMS, XI_CMS_DIS);
-
+#endif
 
 			// Set the amount of downsampling to get decent frame rate.
 			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
