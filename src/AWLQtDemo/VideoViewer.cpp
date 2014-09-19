@@ -115,6 +115,7 @@ void VideoViewer::SpinOnce()
 		cameraFrame->copyTo(*workFrames[currentWorkFrameIndex]);
 
 		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
+		DisplayCrossHairs(cameraFrame, workFrames[currentWorkFrameIndex]);
 
 		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
 		//  In that case, do NOT reopen it.  The thread may be terminating.
@@ -283,6 +284,45 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	DrawDetectionLine(sourceFrame, targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, thickness);
 }
 
+void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame)
+{
+	int top;
+	int left;
+	int bottom;
+	int right;
+
+	CvRect rect;
+
+	cv::Vec3b color;
+	cv::Vec3b colorEnhance(255, 0, 255); // Yellow
+	cv::Vec3b colorDehance(0, 255, 0);
+	int thickness = 1;
+
+	// Paint a crosshair in the center of the image
+	int lineWidth = 30;
+	int lineHeight = 10;
+
+	CvPoint topCenter;
+	CvPoint bottomCenter;
+	CvPoint middleLeft;
+	CvPoint middleRight;
+
+	topCenter.x = frameWidth / 2;
+	topCenter.y = (frameHeight / 2) - (lineHeight / 2);
+
+	bottomCenter.x = frameWidth / 2;
+	bottomCenter.y = (frameHeight / 2) + (lineHeight / 2);
+
+	middleLeft.x = (frameWidth / 2) - (lineWidth/2);
+	middleLeft.y = (frameHeight / 2);
+
+	middleRight.x = (frameWidth / 2) + (lineWidth/2);
+	middleRight.y = (frameHeight / 2);
+
+	DrawContrastingLine(sourceFrame, targetFrame, topCenter, bottomCenter, thickness, 1);
+	DrawContrastingLine(sourceFrame, targetFrame, middleLeft, middleRight,  1, thickness);
+}
+
 void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness)
 
 {
@@ -412,3 +452,45 @@ void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCa
 }
 
 
+void VideoViewer::DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight)
+{
+	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
+
+	// alternative way of iterating through the line
+	for(int i = 0; i < lineIter.count; i++, ++lineIter)
+	{
+		cv::Point centerPos = lineIter.pos();
+		cv::Point pixelPos = centerPos;
+		pixelPos.x = centerPos.x - (iWidth /2);
+		for (int width = 0; width < iWidth; width++, pixelPos.x++)
+		{
+			pixelPos.y = centerPos.y + (iHeight / 2); 
+			for (int height = 0; height < iHeight; height++, pixelPos.y--)
+			{
+				if (pixelPos.x >= 0 && pixelPos.x < frameWidth && pixelPos.y >= 0 && pixelPos.y < frameHeight)
+				{
+					cv::Vec3b	color = sourceFrame->at<cv::Vec3b>(pixelPos);
+
+					int r = (int)color[0];
+					int g = (int)color[1];
+					int b = (int)color[2];
+
+					if (r + g + b > (3*128)) 
+					{
+						r = g = b  = 0;
+					}
+					else 
+					{
+						r = g = b = 255;
+					}
+
+					color[0] = r;
+					color[1] = g;
+					color[2] = b;
+
+					targetFrame->at<cv::Vec3b>(pixelPos) = color;
+				}
+			}
+		}
+	}
+}

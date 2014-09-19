@@ -112,6 +112,8 @@ protected:
 
 	void DisplayTarget(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
 
+	void DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame);
+
 protected:
 	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
 	void GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
@@ -126,7 +128,17 @@ protected:
 						 const CvPoint &startPoint, const CvPoint &endPoint,  
 						 const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, 
 						 int iWidth, int iHeight);
- 
+
+	/** \brief Draw a contrasting lineline over the target frame.
+	           We take the original background from the source frame. And paint the line gray: ligther on dark pixel, darker on light pixels;
+
+			   This way, we avoid a "pile-up" of enhancements that can be confusing.
+			   Since the detections are sorted in order of threatLevel, this insures that the most menacing threats 
+			   are always displayed correctly.
+      */
+
+	void DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight);
+
 protected:
      /** \brief Current video frame width. */
 	int frameWidth;
