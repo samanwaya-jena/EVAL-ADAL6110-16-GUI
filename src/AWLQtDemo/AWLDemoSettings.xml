@@ -30,7 +30,7 @@
     <!-- enableDemo:  
 	       when set to true, inject at startup and
 	       enable simulated feedback for common commands such as set/get registers -->
-    <enableDemo>false</enableDemo>
+    <enableDemo>true</enableDemo>
 
     <!-- injectType:
 	       0: ramp
@@ -87,18 +87,18 @@
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0</up>
+          <up>3.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>-0.0</yaw>
+          <yaw>0.0</yaw>
         </orientation>
       </sensorGeometry>
 
       <displayedRangeMin>0.5</displayedRangeMin>
       <displayedRangeMax>45</displayedRangeMax>
-      <rangeOffset>0.0</rangeOffset>
+      <rangeOffset>-1.9</rangeOffset>
 
       <channel>
         <!--channel 0: Short-range left -->
@@ -108,11 +108,11 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>-6.8</pitch>
+          <pitch>6.8</pitch>
           <roll>0.0</roll>
-          <yaw>15</yaw>
+          <yaw>15.0</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -128,11 +128,11 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>-6.8</pitch>
-          <roll>0</roll>
+          <pitch>6.8</pitch>
+          <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>15</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -148,11 +148,11 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>-6.8</pitch>
+          <pitch>6.8</pitch>
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -168,11 +168,11 @@
           <y>9.0</y>
         </fov>
         <orientation>
-          <pitch>-6.8</pitch>
+          <pitch>6.8</pitch>
           <roll>0.0</roll>
-          <yaw>-15</yaw>
+          <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -188,11 +188,11 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>-2.15</pitch>
+          <pitch>2.15</pitch>
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>40</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -208,11 +208,11 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>-2.15</pitch>
+          <pitch>2.15</pitch>
           <roll>0.0</roll>
-          <yaw>0</yaw>
+          <yaw>0.0</yaw>
         </orientation>
-        <maxRange>40</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -228,11 +228,11 @@
           <y>4.3</y>
         </fov>
         <orientation>
-          <pitch>-2.15</pitch>
+          <pitch>2.15</pitch>
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>40</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -249,7 +249,7 @@
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index.
+       XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
       <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
@@ -260,11 +260,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0</forward>
+        <forward>0.0</forward>
         <!-- lateral offet -->
         <left>0.0</left>
         <!-- height -->
-        <up>0</up>
+        <up>0.0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -305,10 +305,10 @@
 
     End Comment out unused cameras -->
 
-      <!-- Webcam -->
+      <!-- XIMEA with 3.6mm lensing -->
       <fov>
-        <x>45.0</x>
-        <y>39.0</y>
+        <x>96.75</x>
+        <y>72.5</y>
       </fov>
     </camera>
 
@@ -371,7 +371,7 @@
     <shortRangeAngle>40.0</shortRangeAngle>
     <shortRangeAngleStartLimited>20.0</shortRangeAngleStartLimited>
 
-    <longRangeDistance>45.0</longRangeDistance>
+    <longRangeDistance>30.0</longRangeDistance>
     <longRangeDistanceStartLimited>20.0</longRangeDistanceStartLimited>
     <longRangeAngle>13.0</longRangeAngle>
     <longRangeAngleStartLimited>13.0</longRangeAngleStartLimited>

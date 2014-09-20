@@ -739,7 +739,7 @@ bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID,
 
 	SphericalCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
 	SphericalCoord coordInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
-	coordInCamera.rho = 10;																				     // Place in projection Plane.
+	coordInCamera.rho = 10.0;																				     // Place in projection Plane.
 	CartesianCoord coordInCameraCart(coordInCamera);
 
 	// Remember: In relation to a body the standard convention is
@@ -747,7 +747,7 @@ bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID,
 	// Careful when converting to projected plane, where X is right and y is up
 
 	cameraX = frameWidthInPixels * (coordInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	cameraY = frameHeightInPixels * (coordInCameraCart.up-cameraBottomRight.up) / (cameraTopLeft.up- cameraBottomRight.up);
+	cameraY = frameHeightInPixels * (cameraTopLeft.up-coordInCameraCart.up) / (cameraTopLeft.up- cameraBottomRight.up);
 
 	return(true);
 }
@@ -770,7 +770,9 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 	{
 		ReceiverSettings &receiverSettings = globalSettings->receiverSettings[receiverID];
 		CartesianCoord receiverPosition(receiverSettings.sensorForward, receiverSettings.sensorLeft, receiverSettings.sensorUp);
-		Orientation receiverOrientation(receiverSettings.sensorRoll, receiverSettings.sensorPitch, receiverSettings.sensorYaw);
+		Orientation receiverOrientation(DEG2RAD(receiverSettings.sensorRoll), 
+			                            DEG2RAD(receiverSettings.sensorPitch), 
+										DEG2RAD(receiverSettings.sensorYaw));
 		TransformationNode::Ptr receiverNode = TransformationNode::Ptr(new TransformationNode(receiverPosition, receiverOrientation));
 		firstNode->AddChild(receiverNode);
 		receivers.push_back(receiverNode);
@@ -791,13 +793,15 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 	}
 
 	// Build a transformation matrix for the cameras
-	// Loop for the receivers
+	// Loop for the cameras
 	int cameraQty = globalSettings->cameraSettings.size();
 	for (int cameraID = 0; cameraID < cameraQty; cameraID++)
 	{
 		CameraSettings &cameraSettings = globalSettings->cameraSettings[cameraID];
 		CartesianCoord cameraPosition(cameraSettings.cameraForward, cameraSettings.cameraLeft, cameraSettings.cameraUp);
-		Orientation cameraOrientation(cameraSettings.cameraRoll, cameraSettings.cameraPitch, cameraSettings.cameraYaw);
+		Orientation cameraOrientation(DEG2RAD(cameraSettings.cameraRoll),
+									  DEG2RAD(cameraSettings.cameraPitch), 
+									  DEG2RAD(cameraSettings.cameraYaw));
 		TransformationNode::Ptr cameraNode = TransformationNode::Ptr(new TransformationNode(cameraPosition, cameraOrientation));
 		firstNode->AddChild(cameraNode);
 		cameras.push_back(cameraNode);

@@ -91,10 +91,12 @@ typedef float (TransformationRow)[4];
   * •z up
   * 
   *  Note that, in the case of cameras, there is often a different frame which uses a slightly 
-  *  different convention, not used here, where:
+  *  different convention, NOT USED HERE, where:
   * •z forward
   * •x right
   * •y down
+  * Excercice caution when specifying coordinates to make sure you always use the body standard, not the camera style reference.
+  * X is always forward.
   */
 
 
@@ -190,11 +192,11 @@ public:
 /** \brief The Orientation class defines the relative orientation of an object in a frame of reference. 
 	*  \notes
 	*  yaw is a counterclockwise rotation of $ \alpha$ about the $ z$-axis (looking right is yaw negative).
-	*  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis (looking down is pitch negative). 
-	 * roll is a counterclockwise rotation of $ \gamma$ about the $ x$-axis (rolling .
+	*  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis (looking down is pitch positive [since Y axis is oriented leftwards]). 
+	 * roll is a counterclockwise rotation of $ \gamma$ about the $ x$-axis (rolling rightwards is roll negative).
 	*  This meansd that, for a standard reference frame, where X axis is looking forward from the object:
 	*  - looking right is yaw negative.
-	*  - looking down is pitch negative. 
+	*  - looking down is pitch positive. 
 	 * - rolling to the right side is negative.
 
 	 * \reference: http://planning.cs.uiuc.edu/node102.html
