@@ -851,6 +851,12 @@ void AWLQtDemo::on_distanceLogCheckBox_setChecked(bool  bChecked)
 	}
 }
 
+void AWLQtDemo::on_videoCrosshairCheckBox_setChecked(bool  bChecked)
+{
+
+	AWLSettings::GetGlobalSettings()->bDisplayVideoCrosshair = bChecked;
+}
+
 void AWLQtDemo::on_timerTimeout()
 {
 	myTimer->stop();

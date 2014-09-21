@@ -31,7 +31,8 @@ pixelSize(1),
 colorStyle(0),
 cameraView(3),
 sLogoFileName(""),
-sIconFileName("")
+sIconFileName(""),
+bDisplayVideoCrosshair(false)
 
 {
 	cameraView = 3;
@@ -340,6 +341,9 @@ bool AWLSettings::ReadSettings()
 	threatLevelLowThreshold = propTree.get<float>("config.dynamicTesting.threatLevelLowThreshold");
 	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
+
+	bDisplayVideoCrosshair = propTree.get<bool>("config.video.displayCrosshair");
+
 
 	return(true);
 }

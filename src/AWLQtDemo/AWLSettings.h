@@ -284,7 +284,7 @@ public:
 	float viewerMaxRange;
 
 	// Video display options
-	bool bDisplayCrosshair;
+	bool bDisplayVideoCrosshair;
 
 	// Scope
 	int scopeTimerInterval;

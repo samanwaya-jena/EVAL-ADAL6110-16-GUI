@@ -76,6 +76,7 @@ private slots:
 	void on_targetHintDistanceSpin_editingFinished();
 	void on_targetHintAngleSpin_editingFinished();
 	void on_distanceLogCheckBox_setChecked(bool  bChecked);
+	void on_videoCrosshairCheckBox_setChecked(bool  bChecked);
 
 	void on_calibratePushButton_clicked();
 

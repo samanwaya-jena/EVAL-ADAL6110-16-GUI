@@ -7,14 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>315</height>
+    <height>316</height>
    </rect>
   </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-    <horstretch>0</horstretch>
+    <horstretch>200</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="sizeIncrement">
+   <size>
+    <width>5</width>
+    <height>5</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>AWLQtDemo</string>
@@ -569,7 +575,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -791,14 +797,14 @@ stop: 0.3 #808080
       <widget class="QPushButton" name="calibrateButton">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>50</x>
          <y>180</y>
-         <width>75</width>
+         <width>111</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Calibrate</string>
+        <string>&amp;Calibrate (Alt+C)</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -807,9 +813,6 @@ stop: 0.3 #808080
         <bool>false</bool>
        </property>
        <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-       <property name="default">
         <bool>false</bool>
        </property>
        <property name="flat">
@@ -1356,12 +1359,53 @@ stop: 0.3 #808080
         <rect>
          <x>20</x>
          <y>80</y>
-         <width>121</width>
+         <width>141</width>
          <height>17</height>
         </rect>
        </property>
        <property name="text">
-        <string>Logging Enabled</string>
+        <string>&amp;Logging Enabled (Alt+L)</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="videoAlignGroupBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>820</x>
+        <y>130</y>
+        <width>181</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Sensor Video Alignment</string>
+      </property>
+      <widget class="QCheckBox" name="videoCrosshairCheckbox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>151</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Display Cross&amp;hair (Alt+H)</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -4387,6 +4431,22 @@ color: rgb(255,255,255);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>videoCrosshairCheckbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_videoCrosshairCheckBox_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>909</x>
+     <y>228</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>984</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_colorImageRadioButton_setChecked(bool)</slot>
@@ -4432,6 +4492,6 @@ color: rgb(255,255,255);</string>
   <slot>on_calibrationRangeMax5Spin_editingFinished()</slot>
   <slot>on_calibrationRangeMax6Spin_editingFinished()</slot>
   <slot>on_algo4RadioButton_setChecked(bool)</slot>
-  <slot>slot1()</slot>
+  <slot>on_videoCrosshairCheckBox_setChecked(bool)</slot>
  </slots>
 </ui>

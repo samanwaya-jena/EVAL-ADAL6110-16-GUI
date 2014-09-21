@@ -119,8 +119,10 @@ void VideoViewer::SpinOnce()
 		cameraFrame->copyTo(*workFrames[currentWorkFrameIndex]);
 
 		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
-		DisplayCrossHairs(cameraFrame, workFrames[currentWorkFrameIndex]);
-
+		if (AWLSettings::GetGlobalSettings()->bDisplayVideoCrosshair)
+		{
+			DisplayCrossHairs(cameraFrame, workFrames[currentWorkFrameIndex]);
+		}
 
 		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
 		//  In that case, do NOT reopen it.  The thread may be terminating.

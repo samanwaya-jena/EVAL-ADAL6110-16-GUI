@@ -42,7 +42,7 @@
     <Filter Include="Installable DLLs">
       <UniqueIdentifier>{2288fec3-c645-4398-b66e-947cd4c5104a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Installable Plugins">
+    <Filter Include="Installable Files\Installable Plugins">
       <UniqueIdentifier>{7fc9c3c1-d6ce-4b0f-98c4-2562e15940fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -655,10 +655,10 @@
     </None>
     <None Include="plugin1.bin" />
     <None Include="..\InstallableDLLs\platforms\qwindows.dll">
-      <Filter>Installable Plugins</Filter>
+      <Filter>Installable Files\Installable Plugins</Filter>
     </None>
     <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
-      <Filter>Installable Plugins</Filter>
+      <Filter>Installable Files\Installable Plugins</Filter>
     </None>
     <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100.dll">
       <Filter>Installable DLLs</Filter>
