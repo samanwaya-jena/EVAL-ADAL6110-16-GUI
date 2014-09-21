@@ -330,7 +330,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		// This has to be done agfter the Go(), to make sure the window is created
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
-		    videoViewers[viewerID]->move(scr.left()+(viewerID*10), scr.top()+95+(viewerID*10));
+		    videoViewers[viewerID]->move(scr.left()+580, scr.top()+15+(viewerID*10));
 		}
 	}
 

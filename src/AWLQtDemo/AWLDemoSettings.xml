@@ -4,7 +4,7 @@
     <!-- default layout at startup.  Tells which windows and parts of
 	       screen are displayed. -->
     <display2DWindow>true</display2DWindow>
-    <displayTableViewWindow>true</displayTableViewWindow>
+    <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>false</displayScopeWindow>
     <displayCameraWindow>true</displayCameraWindow>
@@ -30,7 +30,7 @@
     <!-- enableDemo:  
 	       when set to true, inject at startup and
 	       enable simulated feedback for common commands such as set/get registers -->
-    <enableDemo>true</enableDemo>
+    <enableDemo>false</enableDemo>
 
     <!-- injectType:
 	       0: ramp
@@ -87,7 +87,7 @@
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>3.0</up>
+          <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -112,7 +112,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -132,7 +132,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -152,7 +152,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -172,7 +172,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>20</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -192,7 +192,7 @@
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>80</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -212,7 +212,7 @@
           <roll>0.0</roll>
           <yaw>0.0</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>80</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -232,7 +232,7 @@
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>20</maxRange>
+        <maxRange>80</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -241,7 +241,7 @@
       </channel>
     </receiver>
 
-   </receivers>
+  </receivers>
 
   <cameras>
     <camera>
@@ -251,12 +251,12 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1100</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>false</cameraFlip>
+      <cameraFlip>true</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->

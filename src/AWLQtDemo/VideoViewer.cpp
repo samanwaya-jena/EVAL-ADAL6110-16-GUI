@@ -25,8 +25,8 @@ const long flashPeriodMillisec = 300;		 // Period of the flashes used in the tar
 
 const int  workFrameQty = 3;  // Number of buffers. That may depend on the display lag of the systems.
 
-const int maxWindowWidth = 640;
-const int maxWindowHeight = 480;
+const int maxWindowWidth = 900;
+const int maxWindowHeight = 900;
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
 LoopedWorker(),
@@ -71,7 +71,11 @@ void  VideoViewer::Go()
 		// Create output window, only if it does not already exist
 		if (windowPtr == NULL)
 		{
-			cvNamedWindow(cameraName.c_str(), CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+//			cv::namedWindow(cameraName.c_str(), cv::WINDOW_NORMAL);
+//			cvNamedWindow(cameraName.c_str(), CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);//
+//			cv::namedWindow(cameraName.c_str(),  CV_NORMAL);
+			cv::namedWindow(cameraName.c_str(), cv::WINDOW_AUTOSIZE | CV_GUI_NORMAL);
+			cv::setWindowProperty(cameraName.c_str(), cv::WND_PROP_ASPECT_RATIO, 1);
 			SizeWindow();
 		}
 
@@ -79,13 +83,13 @@ void  VideoViewer::Go()
 		LoopedWorker::Go();
 	}
 }
- 
+	
 void  VideoViewer::Stop() 
 {
 	if (!mWorkerRunning) return;
 
 	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-	if (windowPtr != NULL) cvDestroyWindow(cameraName.c_str());
+	if (windowPtr != NULL) cv::destroyWindow(cameraName.c_str());
 
 	LoopedWorker::Stop();
 }
@@ -117,6 +121,7 @@ void VideoViewer::SpinOnce()
 		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
 		DisplayCrossHairs(cameraFrame, workFrames[currentWorkFrameIndex]);
 
+
 		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
 		//  In that case, do NOT reopen it.  The thread may be terminating.
 		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
@@ -136,32 +141,20 @@ void VideoViewer::SizeWindow()
 		const long nScreenWidth  = maxWindowWidth;
 		const long nScreenHeight = maxWindowHeight;
 
-		int height = 0, width = 0;
-		if(frameWidth > nScreenWidth || frameHeight >nScreenHeight)
+		int height = frameHeight * 2, width = frameWidth * 2;
+		while (width > nScreenWidth || height > nScreenHeight)
 		{
-			if((frameWidth/2) > nScreenWidth || (frameHeight/2) > nScreenHeight) 
-			{
-				width = frameWidth/4;
-				height = frameHeight /4;
-			} 
-			else 
-			{   
-				width = frameWidth / 2;
-				height = frameHeight /2; 
-			}
-		} 
-		else 
-		{   
-			width = frameWidth;
-			height = frameHeight; 
+			width /= 2;
+			height /=2;
 		}
 
-		cvResizeWindow(cameraName.c_str(), width, height);
+		cv::resizeWindow(cameraName.c_str(), nScreenWidth, nScreenHeight);
 }
+
 
 void VideoViewer::move(int left, int top)
 {
-	cvMoveWindow(cameraName.c_str(), left, top);
+	cv::moveWindow(cameraName.c_str(), left, top);
 }
 
 
@@ -259,29 +252,32 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 
 	// Inset the vertical lines horizontally, to compensate for line thickness.
 	//Draw the vertical lines
-	topLeft.x += (thickness/2);
-	topRight.x -=  (thickness - (thickness/2) - 1); // In case thickness is odd 
+	CvPoint startPoint;
+	CvPoint endPoint;
 
-	bottomLeft.x += (thickness/2); 
-	bottomRight.x -= (thickness - (thickness/2) -1); // in case thickness is odd
+	startPoint.x = topLeft.x - thickness/2;
+	startPoint.y = topLeft.y;
+	endPoint.x = topRight.x  + thickness/2;
+	endPoint.y = topRight.y;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
 
-	DrawDetectionLine(sourceFrame, targetFrame, topRight, bottomRight, colorEnhance, colorDehance, thickness, 1);
-	DrawDetectionLine(sourceFrame, targetFrame, topLeft, bottomLeft, colorEnhance, colorDehance, thickness, 1);
+	startPoint.x = bottomLeft.x - thickness/2;
+	startPoint.y = bottomLeft.y;
+	endPoint.x =bottomRight.x  + thickness/2;
+	endPoint.y = bottomRight.y;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
 
-	// Inset the horizontal lines vertically, to compensate for line height
-	topLeft.y -= thickness/2;
-	bottomLeft.y += (thickness - (thickness/2) -1);
-	topRight.y -= thickness/2;
-	bottomRight.y += (thickness - (thickness/2) -1);
+	startPoint.x = topLeft.x;
+	startPoint.y = topLeft.y + thickness/2;
+	endPoint.x = bottomLeft.x;
+	endPoint.y = bottomLeft.y - thickness/2;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
 
-	// Shorten the horizontal lines still, to avoid overlap with the verticals
-	topLeft.x += (thickness - (thickness/2));
-	topRight.x -= (thickness/2)+1;
-	bottomLeft.x += (thickness - (thickness/2));
-	bottomRight.x -= (thickness/2)+1;
-
-	DrawDetectionLine(sourceFrame, targetFrame, topLeft, topRight, colorEnhance, colorDehance, 1, thickness);
-	DrawDetectionLine(sourceFrame, targetFrame, bottomLeft, bottomRight, colorEnhance, colorDehance, 1, thickness);
+	startPoint.x = topRight.x;
+	startPoint.y = topRight.y + thickness/2;
+	endPoint.x = bottomRight.x;
+	endPoint.y = bottomRight.y - thickness/2;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
 }
 
 void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame)

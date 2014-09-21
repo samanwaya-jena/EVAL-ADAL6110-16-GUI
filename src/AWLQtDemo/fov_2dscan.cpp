@@ -329,7 +329,8 @@ void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
 	xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
 	float recommendedWidth = (xWidth*2)+125;
 	resize(recommendedWidth, recommendedHeight);
-	move(scr.right()-(recommendedWidth + horizontalDecorationsWidth), scr.top());
+//	move(scr.right()-(recommendedWidth + horizontalDecorationsWidth), scr.top());
+	move(scr.left(), scr.top());
 
 	zeroY = height() - (config.spareDepth * Ratio);
 	zeroX = width()/2;
