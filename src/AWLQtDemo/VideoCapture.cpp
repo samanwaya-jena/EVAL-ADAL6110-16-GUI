@@ -172,7 +172,7 @@ cameraID(inCameraID)
 			colorCorrectionMatrix[3][2] = 1.0;
 			colorCorrectionMatrix[3][3] = 0.0;
 
-#if 1
+#if 0
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_00, colorCorrectionMatrix[0][0]);
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_01, colorCorrectionMatrix[0][1]);
 			xiSetParamFloat(ximeaHandle, XI_PRM_CC_MATRIX_02, colorCorrectionMatrix[0][2]);
