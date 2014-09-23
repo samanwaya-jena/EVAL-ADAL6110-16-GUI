@@ -27,7 +27,7 @@ ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID,
 	fovWidthX(inFovWidth),
 	fovWidthY(inFovHeight),
 	fovCenterX(inCenterX),
-	fovCenterY(inCenterY),
+	fovCenterY(-inCenterY),  // In our world, pitch is clowckwise, whereas elsewere is counterclockwise.
 	rangeMax(inRangeMax), 
 	displayColorR(inDisplayColorR),
 	displayColorG(inDisplayColorG),
