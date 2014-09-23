@@ -318,7 +318,7 @@ void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
 	int minWidth = (xWidth*2)+125;
     setMinimumSize(minWidth, minHeight);
 
-	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
+	QRect scr = QApplication::desktop()->availableGeometry();
 	QRect frame = frameGeometry();
 	QRect client = geometry();
 	int verticalDecorationsHeight = frame.height() - client.height();

@@ -54,7 +54,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings();
 
-#if 1
+#if 0
 
 	// Test the coordinates system
 	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
@@ -79,8 +79,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Position the main widget on the top left corner
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
+	QRect frame = frameGeometry();
+	QRect client = geometry();
+	int verticalDecorationsHeight = frame.height() - client.height();
+	int horizontalDecorationsWidth = frame.width() - client.width();
+
 	show();
-	move(scr.left(),  scr.top()); 
+	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
 
 
 	// In demo mode, put demo mode in window title
@@ -90,9 +95,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 
+
 	// Adjust the default displayed ranges depending on the sensor capabilities
 	AdjustDefaultDisplayedRanges();
-
 
 	// Create the receiver communication objects
 	int receiverQty = globalSettings->receiverSettings.size();
@@ -218,23 +223,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
 	 scopeWindow = new AWLQtScope();
-	 //scopeWindow->show();
+	 if (ui.actionGraph->isChecked()) 
+	 {
+		 scopeWindow->show();
+	 }
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
 	m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
-
-	// Place the 2D view in the screen
-
-	int frameWindowWidth = 712;
-	m2DScan->move(scr.right()-frameWindowWidth, scr.top());
-	m2DScan->show();
-	QRect frame = m2DScan->frameGeometry();
-	QRect client = m2DScan->geometry();
-	int verticalDecorationsHeight = frame.height() - client.height();
-	int horizontalDecorationsWidth = frame.width() - client.width();
-	m2DScan->resize(frameWindowWidth-horizontalDecorationsWidth, scr.height() - verticalDecorationsHeight);
-
 	mCfgSensor.shortRangeDistance = globalSettings->shortRangeDistance;
     mCfgSensor.shortRangeDistanceStartLimited = globalSettings->shortRangeDistanceStartLimited;
     mCfgSensor.shortRangeAngle = globalSettings->shortRangeAngle;
@@ -253,40 +249,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	mTableView = new TableView();
 	mTableView->setWindowTitle(this->windowTitle() + " Table View");
 
-	// Place the table view in the top left of screen
-
-	mTableView->move(scr.left(), scr.top());
-	mTableView->show();
-	frame = mTableView->frameGeometry();
-	client = mTableView->geometry();
-	verticalDecorationsHeight = frame.height() - client.height();
-	horizontalDecorationsWidth = frame.width() - client.width();
-	mTableView->resize(client.width(), scr.height() - verticalDecorationsHeight);
-
-	mTableView->slotConfigChanged();
-
-	// Calibration 
-
-	// Menu items signals and slots
-	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
-	connect(ui.actionTableView, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
-	connect(ui.actionCamera, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
-	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
-	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
-
-	connect(ui.actionQuitter, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
-	// View signals and slots on close
-	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
-	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
-	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
-
-
 	// Start the threads for background  receiver capture objects
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
 	{ 
 		receiverCaptures[receiverID]->Go();
 	}
-
 
 	// Start the threads for background video capture objects
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
@@ -301,38 +268,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initial Update the various status indicators on the display
 	DisplayReceiverStatus();
-
-	// Start the threads and display the windows if they are defined as startup in the ini file
-	if (globalSettings->bDisplay2DWindow) 
-	{
-		ui.action2D->toggle();
-	}
-
-	if (globalSettings->bDisplayTableViewWindow) 
-	{
-		ui.actionTableView->toggle();
-	}
-
-	if (globalSettings->bDisplay3DWindow) 
-	{
-		ui.action3D_View->toggle();
-	}
-	
-	if (globalSettings->bDisplayScopeWindow)
-	{
-		ui.actionGraph->toggle();
-	}
-
-	if (globalSettings->bDisplayCameraWindow)
-	{
-		ui.actionCamera->toggle();
-		// Position the video viewer.
-		// This has to be done agfter the Go(), to make sure the window is created
-		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
-		{
-		    videoViewers[viewerID]->move(scr.left()+580, scr.top()+15+(viewerID*10));
-		}
-	}
 
 	switch (globalSettings->defaultParametersAlgos.defaultAlgo)
 	{
@@ -367,7 +302,27 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		break;
 
 	}
+		// Menu items signals and slots
+	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
+	ui.action2D->setChecked(globalSettings->bDisplay2DWindow);
 
+	connect(ui.actionTableView, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
+	ui.actionTableView->setChecked(globalSettings->bDisplayTableViewWindow);
+
+	connect(ui.actionCamera, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
+	ui.actionCamera->setChecked(globalSettings->bDisplayCameraWindow);
+
+	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
+	ui.actionGraph->setChecked(globalSettings->bDisplayScopeWindow);
+
+	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
+	ui.action3D_View->setChecked(globalSettings->bDisplay3DWindow);
+
+	connect(ui.actionQuitter, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
+	// View signals and slots on close
+	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
+	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
+	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
@@ -794,6 +749,13 @@ void AWLQtDemo::on_measurementOffsetSpin_editingFinished()
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].rangeOffset = offset;
 
 }
+
+void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
+
+{
+	AWLSettings::GetGlobalSettings()->StoreReceiverCalibration();
+}
+
 
 
 void AWLQtDemo::on_calibratePushButton_clicked()
@@ -1667,15 +1629,31 @@ void AWLQtDemo::on_view3DActionToggled()
 void AWLQtDemo::on_view2DActionToggled()
 {
 	if (ui.action2D->isChecked())
+	{
 		m2DScan->show();
+		m2DScan->slotConfigChanged(mCfgSensor);  // Force redraw with the current video parameters
+	}
 	else
 		m2DScan->hide();
 }
 
 void AWLQtDemo::on_viewTableViewActionToggled()
 {
-	if (ui.actionTableView->isChecked())
+	if (ui.actionTableView->isChecked()) 
+	{
+		// Place the table view in the top left of screen
+		QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
+
+		mTableView->move(scr.left(), scr.top());
 		mTableView->show();
+		QRect frame = mTableView->frameGeometry();
+		QRect client = mTableView->geometry();
+		int verticalDecorationsHeight = frame.height() - client.height();
+		int horizontalDecorationsWidth = frame.width() - client.width();		
+		mTableView->resize(client.width(), scr.height() - verticalDecorationsHeight);
+
+		mTableView->slotConfigChanged();
+	}
 	else
 		mTableView->hide();
 }
@@ -1701,6 +1679,12 @@ void AWLQtDemo::on_viewCameraActionToggled()
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) videoViewers[viewerID]->Go();
+
+		// Position the video viewer.
+		// This has to be done agfter the Go(), to make sure the window is created
+		QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
+		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
+		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
 		}
 	}
 

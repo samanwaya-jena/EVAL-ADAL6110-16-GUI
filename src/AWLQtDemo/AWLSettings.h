@@ -201,6 +201,12 @@ public:
       */
 	AlgorithmParameter *AWLSettings::FindAlgoParamByAddress(int receiverID, int AlgoID, uint16_t inAddress);
 
+
+	/** \brief Stores the current receiver calibration settings
+		* \return true if storage processe dwithout error. False in case of a storage error.
+      */
+	bool AWLSettings::StoreReceiverCalibration();
+
 public:
 	// Default register configurations
 

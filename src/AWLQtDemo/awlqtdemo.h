@@ -78,6 +78,7 @@ private slots:
 	void on_distanceLogCheckBox_setChecked(bool  bChecked);
 	void on_videoCrosshairCheckBox_setChecked(bool  bChecked);
 
+	void on_receiverCalibStorePushButton_clicked();
 	void on_calibratePushButton_clicked();
 
 	void on_registerFPGASetPushButton_clicked();

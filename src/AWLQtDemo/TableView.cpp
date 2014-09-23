@@ -66,7 +66,7 @@ void TableView::createAction()
 	}
 
 	connect(groupDetectionsPerChannel, SIGNAL(triggered(QAction*)), this, SLOT(slotDetectionsPerChannelAction()));
-
+	PrepareTableViews();
 }
 
 void TableView::slotDetectionsPerChannelAction()

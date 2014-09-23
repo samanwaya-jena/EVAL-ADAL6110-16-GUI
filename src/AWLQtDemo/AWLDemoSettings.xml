@@ -41,6 +41,10 @@
     <injectType>3</injectType>
   </demoMode>
 
+  <video>
+    <displayCrosshair>false</displayCrosshair>
+  </video>
+  
   <calibration>
     <distanceScale>1.0</distanceScale>
     <targetHintDistance>0.0</targetHintDistance>
@@ -87,7 +91,7 @@
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0.0</up>
+          <up>1.3</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -96,9 +100,9 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>0.5</displayedRangeMin>
+      <displayedRangeMin>1.0</displayedRangeMin>
       <displayedRangeMax>45</displayedRangeMax>
-      <rangeOffset>-1.9</rangeOffset>
+      <rangeOffset>-0.75</rangeOffset>
 
       <channel>
         <!--channel 0: Short-range left -->
@@ -260,11 +264,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0.0</forward>
+        <forward>0</forward>
         <!-- lateral offet -->
         <left>0.0</left>
         <!-- height -->
-        <up>0.0</up>
+        <up>1.3</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>

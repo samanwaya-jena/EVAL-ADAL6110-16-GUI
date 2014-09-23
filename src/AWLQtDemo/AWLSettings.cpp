@@ -20,6 +20,11 @@ void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y);
 void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
 void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
 
+void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
+void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);
+void Put2DPoint(boost::property_tree::ptree &node, float x, float y);
+void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
+void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue);
 AWLSettings *AWLSettings::globalSettings=NULL;
 
 AWLSettings::AWLSettings():
@@ -348,6 +353,76 @@ bool AWLSettings::ReadSettings()
 	return(true);
 }
 
+bool AWLSettings::StoreReceiverCalibration()
+
+{
+	// Create an empty property tree object
+    using boost::property_tree::ptree;
+    ptree propTree;
+
+	// Load the XML file into the property tree. If reading fails
+    // (cannot open file, parse error), an exception is thrown.
+    read_xml(sFileName, propTree);
+
+
+#if 0
+	// Loop for all Receiver Configurations
+	BOOST_FOREACH(ptree::value_type &receiversNode, propTree.get_child("config.receivers"))
+	{
+		if( receiversNode.first == "receiver" ) 
+		{
+			boost::property_tree::ptree &receiverNode = receiversNode.second;
+			ReceiverSettings receiver;
+
+			receiverNode.put<std::string>("receiverType", receiver.sReceiverType);
+			receiverNode.put<uint8_t>("channelMask", receiver.receiverChannelMask);
+			receiverNode.put<uint8_t>("frameRate", receiver.receiverFrameRate);
+
+			// Geometry
+			boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
+			PutGeometry(geometryNode, 
+				receiver.sensorForward, receiver.sensorLeft, receiver.sensorUp,
+				receiver.sensorPitch, receiver.sensorYaw, receiver.sensorRoll);
+
+			// Display
+			receiverNode.put<float>("displayedRangeMin", receiver.displayedRangeMin);
+			receiverNode.put<float>("displayedRangeMax", receiver.displayedRangeMax);
+			receiverNode.put<float>("rangeOffset", receiver.rangeOffset);
+
+			// All channel info for the receiver
+			BOOST_FOREACH(ptree::value_type &channelsNode, receiverNode)
+			{
+				if( channelsNode.first == "channel" ) 
+				{
+					boost::property_tree::ptree &channelNode = channelsNode.second;
+					ChannelConfig channelConfig;
+
+					channelNode.put<int>("index", channelConfig.channelIndex);
+					Put2DPoint(channelNode.get_child("fov"), channelConfig.fovWidth, channelConfig.fovHeight);
+					float roll = 0.0;
+					PutOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
+					channelNode.put<float>("maxRange", channelConfig.maxRange);
+
+					PutColor(channelNode.get_child("displayColor"), 
+						channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
+
+					channelsNode->add_child(channelNode);
+				}// if( receiversNode.first == "channel"
+
+			} // BOOST_FOREACH(ptree::value_type &channelsNode
+			receiverNode.put_child(channelsNode);
+		} // If receiversNode.first == "receiver"
+		receiversNode.put_child(receiverNode);
+	} // BOOST_FOREACH(ptree::value_type &receiversNode, propT
+	proptree->put_child(receiversNode);
+#endif
+	// Write the XML file into the property tree. If reading fails
+    // (cannot open file, parse error), an exception is thrown.
+	 boost::property_tree::xml_writer_settings<char> set(' ', 4);
+	write_xml("test.xml", propTree, std::locale(), set);
+
+	return (true);
+}
 
 int AWLSettings::FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress)
 
@@ -447,6 +522,42 @@ void GetColor(boost::property_tree::ptree &colorNode, uint8_t &red, uint8_t &gre
 	red = colorNode.get<uint8_t>("red");
 	green = colorNode.get<uint8_t>("green");
 	blue = colorNode.get<uint8_t>("blue");
+}
+
+
+void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up)
+{
+	node.put<float>("forward", forward);
+	node.put<float>("left", left);
+	node.put<float>("up", up);
+}
+
+void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll)
+{
+	node.put<float>("pitch", pitch);
+	node.put<float>("yaw", yaw);
+	node.put<float>("roll", roll);
+}
+
+void Put2DPoint(boost::property_tree::ptree &node, float x, float y)
+{
+	node.put<float>("x", x);
+	node.put<float>("y", y);
+}
+
+void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll)
+{
+	boost::property_tree::ptree &positionNode = geometryNode.get_child("position");
+	boost::property_tree::ptree &orientationNode = geometryNode.get_child("orientation");
+	PutPosition(positionNode, forward, left, up);
+	PutOrientation(orientationNode, pitch, yaw, roll);
+}
+
+void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue)
+{
+	colorNode.get<uint8_t>("red");
+	colorNode.get<uint8_t>("green");
+	colorNode.get<uint8_t>("blue");
 }
 
 
