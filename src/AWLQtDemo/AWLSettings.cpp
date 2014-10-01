@@ -102,6 +102,7 @@ bool AWLSettings::ReadSettings()
         }
     }
  
+	// Read all GPIO Registers default descriptions
  	BOOST_FOREACH(ptree::value_type &registersGPIONode, propTree.get_child("config.GPIOs"))
 	{
 		if( registersGPIONode.first == "register" ) 
@@ -133,7 +134,6 @@ bool AWLSettings::ReadSettings()
 			// All channel info for the receiver
 			BOOST_FOREACH(ptree::value_type &parametersNode, algoNode/*.get_child("parameter")*/)
 			{
-#if 1
 				if( parametersNode.first == "parameter" ) 
 				{
 					boost::property_tree::ptree &parameterNode = parametersNode.second;
@@ -158,29 +158,6 @@ bool AWLSettings::ReadSettings()
 					parameter.pendingUpdates = 0;
 					algoDescription.parameters.push_back(parameter);
 				} // if (parametersNode.first)
-#else
-					boost::property_tree::ptree &parameterNode = parametersNode.second;
-					AlgorithmParameter parameter;
-					parameter.sIndex = parameterNode.get<std::string>("index");
-					parameter.sIndex = parameterNode.get<uint16_t>("address");
-					parameter.sDescription = parameterNode.get<std::string>("description");
-					std::string sType = parameterNode.get<std::string>("type");
-					if (!sType.compare("int")) 
-					{
-						parameter.paramType = eAlgoParamInt;
-						parameter.intValue = parameterNode.get<uint32_t>("default");
-						parameter.floatValue = 0.0;
-					}
-					else if (!sType.compare("float")) 
-					{
-						parameter.paramType = eAlgoParamFloat;
-						parameter.intValue = 0;
-						parameter.floatValue = parameterNode.get<float>("default");
-					}
-
-					parameter.pendingUpdates = 0;
-					algoDescription.parameters.push_back(parameter);
-#endif
 			} // BOOST_FOREACH (parametersNode)
 
 			defaultParametersAlgos.algorithms.push_back(algoDescription);
@@ -202,10 +179,6 @@ bool AWLSettings::ReadSettings()
 
 			// Communication parameters
 			receiver.sCommPort =  receiverNode.get<std::string>("commPort");
-			receiver.serialPortRate =  receiverNode.get<long>("serialPortRate");
-			receiver.sCANBitRate = receiverNode.get<std::string>("bitRate");
-			receiver.yearOffset = receiverNode.get<uint16_t>("yearOffset");
-			receiver.monthOffset = receiverNode.get<uint16_t>("monthOffset");
 
 			// Messages enabled
 			receiver.msgEnableObstacle = receiverNode.get<bool>("msgEnableObstacle");
@@ -246,11 +219,6 @@ bool AWLSettings::ReadSettings()
 				}// if( receiversNode.first == "channel"
 			} // BOOST_FOREACH(ptree::value_type &channelsNode
 
-			// Copy default register, adc, GPIO and algo settings into each receiver
-			receiver.registersFPGA = defaultRegistersFPGA;
-			receiver.registersADC = defaultRegistersADC;
-			receiver.registersGPIO = defaultRegistersGPIO;
-			receiver.parametersAlgos = defaultParametersAlgos;
 			// Store
 			receiverSettings.push_back(receiver);
 		} //if ( receiversNode.first == "receiver" 
@@ -299,7 +267,6 @@ bool AWLSettings::ReadSettings()
 	sLogoFileName = propTree.get<std::string>("config.layout.logoFileName");
 	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
 
-	distanceScale =  propTree.get<float>("config.calibration.distanceScale");
 	targetHintDistance = propTree.get<float>("config.calibration.targetHintDistance");
 	targetHintAngle = propTree.get<float>("config.calibration.targetHintAngle");
 
@@ -424,70 +391,6 @@ bool AWLSettings::StoreReceiverCalibration()
 	return (true);
 }
 
-int AWLSettings::FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress)
-
-{
-	if (receiverID >= receiverSettings.size()) return(-1);
-
-	const RegisterSet *registersFPGA  = &(receiverSettings.at(receiverID).registersFPGA);
-	for (int i = 0; i < registersFPGA->size(); i++) 
-	{
-		if (registersFPGA->at(i).address == inAddress)
-		{
-			return(i);
-		}
-	}
-
-	return(-1);
-}
-
-int AWLSettings::FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress)
-
-{
-	if (receiverID >= receiverSettings.size()) return(-1);
-
-	const RegisterSet *registersADC  = &(receiverSettings.at(receiverID).registersADC);
-	for (int i = 0; i < registersADC->size(); i++) 
-	{
-		if (registersADC->at(i).address == inAddress)
-		{
-			return(i);
-		}
-	}
-
-	return(-1);
-}
-
-int AWLSettings::FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress)
-
-{
-	if (receiverID >= receiverSettings.size()) return(-1);
-
-	const RegisterSet *registersGPIO  = &(receiverSettings.at(receiverID).registersGPIO);
-	for (int i = 0; i < registersGPIO->size(); i++) 
-	{
-		if (registersGPIO->at(i).address == inAddress)
-		{
-			return(i);
-		}
-	}
-
-	return(-1);
-}
-
-AlgorithmParameter * AWLSettings::FindAlgoParamByAddress(int receiverID, int algoID, uint16_t inAddress)
-{
-
-	for (int i = 0; i < receiverSettings[receiverID].parametersAlgos.algorithms[algoID].parameters.size(); i++) 	
-	{
-		if ( receiverSettings[receiverID].parametersAlgos.algorithms[algoID].parameters[i].address == inAddress)
-		{
-			return(&receiverSettings[receiverID].parametersAlgos.algorithms[algoID].parameters[i]);
-		}
-	}
-
-	return(NULL);
-}
 
 void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up)
 {

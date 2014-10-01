@@ -25,11 +25,7 @@ using namespace std;
 using namespace awl;
 
 // Text update rate, in frame per seconds
-#if 1
 #define LOOP_RATE	30
-#else
-#define LOOP_RATE	20
-#endif
 
 TransformationNode::Ptr myBaseNode;
 
@@ -54,29 +50,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings();
 
-#if 0
-
-	// Test the coordinates system
-	TransformationNode::List receiverCoords = AWLCoordinates::GetReceivers();
-	SphericalCoord sphericalPointInChannel(10, M_PI_2, 0);
-	CartesianCoord cartesianPointInWorld0 = receiverCoords[0]->children[0]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld1 = receiverCoords[0]->children[1]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld2 = receiverCoords[0]->children[2]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld3 = receiverCoords[0]->children[3]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld4 = receiverCoords[0]->children[4]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld5 = receiverCoords[0]->children[5]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	CartesianCoord cartesianPointInWorld6 = receiverCoords[0]->children[6]->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-
-	TransformationNode::List cameraCoords = AWLCoordinates::GetCameras();
-	SphericalCoord worldPoint = cameraCoords[0]->FromReferenceCoord(eCameraToWorldCoord, cartesianPointInWorld0);
-#endif
-
-
-	// Fill the parameters  tables from the settings
-	FillFPGAList(globalSettings);
-	FillADCList(globalSettings);
-	FillGPIOList(globalSettings);
-
 	// Position the main widget on the top left corner
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
 	QRect frame = frameGeometry();
@@ -94,8 +67,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		this->setWindowTitle(this->windowTitle()+" [DEMO Mode]");
 	}
 
-
-
 	// Adjust the default displayed ranges depending on the sensor capabilities
 	AdjustDefaultDisplayedRanges();
 
@@ -107,7 +78,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file, and by default
-			receiverCaptures.push_back(ReceiverCapture::Ptr((ReceiverCapture *) new ReceiverCANCapture(receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size())));
+			ReceiverCapture * capturePtr = new ReceiverCANCapture(receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size(), globalSettings->receiverSettings[receiverID].sCommPort,
+																	globalSettings->defaultRegistersFPGA, 
+																	globalSettings->defaultRegistersADC, 
+																	globalSettings->defaultRegistersGPIO,
+																	globalSettings->defaultParametersAlgos);
+
+			receiverCaptures.push_back(ReceiverCapture::Ptr(capturePtr));
 		}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
@@ -134,6 +111,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID])));
 	}
 
+	// Fill the parameters  tables from the settings
+	FillFPGAList(globalSettings);
+	FillADCList(globalSettings);
+	FillGPIOList(globalSettings);
+
+	// Prepare the parameters view
 	PrepareParametersView();
 	PrepareGlobalParametersView();
 
@@ -624,13 +607,6 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 {
 	double range = ui.sensorRangeMinSpinBox->value();
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMin = range;
-#if 1
-	if (receiverCaptures[0]) 
-	{
-		receiverCaptures[0]->SetMinDistance(range);
-	}
-#endif
-
 }
 
 void AWLQtDemo::ChangeRangeMax(int channelID, double range)
@@ -658,11 +634,6 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 
 
 	// Update user interface parts
-	if (receiverCaptures[0]) 
-	{
-		receiverCaptures[0]->SetMaxDistance(channelID, range);
-	}
-
 	if (cloudViewer) 
 	{
 		cloudViewer->UpdateFromGlobalConfig();	
@@ -903,6 +874,7 @@ void AWLQtDemo::on_timerTimeout()
 	}
 
 
+	// Let's go for the next run
 	if (bContinue)
 	{
 		myTimer->start(LOOP_RATE);
@@ -922,10 +894,12 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
+		ReceiverSettings &receiverSettings = settings->receiverSettings[receiverID];
+
+
 		// Use the frame snapped by the main display timer as the current frame
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
 		uint32_t lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
-
 		if (receiver->HasNews(subscriberID))
 		{
 			bNew = true;	
@@ -948,8 +922,8 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 					for (int i = 0; i < detectionQty; i++)
 					{
 						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= receiver->GetMinDistance()) && 
-							(detection->distance <= receiver->GetMaxDistance(channelID))) 
+						if ((detection->distance >= receiverSettings.displayedRangeMin) && 
+							(detection->distance <=  receiverSettings.channelsConfig[channelID].maxRange)) 
 						{
 							Detection::Ptr storedDetection = detection;
 							detectionData.push_back(storedDetection);
@@ -960,6 +934,7 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 			}
 		}
 	}
+
 	return(bNew);
 }
 
@@ -1173,10 +1148,10 @@ void AWLQtDemo::PrepareParametersView()
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1250,14 +1225,13 @@ void AWLQtDemo::UpdateParametersView()
 
 {
 	int currentAlgo;
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1304,14 +1278,13 @@ void AWLQtDemo::UpdateParametersView()
 void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 {
 	int currentAlgo;
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1361,14 +1334,13 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 {
 	int currentAlgo;
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = settingsPtr->receiverSettings[0].parametersAlgos.defaultAlgo;
+		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1401,10 +1373,9 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 void AWLQtDemo::PrepareGlobalParametersView()
 
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1477,10 +1448,9 @@ void AWLQtDemo::PrepareGlobalParametersView()
 void AWLQtDemo::UpdateGlobalParametersView()
 
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1526,10 +1496,9 @@ void AWLQtDemo::UpdateGlobalParametersView()
 
 void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1578,10 +1547,9 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 
 void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
 	int currentAlgo = 0;
 
-	AlgorithmParameterVector algoParameters = settingsPtr->receiverSettings[0].parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1715,11 +1683,11 @@ void AWLQtDemo::on_viewGraphClose()
 
 void AWLQtDemo::FillFPGAList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersFPGA.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++) 
 	{
-		QString sLabel = settingsPtr->receiverSettings[0].registersFPGA[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersFPGA[i].sDescription.c_str();
+		sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
 		ui.registerFPGAAddressSetComboBox->addItem(sLabel);
 	}
 
@@ -1735,8 +1703,7 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->receiverSettings[0].registersFPGA[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
 
 	sValue = ui.registerFPGAValueSetLineEdit->text();
 	bool ok;
@@ -1769,8 +1736,7 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->receiverSettings[0].registersFPGA[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
 
 	// Now update user interface
 	ui.registerFPGAAddressGetLineEdit->setText("");
@@ -1785,11 +1751,11 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersADC.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
 	{
-		QString sLabel = settingsPtr->receiverSettings[0].registersADC[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersADC[i].sDescription.c_str();
+		sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
 		ui.registerADCAddressSetComboBox->addItem(sLabel);
 	}
 
@@ -1805,8 +1771,7 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	int comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->receiverSettings[0].registersADC[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
 
 	sValue = ui.registerADCValueSetLineEdit->text();
 	bool ok;
@@ -1839,8 +1804,7 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 	int comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	registerAddress = settingsPtr->receiverSettings[0].registersADC[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
 
 	// Now update user interface
 	ui.registerADCAddressGetLineEdit->setText("");
@@ -1856,12 +1820,12 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 
 void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
 {
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
-		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
+		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}
@@ -1878,21 +1842,19 @@ void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
 
 void AWLQtDemo::UpdateGPIOList()
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
 
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
-		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
+		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}
 	
-		if (settingsPtr->receiverSettings[0].registersGPIO[i].value) 
+		if (receiverCaptures[0]->registersGPIO[i].value) 
 		{
 			listItem->setCheckState(Qt::Checked);
 		}
@@ -1905,12 +1867,10 @@ void AWLQtDemo::UpdateGPIOList()
 
 void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
-		uint16_t registerAddress = settingsPtr->receiverSettings[0].registersGPIO[i].address;
+		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
 		uint32_t registerValue = 0;
 
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
@@ -1928,10 +1888,10 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 		}
 
 		// Update the user interface
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
-		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
+		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}		
@@ -1942,12 +1902,10 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 
 void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < settingsPtr->receiverSettings[0].registersGPIO.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
-		uint16_t registerAddress = settingsPtr->receiverSettings[0].registersGPIO[i].address;
+		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
 
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
 	
@@ -1958,10 +1916,10 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 		}
 
 		// Update the user interface
-		QString sLabel = settingsPtr->receiverSettings[0].registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += settingsPtr->receiverSettings[0].registersGPIO[i].sDescription.c_str();
-		if (settingsPtr->receiverSettings[0].registersGPIO[i].pendingUpdates)
+		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
 		{
 			sLabel += " -- UPDATING...";
 		}		

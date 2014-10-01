@@ -60,10 +60,25 @@ public:
 
 	/** \brief ReceiverCANCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
-	    * \param[in] inReceiverChannelQty index of the required channel
+	    * \param[in] inReceiverChannelQty number of channels in the receiver
       */
 
 	ReceiverCANCapture(int receiverID, int inReceiverChannelQty);
+
+	/** \brief ReceiverCANCapture constructor.
+ 	    * \param[in] inReceiverID  unique receiverID
+	    * \param[in] inReceiverChannelQty number of channels in the receiver
+		* \param[in] inSerialPort name of the serial port for the receiver
+		* \param[in] inRegistersFPGA default description of the FPGA registers
+		* \param[in] inRegistersADC default description of the ADC registers
+		* \param[in] inRegistersGPIO default description of the GPIO registers
+        * \param[in] inParametersAlgos default description if the algorithm parameters
+      */
+
+	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, 
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
+
+
 
 	/** \brief ReceiverCANCapture Destructor.  Insures that all threads are stopped before destruction.
       */

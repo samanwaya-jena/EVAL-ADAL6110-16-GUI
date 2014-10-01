@@ -89,13 +89,6 @@ namespace awl
 
 	typedef struct ReceiverSettings
 	{
-	RegisterSet registersFPGA;
-	RegisterSet registersADC;
-	RegisterSet registersGPIO;
-	
-	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
-	AlgorithmSet parametersAlgos;
-
 	// Channel configuration
 	ChannelConfigVector channelsConfig;
 
@@ -106,11 +99,6 @@ namespace awl
 
 	// Receiver communications port config
 	std::string sCommPort;       // Default is "COM16"
-	long serialPortRate;		// In bpschannelMask
-	std::string sCANBitRate;		// "S8" for 1Mbps.  Specific to the CAN driver used.
-	uint16_t yearOffset;		   // All sensor Dates are offset from 1900
-	uint16_t monthOffset;		// All sensor months start at 0.  Posix starts aty 1.
-	
 	
 	// Messages enabled
 	bool msgEnableObstacle;
@@ -119,7 +107,7 @@ namespace awl
 	bool msgEnableIntensity_1_4;
 	bool msgEnableIntensity_5_8;
 
-	// Calibration parameters
+	// Geometry parameters
 	float sensorForward;
 	float sensorLeft;
 	float sensorUp;
@@ -164,43 +152,6 @@ public:
 	AWLSettings();
 	bool ReadSettings();
 
-	/** \brief Return the index of the FPGA RegisterSetting for the object that
-	           has the address specified.
-    * \param[in] inReceiver the receiver for which we want the register read
-	* \param[in] inAddress the register address
-	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
-
-      */
-	int FindRegisterFPGAByAddress(ReceiverID receiverID, uint16_t inAddress);
-
-	/** \brief Return the index of the ADC RegisterSetting for the object that
-	           has the address specified.
-    * \param[in] inReceiver the receiver for which we want the register read
-	* \param[in] inAddress the register address
-	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
-
-      */
-	int FindRegisterADCByAddress(ReceiverID receiverID, uint16_t inAddress);
-
-	/** \brief Return the index of the GPIO RegisterSetting for the object that
-	           has the address specified.
-     * \param[in] inReceiver the receiver for which we want the register read
-	 * \param[in] inAddress the register address
-	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
-
-      */
-	int FindRegisterGPIOByAddress(ReceiverID receiverID, uint16_t inAddress);
-
-	/** \brief Returna pointer to the Algorithm parameter for the parameter that
-	           has the address specified, on the specified receiver
-     * \param[in] receiverID index of the receiver for which we want the parameter
-	  * \param[in] algoID an algorithm for which we want the parameter description.
-	 * \param[in] inAddress the parameter address
-	* \return pointer to the found parameter in the list. NULL if no parameters match that address.
-
-      */
-	AlgorithmParameter *AWLSettings::FindAlgoParamByAddress(int receiverID, int AlgoID, uint16_t inAddress);
-
 
 	/** \brief Stores the current receiver calibration settings
 		* \return true if storage processe dwithout error. False in case of a storage error.
@@ -244,7 +195,6 @@ public:
 	int  demoInjectType;
 
 	// Calibration parameters
-	float distanceScale;
 	float targetHintDistance;
 	float targetHintAngle;
 

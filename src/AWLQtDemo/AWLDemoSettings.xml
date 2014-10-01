@@ -46,13 +46,12 @@
   </video>
   
   <calibration>
-    <distanceScale>1.0</distanceScale>
     <targetHintDistance>0.0</targetHintDistance>
     <targetHintAngle>0.0</targetHintAngle>
   </calibration>
 
   <receivers>
-    <!-- Receiver 1 -->
+    <!-- Receiver 0 -->
     <receiver>
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
@@ -60,13 +59,15 @@
 		       values currently possible are "EasySyncCAN" -->
       <receiverType>EasySyncCAN</receiverType>
 
+      <commPort>COM16</commPort>
+      <frameRate>50</frameRate>
+
+
       <!-- Channel mask: Controls which channels are
 		       processed at AWL Unit Level -->
-      <!--enter the mask in decimal -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>127</channelMask>
 
-      <!-- Frame rate, in Hertz -->
-      <frameRate>50</frameRate>
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -77,13 +78,7 @@
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
 
-      <commPort>COM16</commPort>
-      <serialPortRate>921600</serialPortRate>
-      <bitRate>S8</bitRate>
-
-      <yearOffset>1900</yearOffset>
-      <monthOffset>1</monthOffset>
-
+ 
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
@@ -104,6 +99,7 @@
       <displayedRangeMax>45</displayedRangeMax>
       <rangeOffset>-0.75</rangeOffset>
 
+  
       <channel>
         <!--channel 0: Short-range left -->
         <index>0</index>

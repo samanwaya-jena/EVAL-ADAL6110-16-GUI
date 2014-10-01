@@ -236,14 +236,25 @@ public:
 	
 	// public Methods
 public:
-
-	ReceiverCapture(int inReceiverID) { receiverID = inReceiverID;};
-
 	/** \brief ReceiverCapture constructor.  Builds an empty sequence.
 	    * \param[in] inReceiverChannelQty index of the required channel
     */
 
 	ReceiverCapture(int inReceiverID, int inReceiverChannelQty);
+
+	/** \brief ReceiverCapture constructor.
+ 	    * \param[in] inReceiverID  unique receiverID
+	    * \param[in] inReceiverChannelQty number of channels in the receiver
+		* \param[in] inRegistersFPGA default description of the FPGA registers
+		* \param[in] inRegistersADC default description of the ADC registers
+		* \param[in] inRegistersGPIO default description of the GPIO registers
+        * \param[in] inParametersAlgos default description if the algorithm parameters
+      */
+
+	ReceiverCapture(int receiverID, int inReceiverChannelQty,
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
+
+
 
 	/** \brief ReceiverCapture Destructor.  Insures that all threads are stopped before destruction.
       */
@@ -267,42 +278,6 @@ public:
       * \return int indicating the number of channels.
       */
 	virtual int GetChannelQty() {return receiverChannelQty;};
-
-	/** \brief Return the minimum distance for detection
-      * \return float indicating the minimum distance.
-      */
-	virtual float GetMinDistance() {return minDistance;};
-#if 0
-	/** \brief Return the maxiimum distance for detection
-      * \return float indicating the maximimum distance.
-      */
-	virtual float GetMaxDistance() {return maxDistance;};
-#endif
-	/** \brief Return the maxiimum distance for detection
-      * \param[in] channelIndex index of the channel for which we want the maximum distance
-      * \return float indicating the maximimum distance.
-      */
-	virtual float GetMaxDistance(int channelIndex);
-
-	/** \brief Return the minimum distance for detection
-      * \param[in] inMinDistance the new minimum distance
-      * \return float indicating the minimum distance.
-      */
-	virtual float SetMinDistance(float inMinDistance);
-#if 0
-	/** \brief Return the maxiimum distance for detection
-      * \param[in] inMaxDistance the new maximum distance
-      * \return float indicating the maximimum distance.
-      */
-	virtual float SetMaxDistance(float inMinDistance);
-#endif
-	/** \brief Set the maxiimum distance for detection
-      * \param[in] channelIndex index of the channel for which we want the maximum distance
-      * \param[in] inMaxDistance the new maximum distance
-      * \return float indicating the maximimum distance.
-	  * \note  This affects the AWLSettings::channelsConfig[channelIndex].maxDistance
-      */
-	virtual float SetMaxDistance(int channelIndex, float inMaxDistance);
 
 	/** \brief copy the channel data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
@@ -574,6 +549,25 @@ public:
       */
 	ReceiverStatus	receiverStatus;
 
+
+	/** \brief FPGA Registers 
+      */
+	RegisterSet registersFPGA;
+
+	/** \brief ADC Registers 
+      */	
+	RegisterSet registersADC;
+	
+	/** \brief GPIO Registers 
+      */
+	RegisterSet registersGPIO;
+	
+	/** \brief Algorithm parameters
+	 *  \remarks Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
+	 */
+	AlgorithmSet parametersAlgos;
+
+
 // Protected methods
 protected:
 	/** \brief Return the lidar data rendering thread status
@@ -644,6 +638,24 @@ protected:
       */
 	virtual void InitStatus();
 
+	/** \brief Return the index of the RegisterSetting for the object that
+	           has the address specified.
+    * \param[in] inRegisterSet the registerSet that we want to search into
+	* \param[in] inAddress the register address that we are searching for.
+	* \return "index" of the found object in the list (this is NOT the sIndex field). -1 if no registers match that address.
+
+      */
+	int FindRegisterByAddress(const RegisterSet &inRegisterSet, uint16_t inAddress);
+
+
+	/** \brief Returna pointer to the Algorithm parameter for the parameter that
+	           has the address specified
+	  * \param[in] algoID an algorithm for which we want the parameter description.
+	 * \param[in] inAddress the parameter address
+	* \return pointer to the found parameter in the list. NULL if no parameters match that address.
+
+      */
+	AlgorithmParameter *FindAlgoParamByAddress(int inAlgoID, uint16_t inAddress);
 
 // Protected variables
 protected:
@@ -653,19 +665,6 @@ protected:
 			   Reset after call of ProcessCompletedFrame();
      */
 	bool bFrameInvalidated;
-
-	/** \brief Minimum distance for objects.  All messages with distance < minDistance are eliminated.
-		\default 3.0;
-	*/
-
-	float minDistance;
-
-	/** \brief Maximum distance for objects for each channel .  
-	           All messages with distance > maxDistance are eliminated.
-		\default 50.0 meters
-	*/
-
-	boost::container::vector<float> maxDistances;
 
 	/** \brief Time at the start of thread
 	 * \remark Initialized on object creation and evertytime the Go() method is called.
@@ -677,9 +676,6 @@ protected:
 
 	/** \brief  controls the injection of simulated data.  Injection is enabled when true */
 	bool  bSimulatedDataEnabled;
-
-	/** \brief  scaling error (multiplication) introduced by clock speed variations in configurations, should be 1 by default */
-	float  distanceScale;
 
 	/** \brief  defines the type of data injected.  */
 	InjectType injectType;

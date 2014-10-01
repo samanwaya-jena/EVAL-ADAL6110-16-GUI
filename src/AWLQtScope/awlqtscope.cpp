@@ -177,6 +177,7 @@ void AWLQtScope::updateCurveDataRaw()
 
 
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+	float minDistance = settings->receiverSettings[d_receiverCapture->receiverID].displayedRangeMin;
 	// y Scale for velocities
 	float maxVelocity =  settings->maxVelocity2D;
 	if (settings->velocityUnits != eVelocityUnitsMS)
@@ -207,6 +208,7 @@ void AWLQtScope::updateCurveDataRaw()
 				int channelQty = d_distanceCurveDataArray.size();
 				for (int channelID = 0; channelID < channelQty; channelID++)
 				{
+					float maxDistance =settings->receiverSettings[d_receiverCapture->receiverID].channelsConfig[channelID].maxRange;
 					ChannelFrame::Ptr channelFrame = sensorFrame->channelFrames.at(channelID);
 
 					// Thread safe
@@ -217,8 +219,8 @@ void AWLQtScope::updateCurveDataRaw()
 					for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
 					{
 						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= d_receiverCapture->GetMinDistance()) && 
-							(detection->distance <= d_receiverCapture->GetMaxDistance(channelID))) 
+						if ((detection->distance >= minDistance) && 
+							(detection->distance <= maxDistance)) 
 						{
 							// Replace the new point to the end, with detected value
 							const QPointF distancePoint(elapsed,  detection->distance);

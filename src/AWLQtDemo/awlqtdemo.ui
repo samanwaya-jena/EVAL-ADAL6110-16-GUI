@@ -575,7 +575,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>5</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>

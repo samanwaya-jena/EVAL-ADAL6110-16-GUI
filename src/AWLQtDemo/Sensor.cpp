@@ -53,8 +53,9 @@ ReceiverChannel::~ReceiverChannel()
 
 void ReceiverChannel::AddDistancesToCloud()
 {
-	float minDistance = receiverCapture->GetMinDistance();
-	float maxDistance = receiverCapture->GetMaxDistance(channelID);
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	float minDistance = globalSettings->receiverSettings[receiverID].displayedRangeMin;
+	float maxDistance = globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange;
 
 	if (channelID < receiverCapture->GetChannelQty())
 	{
