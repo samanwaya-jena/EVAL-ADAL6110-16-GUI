@@ -18,70 +18,13 @@ using namespace awl;
 const int ReceiverCapture::maximumSensorFrames(100);
 // Sensor transitions going from left to right...
 
-const int channelTransitionQty(13);
-const int channelTransitions[channelTransitionQty][2] =
-{
-	{0, -1},
-	{0, 1},
-	{1, -1},
-	{1, 4},
-	{1, -1},
-	{1, 5},
-	{5, -1},
-	{2, 5},
-	{2, -1},
-	{2, 6},
-	{2, -1},
-	{2, 3},
-	{3, -1}
-};
-
-ReceiverCapture::ReceiverCapture(int inReceiverID, int inReceiverChannelQty):
-ThreadedWorker(),
-Publisher(),
-receiverID(inReceiverID),
-receiverChannelQty(inReceiverChannelQty),
-acquisitionSequence(new AcquisitionSequence()),
-frameID(0),
-snapshotFrameID(0),
-currentFrame(new SensorFrame(inReceiverID, 0, inReceiverChannelQty)),
-bSimulatedDataEnabled(false),
-bEnableDemo(false),
-injectType(eInjectRamp),
-lastElapsed(0),
-lastDistance(0),
-trackIDGenerator(0),
-lastTransition(0),
-transitionDirection(1),
-directionPacing(5000/channelTransitionQty),  /* Every 3 seconds, we move from left to right */
-nextElapsedDirection(0),
-distanceIncrement(0.1),
-distancePacing(120), /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
-nextElapsedDistance(0),
-bFrameInvalidated(false)
-
-{
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
-	registersFPGA = globalSettings->defaultRegistersFPGA;
-	registersADC = globalSettings->defaultRegistersADC;
-	registersGPIO = globalSettings->defaultRegistersGPIO;
-	parametersAlgos = globalSettings->defaultParametersAlgos;
-
-	measurementOffset = globalSettings->receiverSettings[receiverID].rangeOffset;
-	bEnableDemo = globalSettings->bEnableDemo;
-	injectType = (InjectType) globalSettings->demoInjectType;
-
-	receiverStatus.currentAlgo = globalSettings->defaultParametersAlgos.defaultAlgo;
-	receiverStatus.currentAlgoPendingUpdates = 0;
-	
-	SetMessageFilters();
-	InitStatus();
-}
+const std::string sDefaultReceiverType = "Generic";
+const int defaultFrameRate(50);
+const uint8_t defaultChannelMaskValue = 127;
 
 
-
-ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty,  
+ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, 
+					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
 ThreadedWorker(),
 Publisher(),
@@ -89,38 +32,59 @@ receiverID(receiverID),
 receiverChannelQty(inReceiverChannelQty),
 acquisitionSequence(new AcquisitionSequence()),
 frameID(0),
-snapshotFrameID(0),
 currentFrame(new SensorFrame(receiverID, 0, inReceiverChannelQty)),
-bSimulatedDataEnabled(false),
-bEnableDemo(false),
-injectType(eInjectRamp),
-lastElapsed(0),
-lastDistance(0),
+measurementOffset(inRangeOffset),
 trackIDGenerator(0),
-lastTransition(0),
-transitionDirection(1),
-directionPacing(5000/channelTransitionQty),  /* Every 3 seconds, we move from left to right */
-nextElapsedDirection(0),
-distanceIncrement(0.1),
-distancePacing(120), /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
-nextElapsedDistance(0),
 bFrameInvalidated(false),
 registersFPGA(inRegistersFPGA),
 registersADC(inRegistersADC),
 registersGPIO(inRegistersGPIO),
-parametersAlgos(inParametersAlgos)
+parametersAlgos(inParametersAlgos),
+sReceiverType(sDefaultReceiverType)
 
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	measurementOffset = globalSettings->receiverSettings[receiverID].rangeOffset;
-	bEnableDemo = globalSettings->bEnableDemo;
-	injectType = (InjectType) globalSettings->demoInjectType;
-
-	receiverStatus.currentAlgo = globalSettings->defaultParametersAlgos.defaultAlgo;
-	receiverStatus.currentAlgoPendingUpdates = 0;
-	
-	SetMessageFilters();
+	// Initialize default status values
 	InitStatus();
+
+	receiverStatus.frameRate = inFrameRate;
+	receiverStatus.currentAlgo = 0;
+	receiverStatus.currentAlgoPendingUpdates = 0;
+
+	// Update settings from application
+	receiverStatus.frameRate = inFrameRate;
+	receiverStatus.channelMask = inChannelMask;
+	receiverStatus.messageMask = inMessageMask;
+
+	// Reflect the settings in hardware
+	SetMessageFilters();
+}
+
+ReceiverCapture::ReceiverCapture(int receiverID, boost::property_tree::ptree &propTree):
+ThreadedWorker(),
+Publisher(),
+receiverID(receiverID),
+acquisitionSequence(new AcquisitionSequence()),
+frameID(0),
+trackIDGenerator(0),
+bFrameInvalidated(false),
+sReceiverType(sDefaultReceiverType)
+
+{
+	// Read the configuration from the configuration file
+	ReadConfigFromPropTree(propTree);
+	ReadRegistersFromPropTree(propTree);
+
+	// Initialize default status values
+	InitStatus();
+
+	// make sure that the communication is reset.
+	receiverStatus.currentAlgoPendingUpdates = 0;
+
+	// Create a temporary SensorFrame object for storage of the current data
+	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, 0, receiverChannelQty));
+
+	// Reflect the settings in hardware
+	SetMessageFilters();
 }
 
 ReceiverCapture::~ReceiverCapture()
@@ -148,12 +112,9 @@ void ReceiverCapture::DoThreadLoop()
 
 void ReceiverCapture::InitStatus()
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
 	receiverStatus.bUpdated = false;
 	receiverStatus.temperature = 0.0;
 	receiverStatus.voltage = 0;
-	receiverStatus.frameRate = globalSettings->receiverSettings[receiverID].receiverFrameRate;	// Default frame rate is 100Hz
 	receiverStatus.hardwareError.byteData = 0;
 	receiverStatus.receiverError.byteData = 0;
 	receiverStatus.status.byteData = 0;
@@ -284,21 +245,6 @@ bool ReceiverCapture::StopRecord()
 bool ReceiverCapture::SetMessageFilters()
 
 {
-	uint8_t frameRate;
-	ChannelMask channelMask;
-	MessageMask messageMask;
-
-	// Update settings from application
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
-	receiverStatus.frameRate = globalSettings->receiverSettings[receiverID].receiverFrameRate;
-	receiverStatus.channelMask.byteData = globalSettings->receiverSettings[receiverID].receiverChannelMask;
-	receiverStatus.messageMask.byteData = 0;
-	if (globalSettings->receiverSettings[receiverID].msgEnableObstacle) receiverStatus.messageMask.bitFieldData.obstacle = 1;
-	if (globalSettings->receiverSettings[receiverID].msgEnableDistance_1_4) receiverStatus.messageMask.bitFieldData.distance_1_4 = 1;
-	if (globalSettings->receiverSettings[receiverID].msgEnableDistance_5_8) receiverStatus.messageMask.bitFieldData.distance_5_8 = 1;
-	if (globalSettings->receiverSettings[receiverID].msgEnableIntensity_1_4) receiverStatus.messageMask.bitFieldData.intensity_1_4 = 1;
-	if (globalSettings->receiverSettings[receiverID].msgEnableIntensity_5_8) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
 
 	return(SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask));
 }
@@ -349,6 +295,13 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	currentFrame->timeStamp = GetElapsed();
 
+	// Complete the track information that is not yet processed at the module level.
+	if (!acquisitionSequence->UpdateTrackInfo(currentFrame))
+	{
+		DebugFilePrintf(debugFile, "Incomplete frame in Up^dateTrackInfo- %lu", frameID);
+		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
+	}
+
 	// Build distances from the tracks that were accumulated during the frame
 	if (!acquisitionSequence->BuildDetectionsFromTracks(currentFrame))
 	{
@@ -356,20 +309,17 @@ void ReceiverCapture::ProcessCompletedFrame()
 		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
 	}
 
-	// Log the tracks or distance, depending on options selected
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
 	// Log Tracks?
-	if (globalSettings->receiverSettings[receiverID].msgEnableObstacle)
+	if (receiverStatus.messageMask.bitFieldData.obstacle)
 	{
 		LogTracks(logFile, currentFrame);
 	}
 
 	// Log Distances?
-	if (globalSettings->receiverSettings[receiverID].msgEnableDistance_1_4 ||
-	    globalSettings->receiverSettings[receiverID].msgEnableDistance_5_8 || 
-		globalSettings->receiverSettings[receiverID].msgEnableIntensity_1_4 ||
-		globalSettings->receiverSettings[receiverID].msgEnableIntensity_5_8)
+	if (receiverStatus.messageMask.bitFieldData.distance_1_4 ||
+	    receiverStatus.messageMask.bitFieldData.distance_5_8 || 
+		receiverStatus.messageMask.bitFieldData.intensity_1_4 ||
+		receiverStatus.messageMask.bitFieldData.intensity_5_8)
 	{
 		LogDistances(logFile, currentFrame);
 	}
@@ -536,466 +486,36 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 	}	
 }
 
+// Configuration file related functions
 
-void ReceiverCapture::FakeChannelDistanceRamp(int channel)
 
+void ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
+		char receiverKeyString[32];
+		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
+		std::string receiverKey = receiverKeyString;
 
-	int detectOffset = 0;
+		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
-	if (channel >= 30) 
-	{
-		channel = channel - 30;
-		detectOffset = 4;
-	}
-	else 
-	{
-		channel = channel - 20;
-	}
+		sReceiverType = receiverNode.get<std::string>("receiverType");
+		measurementOffset = receiverNode.get<float>("rangeOffset");
+		receiverChannelQty = receiverNode.get<int>("channelQty");
+		receiverStatus.frameRate =  receiverNode.get<uint8_t>("frameRate");	// Default frame rate is 100Hz
 
-	if (channel >= 0) 
-	{
+		receiverStatus.channelMask.byteData = receiverNode.get<uint8_t>("channelMask");
 
-		boost::mutex::scoped_lock rawLock(GetMutex());
-		int elapsed = (int) GetElapsed();
-		float distance = elapsed % 4000 ;
-		distance /= 100;
+		receiverStatus.messageMask.byteData = 0;
+		if (receiverNode.get<bool>("msgEnableObstacle")) receiverStatus.messageMask.bitFieldData.obstacle = 1;
+		if (receiverNode.get<bool>("msgEnableDistance_1_4")) receiverStatus.messageMask.bitFieldData.distance_1_4 = 1;
+		if (receiverNode.get<bool>("msgEnableDistance_5_8")) receiverStatus.messageMask.bitFieldData.distance_5_8 = 1;
+		if (receiverNode.get<bool>("msgEnableIntensity_1_4")) receiverStatus.messageMask.bitFieldData.intensity_1_4 = 1;
+		if (receiverNode.get<bool>("msgEnableIntensity_5_8")) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
 
-		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
-
-		if (distance < 0  || distance > 45.0) distance = 0.0;
-
-		lastDistance = distance;
-
-		int detectionIndex = 0+detectOffset;
-		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-		detection->distance = distance;
-		detection->trackID = 0;
-		detection->velocity = 0;
-
-		// Only the first channel displays a distance
-		distance += 5;
-		if (distance < 0  || distance  > 45) distance = 0.0;
-		detectionIndex = 1+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-		detection->distance = distance;
-		detection->trackID = 0;
-		detection->velocity = 0;
-
-		
-		distance += 5;
-
-		if (distance < 0  || distance  > 45) distance = 0.0;
-		detectionIndex = 2+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-		detection->distance = distance;
-		detection->trackID = 0;
-		detection->velocity = 0;
-
-		distance += 5;
-	
-		if (distance < 0  || distance > 45) distance = 0.0;
-		detectionIndex = 3+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-		detection->distance = distance;
-		detection->trackID = 0;
-		detection->velocity = 0;
-		rawLock.unlock();
-	}
-
-	if (channel == 6 && detectOffset == 4)
-	{
-		ProcessCompletedFrame();
-	}
 
 }
 
-const float simulatedDistance1 = 20.0;
-const float simulatedDistanced2 = 12.0;
-
-const float maxSimulatedJitter = 0.9;
-const float simulatedPresenceRatio = 0.5;
-const int   maxSimulatedFalsePositives = 3;
-
-void ReceiverCapture::FakeChannelDistanceNoisy(int channel)
-
+void ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree &propTree)
 {
 
-	int detectOffset = 0;
-
-	if (channel >= 30) 
-	{
-		channel = channel - 30;
-		detectOffset = 4;
-	}
-	else 
-	{
-		channel = channel - 20;
-	}
-
-	if (channel == 0) 
-	{
-
-		boost::mutex::scoped_lock rawLock(GetMutex());
-		int elapsed = (int) GetElapsed();
-
-		double distance = simulatedDistance1; 
-		// Add jitter to the detection
-		distance += ((maxSimulatedJitter * rand() / RAND_MAX)) - (maxSimulatedJitter/2);
-		
-		// Check if we should create a "false negative to the detection
-		bool bIsPresent = (rand()*1.0 / RAND_MAX) < simulatedPresenceRatio;
-
-		if (distance < 0  || distance  > 45) distance = 0.0;
-
-		int detectionIndex = 0+detectOffset;
-		if (bIsPresent) 
-		{
-			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-			detection->distance = distance;
-			detection->trackID = 0;
-			detection->velocity = 0;
-			detectionIndex++;
-		}
-
-		int falsePositiveQty = ((maxSimulatedFalsePositives * rand() / RAND_MAX));
-		for (int i = 0; i < falsePositiveQty; i++) 
-		{
-			// Simulate the distance between minDistance maxDistance
-			distance = ((45.0) * rand() / RAND_MAX);
-			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
-			detection->distance = distance;
-			detection->trackID = 0;
-			detection->velocity = 0;
-
-			detectionIndex++;
-		}
-
-
-		rawLock.unlock();
-	}
-
-	if (channel == 6 && detectOffset == 4)
-	{
-		ProcessCompletedFrame();
-	}
-
 }
-
-
-
-
-
-void ReceiverCapture::FakeChannelDistanceSlowMove(int channel)
-
-{
-
-	int detectOffset = 0;
-
-	if (channel >= 30) 
-	{
-		channel = channel - 30;
-		detectOffset = 4;
-	}
-	else 
-	{
-		channel = channel - 20;
-	}
-
-	if (channel >= 0) 
-	{
-		int elapsed = (int) GetElapsed();
-		
-		// Every "directionPacing" milliseconds, we move from left to right;
-		if (elapsed > nextElapsedDirection) 
-		{
-			// We update ournext time stamp, and make sure it exceeds current time.
-			while (nextElapsedDirection < elapsed) nextElapsedDirection += directionPacing;
-
-			lastTransition += transitionDirection;
-			
-			// Going too far right, we change direction
-			if (lastTransition >= channelTransitionQty) 
-			{
-				lastTransition = channelTransitionQty - 1;
-				transitionDirection = -1;
-			}
-
-			// Going too far left, we change direction
-			if (lastTransition < 0) 
-			{
-				lastTransition = 0;
-				transitionDirection = +1;
-			}
-		}
-
-		float distanceMin = 0.0;
-		float distanceMax = 0.0;
-		if (45.0 > distanceMax) distanceMax = 45.0; 
-
-		// Every "distancePacing" milliseconds, we move backwards or forward;
-		if (elapsed > nextElapsedDistance) 
-		{
-				// We update ournext time stamp, and make sure it exceeds current time.
-			while (nextElapsedDistance < elapsed) nextElapsedDistance += distancePacing;
-
-			lastDistance += distanceIncrement;
-			
-			// Going too far , we change direction
-			if (lastDistance >= distanceMax) 
-			{
-				lastDistance = distanceMax;
-				distanceIncrement = -distanceIncrement;
-			}
-
-			// Going too far left, we change direction
-			if (lastDistance < distanceMin) 
-			{
-				lastDistance = distanceMin;
-				distanceIncrement = -distanceIncrement;
-			}
-		}
-
-		currentFrame->channelFrames[channel]->timeStamp = elapsed;
-		int channelA = channelTransitions[lastTransition][0];
-		int channelB = channelTransitions[lastTransition][1];
-
-		boost::mutex::scoped_lock rawLock(GetMutex());
-
-		// Short range channels don't display at more than their maxDistance
-		if (lastDistance < 45.0)
-		{
-			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelA, 0);
-			detection->distance = lastDistance;
-			detection->trackID = 0;
-			detection->velocity = 0;
-			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
-			detection->firstTimeStamp = elapsed;
-			detection->timeStamp = elapsed;
-		}
-		// There may be detection in a single channel
-		if (channelB >= 0) 
-		{
-			if (lastDistance < 45.0) 
-			{
-				Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelB, 0);
-				detection->distance = lastDistance;
-				detection->trackID = 0;
-				detection->velocity = 0;
-				currentFrame->channelFrames[channel]->timeStamp = elapsed;
-				detection->firstTimeStamp = currentFrame->timeStamp;
-				detection->timeStamp = currentFrame->timeStamp;
-			}
-		}
-
-
-
-		rawLock.unlock();
-		lastElapsed = elapsed;
-	
-	}
-
-	if (channel == 6 && detectOffset == 4)
-	{
-		ProcessCompletedFrame();
-	}
-
-}
-
-
-
-void ReceiverCapture::FakeChannelDistanceConstant(int channel)
-
-{
-
-	int detectOffset = 0;
-
-	if (channel >= 30) 
-	{
-		channel = channel - 30;
-		detectOffset = 4;
-	}
-	else 
-	{
-		channel = channel - 20;
-	}	
-
-	float steadyDistance = 10.0; // Evantually, change this for a INI File variable
-	if (channel >= 0) 
-	{
-		int elapsed = (int) GetElapsed();
-		
-		float  distance = steadyDistance;
-		distance += measurementOffset;
-
-		currentFrame->channelFrames[channel]->timeStamp = elapsed;
-
-		boost::mutex::scoped_lock rawLock(GetMutex());
-
-		// Short range channels don't display at more than shortRangeMax.
-		for (int channel = 0; channel < receiverChannelQty; channel++) 
-		{
-			Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, 0);
-			detection->distance = distance;
-			detection->trackID = 0;
-			detection->velocity = 0;
-			currentFrame->channelFrames[channel]->timeStamp = elapsed;
-			detection->timeStamp = elapsed;
-			detection->firstTimeStamp = elapsed;
-		}
-
-		rawLock.unlock();
-		lastElapsed = elapsed;
-	
-	}
-
-	if (channel == 6 && detectOffset == 4)
-	{
-		ProcessCompletedFrame();
-	}
-
-}
-
-void ReceiverCapture::FakeChannelTrackSlowMove(int channel)
-
-{
-
-	int detectOffset = 0;
-
-	if (channel >= 30) 
-	{
-		channel = channel - 30;
-		detectOffset = 4;
-	}
-	else 
-	{
-		channel = channel - 20;
-	}
-
-
-	if (channel >= 0) 
-	{
-		int elapsed = (int) GetElapsed();
-		
-		// Every "directionPacing" milliseconds, we move from left to right;
-		if (elapsed > nextElapsedDirection) 
-		{
-			// We update ournext time stamp, and make sure it exceeds current time.
-			while (nextElapsedDirection < elapsed) nextElapsedDirection += directionPacing;
-
-			lastTransition += transitionDirection;
-			
-			// Going too far right, we change direction
-			if (lastTransition >= channelTransitionQty) 
-			{
-				lastTransition = channelTransitionQty - 1;
-				transitionDirection = -1;
-			}
-
-			// Going too far left, we change direction
-			if (lastTransition < 0) 
-			{
-				lastTransition = 0;
-				transitionDirection = +1;
-			}
-		}
-
-		float distanceMin = 0;
-		float distanceMax = 0.0;
-		if (45.0 > distanceMax) distanceMax = 45.0; 
-	
-		float shortRangeMax = AWLSettings::GetGlobalSettings()->shortRangeDistance;
-
-		// Every "distancePacing" milliseconds, we move backwards or forward;
-		if (elapsed > nextElapsedDistance) 
-		{
-				// We update ournext time stamp, and make sure it exceeds current time.
-			while (nextElapsedDistance < elapsed) nextElapsedDistance += distancePacing;
-
-			lastDistance += distanceIncrement;
-			
-			// Going too far , we change direction
-			if (lastDistance >= distanceMax) 
-			{
-				lastDistance = distanceMax;
-				distanceIncrement = -distanceIncrement;
-			}
-
-			// Going too far left, we change direction
-			if (lastDistance < distanceMin) 
-			{
-				lastDistance = distanceMin;
-				distanceIncrement = -distanceIncrement;
-			}
-		}
-
-		currentFrame->channelFrames[channel]->timeStamp = elapsed;
-		int channelA = channelTransitions[lastTransition][0];
-		int channelB = channelTransitions[lastTransition][1];
-
-		boost::mutex::scoped_lock rawLock(GetMutex());
-
-		// Short range channels don't display at more than shortRangeMax.
-		if (lastDistance < 45.0) 
-		{
-			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackIDGenerator++);
-			track->distance = lastDistance;
-#if 1
-				track->distance = 10;
-#endif
-			uint8_t test = 0x001 << channelA;
-			track->channels = test;
-
-			track->velocity = (45.0 - (track->distance)) / 2;
-			if (distanceIncrement <= 0) track->velocity = -track->velocity;
-
-			track->acceleration = 0;
-			track->part1Entered = true;
-			track->part2Entered = true;
-			track->part3Entered = true;
-			track->part4Entered = true;
-
-			track->probability = 99;
-			track->timeStamp = elapsed;
-			track->firstTimeStamp = elapsed;
-			currentFrame->channelFrames[channelA]->timeStamp = elapsed;
-		}
-
-		// There may be detection in a single channel
-		if (channelB >= 0) 
-		{
-			if (lastDistance < 45.0) 
-			{
-				Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackIDGenerator++);
-				track->distance = lastDistance;
-#if 1
-				track->distance = 10;
-#endif
-				track->channels = (0x01 << channelB);
-				track->velocity = (45.0 - (track->distance)) / 2;
-				if (distanceIncrement <= 0) track->velocity = -track->velocity;
-				track->acceleration = 0;
-				track->part1Entered = true;
-				track->part2Entered = true;
-				track->part3Entered = true;
-				track->part4Entered = true;
-				track->probability = 99;
-				track->timeStamp = elapsed;
-				track->firstTimeStamp = elapsed;
-				currentFrame->channelFrames[channelB]->timeStamp = elapsed;
-			}
-		}
-
-		rawLock.unlock();
-		lastElapsed = elapsed;
-	
-	}
-
-	if (channel == 6 && detectOffset == 4)
-	{
-		ProcessCompletedFrame();
-	}
-
-}
-
 

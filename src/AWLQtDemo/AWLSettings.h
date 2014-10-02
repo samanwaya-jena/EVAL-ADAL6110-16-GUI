@@ -2,8 +2,10 @@
 #define _AWLSettings__H
 
 #include <string>
-#include <boost/container/vector.hpp>
 #include <stdint.h>
+#include <boost/container/vector.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 #define VelocityToKmH(velocity) (velocity * 3.6)
 
@@ -13,56 +15,6 @@
 namespace awl
 {
 
-	typedef int ReceiverID;
-
-	typedef struct RegisterSetting 
-	{
-		std::string sIndex;
-		uint16_t address;
-		std::string sDescription;
-		uint32_t value;
-		int pendingUpdates;
-	}
-	RegisterSetting;
-	
-	typedef boost::container::vector<RegisterSetting> RegisterSet;
-
-
-	typedef enum  {
-		eAlgoParamInt = 0,
-		eAlgoParamFloat = 1
-	}
-	AlgoParamType;
-
-	typedef struct AlgorithmParameter 
-	{
-		std::string sIndex;
-		uint16_t address;
-		std::string sDescription;
-		AlgoParamType paramType;
-		uint32_t intValue;
-		float floatValue;
-		int pendingUpdates;
-	}
-	AlgorithmParameter;
-	
-	typedef boost::container::vector<AlgorithmParameter> AlgorithmParameterVector;
-
-	typedef struct AlgorithmDescription
-	{
-		std::string sAlgoName;
-		uint16_t	algoID;
-		AlgorithmParameterVector parameters;
-	}
-	AlgorithmDescription;
-
-	typedef struct AlgorithmSet
-	{
-		// Default displayedAlgo
-		int defaultAlgo;
-		boost::container::vector<AlgorithmDescription> algorithms;
-	}
-	AlgorithmSet;
 
 	typedef struct ChannelConfig 
 	{
@@ -94,18 +46,6 @@ namespace awl
 
 	// Receiver
 	std::string sReceiverType;
-	uint8_t receiverChannelMask;		// Indicates which channels are processed by unit
-	uint8_t receiverFrameRate;			// Frame rate, in hertz
-
-	// Receiver communications port config
-	std::string sCommPort;       // Default is "COM16"
-	
-	// Messages enabled
-	bool msgEnableObstacle;
-	bool msgEnableDistance_1_4;
-	bool msgEnableDistance_5_8;
-	bool msgEnableIntensity_1_4;
-	bool msgEnableIntensity_5_8;
 
 	// Geometry parameters
 	float sensorForward;
@@ -151,7 +91,24 @@ public:
 	// Constructor
 	AWLSettings();
 	bool ReadSettings();
+	boost::property_tree::ptree &GetPropTree() {return (propTree);};
 
+
+	// Get/Set methods
+
+	static void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up);
+
+	static void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float&roll);
+	static void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y);
+
+	static void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
+	static void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
+
+	static void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
+	static void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);
+	static void Put2DPoint(boost::property_tree::ptree &node, float x, float y);
+	static void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
+	static void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue);
 
 	/** \brief Stores the current receiver calibration settings
 		* \return true if storage processe dwithout error. False in case of a storage error.
@@ -159,15 +116,6 @@ public:
 	bool AWLSettings::StoreReceiverCalibration();
 
 public:
-	// Default register configurations
-
-	RegisterSet defaultRegistersFPGA;
-	RegisterSet defaultRegistersADC;
-	RegisterSet defaultRegistersGPIO;
-
-	// Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
-	AlgorithmSet defaultParametersAlgos;
-
 	// Receiver configuration
 	ReceiverSettingsVector receiverSettings;
 
@@ -189,10 +137,6 @@ public:
 
 	std::string sLogoFileName;
 	std::string sIconFileName;
-
-	// Demo mode
-	bool bEnableDemo;
-	int  demoInjectType;
 
 	// Calibration parameters
 	float targetHintDistance;
@@ -261,6 +205,8 @@ public:
 protected:
 	std::string sFileName;
 	static AWLSettings *globalSettings;
+	// Property tree contains all the information from the configuration file
+	boost::property_tree::ptree propTree;
 };
 
 } // namespace AWL          

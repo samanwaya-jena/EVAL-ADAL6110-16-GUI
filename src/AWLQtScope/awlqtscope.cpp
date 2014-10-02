@@ -30,16 +30,7 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	timerInterval = globalSettings->scopeTimerInterval;
 
-	// In demo mode, change the title of the Window
-	if (globalSettings->bEnableDemo)
-	{
-		this->setWindowTitle(this->windowTitle() + " [DEMO Mode]" + " Scope view");
-	}
-	else 
-	{
-		this->setWindowTitle(this->windowTitle() + " Scope view");
-	}
-
+	this->setWindowTitle(this->windowTitle() + " Scope view");
 
 	// Position the widget on the top left corner
 	QRect scr = QApplication::desktop()->screenGeometry();

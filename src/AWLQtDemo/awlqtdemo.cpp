@@ -60,31 +60,19 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	show();
 	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
 
-
-	// In demo mode, put demo mode in window title
-	if (globalSettings->bEnableDemo)
-	{
-		this->setWindowTitle(this->windowTitle()+" [DEMO Mode]");
-	}
-
 	// Adjust the default displayed ranges depending on the sensor capabilities
 	AdjustDefaultDisplayedRanges();
 
 	// Create the receiver communication objects
 	int receiverQty = globalSettings->receiverSettings.size();
+	receiverCaptures.resize(receiverQty);
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object
 		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file, and by default
-			ReceiverCapture * capturePtr = new ReceiverCANCapture(receiverID, globalSettings->receiverSettings[receiverID].channelsConfig.size(), globalSettings->receiverSettings[receiverID].sCommPort,
-																	globalSettings->defaultRegistersFPGA, 
-																	globalSettings->defaultRegistersADC, 
-																	globalSettings->defaultRegistersGPIO,
-																	globalSettings->defaultParametersAlgos);
-
-			receiverCaptures.push_back(ReceiverCapture::Ptr(capturePtr));
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverCANCapture(receiverID, globalSettings->GetPropTree()));
 		}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
@@ -182,7 +170,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.calibrationChannel6CheckBox->setChecked(true);
 		ui.calibrationChannel7CheckBox->setChecked(true);
 		
-		ui.frameRateSpinBox->setValue(globalSettings->receiverSettings[0].receiverFrameRate);
+		ui.frameRateSpinBox->setValue(0);
 	}
 
 	CloudViewerWin::ColorHandlerType defaultColorType = (CloudViewerWin::ColorHandlerType) globalSettings->colorStyle;
@@ -198,11 +186,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	// Initialize from other operating variables.
-	if (receiverCaptures[0]) 
-	{
-		ui.injectSimulatedCheckbox->setChecked(receiverCaptures[0]->IsSimulatedDataEnabled());
-	}
-
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
 	 scopeWindow = new AWLQtScope();
@@ -252,7 +235,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Initial Update the various status indicators on the display
 	DisplayReceiverStatus();
 
-	switch (globalSettings->defaultParametersAlgos.defaultAlgo)
+	switch (receiverCaptures[0]->parametersAlgos.defaultAlgo)
 	{
 	case 1: 
 		{
@@ -309,15 +292,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
-
-	// In demo mode, automatically force the injection of data on receiver.
-	// put demo mode in window titles
-	if (globalSettings->bEnableDemo)
-	{
-		ui.injectSimulatedCheckbox->setChecked(true);
-		m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
-		mTableView->setWindowTitle(this->windowTitle() + " Table View");
-	}
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -389,21 +363,6 @@ void AWLQtDemo::on_rangeImageRadioButton_setChecked(bool bChecked)
 	{
 		cloudViewer->SetCurrentColorHandlerType(CloudViewerWin::eHandlerZ);
 	}
-}
-
-
-void AWLQtDemo::on_simulatedDataInjectCheckBox_setChecked(bool  bChecked)
-{
-	if (receiverCaptures[0])
-	{
-		receiverCaptures[0]->EnableSimulationData(bChecked);
-	}
-
-	if (receiverCaptures.size() >= 2 && receiverCaptures[1])
-	{
-		receiverCaptures[1]->EnableSimulationData(bChecked);
-	}
-
 }
 
 
@@ -1142,8 +1101,7 @@ void AWLQtDemo::on_algo4RadioButton_setChecked(bool bChecked)
 void AWLQtDemo::PrepareParametersView()
 
 {
-	AWLSettings *settingsPtr = AWLSettings::GetGlobalSettings();
-	int currentAlgo = settingsPtr->defaultParametersAlgos.defaultAlgo;
+	int currentAlgo = 0;
 
 	if (receiverCaptures[0]) 
 	{

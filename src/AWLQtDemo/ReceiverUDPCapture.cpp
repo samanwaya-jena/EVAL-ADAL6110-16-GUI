@@ -32,7 +32,6 @@ bitRate("50"),
 acceptanceCode("0x1FFFFFFF"),
 acceptanceMask("0x1FFFFFFF"),
 currentFrame(new SensorFrame(0, inReceiverChannelQty)),
-lastMessageID(0)
 
 {
 	debugFile.open("UDPLog.dat");
@@ -239,7 +238,6 @@ void ReceiverUDPCapture::DoOneThreadIteration()
 {
 	if (!WasStopped())
     {
-		lastMessageID = 0;
 
 		if (canHandle) 
 		{
@@ -256,12 +254,10 @@ void ReceiverUDPCapture::DoOneThreadIteration()
 				if (msgID >= 20 && msgID <= 26) 
 				{
 					ProcessChannelDistance(msg);
-					lastMessageID = msgID;
 				}
 				else if (msgID >= 30 && msgID <= 36) 
 				{
 					ProcessChannelDistance(msg);
-					lastMessageID = msgID;
 					// On the last distance message, notify send the sensor frame to the application.
 					if (msgID == 36) ProcessCompletedFrame();
 				}
@@ -274,8 +270,6 @@ void ReceiverUDPCapture::DoOneThreadIteration()
 					sprintf(str, "Msg %d - %s- \n", msgID, timeStr.c_str());
 					std::string myString(str);
 					debugFile << myString;
-
-					lastMessageID = msgID;
 				}
 			}  // If result
 			else 

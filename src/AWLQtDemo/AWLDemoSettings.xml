@@ -26,22 +26,7 @@
     <enableLogFile>false</enableLogFile>
   </debug>
 
-  <demoMode>
-    <!-- enableDemo:  
-	       when set to true, inject at startup and
-	       enable simulated feedback for common commands such as set/get registers -->
-    <enableDemo>false</enableDemo>
-
-    <!-- injectType:
-	       0: ramp
-	       1: random
-	       2: slow moving, single target
-	       3: steady target -->
-
-    <injectType>3</injectType>
-  </demoMode>
-
-  <video>
+   <video>
     <displayCrosshair>false</displayCrosshair>
   </video>
   
@@ -51,8 +36,8 @@
   </calibration>
 
   <receivers>
-    <!-- Receiver 0 -->
-    <receiver>
+    <receiverQty>1</receiverQty>
+    <receiver0>
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
@@ -99,10 +84,9 @@
       <displayedRangeMax>45</displayedRangeMax>
       <rangeOffset>-0.75</rangeOffset>
 
-  
-      <channel>
+      <channelQty>7</channelQty>
+      <channel0>
         <!--channel 0: Short-range left -->
-        <index>0</index>
         <fov>
           <x>9.0</x>
           <y>9.0</y>
@@ -118,11 +102,10 @@
           <green>216</green>
           <blue>168</blue>
         </displayColor>
-      </channel>
+      </channel0>
 
-      <channel>
+      <channel1>
         <!--channel 1: short range - middle left -->
-        <index>1</index>
         <fov>
           <x>9.0</x>
           <y>9.0</y>
@@ -138,11 +121,10 @@
           <green>166</green>
           <blue>38</blue>
         </displayColor>
-      </channel>
+      </channel1>
 
-      <channel>
+      <channel2>
         <!--channel 2: short range - middle right -->
-        <index>2</index>
         <fov>
           <x>9.0</x>
           <y>9.0</y>
@@ -158,11 +140,10 @@
           <green>166</green>
           <blue>38</blue>
         </displayColor>
-      </channel>
+      </channel2>
 
-      <channel>
+      <channel3>
         <!--channel 3: short range - right -->
-        <index>3</index>
         <fov>
           <x>9.0</x>
           <y>9.0</y>
@@ -178,11 +159,10 @@
           <green>216</green>
           <blue>168</blue>
         </displayColor>
-      </channel>
+      </channel3>
 
-      <channel>
+      <channel4>
         <!--channel 4: long range - left -->
-        <index>4</index>
         <fov>
           <x>4.3</x>
           <y>4.3</y>
@@ -198,11 +178,10 @@
           <green>192</green>
           <blue>217</blue>
         </displayColor>
-      </channel>
+      </channel4>
 
-      <channel>
+      <channel5>
         <!--channel 5: long range - center -->
-        <index>5</index>
         <fov>
           <x>4.3</x>
           <y>4.3</y>
@@ -218,11 +197,10 @@
           <green>192</green>
           <blue>217</blue>
         </displayColor>
-      </channel>
+      </channel5>
 
-      <channel>
-        <!--channel 5: long range - right -->
-        <index>6</index>
+      <channel6>
+        <!--channel 6: long range - right -->
         <fov>
           <x>4.3</x>
           <y>4.3</y>
@@ -238,20 +216,21 @@
           <green>192</green>
           <blue>217</blue>
         </displayColor>
-      </channel>
-    </receiver>
+      </channel6>
+    </receiver0>
 
   </receivers>
 
   <cameras>
-    <camera>
+    <cameraQty>1</cameraQty>
+    <camera0>
       <!-- cameraName:
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -310,10 +289,10 @@
         <x>96.75</x>
         <y>72.5</y>
       </fov>
-    </camera>
+    </camera0>
 
 
-    <cameraDummy>
+    <camera1>
       <!-- cameraName:
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
@@ -346,7 +325,7 @@
         <x>96.75</x>
         <y>72.5</y>
       </fov>
-    </cameraDummy>
+    </camera1>
 
   </cameras>
   
@@ -465,560 +444,558 @@
     <travelSpeed>16.66</travelSpeed>
   </dynamicTesting>
 
- 
 
-  <registersFPGA>
-    <register>
-      <index>R0</index>
-      <address>0</address>
-      <description>Version - Date</description>
-    </register>
+  <registerDescription_RevC>
+    <registersFPGA>
+      <register>
+        <index>R0</index>
+        <address>0</address>
+        <description>Version - Date</description>
+      </register>
 
-    <register>
-      <index>R1</index>
-      <address>4</address>
-      <description>Underflow - Overflow</description>
-    </register>
+      <register>
+        <index>R1</index>
+        <address>4</address>
+        <description>Underflow - Overflow</description>
+      </register>
 
-    <register>
-      <index>R3</index>
-      <address>12</address>
-      <description>MIO Control</description>
-    </register>
+      <register>
+        <index>R3</index>
+        <address>12</address>
+        <description>MIO Control</description>
+      </register>
 
-    <register>
-      <index>R4</index>
-      <address>16</address>
-      <description>ASCAN Timing Register</description>
-    </register>
+      <register>
+        <index>R4</index>
+        <address>16</address>
+        <description>ASCAN Timing Register</description>
+      </register>
 
-    <register>
-      <index>R5</index>
-      <address>20</address>
-      <description>ASCAN Frequency Register</description>
-    </register>
+      <register>
+        <index>R5</index>
+        <address>20</address>
+        <description>ASCAN Frequency Register</description>
+      </register>
 
-    <register>
-      <index>R6</index>
-      <address>24</address>
-      <description>Debug Mode - Ramp Test - Soft Reset - Input Clock</description>
-    </register>
+      <register>
+        <index>R6</index>
+        <address>24</address>
+        <description>Debug Mode - Ramp Test - Soft Reset - Input Clock</description>
+      </register>
 
-    <register>
-      <index>R7</index>
-      <address>28</address>
-      <description>Dead zone</description>
-    </register>
+      <register>
+        <index>R7</index>
+        <address>28</address>
+        <description>Dead zone</description>
+      </register>
 
-    <register>
-      <index>R8</index>
-      <address>32</address>
-      <description>SYS - LIDAR Module Enable</description>
-    </register>
+      <register>
+        <index>R8</index>
+        <address>32</address>
+        <description>SYS - LIDAR Module Enable</description>
+      </register>
 
-    <register>
-      <index>R9</index>
-      <address>36</address>
-      <description>Pulse Width - Mode - LZ Enable</description>
-    </register>
+      <register>
+        <index>R9</index>
+        <address>36</address>
+        <description>Pulse Width - Mode - LZ Enable</description>
+      </register>
 
-    <register>
-      <index>R10</index>
-      <address>40</address>
-      <description>ACC -  ChannelMask</description>
-    </register>
+      <register>
+        <index>R10</index>
+        <address>40</address>
+        <description>ACC -  ChannelMask</description>
+      </register>
 
-    <register>
-      <index>R11</index>
-      <address>44</address>
-      <description>FIR Tap A</description>
-    </register>
+      <register>
+        <index>R11</index>
+        <address>44</address>
+        <description>FIR Tap A</description>
+      </register>
 
-    <register>
-      <index>R12</index>
-      <address>48</address>
-      <description>FIR Tap B</description>
-    </register>
+      <register>
+        <index>R12</index>
+        <address>48</address>
+        <description>FIR Tap B</description>
+      </register>
 
-    <register>
-      <index>R13</index>
-      <address>52</address>
-      <description>DDR Base Address</description>
-    </register>
+      <register>
+        <index>R13</index>
+        <address>52</address>
+        <description>DDR Base Address</description>
+      </register>
 
-    <register>
-      <index>R14</index>
-      <address>56</address>
-      <description>SR Channel Enable</description>
-    </register>
+      <register>
+        <index>R14</index>
+        <address>56</address>
+        <description>SR Channel Enable</description>
+      </register>
 
-    <register>
-      <index>R15</index>
-      <address>60</address>
-      <description>LR Channel Enable</description>
-    </register>
+      <register>
+        <index>R15</index>
+        <address>60</address>
+        <description>LR Channel Enable</description>
+      </register>
 
-    <register>
-      <index>R16</index>
-      <address>64</address>
-      <description>IRQ Status</description>
-    </register>
+      <register>
+        <index>R16</index>
+        <address>64</address>
+        <description>IRQ Status</description>
+      </register>
 
-    <register>
-      <index>R17</index>
-      <address>68</address>
-      <description>IRQ Enable</description>
-    </register>
+      <register>
+        <index>R17</index>
+        <address>68</address>
+        <description>IRQ Enable</description>
+      </register>
 
-    <register>
-      <index>R18</index>
-      <address>72</address>
-      <description>IRQ Reset</description>
-    </register>
+      <register>
+        <index>R18</index>
+        <address>72</address>
+        <description>IRQ Reset</description>
+      </register>
 
-    <register>
-      <index>R19</index>
-      <address>76</address>
-      <description>Laser frequency</description>
-    </register>
+      <register>
+        <index>R19</index>
+        <address>76</address>
+        <description>Laser frequency</description>
+      </register>
 
-    <register>
-      <index>R27</index>
-      <address>108</address>
-      <description>DDR Input Delay</description>
-    </register>
+      <register>
+        <index>R27</index>
+        <address>108</address>
+        <description>DDR Input Delay</description>
+      </register>
 
-    <register>
-      <index>R28</index>
-      <address>112</address>
-      <description>SERDES Sync."</description>
-    </register>
+      <register>
+        <index>R28</index>
+        <address>112</address>
+        <description>SERDES Sync."</description>
+      </register>
 
-    <register>
-      <index>R29</index>
-      <address>116</address>
-      <description>Tx AXI Error</description>
-    </register>
+      <register>
+        <index>R29</index>
+        <address>116</address>
+        <description>Tx AXI Error</description>
+      </register>
 
-    <register>
-      <index>R30</index>
-      <address>120</address>
-      <description>Debug Mode - Debug LED</description>
-    </register>
+      <register>
+        <index>R30</index>
+        <address>120</address>
+        <description>Debug Mode - Debug LED</description>
+      </register>
 
-    <register>
-      <index>R31</index>
-      <address>124</address>
-      <description>Channel Enable</description>
-    </register>
-  </registersFPGA>
+      <register>
+        <index>R31</index>
+        <address>124</address>
+        <description>Channel Enable</description>
+      </register>
+    </registersFPGA>
 
+    <registersADC>
+      <register>
+        <index>0</index>
+        <address>0</address>
+        <description>Software Reset</description>
+      </register>
 
+      <register>
+        <index>0x0F</index>
+        <address>15</address>
+        <description>Power-Down Modes</description>
+      </register>
 
-  <registersADC>
-    <register>
-      <index>0</index>
-      <address>0</address>
-      <description>Software Reset</description>
-    </register>
-
-    <register>
-      <index>0x0F</index>
-      <address>15</address>
-      <description>Power-Down Modes</description>
-    </register>
-
-    <register>
-      <index>0x11</index>
-      <address>17</address>
-      <description>LVDS Drive Program</description>
-    </register>
-
-    <register>
-      <index>¸0x12</index>
-      <address>18</address>
-      <description>LVDS Internal Termination</description>
-    </register>
-
-    <register>
-      <index>0x14</index>
-      <address>20</address>
-      <description>Low-freq noise supression mode</description>
-    </register>
-
-    <register>
-      <index>0x24</index>
-      <address>36</address>
-      <description>Analog Input Invert</description>
-    </register>
-
-    <register>
-      <index>0x25</index>
-      <address>37</address>
-      <description>LVDS Test Patterns A</description>
-    </register>
-
-    <register>
-      <index>0x26</index>
-      <address>38</address>
-      <description>LVDS Test Patterns B</description>
-    </register>
-
-    <register>
-      <index>0x27</index>
-      <address>39</address>
-      <description>LVDS Test Patterns C</description>
-    </register>
-
-    <register>
-      <index>0x45</index>
-      <address>69</address>
-      <description>LVDS Test Patterns D</description>
-    </register>
-
-    <register>
-      <index>0x2A</index>
-      <address>42</address>
-      <description>Programmable Gain A</description>
-    </register>
-
-    <register>
-      <index>0x2B</index>
-      <address>43</address>
-      <description>Programmable Gain B</description>
-    </register>
-
-    <register>
-      <index>0x42</index>
-      <address>66</address>
-      <description>Clock, Reference, Data out mode A</description>
-    </register>
-
-    <register>
-      <index>0x46</index>
-      <address>70</address>
-      <description>Clock, Reference, Data out mode B</description>
-    </register>
-  </registersADC>
-
-  <GPIOs>
-    <register>
-      <index>67</index>
-      <address>67</address>
-      <description>ADC Reset</description>
-    </register>
-
-    <register>
-      <index>68</index>
-      <address>68</address>
-      <description>ADC Power down</description>
-    </register>
-
-    <register>
-      <index>70</index>
-      <address>70</address>
-      <description>Short-range disable</description>
-    </register>
-
-    <register>
-      <index>71</index>
-      <address>71</address>
-      <description>Short-range attenuation</description>
-    </register>
-
-    <register>
-      <index>72</index>
-      <address>72</address>
-      <description>Short-range gain</description>
-    </register>
-
-    <register>
-      <index>73</index>
-      <address>73</address>
-      <description>Long-range disable</description>
-    </register>
-
-    <register>
-      <index>74</index>
-      <address>74</address>
-      <description>Long-range attenuation</description>
-    </register>
-
-    <register>
-      <index>75</index>
-      <address>75</address>
-      <description>Long-range gain</description>
-    </register>
-  </GPIOs>
-
-  <algos>
-    <defaultAlgo>4</defaultAlgo>
-
-    <algo>
-      <!-- Algo 00 -->
-      <!-- Algo00 is the Global parameters section -->
-      <algoID>0</algoID>
-      <algoName>Global</algoName>
-      <parameter>
-        <index>17</index>
+      <register>
+        <index>0x11</index>
         <address>17</address>
-        <description>Window width</description>
-        <type>int</type>
-        <default>3</default>
-      </parameter>
+        <description>LVDS Drive Program</description>
+      </register>
 
-      <parameter>
-        <index>18</index>
+      <register>
+        <index>¸0x12</index>
         <address>18</address>
-        <description>Window qty</description>
-        <type>int</type>
-        <default>3</default>
-      </parameter>
+        <description>LVDS Internal Termination</description>
+      </register>
 
-      <parameter>
-        <index>1</index>
-        <address>1</address>
-        <description>Moving average</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+      <register>
+        <index>0x14</index>
+        <address>20</address>
+        <description>Low-freq noise supression mode</description>
+      </register>
 
-      <parameter>
-        <index>2</index>
-        <address>2</address>
-        <description>Persistance</description>
-        <type>int</type>
-        <default>7</default>
-      </parameter>
+      <register>
+        <index>0x24</index>
+        <address>36</address>
+        <description>Analog Input Invert</description>
+      </register>
 
-      <parameter>
-        <index>257</index>
-        <address>257</address>
-        <description>Track filter Alpha</description>
-        <type>float</type>
-        <default>0.2</default>
-      </parameter>
+      <register>
+        <index>0x25</index>
+        <address>37</address>
+        <description>LVDS Test Patterns A</description>
+      </register>
 
-      <parameter>
-        <index>258</index>
-        <address>258</address>
-        <description>Track filter Beta</description>
-        <type>float</type>
-        <default>0.015</default>
-      </parameter>
+      <register>
+        <index>0x26</index>
+        <address>38</address>
+        <description>LVDS Test Patterns B</description>
+      </register>
 
-      <parameter>
-        <index>289</index>
-        <address>289</address>
-        <description>Track max speed</description>
-        <type>float</type>
-        <default>30.0</default>
-      </parameter>
-    </algo>
+      <register>
+        <index>0x27</index>
+        <address>39</address>
+        <description>LVDS Test Patterns C</description>
+      </register>
 
-    <algo>
-      <!-- Algo 01 -->
-      <!-- Algo01 is the threshold algo section -->
-      <algoID>1</algoID>
-      <algoName>Threshold</algoName>
+      <register>
+        <index>0x45</index>
+        <address>69</address>
+        <description>LVDS Test Patterns D</description>
+      </register>
 
-      <parameter>
-        <index>0</index>
-        <address>0</address>
-        <description>Offset</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
-    </algo>
+      <register>
+        <index>0x2A</index>
+        <address>42</address>
+        <description>Programmable Gain A</description>
+      </register>
 
-    <algo>
-      <!-- Algo 02 -->
-      <!-- Algo02 is the dw algosection -->
-      <algoID>2</algoID>
-      <algoName>Double-W</algoName>
+      <register>
+        <index>0x2B</index>
+        <address>43</address>
+        <description>Programmable Gain B</description>
+      </register>
 
-      <parameter>
-        <index>0</index>
-        <address>0</address>
-        <description>Offset</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+      <register>
+        <index>0x42</index>
+        <address>66</address>
+        <description>Clock, Reference, Data out mode A</description>
+      </register>
 
-      <parameter>
-        <index>1</index>
-        <address>1</address>
-        <description>Starting threshold</description>
-        <type>float</type>
-        <default>0.15</default>
-      </parameter>
+      <register>
+        <index>0x46</index>
+        <address>70</address>
+        <description>Clock, Reference, Data out mode B</description>
+      </register>
+    </registersADC>
 
-      <parameter>
-        <index>2</index>
-        <address>2</address>
-        <description>First damping</description>
-        <type>float</type>
-        <default>0.15</default>
-      </parameter>
+    <GPIOs>
+      <register>
+        <index>67</index>
+        <address>67</address>
+        <description>ADC Reset</description>
+      </register>
 
-      <parameter>
-        <index>3</index>
-        <address>3</address>
-        <description>Numwidth</description>
-        <type>int</type>
-        <default>2</default>
-      </parameter>
+      <register>
+        <index>68</index>
+        <address>68</address>
+        <description>ADC Power down</description>
+      </register>
 
-      <parameter>
-        <index>4</index>
-        <address>4</address>
-        <description>Intensity filter</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+      <register>
+        <index>70</index>
+        <address>70</address>
+        <description>Short-range disable</description>
+      </register>
 
-      <parameter>
-        <index>5</index>
-        <address>5</address>
-        <description>Second width</description>
-        <type>int</type>
-        <default>6</default>
-      </parameter>
+      <register>
+        <index>71</index>
+        <address>71</address>
+        <description>Short-range attenuation</description>
+      </register>
 
-      <parameter>
-        <index>6</index>
-        <address>6</address>
-        <description>First index</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+      <register>
+        <index>72</index>
+        <address>72</address>
+        <description>Short-range gain</description>
+      </register>
 
-      <parameter>
-        <index>7</index>
-        <address>7</address>
-        <description>SNR Cutoff (dB)</description>
-        <type>float</type>
-        <default>18.0</default>
-      </parameter>
-    </algo>
+      <register>
+        <index>73</index>
+        <address>73</address>
+        <description>Long-range disable</description>
+      </register>
 
-    <algo>
-      <!-- Algo 03 -->
-      <!-- Algo03 is the double-d algo -->
-      <algoID>3</algoID>
-      <algoName>Double-D</algoName>
+      <register>
+        <index>74</index>
+        <address>74</address>
+        <description>Long-range attenuation</description>
+      </register>
 
-      <parameter>
-        <index>0</index>
-        <address>0</address>
-        <description>Offset</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+      <register>
+        <index>75</index>
+        <address>75</address>
+        <description>Long-range gain</description>
+      </register>
+    </GPIOs>
 
-      <parameter>
-        <index>1</index>
-        <address>1</address>
-        <description>Starting threshold</description>
-        <type>float</type>
-        <default>0.1</default>
-      </parameter>
+    <algos>
+      <defaultAlgo>4</defaultAlgo>
+      <algo>
+        <!-- Algo 00 -->
+        <!-- Algo00 is the Global parameters section -->
+        <algoID>0</algoID>
+        <algoName>Global</algoName>
+        <parameter>
+          <index>17</index>
+          <address>17</address>
+          <description>Window width</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
 
-      <parameter>
-        <index>2</index>
-        <address>2</address>
-        <description>First derivate order</description>
-        <type>int</type>
-        <default>2</default>
-      </parameter>
+        <parameter>
+          <index>18</index>
+          <address>18</address>
+          <description>Window qty</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
 
-      <parameter>
-        <index>3</index>
-        <address>3</address>
-        <description>Second derivate order</description>
-        <type>int</type>
-        <default>6</default>
-      </parameter>
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Moving average</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
 
-      <parameter>
-        <index>4</index>
-        <address>4</address>
-        <description>Intensity filter</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Persistance</description>
+          <type>int</type>
+          <default>7</default>
+        </parameter>
 
-      <parameter>
-        <index>6</index>
-        <address>6</address>
-        <description>First index</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+        <parameter>
+          <index>257</index>
+          <address>257</address>
+          <description>Track filter Alpha</description>
+          <type>float</type>
+          <default>0.2</default>
+        </parameter>
 
-      <parameter>
-        <index>7</index>
-        <address>7</address>
-        <description>SNR Cutoff (dB)</description>
-        <type>float</type>
-        <default>18.0</default>
-      </parameter>
-    </algo>
+        <parameter>
+          <index>258</index>
+          <address>258</address>
+          <description>Track filter Beta</description>
+          <type>float</type>
+          <default>0.015</default>
+        </parameter>
 
-    <algo>
-      <!-- Algo 04 -->
-      <!-- Algo04 is RMSConv -->
-      <algoID>4</algoID>
-      <algoName>RMSConv</algoName>
+        <parameter>
+          <index>289</index>
+          <address>289</address>
+          <description>Track max speed</description>
+          <type>float</type>
+          <default>30.0</default>
+        </parameter>
+      </algo>
 
-      <parameter>
-        <index>0</index>
-        <address>0</address>
-        <description>Offset</description>
-        <type>int</type>
-        <default>0</default>
-      </parameter>
+      <algo>
+        <!-- Algo 01 -->
+        <!-- Algo01 is the threshold algo section -->
+        <algoID>1</algoID>
+        <algoName>Threshold</algoName>
 
-      <parameter>
-        <index>2</index>
-        <address>2</address>
-        <description>Damping</description>
-        <type>float</type>
-        <default>1.3</default>
-      </parameter>
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+      </algo>
 
-      <parameter>
-        <index>3</index>
-        <address>3</address>
-        <description>Mean width</description>
-        <type>int</type>
-        <default>3</default>
-      </parameter>
+      <algo>
+        <!-- Algo 02 -->
+        <!-- Algo02 is the dw algosection -->
+        <algoID>2</algoID>
+        <algoName>Double-W</algoName>
 
-      <parameter>
-        <index>4</index>
-        <address>4</address>
-        <description>SourceWidth</description>
-        <type>int</type>
-        <default>7</default>
-      </parameter>
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
 
-      <parameter>
-        <index>5</index>
-        <address>5</address>
-        <description>Derivate width</description>
-        <type>int</type>
-        <default>5</default>
-      </parameter>
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Starting threshold</description>
+          <type>float</type>
+          <default>0.15</default>
+        </parameter>
 
-      <parameter>
-        <index>7</index>
-        <address>7</address>
-        <description>SNR Cutoff (dB)</description>
-        <type>float</type>
-        <default>18.0</default>
-      </parameter>
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>First damping</description>
+          <type>float</type>
+          <default>0.15</default>
+        </parameter>
 
-    </algo>
-  </algos>
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Numwidth</description>
+          <type>int</type>
+          <default>2</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Intensity filter</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>Second width</description>
+          <type>int</type>
+          <default>6</default>
+        </parameter>
+
+        <parameter>
+          <index>6</index>
+          <address>6</address>
+          <description>First index</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>18.0</default>
+        </parameter>
+      </algo>
+
+      <algo>
+        <!-- Algo 03 -->
+        <!-- Algo03 is the double-d algo -->
+        <algoID>3</algoID>
+        <algoName>Double-D</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Starting threshold</description>
+          <type>float</type>
+          <default>0.1</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>First derivate order</description>
+          <type>int</type>
+          <default>2</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Second derivate order</description>
+          <type>int</type>
+          <default>6</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Intensity filter</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>6</index>
+          <address>6</address>
+          <description>First index</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>18.0</default>
+        </parameter>
+      </algo>
+
+      <algo>
+        <!-- Algo 04 -->
+        <!-- Algo04 is RMSConv -->
+        <algoID>4</algoID>
+        <algoName>RMSConv</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Mean width</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>SourceWidth</description>
+          <type>int</type>
+          <default>7</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>Derivate width</description>
+          <type>int</type>
+          <default>5</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>18.0</default>
+        </parameter>
+
+      </algo>
+    </algos>
+  </registerDescription_RevC>
 </config>

@@ -12,27 +12,6 @@
 using namespace std;
 using namespace awl;
 
-AcquisitionSequence::AcquisitionSequence():
-frameID(1)
-
-{
-}
-
-uint32_t AcquisitionSequence::AllocateFrameID()
-
-{
-	return(frameID++);
-}
-
-uint32_t	AcquisitionSequence::GetLastFrameID()
-
-{
-	if (sensorFrames.size() <= 0) return(0);
-	
-	return(sensorFrames.back()->GetFrameID());
-
-}
-
 
 	/** \brief Predict the time to collision (distance = 0) between sensor and obstacle,  
 	  *        given current distance and speed, assuming constant deceleration.
@@ -112,6 +91,29 @@ float PredictTTC(float distance, float speed, float acceleration, float time)  /
 }
 
 
+
+AcquisitionSequence::AcquisitionSequence():
+frameID(1)
+
+{
+}
+
+uint32_t AcquisitionSequence::AllocateFrameID()
+
+{
+	return(frameID++);
+}
+
+uint32_t	AcquisitionSequence::GetLastFrameID()
+
+{
+	if (sensorFrames.size() <= 0) return(0);
+	
+	return(sensorFrames.back()->GetFrameID());
+
+}
+
+
 bool AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
 {
 	bool bAllTracksComplete = true;
@@ -157,16 +159,9 @@ bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 {
 	bool bAllTracksComplete = true;
 
-	UpdateTrackInfo(currentFrame);
-
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	ReceiverSettings receiverSettings = globalSettings->receiverSettings[currentFrame->GetReceiverID()];
-	int channelQty = receiverSettings.channelsConfig.size();
+	int channelQty = currentFrame->channelFrames.size();
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
 	{
-
-		ChannelConfig channelConfig = receiverSettings.channelsConfig[channelIndex];
-
 		uint8_t channelMask = 0x01 << channelIndex;
 
 		int detectionIndex = 0;
@@ -181,8 +176,6 @@ bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 			Track::Ptr track = *trackIterator;
 			if (track->IsComplete() && (track->channels & channelMask)) 
 			{
-				if ((track->distance > receiverSettings.displayedRangeMin) && (track->distance <= channelConfig.maxRange))
-				{
 				int detectionIndex = currentFrame->channelFrames[channelIndex]->detections.size();
 				Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelIndex, detectionIndex);
 				detection->channelID = channelIndex;
@@ -209,7 +202,6 @@ bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 				detection->relativeToSensorSpherical = detection->relativeToSensorCart;
 				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
 				detection->relativeToWorldSpherical = detection->relativeToWorldCart;
-				}
 			}  // if (track...
 			else if (!track->IsComplete() || (track->channels == 0))
 			{

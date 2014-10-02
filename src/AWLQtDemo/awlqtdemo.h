@@ -58,8 +58,6 @@ private slots:
 	void on_playbackPushButton_clicked();
 	void on_stopPushButton_clicked();
 
-	void on_simulatedDataInjectCheckBox_setChecked(bool  bChecked);
-
 	void on_sensorHeightSpin_editingFinished();
 	void on_sensorDepthSpin_editingFinished();
 	void on_calibrationRangeMinSpin_editingFinished();

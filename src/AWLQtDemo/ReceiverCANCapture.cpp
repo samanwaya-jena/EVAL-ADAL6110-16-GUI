@@ -7,6 +7,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
+#include <boost/foreach.hpp>
 #endif
 
 #include "DebugPrintf.h"
@@ -34,43 +35,13 @@ const uint16_t		defaultMonthOffset = 1;		// On AWL, all CAN months start at 0.  
 
 #define ConvertIntensityToSNR(v) (((v)/2.0) - 21.0)
 
-ReceiverCANCapture::ReceiverCANCapture(int inReceiverID, int inReceiverChannelQty):
-ReceiverCapture(inReceiverID, inReceiverChannelQty),
-port(NULL),
-reader(NULL),
-lastMessageID(0),
-io(),
-responseString(""),
-closeCANReentryCount(0)
-
-{
-	// Update settings from application
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	sCommPort = globalSettings->receiverSettings[receiverID].sCommPort;
-
-
-	serialPortRate = defaultSerialPortRate;
-	sBitRate = sDefaultEasySyncBitRate;// "S2" = 50Kbps,  "S8" = 1Mbps
-	yearOffset = defaultYearOffset;
-	monthOffset = defaultMonthOffset;
-
-	registersFPGA = globalSettings->defaultRegistersFPGA;
-	registersADC = globalSettings->defaultRegistersADC;
-	registersGPIO = globalSettings->defaultRegistersGPIO;
-	parametersAlgos = globalSettings->defaultParametersAlgos;
-
-	OpenDebugFile(debugFile, "CanBusLog.dat");
-
-	DebugFilePrintf(debugFile, "StartProgram %d", 22);
-}
-
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, 
+					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCapture(receiverID, inReceiverChannelQty, inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+ReceiverCapture(receiverID, inReceiverChannelQty, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
 port(NULL),
 reader(NULL),
-lastMessageID(0),
 io(),
 responseString(""),
 closeCANReentryCount(0)
@@ -90,6 +61,30 @@ closeCANReentryCount(0)
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
 }
 
+
+ReceiverCANCapture::ReceiverCANCapture(int receiverID, boost::property_tree::ptree &propTree):
+ReceiverCapture(receiverID, propTree),
+port(NULL),
+reader(NULL),
+io(),
+responseString(""),
+closeCANReentryCount(0)
+
+{
+	// Read the configuration from the configuration file
+	ReadConfigFromPropTree(propTree);
+	ReadRegistersFromPropTree(propTree);
+
+	// Default values that are not in the configuration file anymore
+	serialPortRate = defaultSerialPortRate;
+	sBitRate = sDefaultEasySyncBitRate;// "S2" = 50Kbps,  "S8" = 1Mbps
+	yearOffset = defaultYearOffset;
+	monthOffset = defaultMonthOffset;
+
+	OpenDebugFile(debugFile, "CanBusLog.dat");
+
+	DebugFilePrintf(debugFile, "StartProgram %d", 22);
+}
 
 ReceiverCANCapture::~ReceiverCANCapture()
 {
@@ -125,7 +120,6 @@ void  ReceiverCANCapture::Go()
 #endif
 
 }
- 
 
 void  ReceiverCANCapture::Stop() 
 {
@@ -235,63 +229,8 @@ void ReceiverCANCapture::DoOneThreadIteration()
 {
 	if (!WasStopped())
     {
-		lastMessageID = 0;
 		AWLCANMessage msg;
 		float distance;
-
-		// If the simulated data mode is enabled,
-		// inject distance information by simulating receiver data.
-		if (bSimulatedDataEnabled && ((GetElapsed() - lastElapsed) >= 10)) 
-		{
-			AWLSettings *settings = AWLSettings::GetGlobalSettings();
-			bool bUseTrack = settings->receiverSettings[receiverID].msgEnableObstacle;
-
-			if ((injectType == eInjectRamp)  && !bUseTrack)
-			{
-				FakeChannelDistanceRamp(20);
-				FakeChannelDistanceRamp(21);
-				FakeChannelDistanceRamp(22);
-				FakeChannelDistanceRamp(23);
-				FakeChannelDistanceRamp(24);
-				FakeChannelDistanceRamp(36);
-			}
-			else if ((injectType == eInjectNoisy)  && !bUseTrack)
-			{
-				FakeChannelDistanceNoisy(20);
-				FakeChannelDistanceNoisy(21);
-				FakeChannelDistanceNoisy(22);
-				FakeChannelDistanceNoisy(23);
-				FakeChannelDistanceNoisy(24);
-				FakeChannelDistanceNoisy(36);
-			}
-			else if ((injectType == eInjectSlowMove) && !bUseTrack)
-			{
-				FakeChannelDistanceSlowMove(20);
-				FakeChannelDistanceSlowMove(21);
-				FakeChannelDistanceSlowMove(22);
-				FakeChannelDistanceSlowMove(23);
-				FakeChannelDistanceSlowMove(24);
-				FakeChannelDistanceSlowMove(25);
-				FakeChannelDistanceSlowMove(36);
-			}
-			else if ((injectType == eInjectConstant) && !bUseTrack)
-			{
-				FakeChannelDistanceConstant(20);
-				FakeChannelDistanceConstant(21);
-				FakeChannelDistanceConstant(22);
-				FakeChannelDistanceConstant(23);
-				FakeChannelDistanceConstant(24);
-				FakeChannelDistanceConstant(25);
-				FakeChannelDistanceConstant(36);
-			}
-			else if (bUseTrack)
-			{
-				FakeChannelTrackSlowMove(36);
-			}
-
-
-			lastElapsed = GetElapsed();
-		}
 
 		if (port && reader && port->is_open()) 
 		{
@@ -495,42 +434,34 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	else if (msgID == 10) 
 	{
 		ParseObstacleTrack(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID == 11) 
 	{
 		ParseObstacleVelocity(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID == 12) 
 	{
 		ParseObstacleSize(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID == 13) 
 	{
 		ParseObstacleAngularPosition(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID >= 20 && msgID <= 26) 
 	{
 		ParseChannelDistance(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID >= 30 && msgID <= 36) 
 	{
 		ParseChannelDistance(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID >= 40 && msgID <= 46) 
 	{
 		ParseChannelIntensity(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID >= 50 && msgID <= 56) 
 	{
 		ParseChannelIntensity(inMsg);
-		lastMessageID = msgID;
 	}
 	else if (msgID == 80) /* Command */
 	{
@@ -540,7 +471,6 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		DebugFilePrintf(debugFile, "UnknownMessage %d", msgID);
 		InvalidateFrame();
-		lastMessageID = msgID;
 	}
 }
 
@@ -1587,13 +1517,6 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 	receiverStatus.currentAlgo = algorithmID;
 	receiverStatus.currentAlgoPendingUpdates = 1;
 
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterAlgoSelectResponse(message);
-   }
-
    return(bMessageOk);
 }
 
@@ -1623,14 +1546,7 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 		registersFPGA[index].pendingUpdates = 1;
 	}
 
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterFPGARegisterResponse(message);
-   }
-
-   return(bMessageOk);
+    return(bMessageOk);
 }
 
 bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t registerValue)
@@ -1657,13 +1573,6 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 		// fall out of sync.
 		registersADC[index].pendingUpdates = 1;
 	}
-
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterADCRegisterResponse(message);
-   }
 
 	return(bMessageOk);
 }
@@ -1694,13 +1603,6 @@ bool ReceiverCANCapture::SetGPIORegister(uint16_t registerAddress, uint32_t regi
 	}
 
 
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterGPIORegisterResponse(message);
-	}
-
 	return(bMessageOk);
 }
 
@@ -1729,14 +1631,7 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		parameter->pendingUpdates = 1;
 	}
 
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterAlgoParameterResponse(message);
-   }
-
-	return(bMessageOk);
+ 	return(bMessageOk);
 }
 
 bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue)
@@ -1764,14 +1659,7 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
 		parameter->pendingUpdates = 1;
 	}
 
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterGlobalParameterResponse(message);
-   }
-
-	return(bMessageOk);
+ 	return(bMessageOk);
 }
 
 
@@ -1822,14 +1710,7 @@ bool ReceiverCANCapture::QueryAlgorithm()
 	// fall out of sync.
 	receiverStatus.currentAlgoPendingUpdates = 1;
 
-   if (bEnableDemo)
-   {
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response 
-	     ParseParameterAlgoSelectResponse(message);
-   }
-
-   return(bMessageOk);
+    return(bMessageOk);
 }
 
 
@@ -1858,14 +1739,6 @@ bool ReceiverCANCapture::QueryFPGARegister(uint16_t registerAddress)
 		registersFPGA[index].pendingUpdates = 1;
 	}
 
-	if (bEnableDemo)
-	{
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response
-	     ParseParameterFPGARegisterResponse(message);
-	}
-
-
 	return(bMessageOk);
 }
 
@@ -1892,13 +1765,6 @@ bool ReceiverCANCapture::QueryADCRegister(uint16_t registerAddress)
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		registersADC[index].pendingUpdates = 1;
-	}
-
-	if (bEnableDemo)
-	{
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response
-	     ParseParameterADCRegisterResponse(message);
 	}
 
 	return(bMessageOk);
@@ -1929,13 +1795,6 @@ bool ReceiverCANCapture::QueryGPIORegister(uint16_t registerAddress)
 		registersGPIO[index].pendingUpdates = 1;
 	}
 
-	if (bEnableDemo)
-	{
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response
-	     ParseParameterGPIORegisterResponse(message);
-	}
-
 	return(bMessageOk);
 }
 
@@ -1962,13 +1821,6 @@ bool ReceiverCANCapture::QueryAlgoParameter(int algoID, uint16_t registerAddress
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		parameter->pendingUpdates = 1;
-	}
-
-	if (bEnableDemo)
-	{
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response
-	     ParseParameterAlgoParameterResponse(message);
 	}
 
 	return(bMessageOk);
@@ -1999,13 +1851,133 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 		parameter->pendingUpdates = 1;
 	}
 
-	if (bEnableDemo)
-	{
-		// Simulate rsponse for tests
-	     message.data[0] = 0xC2; // Parameter Response
-	     ParseParameterGlobalParameterResponse(message);
-	}
-
 	return(bMessageOk);
+}
+
+
+void ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
+{
+		ReceiverCapture::ReadConfigFromPropTree(propTree);
+
+		char receiverKeyString[32];
+		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
+		std::string receiverKey = receiverKeyString;
+
+		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
+		// Communication parameters
+		sCommPort =  receiverNode.get<std::string>("commPort");
+}
+
+void ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree &propTree)
+{
+	using boost::property_tree::ptree;
+
+		// Read all FPGA Registers default descriptions
+	char registerDescKeyString[255];
+	sprintf(registerDescKeyString, "config.registerDescription_RevC.");
+	std::string registerDescKey = registerDescKeyString;
+
+	registersFPGA.clear();
+
+	BOOST_FOREACH(ptree::value_type &registersFPGANode, propTree.get_child(registerDescKey+"registersFPGA"))
+	{
+		if( registersFPGANode.first == "register" ) {
+			boost::property_tree::ptree &registerNode = registersFPGANode.second;
+
+            RegisterSetting registerFPGA;
+            registerFPGA.sIndex = registerNode.get<std::string>("index");
+            registerFPGA.address = registerNode.get<uint16_t>("address");
+		    registerFPGA.sDescription = registerNode.get<std::string>("description");
+			registerFPGA.value = 0L;
+			registerFPGA.pendingUpdates = 0;
+
+			registersFPGA.push_back(registerFPGA);
+        }
+    }
+ 
+ 
+	// Read all ADC Registers default descriptions
+	registersADC.clear();
+	BOOST_FOREACH(ptree::value_type &registersADCNode, propTree.get_child(registerDescKey+"registersADC"))
+	{
+		if( registersADCNode.first == "register" ) 
+		{
+			boost::property_tree::ptree &registerNode = registersADCNode.second;
+
+            RegisterSetting registerADC;
+            registerADC.sIndex = registerNode.get<std::string>("index");
+            registerADC.address  = registerNode.get<uint16_t>("address");
+		    registerADC.sDescription = registerNode.get<std::string>("description");
+			registerADC.value = 0L;
+			registerADC.pendingUpdates = 0;
+
+			registersADC.push_back(registerADC);
+        }
+    }
+ 
+	// Read all GPIO Registers default descriptions
+	registersGPIO.clear();
+	BOOST_FOREACH(ptree::value_type &registersGPIONode, propTree.get_child(registerDescKey+"GPIOs"))
+	{
+		if( registersGPIONode.first == "register" ) 
+		{
+			boost::property_tree::ptree &gpioNode = registersGPIONode.second;
+
+            RegisterSetting registerGPIO;
+            registerGPIO.sIndex = gpioNode.get<std::string>("index");
+            registerGPIO.address  = gpioNode.get<uint16_t>("address");
+		    registerGPIO.sDescription = gpioNode.get<std::string>("description");
+			registerGPIO.value = 0L;
+			registerGPIO.pendingUpdates = 0;
+
+			registersGPIO.push_back(registerGPIO);
+        }
+    }
+
+	// Load all algorithm parameters for all algorithms and for global parameters
+
+	parametersAlgos.defaultAlgo = propTree.get<uint16_t>(registerDescKey+"algos.defaultAlgo");
+	parametersAlgos.algorithms.clear();
+	BOOST_FOREACH(ptree::value_type &algosNode, propTree.get_child(registerDescKey+"algos"))
+	{
+		if (algosNode.first == "algo")
+		{
+			boost::property_tree::ptree &algoNode = algosNode.second;
+			AlgorithmDescription algoDescription;	
+			algoDescription.algoID = algoNode.get<uint16_t>("algoID");
+			algoDescription.sAlgoName = algoNode.get<std::string>("algoName");
+
+			// All channel info for the receiver
+			BOOST_FOREACH(ptree::value_type &parametersNode, algoNode/*.get_child("parameter")*/)
+			{
+				if( parametersNode.first == "parameter" ) 
+				{
+					boost::property_tree::ptree &parameterNode = parametersNode.second;
+					AlgorithmParameter parameter;
+					parameter.sIndex = parameterNode.get<std::string>("index");
+					parameter.address = parameterNode.get<uint16_t>("address");
+					parameter.sDescription = parameterNode.get<std::string>("description");
+					std::string sType = parameterNode.get<std::string>("type");
+					if (!sType.compare("int")) 
+					{
+						parameter.paramType = eAlgoParamInt;
+						parameter.intValue = parameterNode.get<uint32_t>("default");
+						parameter.floatValue = 0.0;
+					}
+					else if (!sType.compare("float")) 
+					{
+						parameter.paramType = eAlgoParamFloat;
+						parameter.intValue = 0;
+						parameter.floatValue = parameterNode.get<float>("default");
+					}
+
+					parameter.pendingUpdates = 0;
+					algoDescription.parameters.push_back(parameter);
+				} // if (parametersNode.first)
+			} // BOOST_FOREACH (parametersNode)
+
+			parametersAlgos.algorithms.push_back(algoDescription);
+		} //		if (algoNode.first == "algo")
+	} // BOOST_FOREACH(algosNode)
 }
 

@@ -12,19 +12,7 @@ using namespace std;
 const std::string sDefaultSettingsFileName("AWLDemoSettings.xml");
 
 
-void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up);
 
-void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float&roll);
-void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y);
-
-void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
-void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
-
-void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
-void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);
-void Put2DPoint(boost::property_tree::ptree &node, float x, float y);
-void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
-void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue);
 AWLSettings *AWLSettings::globalSettings=NULL;
 
 AWLSettings::AWLSettings():
@@ -60,202 +48,85 @@ bool AWLSettings::ReadSettings()
 {
 	// Create an empty property tree object
     using boost::property_tree::ptree;
-    ptree propTree;
+	propTree.clear();
 
 	// Load the XML file into the property tree. If reading fails
     // (cannot open file, parse error), an exception is thrown.
     read_xml(sFileName, propTree);
 
-	// Read all FPGA Registers default descriptions
-	BOOST_FOREACH(ptree::value_type &registersFPGANode, propTree.get_child("config.registersFPGA"))
+	int receiverQty = propTree.get<int>("config.receivers.receiverQty");
+	receiverSettings.resize(receiverQty);
+	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
-		if( registersFPGANode.first == "register" ) {
-			boost::property_tree::ptree &registerNode = registersFPGANode.second;
+		char receiverKeyString[32];
+		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverIndex);
+		std::string receiverKey = receiverKeyString;
 
-            RegisterSetting registerFPGA;
-            registerFPGA.sIndex = registerNode.get<std::string>("index");
-            registerFPGA.address = registerNode.get<uint16_t>("address");
-		    registerFPGA.sDescription = registerNode.get<std::string>("description");
-			registerFPGA.value = 0L;
-			registerFPGA.pendingUpdates = 0;
+		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
-			defaultRegistersFPGA.push_back(registerFPGA);
-        }
-    }
- 
- 
-	// Read all ADC Registers default descriptions
-	BOOST_FOREACH(ptree::value_type &registersADCNode, propTree.get_child("config.registersADC"))
-	{
-		if( registersADCNode.first == "register" ) 
+		ReceiverSettings *receiverPtr = &receiverSettings[receiverIndex];
+		receiverPtr->sReceiverType = receiverNode.get<std::string>("receiverType");
+
+		// Geometry
+		boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
+		GetGeometry(geometryNode, 
+			        receiverPtr->sensorForward, receiverPtr->sensorLeft, receiverPtr->sensorUp,
+					receiverPtr->sensorPitch, receiverPtr->sensorYaw, receiverPtr->sensorRoll);
+
+		// Display
+		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
+		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
+		receiverPtr->rangeOffset = receiverNode.get<float>("rangeOffset");
+
+		// All channel info for the receiver
+		int channelQty = receiverNode.get<int>("channelQty");
+		receiverPtr->channelsConfig.resize(channelQty);
+
+		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 		{
-			boost::property_tree::ptree &registerNode = registersADCNode.second;
+			char channelKeyString[32];
+			sprintf(channelKeyString, "channel%d", channelIndex);
+			std::string channelKey = channelKeyString;
 
-            RegisterSetting registerADC;
-            registerADC.sIndex = registerNode.get<std::string>("index");
-            registerADC.address  = registerNode.get<uint16_t>("address");
-		    registerADC.sDescription = registerNode.get<std::string>("description");
-			registerADC.value = 0L;
-			registerADC.pendingUpdates = 0;
+			boost::property_tree::ptree &channelNode = receiverNode.get_child(channelKey);
 
-			defaultRegistersADC.push_back(registerADC);
-        }
-    }
- 
-	// Read all GPIO Registers default descriptions
- 	BOOST_FOREACH(ptree::value_type &registersGPIONode, propTree.get_child("config.GPIOs"))
+			ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
+			channelConfigPtr->channelIndex = channelIndex;
+			Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
+			float roll;
+			GetOrientation(channelNode.get_child("orientation"), channelConfigPtr->centerY, channelConfigPtr->centerX, roll);
+			channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
+				
+			GetColor(channelNode.get_child("displayColor"), 
+				     channelConfigPtr->displayColorRed, channelConfigPtr->displayColorGreen, channelConfigPtr->displayColorBlue);
+		} // for (int channelIndex = 0;
+
+	} // for (int receiverIndex = 0; 
+
+	int cameraQty = propTree.get<int>("config.cameras.cameraQty");
+	cameraSettings.resize(cameraQty);
+	for (int cameraIndex = 0; cameraIndex < cameraQty; cameraIndex++)
 	{
-		if( registersGPIONode.first == "register" ) 
-		{
-			boost::property_tree::ptree &gpioNode = registersGPIONode.second;
+		char cameraKeyString[32];
+		sprintf(cameraKeyString, "config.cameras.camera%d", cameraIndex);
+		std::string cameraKey = cameraKeyString;
 
-            RegisterSetting registerGPIO;
-            registerGPIO.sIndex = gpioNode.get<std::string>("index");
-            registerGPIO.address  = gpioNode.get<uint16_t>("address");
-		    registerGPIO.sDescription = gpioNode.get<std::string>("description");
-			registerGPIO.value = 0L;
-			registerGPIO.pendingUpdates = 0;
+		boost::property_tree::ptree &cameraNode =  propTree.get_child(cameraKey);
+		CameraSettings *cameraPtr = &cameraSettings[cameraIndex];
 
-			defaultRegistersGPIO.push_back(registerGPIO);
-        }
-    }
-
-	// Load all algorithm parameters for all algorithms and for global parameters
-	defaultParametersAlgos.defaultAlgo = propTree.get<uint16_t>("config.algos.defaultAlgo");
-	BOOST_FOREACH(ptree::value_type &algosNode, propTree.get_child("config.algos"))
-	{
-		if (algosNode.first == "algo")
-		{
-			boost::property_tree::ptree &algoNode = algosNode.second;
-			AlgorithmDescription algoDescription;	
-			algoDescription.algoID = algoNode.get<uint16_t>("algoID");
-			algoDescription.sAlgoName = algoNode.get<std::string>("algoName");
-
-			// All channel info for the receiver
-			BOOST_FOREACH(ptree::value_type &parametersNode, algoNode/*.get_child("parameter")*/)
-			{
-				if( parametersNode.first == "parameter" ) 
-				{
-					boost::property_tree::ptree &parameterNode = parametersNode.second;
-					AlgorithmParameter parameter;
-					parameter.sIndex = parameterNode.get<std::string>("index");
-					parameter.address = parameterNode.get<uint16_t>("address");
-					parameter.sDescription = parameterNode.get<std::string>("description");
-					std::string sType = parameterNode.get<std::string>("type");
-					if (!sType.compare("int")) 
-					{
-						parameter.paramType = eAlgoParamInt;
-						parameter.intValue = parameterNode.get<uint32_t>("default");
-						parameter.floatValue = 0.0;
-					}
-					else if (!sType.compare("float")) 
-					{
-						parameter.paramType = eAlgoParamFloat;
-						parameter.intValue = 0;
-						parameter.floatValue = parameterNode.get<float>("default");
-					}
-
-					parameter.pendingUpdates = 0;
-					algoDescription.parameters.push_back(parameter);
-				} // if (parametersNode.first)
-			} // BOOST_FOREACH (parametersNode)
-
-			defaultParametersAlgos.algorithms.push_back(algoDescription);
-		} //		if (algoNode.first == "algo")
-	} // BOOST_FOREACH(algosNode)
-
-
-	// Loop for all Receiver Configurations
-	BOOST_FOREACH(ptree::value_type &receiversNode, propTree.get_child("config.receivers"))
-	{
-		if( receiversNode.first == "receiver" ) 
-		{
-			boost::property_tree::ptree &receiverNode = receiversNode.second;
-			ReceiverSettings receiver;
-
-			receiver.sReceiverType = receiverNode.get<std::string>("receiverType");
-			receiver.receiverChannelMask = receiverNode.get<uint8_t>("channelMask");
-			receiver.receiverFrameRate = receiverNode.get<uint8_t>("frameRate");
-
-			// Communication parameters
-			receiver.sCommPort =  receiverNode.get<std::string>("commPort");
-
-			// Messages enabled
-			receiver.msgEnableObstacle = receiverNode.get<bool>("msgEnableObstacle");
-			receiver.msgEnableDistance_1_4 = receiverNode.get<bool>("msgEnableDistance_1_4");
-			receiver.msgEnableDistance_5_8 = receiverNode.get<bool>("msgEnableDistance_5_8");
-			receiver.msgEnableIntensity_1_4 = receiverNode.get<bool>("msgEnableIntensity_1_4");
-			receiver.msgEnableIntensity_5_8 = receiverNode.get<bool>("msgEnableIntensity_5_8");
-
-			// Geometry
-			boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
-			GetGeometry(geometryNode, 
-				        receiver.sensorForward, receiver.sensorLeft, receiver.sensorUp,
-						receiver.sensorPitch, receiver.sensorYaw, receiver.sensorRoll);
-
-			// Display
-			receiver.displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
-			receiver.displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
-			receiver.rangeOffset = receiverNode.get<float>("rangeOffset");
-
-			// All channel info for the receiver
-			BOOST_FOREACH(ptree::value_type &channelsNode, receiverNode)
-			{
-				if( channelsNode.first == "channel" ) 
-				{
-					boost::property_tree::ptree &channelNode = channelsNode.second;
-					ChannelConfig channelConfig;
-
-					channelConfig.channelIndex = channelNode.get<int>("index");
-					Get2DPoint(channelNode.get_child("fov"), channelConfig.fovWidth, channelConfig.fovHeight);
-					float roll;
-					GetOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
-					channelConfig.maxRange = channelNode.get<float>("maxRange");
-					
-					GetColor(channelNode.get_child("displayColor"), 
-						     channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
-
-					receiver.channelsConfig.push_back(channelConfig);
-				}// if( receiversNode.first == "channel"
-			} // BOOST_FOREACH(ptree::value_type &channelsNode
-
-			// Store
-			receiverSettings.push_back(receiver);
-		} //if ( receiversNode.first == "receiver" 
-	} // BOOST_FOREACH(receiversNode
-
-
-	// Loop for each camera Configurations
-	BOOST_FOREACH(ptree::value_type &camerasNode, propTree.get_child("config.cameras"))
-	{
-		if( camerasNode.first == "camera" ) 
-		{
-			boost::property_tree::ptree &cameraNode = camerasNode.second;
-			CameraSettings camera;
-
-			camera.sCameraName = cameraNode.get<std::string>("cameraName");
-			camera.cameraFlip = cameraNode.get<bool>("cameraFlip");
-			GetGeometry(cameraNode,
-					camera.cameraForward, camera.cameraLeft, camera.cameraUp,
-					camera.cameraPitch, camera.cameraYaw, camera.cameraRoll);
-			Get2DPoint(cameraNode.get_child("fov"), camera.cameraFovWidthDegrees, camera.cameraFovHeightDegrees);
-
-			// Store
-			cameraSettings.push_back(camera);
-		} //if ( receiversNode.first == "receiver" 
-	} // BOOST_FOREACH(receiversNode
-
+		cameraPtr->sCameraName = cameraNode.get<std::string>("cameraName");
+		cameraPtr->cameraFlip = cameraNode.get<bool>("cameraFlip");
+		GetGeometry(cameraNode,
+				cameraPtr->cameraForward, cameraPtr->cameraLeft, cameraPtr->cameraUp,
+				cameraPtr->cameraPitch, cameraPtr->cameraYaw, cameraPtr->cameraRoll);
+		Get2DPoint(cameraNode.get_child("fov"), cameraPtr->cameraFovWidthDegrees, cameraPtr->cameraFovHeightDegrees);
+	}
 
 	// Debug and log file control
 	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile");
 	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile");
 
 	// Other settings
-
-	bEnableDemo = propTree.get<bool>("config.demoMode.enableDemo");
-	demoInjectType = propTree.get<int>("config.demoMode.injectType");
-
-
 	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow");
 	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow");
 	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow");;
@@ -307,7 +178,6 @@ bool AWLSettings::ReadSettings()
 	bDisplayScopeDistance = propTree.get<bool>("config.scope.displayScopeDistance");
 	bDisplayScopeVelocity = propTree.get<bool>("config.scope.displayScopeVelocity");
 
-
 	threatLevelCriticalThreshold = propTree.get<float>("config.dynamicTesting.threatLevelCriticalThreshold");
 	threatLevelWarnThreshold = propTree.get<float>("config.dynamicTesting.threatLevelWarnThreshold");
 	threatLevelLowThreshold = propTree.get<float>("config.dynamicTesting.threatLevelLowThreshold");
@@ -315,7 +185,6 @@ bool AWLSettings::ReadSettings()
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 
 	bDisplayVideoCrosshair = propTree.get<bool>("config.video.displayCrosshair");
-
 
 	return(true);
 }
@@ -392,27 +261,27 @@ bool AWLSettings::StoreReceiverCalibration()
 }
 
 
-void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up)
+void AWLSettings::GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up)
 {
 	forward = node.get<float>("forward");
 	left = node.get<float>("left");
 	up = node.get<float>("up");
 }
 
-void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float &roll)
+void AWLSettings::GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float &roll)
 {
 	pitch = node.get<float>("pitch");
 	yaw = node.get<float>("yaw");
 	roll = node.get<float>("roll");
 }
 
-void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y)
+void AWLSettings::Get2DPoint(boost::property_tree::ptree &node, float &x, float &y)
 {
 	x = node.get<float>("x");
 	y = node.get<float>("y");
 }
 
-void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll)
+void AWLSettings::GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll)
 {
 	boost::property_tree::ptree &positionNode = geometryNode.get_child("position");
 	boost::property_tree::ptree &orientationNode = geometryNode.get_child("orientation");
@@ -420,7 +289,7 @@ void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, floa
 	GetOrientation(orientationNode, pitch, yaw, roll);
 }
 
-void GetColor(boost::property_tree::ptree &colorNode, uint8_t &red, uint8_t &green, uint8_t &blue)
+void AWLSettings::GetColor(boost::property_tree::ptree &colorNode, uint8_t &red, uint8_t &green, uint8_t &blue)
 {
 	red = colorNode.get<uint8_t>("red");
 	green = colorNode.get<uint8_t>("green");
@@ -428,27 +297,27 @@ void GetColor(boost::property_tree::ptree &colorNode, uint8_t &red, uint8_t &gre
 }
 
 
-void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up)
+void AWLSettings::PutPosition(boost::property_tree::ptree &node, float forward, float left, float up)
 {
 	node.put<float>("forward", forward);
 	node.put<float>("left", left);
 	node.put<float>("up", up);
 }
 
-void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll)
+void AWLSettings::PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll)
 {
 	node.put<float>("pitch", pitch);
 	node.put<float>("yaw", yaw);
 	node.put<float>("roll", roll);
 }
 
-void Put2DPoint(boost::property_tree::ptree &node, float x, float y)
+void AWLSettings::Put2DPoint(boost::property_tree::ptree &node, float x, float y)
 {
 	node.put<float>("x", x);
 	node.put<float>("y", y);
 }
 
-void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll)
+void AWLSettings::PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll)
 {
 	boost::property_tree::ptree &positionNode = geometryNode.get_child("position");
 	boost::property_tree::ptree &orientationNode = geometryNode.get_child("orientation");
@@ -456,7 +325,7 @@ void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float
 	PutOrientation(orientationNode, pitch, yaw, roll);
 }
 
-void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue)
+void AWLSettings::PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue)
 {
 	colorNode.get<uint8_t>("red");
 	colorNode.get<uint8_t>("green");

@@ -207,11 +207,143 @@ public:
 }
 ReceiverStatus;
 
+/** \brief RegisterSetting is an internal representation of an AWL register for an internal device
+*/
+
+typedef struct RegisterSetting 
+{
+	/** \brief String used to describe the index. 
+	  *        This string corresponds to the index identifier in the device, typically used in the user manual.
+	 * \remarks Can be alphanumeric or numeric or hex string (ex: "R0", "0x1A", "09")..
+	*/
+	std::string sIndex; 
+
+	/** \brief String used to describe the register function. 
+	*/
+	std::string sDescription;
+
+	/** \brief Physical address of the register. 
+	 * \remarks On some devices, the physical address may be different than the register index. (Ex:multibyte registers).
+	*/
+	uint16_t address;
+
+	/** \brief Current value of the register. 
+	*/
+	uint32_t value;
+
+	/** \brief Count of the messages demanding a change in the value, that have not been acknowledged by the 
+	  *        AWL moldule. A non-zero count indicates that the value may not have been received and reflected in the module yet. 
+	*/
+	int pendingUpdates;
+}
+RegisterSetting;
+
+/** \brief A RegisterSet is a container of related RegisterSettings
+*    \remarks For example,  a typical AWL receiver provides controls for FPGA registers, ADC registers and GPIO registers.
+*             Each of these devices is represented in a RegisterSet.
+*/
+typedef boost::container::vector<RegisterSetting> RegisterSet;
 
 
-/** \brief ReceiverCapture class is an abstract class for all classes used to acquire data from the physical LIDAR unit.
-  *        The receiver capture buffers up a few frames to facilitate processing afterwards.
-  *        The receiver capture manages optional "logging" of the track and distance data into a local log file on the PC
+/** \brief The AlgoParamType describles the type of Algorithm parameters, which are either  are either float or int values.
+*/
+typedef enum  {
+	eAlgoParamInt = 0,  // Parameter is an  integer
+ 	eAlgoParamFloat = 1 // Parameter is a floating point value
+}
+AlgoParamType;
+
+/** \brief The AlgorithmParameter describes a parameter value for the internal AWL algorithms.
+*/
+typedef struct AlgorithmParameter 
+{
+	/** \brief String used to describe the parameter index. 
+	 * \remarks Should be numeric - formatted for display purposes.
+	*/
+	std::string sIndex;
+
+	/** \brief Identifier of the parameter for the algorithm. 
+	 * \remarks Parameteres are proprietary and are not further described in documentation.
+	*/
+	uint16_t address;
+
+	/** \brief Short description string opf the parameter. 
+	 * \remarks Parameteres are proprietary and are not further described in documentation.
+	*/
+	std::string sDescription;
+
+	/** \brief Indication of the storage type of the parameter. Can be  eAlgoParamInt or eAlgoParamFloat.
+	*/
+	AlgoParamType paramType;
+
+	/** \brief Storage area for parameters of whose type is eAlgoParamInt.
+	*/
+	uint32_t intValue;
+
+	/** \brief Storage area for parameters of whose type is eAlgoParamFloat.
+	*/
+	float floatValue;
+
+	/** \brief Count of the messages demanding a change in the value, that have not been acknowledged by the 
+	  *        AWL moldule. A non-zero count indicates that the value may not have been received and reflected in the module yet. 
+	*/
+	int pendingUpdates;
+}
+AlgorithmParameter;
+
+/** \brief An AlgorithmParameterVector is a container of related AlgorithmParameters
+*/
+
+typedef boost::container::vector<AlgorithmParameter> AlgorithmParameterVector;
+
+/** \brief An AlgorithmDescription describes a detection Algorithm and all of its controllable parameters.
+*/
+typedef struct AlgorithmDescription
+{
+	/** \brief Algorithm Name descriptive string. Used for display and documentation purposes only.
+	*/
+	std::string sAlgoName;
+
+	/** \brief Internal identifier of the algorithm.
+	*/
+	uint16_t	algoID;
+
+	/** \brief Description of all controllable parameters for that algorithm.
+	*/
+	AlgorithmParameterVector parameters;
+}
+AlgorithmDescription;
+
+/** \brief An AlgorithmSet is a container describing all the available detection algorithm and their associated parameters.
+*    \remarks For experimental purposes, the AWL modules may host different detection algorithms, which can be selected through
+*             the communications protocol.
+*             The performance of each algorithm can be "tweaked" by altering the operation paramneters.
+*             Beware, as units may "store" the parameter changes, which will become the default operating parameters
+*             at boot time.  Those changes may not be reflected in the configuration files.
+*/
+typedef struct AlgorithmSet
+{
+	/** \brief Default displayed algo in the user interface.
+	*/
+	int defaultAlgo;
+
+	/** \brief Container of all the Algorithm descriptions.
+	*/
+	boost::container::vector<AlgorithmDescription> algorithms;
+}
+AlgorithmSet;
+
+/** \brief ReceiverCapture class is an abstract class for all classes used to acquire data from physical LIDAR units.
+  *        The ReceiverCapture acquires LIDAR sensor data in SensorFrames.
+  *        It buffers up a few frames to facilitate processing afterwards.
+  *        The ReceiverCapture also manages a "local" copy of the status indicators of the LIDAR units.
+  *        The ReceiverCapture also stores a "local"  copy of all Registers and Algorithm parameters of the LIDAR unit
+  *        that can be controlled via its communications protocols.
+  *        Finally, the ReceiverCapture manages optional "logging" of the track and distance data into a local log file on the PC
+  * 
+  *        Children classes will implement actual physical units based on their specific communications protocols and
+  *        software extensions.
+  *
   * \author Jean-Yves Deschênes
   */
 class ReceiverCapture: public ThreadedWorker, public Publisher
@@ -236,26 +368,31 @@ public:
 	
 	// public Methods
 public:
-	/** \brief ReceiverCapture constructor.  Builds an empty sequence.
-	    * \param[in] inReceiverChannelQty index of the required channel
-    */
-
-	ReceiverCapture(int inReceiverID, int inReceiverChannelQty);
-
-	/** \brief ReceiverCapture constructor.
+	/** \brief ReceiverCapture constructor from user supplied values.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
+	    * \param[in] inFrameRate frameRate of the receiver
+	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
+	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
+	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
+		*                          Will automatically be added to any range received.
 		* \param[in] inRegistersFPGA default description of the FPGA registers
 		* \param[in] inRegistersADC default description of the ADC registers
 		* \param[in] inRegistersGPIO default description of the GPIO registers
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverCapture(int receiverID, int inReceiverChannelQty,
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
+	ReceiverCapture(int receiverID, int inReceiverChannelQty, 
+					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
+					   const AlgorithmSet &inParametersAlgos);
 
+	/** \brief ReceiverCapture constructor from a configuration file information.
+ 	    * \param[in] inReceiverID  unique receiverID
+	    * \param[in] propTree propertyTree that contains teh confoguration file information.
+      */
 
-
+	ReceiverCapture(int receiverID, boost::property_tree::ptree &propTree);
 	/** \brief ReceiverCapture Destructor.  Insures that all threads are stopped before destruction.
       */
 	virtual ~ReceiverCapture();
@@ -333,23 +470,11 @@ public:
       */
 	void GetMeasurementOffset(double &outMeasurementOffset);
 
-	/** \brief Enable or Disable simulation data injection.  (Injects a ramp).
-      * \param[in] inSimulatedEnabled simulated data is injected if true. Injection is disabled if false.
-      * \remark measurement offset is an offset in distance from sensor caused by the nature of algorithm used.
-      */
-	void EnableSimulationData(bool inSimulationEnabled) { bSimulatedDataEnabled = inSimulationEnabled;};
-
-	/** \brief Get the status of the simulation data injection.
-      * \return Boolean is true if simulated data injection is enable, false otherwise.
-      */
-	bool IsSimulatedDataEnabled() {return (bSimulatedDataEnabled);};
-
 	/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.
       * \return true if success.  false on error
      */
 	virtual bool SetPlaybackFileName(std::string inPlaybackFileName);
-
 
 	/** \brief Sets the record filename at the receiver device level.
       * \param[in] inRecordFileName the name for the playback file.
@@ -528,6 +653,10 @@ public:
 	*/
 	int receiverID;
 
+	/** \brief String indentifying the unique receiver type.
+	*/
+	std::string sReceiverType;
+
 	/** \brief Number of receiver channels on the sensor
       */
 	int receiverChannelQty;
@@ -538,10 +667,6 @@ public:
       */
 	volatile uint32_t frameID;
 
-	/** \brief Snapshot frame Index
-      */
-	volatile uint32_t snapshotFrameID;
-
 	/** \brief Structure holding the frame data accumulation */
 	AcquisitionSequence::Ptr acquisitionSequence;
 		
@@ -549,21 +674,36 @@ public:
       */
 	ReceiverStatus	receiverStatus;
 
-
-	/** \brief FPGA Registers 
+	/** \brief FPGA Registers description 
+	 *  \remarks The FPGA register set should be initialized with a representation of the FPGA registers of the receiver model used.
+	 *           Usually, these are extracted from a config file.  If the register set is not initialized, some of the communication
+	 *           functions related to FPGA parameters will not transmit or interpret FPGA specific messages from the Receiver.
+	 *           However, they should not fail and can be called safely.
       */
 	RegisterSet registersFPGA;
 
-	/** \brief ADC Registers 
+	/** \brief ADC Registers description
+	 *  \remarks The ADC register set should be initialized with a representation of the ADC registers of the receiver model used.
+	 *           Usually, these are extracted from a config file.  If the register set is not initialized, some of the communication
+	 *           functions related to ADC parameters will not transmit or interpret ADC specific messages from the Receiver.
+	 *           However, they should not fail and can be called safely.
       */	
 	RegisterSet registersADC;
 	
-	/** \brief GPIO Registers 
+	/** \brief GPIO Registers description 
+	 *  \remarks The GPIO register set should be initialized with a representation of the GPIO registers of the receiver model used.
+	 *           Usually, these are extracted from a config file.  If the register set is not initialized, some of the communication
+	 *           functions related to GPIO parameters will not transmit or interpret GPIO specific messages from the Receiver.
+	 *           However, they should not fail and can be called safely.
       */
 	RegisterSet registersGPIO;
 	
-	/** \brief Algorithm parameters
+	/** \brief Algorithm parameters  description
 	 *  \remarks Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
+	 *  \remarks The Algorithm set should be initialized with a representation of the algorithms parameters of the receiver model used.
+	 *           Usually, these are extracted from a config file.  If the algorithm set is not initialized, some of the communication
+	 *           functions related to algorithm parameters will not transmit or interpret algo messages from the Receiver.
+	 *           However, they should not fail and can be called safely.
 	 */
 	AlgorithmSet parametersAlgos;
 
@@ -603,33 +743,6 @@ protected:
       */
 	virtual void LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFrame);
 
-	/** \brief Inject distance information in the channel,  using ramp simulation
- 	    * \param[in] channel   channel in whhich data is injected
-      */
-	void FakeChannelDistanceRamp(int channel);
-
-	/** \brief Inject distance information in the channel,  using noisy data simulation
- 	    * \param[in] channel   channel in whhich data is injected
-      */
-	void FakeChannelDistanceNoisy(int channel);
-
-	/** \brief Inject distance information in the channel,  usingslow move simulation
- 	    * \param[in] channel   channel in which data is injected
-      */
-	void FakeChannelDistanceSlowMove(int channel);
-
-	/** \brief Inject  a constant distance information in the channel
- 	    * \param[in] channel   channel in which data is injected
-      */
-	void FakeChannelDistanceConstant(int channel);
-
-	/** \brief Inject distance and velocity information in the trackList, for the channel,
-	   *        usingslow move simulation
- 	    * \param[in] channel   channel for which data is injected
-      */
-	void FakeChannelTrackSlowMove(int channel);
-
-
 	/** \brief Do one iteration of the thread loop.
       */
 	virtual void DoOneThreadIteration();
@@ -648,7 +761,7 @@ protected:
 	int FindRegisterByAddress(const RegisterSet &inRegisterSet, uint16_t inAddress);
 
 
-	/** \brief Returna pointer to the Algorithm parameter for the parameter that
+	/** \brief Returns pointer to the Algorithm parameter for the parameter that
 	           has the address specified
 	  * \param[in] algoID an algorithm for which we want the parameter description.
 	 * \param[in] inAddress the parameter address
@@ -656,6 +769,17 @@ protected:
 
       */
 	AlgorithmParameter *FindAlgoParamByAddress(int inAlgoID, uint16_t inAddress);
+
+	/** \brief Reads the configuration proerties from the configuration file
+	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
+      */
+	virtual void ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
+
+	/** \brief Reads the description of registers (FPGA, ADC and GPIO) and controllable algorithm parameters 
+	  *        from the configuration file.
+	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
+      */
+	virtual void ReadRegistersFromPropTree( boost::property_tree::ptree &propTree);
 
 // Protected variables
 protected:
@@ -674,21 +798,8 @@ protected:
 	/** \brief  measurement offset from sensor, introduced by detection algorithm */
 	double  measurementOffset;
 
-	/** \brief  controls the injection of simulated data.  Injection is enabled when true */
-	bool  bSimulatedDataEnabled;
-
-	/** \brief  defines the type of data injected.  */
-	InjectType injectType;
-
-	/** \brief  controls demo features such as simulatedFeedback.  demo features are on when true */
-	bool bEnableDemo;
-
-	
 	/** \brief  Pointer to the current frame information during frame acquisition */
 	SensorFrame::Ptr currentFrame;
-
-	/** \brief  Time tracker for the last frame used to calculate pacing delays in simulations. */
-	double lastElapsed;
 
 	/** \brief  debug file. */
 	ofstream debugFile;
@@ -696,18 +807,8 @@ protected:
 	/** \brief  Log file. */
 	ofstream logFile;
 
-	
-	/** \brief  distance used in simulations - distance injection code */
-	double lastDistance;
+	// Variable used to keep track of the allocated trackIDs.  Incremented for each new track created.
 	TrackID trackIDGenerator;
-	int lastTransition;
-	int transitionDirection;
-	int directionPacing; /* Every 3 seconds, we move from left to right */
-	int nextElapsedDirection;
-
-	float distanceIncrement;
-	int distancePacing; /* 12 ms per move at 0.1m means we do 40m in 5 seconds */
-	int nextElapsedDistance;
 };
 
 

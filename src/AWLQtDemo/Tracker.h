@@ -265,16 +265,16 @@ public:
 
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
 
-	// Build detections from the current track set.
-	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid channel info.
-	bool BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
-
-protected:
+	// Complete the track info that was not processed by the AWL Module.
 	// Return true if all tracks have been intepreted correctly.
 	// Return false if we have found incomplete tracks or invalid channel info.
 	bool UpdateTrackInfo(SensorFrame::Ptr currentFrame);
 
+	// Rebuild processsed detections from the current track set.
+	// Return true if all tracks have been intepreted correctly.
+	// Return false if we have found incomplete tracks or invalid channel info.
+	bool BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
+		
 public: 
 	// Queue of the stored sensor frames.
 	// The acquisitionSequence stores multiple frames, in support of asynchonous operations,

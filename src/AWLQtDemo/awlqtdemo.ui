@@ -575,7 +575,7 @@ stop: 0.3 #808080
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>1</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -1786,44 +1786,6 @@ stop: 0.3 #808080
          <string notr="true"/>
         </property>
        </widget>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="injectSimulatedGroupBox">
-      <property name="geometry">
-       <rect>
-        <x>520</x>
-        <y>10</y>
-        <width>121</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Simulation</string>
-      </property>
-      <widget class="QCheckBox" name="injectSimulatedCheckbox">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>70</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Enabled</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="autoRepeat">
-        <bool>false</bool>
-       </property>
-       <property name="tristate">
-        <bool>false</bool>
-       </property>
       </widget>
      </widget>
     </widget>
@@ -3723,7 +3685,6 @@ color: rgb(255,255,255);</string>
   <tabstop>stopButton</tabstop>
   <tabstop>recordFileNameEdit</tabstop>
   <tabstop>playbackFileNameEdit</tabstop>
-  <tabstop>injectSimulatedCheckbox</tabstop>
   <tabstop>versionEdit</tabstop>
   <tabstop>temperatureEdit</tabstop>
   <tabstop>voltageEdit</tabstop>
@@ -3975,22 +3936,6 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>297</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>injectSimulatedCheckbox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_simulatedDataInjectCheckBox_setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>582</x>
-     <y>104</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>560</x>
      <y>275</y>
     </hint>
    </hints>

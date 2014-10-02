@@ -30,9 +30,8 @@ typedef struct {
 } AWLCANMessage;
 
 
-/** \brief Threaded ReceiverCANCapture class is used to acquire data  from LIDA
-   *		through CAN bus.
-  *        The receiver file capture buffers up a few frames to faciulitae processing afterwards.
+/** \brief TheReceiverCANCapture class is a specialized implementation of the ReceiverCapture
+   *        used to acquire data from AWL LIDAR modules	through the EasySync CAN bus interface.
   * \author Jean-Yves Deschênes
   */
 class ReceiverCANCapture: public ReceiverCapture
@@ -42,33 +41,17 @@ public:
 	typedef boost::shared_ptr<ReceiverCANCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCANCapture> ConstPtr;
 
-	typedef enum eCANRates
-	{
-		rate10Kbps = 0,
-		rate20Kbps = 1,
-		rate50Kbps = 2,
-		rate100Kbps = 3,
-		rate125Kbps = 4,
-		rate250Kbps = 5,
-		rate500Kbps = 6,
-		rate800Kbps = 7,
-		rate1000Kbps = 8
-	};
-
 // public Methods
 public:
-
-	/** \brief ReceiverCANCapture constructor.
- 	    * \param[in] inReceiverID  unique receiverID
-	    * \param[in] inReceiverChannelQty number of channels in the receiver
-      */
-
-	ReceiverCANCapture(int receiverID, int inReceiverChannelQty);
-
 	/** \brief ReceiverCANCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
 		* \param[in] inSerialPort name of the serial port for the receiver
+	    * \param[in] inFrameRate frameRate of the receiver
+	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
+	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
+	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
+		*                          Will automatically be added to any range received.
 		* \param[in] inRegistersFPGA default description of the FPGA registers
 		* \param[in] inRegistersADC default description of the ADC registers
 		* \param[in] inRegistersGPIO default description of the GPIO registers
@@ -76,8 +59,15 @@ public:
       */
 
 	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, 
+					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 
+	/** \brief ReceiverCANCapture constructor from a configuration file information.
+ 	    * \param[in] inReceiverID  unique receiverID
+	    * \param[in] propTree propertyTree that contains teh confoguration file information.
+      */
+
+	ReceiverCANCapture(int receiverID,  boost::property_tree::ptree  &propTree);
 
 
 	/** \brief ReceiverCANCapture Destructor.  Insures that all threads are stopped before destruction.
@@ -401,33 +391,74 @@ protected:
      */
 	bool WriteCurrentDateTime();
 
+	/** \brief Get a byte in hex format from the text response string supplied by the EasySync and convert it into
+	  *        a uint8_t value.  Used in parsing the EasySync response lines.
+	  * \param[in] inResponse  EasySync response string that corresponds to a CAN message.
+	  * \param[out] outByte  interpreted value of the substring.
+	  * \param[in] startIndex  Index of the substring that we want to parse within the string.
+	  * \param[in] len length of the substring to be interpreted.  Should be 1 or 2.  
+	  *                 Default is 1. Values exceeding 2 are limited to 2 characters.
+ 	  * \return true if the function was successful (the substring is a valid hex number) . False otherwise.
+     */
 	bool GetDataByte(std::string &inResponse, uint8_t &outByte, int startIndex, int len = 1);
+
+	/** \brief Parse a message ID (which is an unsigned long in hex format) from the text response string supplied 
+	  *        by the EasySync and convert it into a an unsigned_long value.
+	  *        Used in parsing the EasySync response lines.
+	  * \param[in] inResponse  EasySync response string that corresponds to a CAN message.
+	  * \param[out] outID  interpreded messageID extracted from the substring.
+	  * \param[in] startIndex  Index of the substring that we want to parse within the string.
+ 	  * \return true if the function was successful (the substring is a valid hex number) . False otherwise.
+     */
 	bool GetStandardID(std::string &inResponse,  unsigned long &outID, int startIndex);
+
+	/** \brief Reads the configuration properties from the configuration file
+	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
+      */
+	virtual void ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
+
+	/** \brief Reads the description of registers (FPGA, ADC and GPIO) and controllable algorithm parameters 
+	  *        from the configuration file.
+	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
+      */
+	virtual void ReadRegistersFromPropTree( boost::property_tree::ptree &propTree);
 
 
 // Protected variables
 protected:
+	    /** \brief String sent to the EasySync to control the bitRate of the CAN to USB converter */
 		std::string	sBitRate;
+	    /** \brief Operating system identification string for the communications port (ex: "COM16") */
 		std::string sCommPort;
+	    /** \brief Commmunications rate, in baud.*/
 		long serialPortRate;
-		uint16_t yearOffset;		   // All CAN Dates are offset from 1900
-		uint16_t monthOffset;			// All CAN months start at 0.  Posix starts at 1.
+
+	    /** \brief All dates received from the CAN devices are sent as offsets from 1900. Add the yearOffset to convert to
+		  *        POSIX-Compliant years. This may change depending on device versions*/
+		uint16_t yearOffset;		   
+
+		/** \brief All months received from the CAN devices are sent starting from 0. 
+		  *        POSIX starts at 1. Add the monthOffset to convert to
+		  *        POSIX-Compliant months. This may change depending on device versions*/
+		uint16_t monthOffset;			
 
 
+		/** \brief Time-out without an input message after which we try to recomnnect the serial port. */
 		boost::posix_time::ptime reconnectTime;
 
-		// This trick will be used to determine when we have a complete frame.
-		// we assume that all messages are inorder and that a frame is complete on message 36
-		unsigned long lastMessageID;
 
+		/** \brief BOOST i/o service object for the serial port. */
 		boost::asio::io_service io;
+		/** \brief BOOST serial port status and description. */
 		boost::asio::serial_port *port;
-		std::string responseString;
-		// A blocking reader for this port that 
-		// will time out a read after 500 milliseconds.
+		/** \brief A blocking reader for this port that will time out a read after 500 milliseconds. */
 		blocking_reader *reader; 
 
-		// counter in the closeCanPort call, used to avoid reentry iduring thread close
+		/** \brief Response string acquires from the EasySync CAN to Serial Converter. */
+		std::string responseString;
+
+
+		/** \brief counter in the closeCanPort() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
 };
 
