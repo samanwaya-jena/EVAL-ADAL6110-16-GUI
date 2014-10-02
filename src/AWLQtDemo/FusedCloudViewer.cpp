@@ -602,8 +602,8 @@ void CloudViewerWin::CreateReceiverProjector(VideoCapture::Ptr inVideoCapture, R
 	// Add the channels to the point-cloud projector. 
 	ReceiverChannel::Ptr channelPtr;
 	int receiverID = receiverCapture->GetReceiverID();
-
-	for (int channelID = 0; channelID < globalSettings->receiverSettings[receiverID].channelsConfig.size(); channelID++)
+	ReceiverSettings * receiverSettingsPtr = &globalSettings->receiverSettings[receiverID];
+	for (int channelID = 0; channelID < receiverSettingsPtr->channelsConfig.size(); channelID++)
 	{
 			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovWidth),
