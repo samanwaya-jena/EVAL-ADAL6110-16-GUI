@@ -588,7 +588,7 @@ void CloudViewerWin::mouseEventOccurred (const pcl::visualization::MouseEvent &e
 
 void CloudViewerWin::CreateReceiverProjector(VideoCapture::Ptr inVideoCapture, ReceiverCapture::Ptr inReceiverCapture)
 {
-  AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 
 	// Create a common point-cloud object that will be "projected" upon
@@ -605,11 +605,12 @@ void CloudViewerWin::CreateReceiverProjector(VideoCapture::Ptr inVideoCapture, R
 	ReceiverSettings * receiverSettingsPtr = &globalSettings->receiverSettings[receiverID];
 	for (int channelID = 0; channelID < receiverSettingsPtr->channelsConfig.size(); channelID++)
 	{
+			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, channelID);
 			ReceiverChannel::Ptr receiverChannel(new ReceiverChannel(receiverID, channelID,
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovWidth),
 				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].fovHeight),
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerX),
-				DEG2RAD(globalSettings->receiverSettings[receiverID].channelsConfig[channelID].centerY),
+				channelPosition.orientation.yaw,
+				channelPosition.orientation.pitch,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange,
 				false,
 				globalSettings->receiverSettings[receiverID].channelsConfig[channelID].displayColorRed / 255.0,

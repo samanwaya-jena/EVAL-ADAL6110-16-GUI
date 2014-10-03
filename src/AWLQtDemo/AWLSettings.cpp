@@ -66,17 +66,19 @@ bool AWLSettings::ReadSettings()
 
 		ReceiverSettings *receiverPtr = &receiverSettings[receiverIndex];
 		receiverPtr->sReceiverType = receiverNode.get<std::string>("receiverType");
-
+#if 0
 		// Geometry
 		boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
 		GetGeometry(geometryNode, 
 			        receiverPtr->sensorForward, receiverPtr->sensorLeft, receiverPtr->sensorUp,
 					receiverPtr->sensorPitch, receiverPtr->sensorYaw, receiverPtr->sensorRoll);
-
+#endif
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
+#if 0
 		receiverPtr->rangeOffset = receiverNode.get<float>("rangeOffset");
+#endif
 
 		// All channel info for the receiver
 		int channelQty = receiverNode.get<int>("channelQty");
@@ -94,7 +96,9 @@ bool AWLSettings::ReadSettings()
 			channelConfigPtr->channelIndex = channelIndex;
 			Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
 			float roll;
+#if 0
 			GetOrientation(channelNode.get_child("orientation"), channelConfigPtr->centerY, channelConfigPtr->centerX, roll);
+#endif
 			channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
 				
 			GetColor(channelNode.get_child("displayColor"), 
@@ -116,9 +120,11 @@ bool AWLSettings::ReadSettings()
 
 		cameraPtr->sCameraName = cameraNode.get<std::string>("cameraName");
 		cameraPtr->cameraFlip = cameraNode.get<bool>("cameraFlip");
+#if 0
 		GetGeometry(cameraNode,
 				cameraPtr->cameraForward, cameraPtr->cameraLeft, cameraPtr->cameraUp,
 				cameraPtr->cameraPitch, cameraPtr->cameraYaw, cameraPtr->cameraRoll);
+#endif
 		Get2DPoint(cameraNode.get_child("fov"), cameraPtr->cameraFovWidthDegrees, cameraPtr->cameraFovHeightDegrees);
 	}
 

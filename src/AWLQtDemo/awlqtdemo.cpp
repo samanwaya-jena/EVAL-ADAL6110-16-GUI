@@ -48,7 +48,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Build a reference coodinate system from the settings
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
-	globalCoordinates->BuildCoordinatesFromSettings();
+	globalCoordinates->BuildCoordinatesFromSettings(globalSettings->GetPropTree());
 
 	// Position the main widget on the top left corner
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
@@ -109,9 +109,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	PrepareGlobalParametersView();
 
 	// Initialize the controls from the settings in INI file
-	ui.sensorHeightSpinBox->setValue(globalSettings->receiverSettings[0].sensorUp);
-	ui.sensorDepthSpinBox->setValue(globalSettings->receiverSettings[0].sensorForward);
-	ui.measurementOffsetSpinBox->setValue(globalSettings->receiverSettings[0].rangeOffset);
+	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	ui.sensorHeightSpinBox->setValue(sensorPosition.position.up);
+	ui.sensorDepthSpinBox->setValue(sensorPosition.position.forward);
+	double measurementOffset;
+	receiverCaptures[0]->GetMeasurementOffset(measurementOffset);
+	ui.measurementOffsetSpinBox->setValue(measurementOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
 	ui.sensorRangeMax0SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
@@ -207,7 +210,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-	mCfgSensor.spareDepth = -globalSettings->receiverSettings[0].sensorForward;
+	mCfgSensor.spareDepth = sensorPosition.position.forward;
 
 	m2DScan->slotConfigChanged(mCfgSensor);
 
@@ -510,12 +513,11 @@ void AWLQtDemo::on_pixelSizeSpin_editingFinished()
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	double height = ui.sensorHeightSpinBox->value();
-	if (abs(height-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp) < 0.001) return;
-	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorUp = height;
+	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	if (abs(height-sensorPosition.position.up) < 0.001) return;
+	sensorPosition.position.up = height;
 
-	// Update all the coordinates system
-	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->relativePosition.position.up = height;
-	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->RefreshGlobal();
+	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -535,12 +537,9 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	double forward = ui.sensorDepthSpinBox->value();
-	if (abs(forward-AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward) < 0.001) return;
-	AWLSettings::GetGlobalSettings()->receiverSettings[0].sensorForward = forward;
-
-	// Update all the coordinates system
-	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->relativePosition.position.forward = forward;
-	AWLCoordinates::GetGlobalCoordinates()->GetReceiver(0)->RefreshGlobal();
+	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	if (abs(forward - sensorPosition.position.forward) < 0.001) return;
+	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -675,9 +674,6 @@ void AWLQtDemo::on_measurementOffsetSpin_editingFinished()
 	{
 		receiverCaptures[0]->SetMeasurementOffset(offset);
 	}
-
-	AWLSettings::GetGlobalSettings()->receiverSettings[0].rangeOffset = offset;
-
 }
 
 void AWLQtDemo::on_receiverCalibStorePushButton_clicked()

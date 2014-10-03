@@ -44,7 +44,7 @@
 		       values currently possible are "EasySyncCAN" -->
       <receiverType>EasySyncCAN</receiverType>
 
-      <commPort>COM16</commPort>
+      <commPort>COM28</commPort>
       <frameRate>50</frameRate>
 
 

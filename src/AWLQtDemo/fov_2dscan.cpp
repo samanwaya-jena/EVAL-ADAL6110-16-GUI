@@ -364,21 +364,24 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
+		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
 		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelQty; channelID++)
 		{
 			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
 			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
+			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID,channelID);
 
 			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
 			painter.setBrush(QBrush(channelColor));
-			float startAngle = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].sensorYaw + 
-				               channelConfig.centerX + (channelConfig.fovWidth/2);
+
+			float startAngle = receiverPosition.orientation.yaw + 
+				               channelPosition.orientation.yaw + (channelConfig.fovWidth/2);
 			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
 			// All distances are relative to bumper, subtract the sensor depth  
 			// Angles are drawn from sensor position add the sensor depth
 			drawPie(&painter, startAngle, -channelConfig.fovWidth, channelConfig.maxRange,
-					-receiverSettings.sensorLeft, -receiverSettings.sensorForward);
+				-receiverPosition.position.left, -receiverPosition.position.forward);
 		}
 	}
 

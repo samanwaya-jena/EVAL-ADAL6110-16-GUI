@@ -7,6 +7,9 @@
 #include <boost/container/vector.hpp>
 #include <boost/container/deque.hpp>
 
+#include <boost/property_tree/ptree.hpp>
+
+
 #include <cmath>
 
 #include "CoordinateSystem.h"
@@ -26,11 +29,29 @@ public:
 	static TransformationNode::Ptr GetReceiver(int receiverID);
 	static TransformationNode::Ptr GetChannel(int receiverID, int channelID);
 	static TransformationNode::List GetCameras();
+	static TransformationNode::Ptr GetCamera(int cameraID);
+	
+
 	// Constructor
 	AWLCoordinates();
-	bool BuildCoordinatesFromSettings();
+	AWLCoordinates(boost::property_tree::ptree &propTree);
+	bool BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree);
 
 	static bool SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
+
+	static RelativePosition GetReceiverPosition(int receiverID);
+	static RelativePosition GetChannelPosition(int receiverID, int channelID);
+	static RelativePosition GetCameraPosition(int cameraID);
+
+	static RelativePosition SetReceiverPosition(int receiverID, const RelativePosition &inPosition);
+	static RelativePosition SetChannelPosition(int receiverID, int channelID, const RelativePosition &inPosition);
+	static RelativePosition SetCameraPosition(int cameraID, const RelativePosition &inPosition);
+
+
+protected:
+	TransformationNode::Ptr GetGeometryFromPropertyNode(boost::property_tree::ptree &propTree);
+	TransformationNode::Ptr GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode);
+
 protected:
 	static AWLCoordinates *globalCoordinates;
 	TransformationNode::Ptr	firstNode;

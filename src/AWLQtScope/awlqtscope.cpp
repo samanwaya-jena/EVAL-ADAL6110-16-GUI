@@ -235,7 +235,7 @@ void AWLQtScope::updateCurveDataRaw()
 				Detection::Vector::iterator  detectionIterator = detectionVector.begin();
 				while (detectionIterator != detectionVector.end()) 
 				{
-					Detection::Ptr detection = *detectionIterator;
+					Detection::Ptr detection = *detectionIterator++;
 					float maxDistance =settings->receiverSettings[detection->receiverID].channelsConfig[detection->channelID].maxRange;
 					boost::container::vector<int> detectionIndexes;
 					detectionIndexes.resize(sensorFrame->channelQty);

@@ -54,6 +54,60 @@ TransformationNode::List AWLCoordinates::GetCameras()
 	return(globalCoordinates->cameras);
 }
 
+TransformationNode::Ptr AWLCoordinates::GetCamera(int cameraID)
+{
+	return(globalCoordinates->cameras[cameraID]);
+}
+
+RelativePosition AWLCoordinates::GetReceiverPosition(int receiverID)
+{
+	return(GetReceiver(receiverID)->relativePosition);
+}
+
+RelativePosition AWLCoordinates::GetChannelPosition(int receiverID, int channelID)
+{
+	return(GetChannel(receiverID, channelID)->relativePosition);
+}
+
+RelativePosition AWLCoordinates::GetCameraPosition(int cameraID)
+{
+	return(GetCamera(cameraID)->relativePosition);
+}
+
+
+
+RelativePosition AWLCoordinates::SetReceiverPosition(int receiverID, const RelativePosition &inPosition)
+{
+	TransformationNode::Ptr node = GetReceiver(receiverID);
+
+	node->relativePosition = inPosition;
+	node->RefreshGlobal();
+
+	return(node->relativePosition);
+}
+
+RelativePosition AWLCoordinates::SetChannelPosition(int receiverID, int channelID, const RelativePosition &inPosition)
+{
+	TransformationNode::Ptr node = GetChannel(receiverID, channelID);
+
+	node->relativePosition = inPosition;
+	node->RefreshGlobal();
+
+	return(node->relativePosition);
+}
+
+
+RelativePosition AWLCoordinates::SetCameraPosition(int cameraID, const RelativePosition &inPosition)
+{
+	TransformationNode::Ptr node = GetCamera(cameraID);
+
+	node->relativePosition = inPosition;
+	node->RefreshGlobal();
+
+	return(node->relativePosition);
+}
+
+
 bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -81,10 +135,8 @@ bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID,
 	return(true);
 }
 
-bool AWLCoordinates::BuildCoordinatesFromSettings()
+bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree)
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
 	// If the firstNode was already created, cler it so that we can rebuild the whole coordinate tree.
 
 	if (firstNode.get()) firstNode.reset();
@@ -92,52 +144,112 @@ bool AWLCoordinates::BuildCoordinatesFromSettings()
 	firstNode  = TransformationNode::Ptr(new TransformationNode(CartesianCoord(0, 0, 0), Orientation(0, 0, 0)));
 
 	// Build a transformation matrix for each of the pixels in each of the receivers
-
 	// Loop for the receivers
-	int receiverQty = globalSettings->receiverSettings.size();
+	int receiverQty = propTree.get<int>("config.receivers.receiverQty");
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		ReceiverSettings &receiverSettings = globalSettings->receiverSettings[receiverID];
-		CartesianCoord receiverPosition(receiverSettings.sensorForward, receiverSettings.sensorLeft, receiverSettings.sensorUp);
-		Orientation receiverOrientation(DEG2RAD(receiverSettings.sensorRoll), 
-			                            DEG2RAD(receiverSettings.sensorPitch), 
-										DEG2RAD(receiverSettings.sensorYaw));
-		TransformationNode::Ptr receiverNode = TransformationNode::Ptr(new TransformationNode(receiverPosition, receiverOrientation));
-		firstNode->AddChild(receiverNode);
-		receivers.push_back(receiverNode);
+		// Get to the receiver in the configuration tree. It will be our anchor in the loop
+		char receiverKeyString[32];
+		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
+		std::string receiverKey = receiverKeyString;
+		boost::property_tree::ptree &receiverPropNode =  propTree.get_child(receiverKey);
 
-		// Loop for the sensors
-		for (int channelID = 0; channelID < receiverSettings.channelsConfig.size(); channelID++)
+
+		// Get to the receiver geometry in the configuration tree
+		boost::property_tree::ptree &receiverGeometryPropNode = receiverPropNode.get_child("sensorGeometry");
+
+		// Make the transformation node and add it to the tree
+		TransformationNode::Ptr receiverGeometryNode = GetGeometryFromPropertyNode(receiverGeometryPropNode);
+		firstNode->AddChild(receiverGeometryNode);
+		receivers.push_back(receiverGeometryNode);
+
+		// Loop for each individual channel
+		int channelQty = receiverPropNode.get<int>("channelQty");
+		for (int channelID = 0; channelID < channelQty; channelID++)
 		{
-			CartesianCoord channelPosition(0, 0, 0);
-			float roll = 0.0;
-			float pitch = DEG2RAD(receiverSettings.channelsConfig[channelID].centerY) /*+ M_PI_2*/;
-			float yaw = DEG2RAD(receiverSettings.channelsConfig[channelID].centerX) /*+ M_PI_2*/;
-			Orientation channelOrientation(roll, pitch, yaw);
+			char channelKeyString[32];
+			sprintf(channelKeyString, "channel%d", channelID);
+			std::string channelKey = channelKeyString;
+			boost::property_tree::ptree &channelPropNode = receiverPropNode.get_child(channelKey);
 
-			TransformationNode::Ptr channelNode = TransformationNode::Ptr(new TransformationNode(channelPosition, channelOrientation));
-			receiverNode->AddChild(channelNode);
-
+			// Make the transformation node and add it to the tree
+			TransformationNode::Ptr channelGeometryNode = GetGeometryFromChannelPropertyNode(channelPropNode);
+			receiverGeometryNode->AddChild(channelGeometryNode);
 		}
 	}
 
+
 	// Build a transformation matrix for the cameras
 	// Loop for the cameras
-	int cameraQty = globalSettings->cameraSettings.size();
+	int cameraQty = propTree.get<int>("config.cameras.cameraQty");
 	for (int cameraID = 0; cameraID < cameraQty; cameraID++)
 	{
-		CameraSettings &cameraSettings = globalSettings->cameraSettings[cameraID];
-		CartesianCoord cameraPosition(cameraSettings.cameraForward, cameraSettings.cameraLeft, cameraSettings.cameraUp);
-		Orientation cameraOrientation(DEG2RAD(cameraSettings.cameraRoll),
-									  DEG2RAD(cameraSettings.cameraPitch), 
-									  DEG2RAD(cameraSettings.cameraYaw));
-		TransformationNode::Ptr cameraNode = TransformationNode::Ptr(new TransformationNode(cameraPosition, cameraOrientation));
-		firstNode->AddChild(cameraNode);
-		cameras.push_back(cameraNode);
+		char cameraKeyString[32];
+		sprintf(cameraKeyString, "config.cameras.camera%d", cameraID);
+		std::string cameraKey = cameraKeyString;
 
+		boost::property_tree::ptree &cameraPropNode =  propTree.get_child(cameraKey);			
+		TransformationNode::Ptr cameraGeometryNode = GetGeometryFromPropertyNode(cameraPropNode);
+
+		firstNode->AddChild(cameraGeometryNode);
+		cameras.push_back(cameraGeometryNode);
 	}
 
 
 	return(true);
 }
 
+
+
+TransformationNode::Ptr AWLCoordinates::GetGeometryFromPropertyNode(boost::property_tree::ptree &propNode)
+
+{
+		// Read the geometry information and transform it into proper transformation node description
+		// Note that some of the configuration properties are in dregrees and will need to be converted in radians.
+
+		CartesianCoord position(0, 0, 0);
+		float rollDegree = 0.0; // Read from ini file in degrees
+		float pitchDegree = 0.0; // Read from ini file in degrees
+		float yawDegree = 0.0; // Read from ini file in degrees
+
+		AWLSettings::GetGeometry(propNode, 
+			        position.forward, position.left, position.up,
+					pitchDegree, yawDegree, rollDegree);
+
+		Orientation orientation(DEG2RAD(rollDegree), 
+			                            DEG2RAD(pitchDegree), 
+										DEG2RAD(yawDegree));
+
+		// Make the transformation node
+		TransformationNode::Ptr destNode = TransformationNode::Ptr(new TransformationNode(position, orientation));
+
+		return (destNode);
+}
+
+TransformationNode::Ptr AWLCoordinates::GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode)
+
+{
+		float fovWidth(0.0);
+		float fovHeight(0.0);
+		float centerY(0.0);
+		float centerX(0.0);
+		float roll(0.0);  
+		
+//		AWLSettings::Get2DPoint(channelNode.get_child("fov"), fovWidth, fovHeight);
+
+		// Read the orientation from the configuration file.
+		AWLSettings::GetOrientation(channelNode.get_child("orientation"), centerY, centerX, roll);
+
+		roll = 0.0;
+		float pitch = DEG2RAD(centerY);
+		float yaw = DEG2RAD(centerX);
+		Orientation orientation(roll, pitch, yaw);
+
+		// Simplification: We assume all channel sensors are at position 0.0
+		CartesianCoord position(0, 0, 0);
+
+		// Make the transformation node
+		TransformationNode::Ptr destNode = TransformationNode::Ptr(new TransformationNode(position, orientation));
+
+		return (destNode);
+}

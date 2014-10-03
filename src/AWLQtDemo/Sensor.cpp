@@ -8,6 +8,7 @@
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
 #include "AWLSettings.h"
+#include "AWLCoord.h"
 #include "awlcoord.h"
 
 using namespace std;
@@ -41,8 +42,10 @@ ReceiverChannel::ReceiverChannel(	const int inReceiverID, const int inChannelID,
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	sensorUp = globalSettings->receiverSettings[receiverID].sensorUp;
-	sensorForward = globalSettings->receiverSettings[receiverID].sensorForward;
+	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+	sensorUp = sensorPosition.position.up;
+	sensorForward = sensorPosition.position.forward;
+
 	rangeMax = globalSettings->receiverSettings[receiverID].displayedRangeMax;
 } 
 
