@@ -789,14 +789,18 @@ protected:
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
+	  * \returns Returns true otherwise.
+	  * \throws  Throws boost error on read of the property keys.
       */
-	virtual void ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
+	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
 	/** \brief Reads the description of registers (FPGA, ADC and GPIO) and controllable algorithm parameters 
 	  *        from the configuration file.
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
+	  * \returns Returns false in case of a read of the property tree, when all the register description is absent or not found.  Returns true otherwise.
+	  * \throws  Throws boost error on read of the property keys orther than the root key.
       */
-	virtual void ReadRegistersFromPropTree( boost::property_tree::ptree &propTree);
+	virtual bool ReadRegistersFromPropTree( boost::property_tree::ptree &propTree);
 
 // Protected variables
 protected:

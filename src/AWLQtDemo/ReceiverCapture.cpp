@@ -534,7 +534,7 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 // Configuration file related functions
 
 
-void ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
+bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
 		char receiverKeyString[32];
 		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
@@ -556,11 +556,12 @@ void ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 		if (receiverNode.get<bool>("msgEnableIntensity_1_4")) receiverStatus.messageMask.bitFieldData.intensity_1_4 = 1;
 		if (receiverNode.get<bool>("msgEnableIntensity_5_8")) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
 
+		return(true);
 
 }
 
-void ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree &propTree)
+bool ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree &propTree)
 {
-
+	return(true);
 }
 

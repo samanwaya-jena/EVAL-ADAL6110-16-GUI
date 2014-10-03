@@ -1852,7 +1852,7 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 }
 
 
-void ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
+bool ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
 		ReceiverCapture::ReadConfigFromPropTree(propTree);
 
@@ -1863,20 +1863,40 @@ void ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &pro
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 		// Communication parameters
 		sCommPort =  receiverNode.get<std::string>("commPort");
+
+		return(true);
 }
 
-void ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree &propTree)
+bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree &propTree)
 {
 	using boost::property_tree::ptree;
 
-		// Read all FPGA Registers default descriptions
+	registersFPGA.clear();
+	registersADC.clear();
+	registersGPIO.clear();
+	parametersAlgos.algorithms.clear();
+
+	// Read all FPGA Registers default descriptions
 	char registerDescKeyString[255];
-	sprintf(registerDescKeyString, "config.registerDescription_RevC.");
+	sprintf(registerDescKeyString, "config.registerDescription_RevC");
 	std::string registerDescKey = registerDescKeyString;
 
-	registersFPGA.clear();
+	// The register configuration section may be absent from the configuration.
+	// This is considered a normal situation.
+	boost::property_tree::ptree *configurationNodePtr = NULL;
 
-	BOOST_FOREACH(ptree::value_type &registersFPGANode, propTree.get_child(registerDescKey+"registersFPGA"))
+	try 
+	{
+		// The register configuration section may be absent from the configuration.
+		// This is considered a normal situation.
+		configurationNodePtr =  &propTree.get_child(registerDescKey);
+	}
+	catch (boost::exception &e) 
+	{ 
+		return (false);
+	}
+
+	BOOST_FOREACH(ptree::value_type &registersFPGANode, configurationNodePtr->get_child("registersFPGA"))
 	{
 		if( registersFPGANode.first == "register" ) {
 			boost::property_tree::ptree &registerNode = registersFPGANode.second;
@@ -1894,8 +1914,8 @@ void ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
  
  
 	// Read all ADC Registers default descriptions
-	registersADC.clear();
-	BOOST_FOREACH(ptree::value_type &registersADCNode, propTree.get_child(registerDescKey+"registersADC"))
+
+	BOOST_FOREACH(ptree::value_type &registersADCNode, configurationNodePtr->get_child("registersADC"))
 	{
 		if( registersADCNode.first == "register" ) 
 		{
@@ -1913,8 +1933,8 @@ void ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
     }
  
 	// Read all GPIO Registers default descriptions
-	registersGPIO.clear();
-	BOOST_FOREACH(ptree::value_type &registersGPIONode, propTree.get_child(registerDescKey+"GPIOs"))
+
+	BOOST_FOREACH(ptree::value_type &registersGPIONode, configurationNodePtr->get_child("GPIOs"))
 	{
 		if( registersGPIONode.first == "register" ) 
 		{
@@ -1933,9 +1953,8 @@ void ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 
 	// Load all algorithm parameters for all algorithms and for global parameters
 
-	parametersAlgos.defaultAlgo = propTree.get<uint16_t>(registerDescKey+"algos.defaultAlgo");
-	parametersAlgos.algorithms.clear();
-	BOOST_FOREACH(ptree::value_type &algosNode, propTree.get_child(registerDescKey+"algos"))
+	parametersAlgos.defaultAlgo = configurationNodePtr->get<uint16_t>("algos.defaultAlgo");
+	BOOST_FOREACH(ptree::value_type &algosNode, configurationNodePtr->get_child("algos"))
 	{
 		if (algosNode.first == "algo")
 		{
@@ -1976,5 +1995,7 @@ void ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 			parametersAlgos.algorithms.push_back(algoDescription);
 		} //		if (algoNode.first == "algo")
 	} // BOOST_FOREACH(algosNode)
+
+	return(true);
 }
 

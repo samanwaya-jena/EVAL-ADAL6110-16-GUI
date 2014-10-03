@@ -210,7 +210,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
     mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
     mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
 
-	mCfgSensor.spareDepth = sensorPosition.position.forward;
+	mCfgSensor.spareDepth = -sensorPosition.position.forward;
 
 	m2DScan->slotConfigChanged(mCfgSensor);
 
@@ -1128,6 +1128,8 @@ void AWLQtDemo::PrepareParametersView()
 		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 
@@ -1208,6 +1210,8 @@ void AWLQtDemo::UpdateParametersView()
 		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
@@ -1260,6 +1264,8 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
 		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
+
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
 
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
@@ -1317,6 +1323,8 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
 	}
 
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
@@ -1351,6 +1359,8 @@ void AWLQtDemo::PrepareGlobalParametersView()
 
 {
 	int currentAlgo = 0;
+
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
 
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
@@ -1427,6 +1437,8 @@ void AWLQtDemo::UpdateGlobalParametersView()
 {
 	int currentAlgo = 0;
 
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
@@ -1474,6 +1486,8 @@ void AWLQtDemo::UpdateGlobalParametersView()
 void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 {
 	int currentAlgo = 0;
+
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
 
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
@@ -1525,6 +1539,8 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 {
 	int currentAlgo = 0;
+
+	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
 
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
@@ -1680,6 +1696,8 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
+	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
+
 	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
 
 	sValue = ui.registerFPGAValueSetLineEdit->text();
@@ -1712,6 +1730,8 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+
+	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
 
 	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
 
@@ -1748,6 +1768,7 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	int comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
+	if (comboIndex >= receiverCaptures[0]->registersADC.size()) return;
 	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
 
 	sValue = ui.registerADCValueSetLineEdit->text();
@@ -1781,6 +1802,7 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 	int comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
+	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
 	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
 
 	// Now update user interface
