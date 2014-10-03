@@ -865,6 +865,7 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 		}
 
 
+#if 0
 		int channelQty = receiver->GetChannelQty();
 		for (int channelID = 0; channelID < channelQty; channelID++) 
 		{
@@ -892,6 +893,28 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 
 			}
 		}
+#else
+		// Thread safe
+		// The UI thread "Snaps" the frame ID for all other interface objects to display
+		Detection::Vector detectionBuffer;
+		if (receiver->CopyReceiverEnhancedDetections(lastDisplayedFrame, detectionBuffer, subscriberID))
+		{
+			// Copy and filter the detection data to keep only those we need.
+			Detection::Vector::iterator  detectionIterator = detectionBuffer.begin();
+			while (detectionIterator != detectionBuffer.end()) 
+			{
+				Detection::Ptr detection = *detectionIterator;
+				if ((detection->distance >= receiverSettings.displayedRangeMin) && 
+					(detection->distance <=  receiverSettings.channelsConfig[detection->channelID].maxRange)) 
+				{
+					Detection::Ptr storedDetection = detection;
+					detectionData.push_back(storedDetection);
+				}
+
+				detectionIterator++;
+			}
+		} // If (receiver...
+#endif
 	}
 
 	return(bNew);

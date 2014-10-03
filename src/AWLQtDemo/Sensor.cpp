@@ -53,6 +53,7 @@ ReceiverChannel::~ReceiverChannel()
 
 void ReceiverChannel::AddDistancesToCloud()
 {
+#if 0
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	float minDistance = globalSettings->receiverSettings[receiverID].displayedRangeMin;
 	float maxDistance = globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange;
@@ -83,6 +84,36 @@ void ReceiverChannel::AddDistancesToCloud()
 			}
 		}
 	}
+#else
+		AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+		float minDistance = globalSettings->receiverSettings[receiverID].displayedRangeMin;
+		float maxDistance = globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange;
+		
+		uint32_t lastDisplayedFrame = receiverCapture->GetCurrentIssueID(receiverCaptureSubscriberID);
+
+		// Thread safe
+		// The UI thread "Snaps" the frame ID for all other interface objects to display
+		Detection::Vector detectionBuffer;
+		if (receiverCapture->CopyReceiverEnhancedDetections(lastDisplayedFrame, detectionBuffer, receiverCaptureSubscriberID))
+		{
+			// Copy and filter the detection data to keep only those we need.
+			Detection::Vector::iterator  detectionIterator = detectionBuffer.begin();
+			while (detectionIterator != detectionBuffer.end()) 
+			{
+				Detection::Ptr detection = *detectionIterator;
+				if ((detection->channelID == channelID &&
+					detection->distance >= minDistance) && 
+					(detection->distance <=  maxDistance)) 
+				{
+					AddDistanceToCloud(detection->distance, 255);
+				}
+
+				detectionIterator++;
+			}
+		} // If (receiver...
+
+#endif
+
 }
 
 void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)

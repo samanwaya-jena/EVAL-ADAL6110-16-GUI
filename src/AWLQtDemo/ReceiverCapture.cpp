@@ -145,6 +145,7 @@ int ReceiverCapture::GetFrameQty()
 }
 
 
+#if 0
 bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Publisher::SubscriberID inSubscriberID)
 {
 	if (!LockNews(inSubscriberID)) return(false);
@@ -168,6 +169,58 @@ bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelI
 	UnlockNews(inSubscriberID);
 	return(bFound);
 };
+#else
+bool ReceiverCapture::CopyReceiverRawDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
+{
+	if (!LockNews(inSubscriberID)) return(false);
+
+	SensorFrame::Ptr sensorFrame;
+	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
+	if (bFound) 
+	{ 
+		outDetections.clear();
+#if 1
+		outDetections = sensorFrame->rawDetections;
+#else
+		int detectionQty = sensorFrame->rawDetections.size();
+		for (int i = 0; i< detectionQty; i++) 
+		{
+ 			outDetections.push_back(sensorFrame->rawDetections[i]);
+		}	
+#endif
+	}
+
+	UnlockNews(inSubscriberID);
+	return(bFound);
+}
+
+bool ReceiverCapture::CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
+{
+	if (!LockNews(inSubscriberID)) return(false);
+
+	SensorFrame::Ptr sensorFrame;
+	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
+	if (bFound) 
+	{ 
+		outDetections.clear();
+#if 1
+		outDetections = sensorFrame->enhancedDetections;
+#else
+		int detectionQty = sensorFrame->enhancedDetections.size();
+		for (int i = 0; i< detectionQty; i++) 
+		{
+ 			outDetections.push_back(sensorFrame->enhancedDetections[i]);
+		}	
+#endif
+	}
+
+	UnlockNews(inSubscriberID);
+	return(bFound);
+}
+
+
+#endif
+
 
 bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID)
 {
@@ -456,34 +509,26 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 
-	ChannelFrame::Vector::iterator channelIterator = sourceFrame->channelFrames.begin();
-	while (channelIterator !=sourceFrame->channelFrames.end()) 
+	Detection::Vector::iterator  detectionIterator = sourceFrame->rawDetections.begin();
+	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
-
-		ChannelFrame::Ptr channelFrame = *channelIterator;
-		Detection::Vector::iterator  detectionIterator = channelFrame->detections.begin();
-		while (detectionIterator != channelFrame->detections.end()) 
-		{
-			Detection::Ptr detection = *detectionIterator;
-			LogFilePrintf(logFile, " ;Dist;;Channel;%d;%d;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.2f;%.1f;%.3f;%.1f;%.0f;%d",
+		Detection::Ptr detection = *detectionIterator;
+		LogFilePrintf(logFile, " ;Dist;;Channel;%d;%d;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.2f;%.1f;%.3f;%.1f;%.0f;%d",
 			detection->channelID, 
 			detection->detectionID,
 			AWLSettings::GetGlobalSettings()->targetHintDistance,
 			AWLSettings::GetGlobalSettings()->targetHintAngle,
-				detection->distance,
-				detection->intensity,
-				detection->velocity, 
-				detection->acceleration, 
-				detection->timeToCollision,
-				detection->decelerationToStop,
-				detection->probability,
-				detection->threatLevel);
+			detection->distance,
+			detection->intensity,
+			detection->velocity, 
+			detection->acceleration, 
+			detection->timeToCollision,
+			detection->decelerationToStop,
+			detection->probability,
+			detection->threatLevel);
 
-			detectionIterator++;
-		}
-
-		channelIterator++;
-	}	
+		detectionIterator++;
+	}
 }
 
 // Configuration file related functions

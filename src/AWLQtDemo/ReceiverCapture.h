@@ -415,7 +415,7 @@ public:
       * \return int indicating the number of channels.
       */
 	virtual int GetChannelQty() {return receiverChannelQty;};
-
+#if 0
 	/** \brief copy the channel data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
@@ -424,7 +424,24 @@ public:
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
 	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Publisher::SubscriberID inSubscriberID);
+#else
+	/** \brief copy the raw detection data identified with a frameID to to a local copy (thread-safe)
+     * \param[in] inFrameID frame identificator of the requiested frame
+	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
+	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
+     * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
+     */
+	virtual bool CopyReceiverRawDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
 
+	/** \brief copy the processed (enhanced) detection data identified with a frameID to to a local copy (thread-safe)
+     * \param[in] inFrameID frame identificator of the requiested frame
+	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
+	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
+     * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
+     */
+	virtual bool CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
+
+#endif
 	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel

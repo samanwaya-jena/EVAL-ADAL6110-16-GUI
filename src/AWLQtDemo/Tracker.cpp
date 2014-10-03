@@ -159,25 +159,22 @@ bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 {
 	bool bAllTracksComplete = true;
 
-	int channelQty = currentFrame->channelFrames.size();
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++) 
+	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++) 
 	{
 		uint8_t channelMask = 0x01 << channelIndex;
 
 		int detectionIndex = 0;
 
-		// Update the coaslesced tracks
+		// Re-Create detections from the coalesced tracks
 		int trackQty = currentFrame->tracks.size();
 
 		Track::Vector::iterator  trackIterator = currentFrame->tracks.begin();
-
 		while (trackIterator != currentFrame->tracks.end()) 
 		{
 			Track::Ptr track = *trackIterator;
 			if (track->IsComplete() && (track->channels & channelMask)) 
 			{
-				int detectionIndex = currentFrame->channelFrames[channelIndex]->detections.size();
-				Detection::Ptr detection = currentFrame->MakeUniqueDetection(channelIndex, detectionIndex);
+				Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->enhancedDetections,channelIndex, detectionIndex++);
 				detection->channelID = channelIndex;
 				detection->distance = track->distance;
 
@@ -264,27 +261,20 @@ bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &ou
 }
 
 
-SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID) :
-receiverID(inReceiverID),
-frameID(inFrameID),
-timeStamp(0)
-{
-}
-
 SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty) :
 receiverID(inReceiverID),
 frameID(inFrameID),
+channelQty(inChannelQty),
+rawDetections(),
+enhancedDetections(),
+tracks(),
 timeStamp(0)
 
 {
-	for (int channel = 0; channel < inChannelQty; channel++) 
-	{
-		ChannelFrame::Ptr myChannelFrame(new ChannelFrame(receiverID, channel));
-		channelFrames.push_back(myChannelFrame);
-	}
 }
 
 
+#if 0
 Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 
 {
@@ -299,7 +289,43 @@ Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
 	return(detection);
 }
 
+#else
 
+Detection::Ptr SensorFrame::MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID)
+
+{
+	Detection::Ptr detection;
+	bool bExists = FindDetection(detectionVector, channelID, detectionID, detection);
+	if (!bExists) 
+	{
+		detection = Detection::Ptr(new Detection(receiverID, channelID, detectionID));
+		detectionVector.push_back(detection);
+	}
+
+	return(detection);
+}
+
+bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection)
+{
+	Detection::Vector::iterator  detectionIterator = detectionVector.begin();
+	while (detectionIterator != detectionVector.end()) 
+	{
+		Detection::Ptr detection = *detectionIterator;
+		if (detection->channelID == inChannelID && detection->detectionID == inDetectionID) 
+		{
+			outDetection = detection;
+			return(true);
+		}
+
+		detectionIterator++;
+	}
+
+	return(false);
+}
+
+#endif
+
+#if 0
 ChannelFrame::ChannelFrame(int inReceiverID, int inChannelID):
 receiverID(inReceiverID),
 channelID(inChannelID)
@@ -327,6 +353,8 @@ bool ChannelFrame::FindDetection(int inDetectionID, Detection::Ptr &outDetection
 
 	return(false);
 }
+#endif
+
 
 Detection::Detection():
 receiverID(0),

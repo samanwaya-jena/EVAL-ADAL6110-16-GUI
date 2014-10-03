@@ -564,11 +564,8 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance /= 100;
 		distance += measurementOffset;
 
-
-		currentFrame->channelFrames[channel]->timeStamp = GetElapsed();
-
 		int detectionIndex = 0+detectOffset;
-		Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 		
 		detection->distance = distance;
 
@@ -583,7 +580,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 
 		detectionIndex = 1+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 		
 		detection->distance = distance;
 		detection->firstTimeStamp = currentFrame->timeStamp;
@@ -597,7 +594,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 
 		detectionIndex = 2+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection =currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 		
 		detection->distance = distance;
 		detection->firstTimeStamp = currentFrame->timeStamp;
@@ -611,7 +608,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		distance += measurementOffset;
 
 		detectionIndex = 3+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 		
 		detection->distance = distance;
 		detection->firstTimeStamp = currentFrame->timeStamp;
@@ -647,28 +644,28 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	boost::mutex::scoped_lock rawLock(GetMutex());
 	float intensity = ((float) intensityPtr[0]) / maxIntensity;
 	int detectionIndex = 0+detectOffset;
-	Detection::Ptr detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[1]) / maxIntensity;
 	detectionIndex = 1+detectOffset;
-	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[2]) / maxIntensity;
 	detectionIndex = 2+detectOffset;
-	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;
 
 	intensity = ((float) intensityPtr[3]) / maxIntensity;
 	detectionIndex = 3+detectOffset;
-	detection = currentFrame->MakeUniqueDetection(channel, detectionIndex);
+	detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
 	detection->velocity = 0;

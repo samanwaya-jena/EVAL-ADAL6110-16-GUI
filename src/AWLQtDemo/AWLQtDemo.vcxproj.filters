@@ -801,5 +801,6 @@
     <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
       <Filter>Installable DLLs</Filter>
     </None>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

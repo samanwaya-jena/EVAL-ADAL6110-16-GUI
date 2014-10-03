@@ -78,6 +78,7 @@ public:
 	float acceleration;
 
 	/** \brief Time to collision, in seconds */
+
 	float timeToCollision;
 
 	/** \brief Required acceleration to zero speed, in m/s2seconds */
@@ -176,6 +177,7 @@ public:
 protected:
 };
 
+#if 0
 /** \brief The ChannelFrame class holds the multiple detections associated to one channel, in one single time frame.
 */
 
@@ -205,7 +207,7 @@ public:
 	/** \brief Vector holding all the detections within that channel, in the time frame */ 
 	Detection::Vector detections;
 };
-
+#endif
 
 /** \brief The SensorFrame class holds all channel detections (channelFrames),
 		corresponding to a unique time frame.
@@ -217,24 +219,34 @@ public:
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
 	typedef std::queue<SensorFrame::Ptr> Queue;
 public:
-	SensorFrame(int inReceiverID, uint32_t inFrameID);
 	SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty);
 	virtual ~SensorFrame() {};
 
 	int GetReceiverID() { return(receiverID);}
 	uint32_t	GetFrameID() {return(frameID);}
 
+#if 0
 	Detection::Ptr MakeUniqueDetection(int channelID, int detectionID);
+#else
+	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
+	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
+#endif
+
 public:
 	int receiverID;
 	uint32_t frameID;
+	int channelQty;
+#if 0
 	ChannelFrame::Vector channelFrames;
+#else
+	Detection::Vector rawDetections;		// Raw detections as acquired from device
+	Detection::Vector enhancedDetections;   // Detections enhanced with post-processing from the tracking algorithms and 3D positionning
+#endif
 	Track::Vector tracks; 
 
 	// Timestamp im milliseconds, elapsed from start of thread.
 	double timeStamp;
 
-//	ChannelFrame &operator[](int channelIndex) {return(*(channelFrames[channelIndex]));}
 };
 
 /** \brief The AcquisitionSequence is a list of all the information acquired from the receiver,
