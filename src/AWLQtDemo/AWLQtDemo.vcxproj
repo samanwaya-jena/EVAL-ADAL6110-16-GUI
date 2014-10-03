@@ -94,6 +94,7 @@
     <ClCompile Include="awlcoord.cpp" />
     <ClCompile Include="awlqtdemo.cpp" />
     <ClCompile Include="AWLSettings.cpp" />
+    <ClCompile Include="CoordinateSystem.cpp" />
     <ClCompile Include="DebugPrintf.cpp" />
     <ClCompile Include="fov_2dscan.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_awlqtscope.cpp">
@@ -231,6 +232,7 @@
     <ClInclude Include="awlcoord.h" />
     <ClInclude Include="AWLSettings.h" />
     <ClInclude Include="BlockingReader.h" />
+    <ClInclude Include="CoordinateSystem.h" />
     <ClInclude Include="DebugPrintf.h" />
     <CustomBuild Include="fov_2dscan.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
