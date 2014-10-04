@@ -341,14 +341,14 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 		{
 			colorEnhance = cv::Vec3b(128, 0, 0);  // Blue
 			colorDehance = cv::Vec3b(0, 64, 64);
-			iThickness = 4;
+			iThickness = 5;
 		}
 		break;
 	case Detection::eThreatLow:
 		{
 			colorEnhance = cv::Vec3b(0, 128, 0); // Green
 			colorDehance = cv::Vec3b(64, 0,64);
-			iThickness = 4;
+			iThickness = 5;
 		}
 		break;
 
