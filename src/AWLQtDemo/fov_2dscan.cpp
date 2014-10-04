@@ -375,8 +375,8 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
 			painter.setBrush(QBrush(channelColor));
 
-			float startAngle = receiverPosition.orientation.yaw + 
-				               channelPosition.orientation.yaw + (channelConfig.fovWidth/2);
+			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
+				               RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth/2);
 			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
 			// All distances are relative to bumper, subtract the sensor depth  
 			// Angles are drawn from sensor position add the sensor depth
