@@ -6,11 +6,11 @@
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
 #include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
 #endif
 
 #include "DebugPrintf.h"
 
-#include "AWLSettings.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverCANCapture.h"

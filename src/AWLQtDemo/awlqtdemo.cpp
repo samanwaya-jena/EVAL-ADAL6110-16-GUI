@@ -129,8 +129,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.sensorRangeMax5SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[5].maxRange);
 	ui.sensorRangeMax6SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[6].maxRange);
 
-	ui.targetHintDistanceSpinBox->setValue(globalSettings->targetHintDistance);
-	ui.targetHintAngleSpinBox->setValue(globalSettings->targetHintAngle);
+	ui.targetHintDistanceSpinBox->setValue(receiverCaptures[0]->targetHintDistance);
+	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
 
 	ui.pixelSizeSpinBox->setValue(globalSettings->pixelSize);	
 	ui.decimationSpinBox->setValue(globalSettings->decimation);
@@ -717,14 +717,14 @@ void AWLQtDemo::on_targetHintDistanceSpin_editingFinished()
 {
 	double distance = ui.targetHintDistanceSpinBox->value();
 
-	AWLSettings::GetGlobalSettings()->targetHintDistance = distance;
+	receiverCaptures[0]->targetHintDistance = distance;
 }
 
 void AWLQtDemo::on_targetHintAngleSpin_editingFinished()
 {
 	double angle = ui.targetHintAngleSpinBox->value();
 
-	AWLSettings::GetGlobalSettings()->targetHintAngle = angle;
+	receiverCaptures[0]->targetHintAngle = angle;
 }
 
 

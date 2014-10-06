@@ -9,9 +9,6 @@
 
 #define VelocityToKmH(velocity) (velocity * 3.6)
 
-#define ALGO_QTY 4
-#define GLOBAL_PARAMETERS_INDEX 0
-
 namespace awl
 {
 
@@ -129,11 +126,6 @@ public:
 	std::string sLogoFileName;
 	std::string sIconFileName;
 
-	// Calibration parameters
-	float targetHintDistance;
-	float targetHintAngle;
-
-	
 	// Table view options
 	int displayedDetectionsPerChannelInTableView;
 

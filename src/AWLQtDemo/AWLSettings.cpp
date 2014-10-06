@@ -17,8 +17,6 @@ AWLSettings *AWLSettings::globalSettings=NULL;
 
 AWLSettings::AWLSettings():
 sFileName(sDefaultSettingsFileName),
-targetHintDistance(0.0),
-targetHintAngle(0.0),
 decimation(3),
 pixelSize(1),
 colorStyle(0),
@@ -125,9 +123,6 @@ bool AWLSettings::ReadSettings()
 
 	sLogoFileName = propTree.get<std::string>("config.layout.logoFileName");
 	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
-
-	targetHintDistance = propTree.get<float>("config.calibration.targetHintDistance");
-	targetHintAngle = propTree.get<float>("config.calibration.targetHintAngle");
 
 	decimation = propTree.get<int>("config.display3D.decimation");
 	pixelSize = propTree.get<int>("config.display3D.pixelSize");

@@ -724,6 +724,14 @@ public:
 	AlgorithmSet parametersAlgos;
 
 
+	/** \brief Reference distance used when logging data.
+	*/
+	float targetHintDistance;
+
+	/** \brief Reference angle used when logging data.
+	*/
+	float targetHintAngle;
+
 // Protected methods
 protected:
 	/** \brief Return the lidar data rendering thread status

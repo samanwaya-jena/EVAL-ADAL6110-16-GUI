@@ -1,11 +1,12 @@
 
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/property_tree/ptree.hpp>
 #endif
 
 #include <fstream>
 
-#include "AWLSettings.h"
+
 #include "Publisher.h"
 #include "ThreadedWorker.h"
 #include "ReceiverCapture.h"
@@ -40,7 +41,9 @@ registersFPGA(inRegistersFPGA),
 registersADC(inRegistersADC),
 registersGPIO(inRegistersGPIO),
 parametersAlgos(inParametersAlgos),
-sReceiverType(sDefaultReceiverType)
+sReceiverType(sDefaultReceiverType),
+targetHintDistance(0.0),
+targetHintAngle(0.0)
 
 {
 	// Initialize default status values
@@ -67,7 +70,10 @@ acquisitionSequence(new AcquisitionSequence()),
 frameID(0),
 trackIDGenerator(0),
 bFrameInvalidated(false),
-sReceiverType(sDefaultReceiverType)
+sReceiverType(sDefaultReceiverType),
+targetHintDistance(0.0),
+targetHintAngle(0.0)
+
 
 {
 	// Read the configuration from the configuration file
@@ -465,8 +471,6 @@ bool ReceiverCapture::EndDistanceLog()
 
 void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 {
-	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-
 	// Update the coaslesced tracks
    Track::Vector::iterator  trackIterator = sourceFrame->tracks.begin();
 
@@ -478,8 +482,8 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;speed;acceleration;probability;timeToCollision);
 			LogFilePrintf(logFile, " ;Track;%d; ; ; ;Expected;%.2f;%.1f;Val;%.2f; ;%.1f;%.1f;%.3f;%.1f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;",
 				track->trackID,
-				AWLSettings::GetGlobalSettings()->targetHintDistance,
-				AWLSettings::GetGlobalSettings()->targetHintAngle,
+				targetHintDistance,
+				targetHintAngle,
 				track->distance,
 				track->velocity, 
 				track->acceleration, 
@@ -503,8 +507,6 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 
 void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 {
-	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-
 	Detection::Vector::iterator  detectionIterator = sourceFrame->rawDetections.begin();
 	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
@@ -512,8 +514,8 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 		LogFilePrintf(logFile, " ;Dist;;Channel;%d;%d;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.2f;%.1f;%.3f;%.1f;%.0f;%d",
 			detection->channelID, 
 			detection->detectionID,
-			AWLSettings::GetGlobalSettings()->targetHintDistance,
-			AWLSettings::GetGlobalSettings()->targetHintAngle,
+			targetHintDistance,
+			targetHintAngle,
 			detection->distance,
 			detection->intensity,
 			detection->velocity, 

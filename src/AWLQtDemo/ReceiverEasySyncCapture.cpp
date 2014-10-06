@@ -8,12 +8,12 @@
 #include <boost/asio.hpp> 
 #include <boost/asio/serial_port.hpp> 
 #include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
 #endif
 
 #include "DebugPrintf.h"
 #include "BlockingReader.h"
 
-#include "AWLSettings.h"
 #include "DetectionStruct.h"
 #include "ReceiverCANCapture.h"
 #include "ReceiverEasySyncCapture.h"

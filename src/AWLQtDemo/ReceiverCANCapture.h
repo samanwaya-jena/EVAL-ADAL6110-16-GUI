@@ -10,6 +10,9 @@
 
 using namespace std;
 
+#define ALGO_QTY 4
+#define GLOBAL_PARAMETERS_INDEX 0
+
 namespace awl
 {
 
