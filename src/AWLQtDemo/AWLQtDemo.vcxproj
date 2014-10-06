@@ -129,6 +129,7 @@
     <ClCompile Include="range_image.cpp" />
     <ClCompile Include="ReceiverCANCapture.cpp" />
     <ClCompile Include="ReceiverCapture.cpp" />
+    <ClCompile Include="ReceiverEasySyncCapture.cpp" />
     <ClCompile Include="ReceiverPostProcessor.cpp" />
     <ClCompile Include="ReceiverUDPCapture.cpp" />
     <ClCompile Include="Sensor.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="Publisher.h" />
     <ClInclude Include="ReceiverCANCapture.h" />
     <ClInclude Include="ReceiverCapture.h" />
+    <ClInclude Include="ReceiverEasySyncCapture.h" />
     <ClInclude Include="ReceiverPostProcessor.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sensor.h" />

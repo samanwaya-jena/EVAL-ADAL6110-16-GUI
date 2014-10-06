@@ -3,13 +3,6 @@
 
 #include <stdint.h>
 
-#ifndef Q_MOC_RUN
-#include <boost/asio.hpp> 
-#include <boost/asio/serial_port.hpp> 
-#endif
-
-#include "BlockingReader.h"
-
 #include "Publisher.h"
 #include "ThreadedWorker.h"
 #include "DetectionStruct.h"
@@ -30,8 +23,22 @@ typedef struct {
 } AWLCANMessage;
 
 
-/** \brief TheReceiverCANCapture class is a specialized implementation of the ReceiverCapture
-   *        used to acquire data from AWL LIDAR modules	through the EasySync CAN bus interface.
+/** \brief TheReceiverCANCapture class is a virtual base class that is a specialized implementation of the ReceiverCapture
+   *        It implements the mechanics for acquisition of CAN data messages.
+   *
+   *        Derived classes that wish to implement a CAN interface must define methods for:
+   *        OpenCANPort(), CloseCANPort, WriteMessage(), DoOneThreadIteration() and ReadConfigFromPropTree().
+   *
+   *        To parse incoming messages:
+   *            In DoOneThreadIteration(), once a CAN Message has been read and Formatted into a AWLCANMessage,
+   *            the derived classes can call ParseMessage() to continue the interpretation of the messages.
+   *            In DoOneThreadIteration(), derived classes should also handle the disconnection / reconnection of the
+   *            CAN port in a robust manner.
+   *
+   *        To Write outgoing messages:
+   *            Write the appropriate WriteMessage() to send an AWLCANMessage to the CAN device.
+   *
+   *        Use the ReceiverEasySyncCapture class as a reference for deriving CAN-Based Receivers.
   * \author Jean-Yves Deschênes
   */
 class ReceiverCANCapture: public ReceiverCapture
@@ -46,7 +53,6 @@ public:
 	/** \brief ReceiverCANCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
-		* \param[in] inSerialPort name of the serial port for the receiver
 	    * \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
@@ -58,7 +64,7 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, 
+	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, 
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 
@@ -257,15 +263,10 @@ protected:
 	virtual void  DoThreadLoop();
 
 	/** \brief Do one iteration of the thread loop.
+	  *        Acquire CAN Data until ParseMessage() can be called with a CAN Message.
+	  *        Try to manage automatic connection/reconnection of the CAN communications in the loop.
       */
-	virtual void DoOneThreadIteration();
-
-	/** \brief Process one line of CAN data from serial port and interpret it into a CANmgs structure.
-	  * \param[in] inResponse  The string that has to be decoded.
-	  * \param[out] outMsg  The formatted CAN message.  Is invalid when false is returned.
-	  * \return true if the inResponse line contains a structured CAN message, false otherwise.
-      */
-	bool ParseLine(std::string inResponse, AWLCANMessage &outMsg);
+	virtual void DoOneThreadIteration() = 0;
 
 	/** \brief Read the sensor status message (001)
  	    * \param[in] inMsg  CAN message contents
@@ -367,24 +368,19 @@ protected:
 	  * \remarks Once the port is successfully opened, use the "reader" pointer to access the can data.
 	  *          If opening the port fails, reader is set to NULL.
 	  */
-	virtual bool OpenCANPort();
+	virtual bool OpenCANPort()  = 0;
 
 
 	/** \brief Closes the CAN port and associated objects.
 	  * \returns true if the port is successfully closed, false otherwise.
 	  */
-	virtual bool CloseCANPort();
-
-	/** \brief Synchronous write of a sting in the stream 
- 	  * \param[in] inString  Message to send
-      */
-	virtual void WriteString(std::string inString);
+	virtual bool CloseCANPort() = 0;
 
 	/** \brief Synchronous write of a CAN message in the stream 
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
       */
-	virtual bool WriteMessage(const AWLCANMessage &inMsg);
+	virtual bool WriteMessage(const AWLCANMessage &inMsg) = 0;
 
 	/** \brief Put the current date and time to the CAN port
  	  * \return true iof the function was successful. false otherwise.
@@ -429,13 +425,6 @@ protected:
 
 // Protected variables
 protected:
-	    /** \brief String sent to the EasySync to control the bitRate of the CAN to USB converter */
-		std::string	sBitRate;
-	    /** \brief Operating system identification string for the communications port (ex: "COM16") */
-		std::string sCommPort;
-	    /** \brief Commmunications rate, in baud.*/
-		long serialPortRate;
-
 	    /** \brief All dates received from the CAN devices are sent as offsets from 1900. Add the yearOffset to convert to
 		  *        POSIX-Compliant years. This may change depending on device versions*/
 		uint16_t yearOffset;		   
@@ -444,21 +433,6 @@ protected:
 		  *        POSIX starts at 1. Add the monthOffset to convert to
 		  *        POSIX-Compliant months. This may change depending on device versions*/
 		uint16_t monthOffset;			
-
-
-		/** \brief Time-out without an input message after which we try to recomnnect the serial port. */
-		boost::posix_time::ptime reconnectTime;
-
-
-		/** \brief BOOST i/o service object for the serial port. */
-		boost::asio::io_service io;
-		/** \brief BOOST serial port status and description. */
-		boost::asio::serial_port *port;
-		/** \brief A blocking reader for this port that will time out a read after 500 milliseconds. */
-		blocking_reader *reader; 
-
-		/** \brief Response string acquires from the EasySync CAN to Serial Converter. */
-		std::string responseString;
 
 
 		/** \brief counter in the closeCanPort() call, used to avoid reentry iduring thread close */

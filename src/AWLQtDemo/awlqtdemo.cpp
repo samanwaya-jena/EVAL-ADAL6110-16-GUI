@@ -13,7 +13,7 @@
 #include "AWLCoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
-#include "ReceiverCANCapture.h"
+#include "ReceiverEasySyncCapture.h"
 #include "ReceiverPostProcessor.h"
 #include "FusedCloudViewer.h"
 #include "DebugPrintf.h"
@@ -76,7 +76,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file, and by default
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverCANCapture(receiverID, globalSettings->GetPropTree()));
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
 		}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
