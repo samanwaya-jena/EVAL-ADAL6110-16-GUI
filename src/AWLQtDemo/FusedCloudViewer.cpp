@@ -107,21 +107,7 @@ void CloudViewerWin::Stop()
 		viewer->registerMouseCallback (NULL, (void*)&viewer);
 	}
 
-#if 0
-	// We should close the window following this strange sequence.
-	// Otherwise, the destruction of the VTK Window underneath the PCL Viewer
-	// finalizes the application
-	HWND viewerWnd = (HWND)  viewer->getRenderWindow()->GetGenericWindowId();
-	vtkRenderWindowInteractor* interactor = viewer->getRenderWindow()->GetInteractor();
-	interactor->GetRenderWindow()->Finalize();
-	viewer->getRenderWindow()->SetWindowId(0);
-
 	viewer.reset();
-
-	if (viewerWnd) DestroyWindow(viewerWnd);
-#else
-	viewer.reset();
-#endif
 
 	if (sourceProjector.get()) sourceProjector.reset();
 	LoopedWorker::Stop();

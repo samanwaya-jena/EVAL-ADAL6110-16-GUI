@@ -6,7 +6,7 @@
 #include <QActionGroup>
 
 #include "ui_TableView.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 #include <boost/container/vector.hpp>
 
 namespace awl

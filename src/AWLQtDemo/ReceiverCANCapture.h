@@ -12,7 +12,7 @@
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 
 using namespace std;

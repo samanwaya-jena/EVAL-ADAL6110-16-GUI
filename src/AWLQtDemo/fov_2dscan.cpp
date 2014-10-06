@@ -1,5 +1,5 @@
 #include "fov_2dscan.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 
 #include <QPainter>
 #include <QLabel>
@@ -616,11 +616,8 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
 	p->setPen(QPen(Qt::red));
-#if 0
-	double pos = config.longRangeDistance-config.spareDepth;
-#else
+
 	double pos = config.longRangeDistance;
-#endif
 
 	drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
 	for (int i = config.shortRangeAngle; i >= 0; i-=5)

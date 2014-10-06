@@ -1,5 +1,5 @@
-#ifndef AWL_TRACKER_H
-#define AWL_TRACKER_H
+#ifndef AWL_DETECTION_STRUCT_H
+#define AWL_DETECTION_STRUCT_H
 
 
 #include <stdint.h>
@@ -7,7 +7,8 @@
 #include <queue>
 #include <boost/shared_ptr.hpp>
 #include <boost/container/vector.hpp>
-#include "awlcoord.h"
+#include "CoordinateSystem.h"
+
 
 using namespace std;
 
@@ -177,37 +178,6 @@ public:
 protected:
 };
 
-#if 0
-/** \brief The ChannelFrame class holds the multiple detections associated to one channel, in one single time frame.
-*/
-
-class ChannelFrame
-{
-public:
-	typedef boost::shared_ptr<ChannelFrame> Ptr;
-    typedef boost::container::vector<ChannelFrame::Ptr> Vector;
-public:
-	ChannelFrame(int inReceiverID, int channelID);
-	virtual ~ChannelFrame() {};
-
-
-	int GetReceiverID() { return(receiverID);}
-	int GetChannelID() { return(channelID);}
-
-	bool FindDetection(int inDetectionID, Detection::Ptr &outDetection);
-
-public:
-	int receiverID;
-
-	int channelID;
-
-	 /** \brief Timestamp im milliseconds, elapsed from start of thread. */
-	double timeStamp;
-	
-	/** \brief Vector holding all the detections within that channel, in the time frame */ 
-	Detection::Vector detections;
-};
-#endif
 
 /** \brief The SensorFrame class holds all channel detections (channelFrames),
 		corresponding to a unique time frame.
@@ -225,23 +195,18 @@ public:
 	int GetReceiverID() { return(receiverID);}
 	uint32_t	GetFrameID() {return(frameID);}
 
-#if 0
-	Detection::Ptr MakeUniqueDetection(int channelID, int detectionID);
-#else
+
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
 	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
-#endif
 
 public:
 	int receiverID;
 	uint32_t frameID;
 	int channelQty;
-#if 0
-	ChannelFrame::Vector channelFrames;
-#else
+
 	Detection::Vector rawDetections;		// Raw detections as acquired from device
 	Detection::Vector enhancedDetections;   // Detections enhanced with post-processing from the tracking algorithms and 3D positionning
-#endif
+
 	Track::Vector tracks; 
 
 	// Timestamp im milliseconds, elapsed from start of thread.
@@ -277,16 +242,18 @@ public:
 
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
 
+#if 0
 	// Complete the track info that was not processed by the AWL Module.
 	// Return true if all tracks have been intepreted correctly.
 	// Return false if we have found incomplete tracks or invalid channel info.
-	bool UpdateTrackInfo(SensorFrame::Ptr currentFrame);
+	bool CompleteTrackInfo(SensorFrame::Ptr currentFrame);
 
 	// Rebuild processsed detections from the current track set.
 	// Return true if all tracks have been intepreted correctly.
 	// Return false if we have found incomplete tracks or invalid channel info.
-	bool BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame);
-		
+	bool BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr currentFrame);
+#endif
+
 public: 
 	// Queue of the stored sensor frames.
 	// The acquisitionSequence stores multiple frames, in support of asynchonous operations,
@@ -297,5 +264,7 @@ public:
 	uint32_t frameID;
 };
 
+
+
 } // namespace awl
-#endif // AWL_TRACKER_H
+#endif // AWL_DETECTION_STRUCT_H

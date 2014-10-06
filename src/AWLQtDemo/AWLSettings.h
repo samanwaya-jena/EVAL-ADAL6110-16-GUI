@@ -21,10 +21,7 @@ namespace awl
 		int channelIndex;
 		float fovWidth;
 		float fovHeight;
-#if 0
-		float centerX;
-		float centerY;
-#endif
+
 		float maxRange;
 		uint8_t displayColorRed;
 		uint8_t displayColorGreen;
@@ -49,22 +46,8 @@ namespace awl
 	// Receiver
 	std::string sReceiverType;
 
-#if 0
-	// Geometry parameters
-	float sensorForward;
-	float sensorLeft;
-	float sensorUp;
-
-	float sensorPitch; // In degrees
-	float sensorRoll;  // In degrees
-	float sensorYaw;   // In degrees
-#endif
-
 	float displayedRangeMin;
 	float displayedRangeMax;
-#if 0
-	float rangeOffset;
-#endif
 	}
 	ReceiverSettings;
 

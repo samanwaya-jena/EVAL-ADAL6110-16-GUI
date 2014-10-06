@@ -8,7 +8,7 @@
 
 #include "AWLSettings.h"
 #include "TableView.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 
 using namespace std;
 using namespace awl;

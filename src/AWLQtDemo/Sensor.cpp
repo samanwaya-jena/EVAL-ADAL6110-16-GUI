@@ -56,38 +56,6 @@ ReceiverChannel::~ReceiverChannel()
 
 void ReceiverChannel::AddDistancesToCloud()
 {
-#if 0
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	float minDistance = globalSettings->receiverSettings[receiverID].displayedRangeMin;
-	float maxDistance = globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange;
-
-	if (channelID < receiverCapture->GetChannelQty())
-	{
-		if (receiverCapture->GetFrameQty()) 
-		{
-	
-			ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverCapture->receiverID, channelID));
-
-			// Thread safe
-
-			uint32_t lastDisplayedFrame = receiverCapture->GetCurrentIssueID(receiverCaptureSubscriberID);
-			if (receiverCapture->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, receiverCaptureSubscriberID))
-			{
-
-				int detectionQty = channelFrame->detections.size();
-				for (int i = 0; i < detectionQty; i++)
-				{
-					Detection::Ptr detection = channelFrame->detections.at(i);
-
-					if (detection->distance >= minDistance && detection->distance <= maxDistance) 
-					{
-							AddDistanceToCloud(detection->distance, 255);
-					}
-				}
-			}
-		}
-	}
-#else
 		AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 		float minDistance = globalSettings->receiverSettings[receiverID].displayedRangeMin;
 		float maxDistance = globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange;
@@ -114,9 +82,6 @@ void ReceiverChannel::AddDistancesToCloud()
 				detectionIterator++;
 			}
 		} // If (receiver...
-
-#endif
-
 }
 
 void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)

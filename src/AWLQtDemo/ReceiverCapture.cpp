@@ -9,7 +9,7 @@
 #include "Publisher.h"
 #include "ThreadedWorker.h"
 #include "ReceiverCapture.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 #include "DebugPrintf.h"
 
 using namespace std;
@@ -145,8 +145,7 @@ int ReceiverCapture::GetFrameQty()
 }
 
 
-#if 0
-bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Publisher::SubscriberID inSubscriberID)
+bool ReceiverCapture::CopyReceiverFrame(uint32_t inFrameID,  SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID)
 {
 	if (!LockNews(inSubscriberID)) return(false);
 
@@ -154,22 +153,21 @@ bool ReceiverCapture::CopyReceiverChannelData(uint32_t inFrameID, int inChannelI
 	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
 	if (bFound) 
 	{ 
-		ChannelFrame::Ptr sourceChannelFrame =  sensorFrame->channelFrames[inChannelID];
-		outChannelFrame->detections.clear();
-
-		int detectionQty = sourceChannelFrame->detections.size();
+#if 1
+		*outSensorFrame = *sensorFrame;
+#else
+		int detectionQty = sensorFrame->enhancedDetections.size();
 		for (int i = 0; i< detectionQty; i++) 
 		{
- 			outChannelFrame->detections.push_back(sourceChannelFrame->detections[i]);
+ 			outDetections.push_back(sensorFrame->enhancedDetections[i]);
 		}	
-	
-		outChannelFrame->channelID = sourceChannelFrame->channelID;
+#endif
 	}
 
 	UnlockNews(inSubscriberID);
 	return(bFound);
-};
-#else
+}
+
 bool ReceiverCapture::CopyReceiverRawDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
 {
 	if (!LockNews(inSubscriberID)) return(false);
@@ -194,6 +192,7 @@ bool ReceiverCapture::CopyReceiverRawDetections(uint32_t inFrameID,  Detection::
 	return(bFound);
 }
 
+
 bool ReceiverCapture::CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
 {
 	if (!LockNews(inSubscriberID)) return(false);
@@ -217,10 +216,6 @@ bool ReceiverCapture::CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detect
 	UnlockNews(inSubscriberID);
 	return(bFound);
 }
-
-
-#endif
-
 
 bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID)
 {
@@ -347,20 +342,21 @@ void ReceiverCapture::ProcessCompletedFrame()
 	double elapsed = GetElapsed();
 
 	currentFrame->timeStamp = GetElapsed();
-
+#if 0
 	// Complete the track information that is not yet processed at the module level.
-	if (!acquisitionSequence->UpdateTrackInfo(currentFrame))
+	if (!acquisitionSequence->CompleteTrackInfo(currentFrame))
 	{
-		DebugFilePrintf(debugFile, "Incomplete frame in Up^dateTrackInfo- %lu", frameID);
+		DebugFilePrintf(debugFile, "Incomplete frame in UpdateTrackInfo- %lu", frameID);
 		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
 	}
 
 	// Build distances from the tracks that were accumulated during the frame
-	if (!acquisitionSequence->BuildDetectionsFromTracks(currentFrame))
+	if (!acquisitionSequence->BuildEnhancedDetectionsFromTracks(currentFrame))
 	{
 		DebugFilePrintf(debugFile, "Incomplete frame- %lu", frameID);
 		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
 	}
+#endif
 
 	// Log Tracks?
 	if (receiverStatus.messageMask.bitFieldData.obstacle)

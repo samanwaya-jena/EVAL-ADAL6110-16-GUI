@@ -4,7 +4,7 @@
 #include "AWLCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 
 #include <boost/foreach.hpp>
 

@@ -161,7 +161,7 @@ public:
  * But, since we are using physics convention instead of math convention (as Wolfram), 
  * swap theta and phi from document.
  * 
- 8 With x looking forward:
+ * With x looking forward:
  * Theta: -: Up  +: Down
  * Phi:   + Left  -: Right
 */

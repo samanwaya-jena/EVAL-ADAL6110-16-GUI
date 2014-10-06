@@ -9,13 +9,17 @@
 
 #include <string>
 
-#include "awlqtdemo.h"
-#include "Tracker.h"
+#include "AWLSettings.h"
+#include "AWLCoord.h"
+#include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverCANCapture.h"
+#include "ReceiverPostProcessor.h"
 #include "FusedCloudViewer.h"
 #include "DebugPrintf.h"
-#include "AWLSettings.h"
+#include "awlqtdemo.h"
+
+
 #include "tableview.h"
 
 #include "..\awlqtscope\awlqtscope.h"
@@ -845,6 +849,8 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	bool bNew = false;
 
+	ReceiverPostProcessor postProcessor;
+
 	// Build the list of detections that need to be updated
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
@@ -861,39 +867,10 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 		}
 
 
-#if 0
-		int channelQty = receiver->GetChannelQty();
-		for (int channelID = 0; channelID < channelQty; channelID++) 
-		{
-			if (receiver->GetFrameQty()) 
-			{
-				ChannelFrame::Ptr channelFrame(new ChannelFrame(receiverID, channelID));
-
-				// Thread safe
-				// The UI thread "Snaps" the frame ID for all other interface objects to display
-				if (receiver->CopyReceiverChannelData(lastDisplayedFrame, channelID, channelFrame, subscriberID)) 
-				{
-					int detectionQty = channelFrame->detections.size();
-					int detectionIndex = 0;
-					for (int i = 0; i < detectionQty; i++)
-					{
-						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= receiverSettings.displayedRangeMin) && 
-							(detection->distance <=  receiverSettings.channelsConfig[channelID].maxRange)) 
-						{
-							Detection::Ptr storedDetection = detection;
-							detectionData.push_back(storedDetection);
-						}
-					}
-				}
-
-			}
-		}
-#else
 		// Thread safe
 		// The UI thread "Snaps" the frame ID for all other interface objects to display
 		Detection::Vector detectionBuffer;
-		if (receiver->CopyReceiverEnhancedDetections(lastDisplayedFrame, detectionBuffer, subscriberID))
+		if (postProcessor.GetEnhancedDetectionsFromFrame(receiver, lastDisplayedFrame, subscriberID, detectionBuffer))
 		{
 			// Copy and filter the detection data to keep only those we need.
 			Detection::Vector::iterator  detectionIterator = detectionBuffer.begin();
@@ -910,7 +887,6 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 				detectionIterator++;
 			}
 		} // If (receiver...
-#endif
 	}
 
 	return(bNew);

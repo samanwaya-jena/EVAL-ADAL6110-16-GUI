@@ -7,12 +7,12 @@
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/container/vector.hpp>
+#include <boost/property_tree/ptree.hpp>
 #endif
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"
-#include "Tracker.h"
-#include "AWLSettings.h"
+#include "DetectionStruct.h"
 
 using namespace std;
 const int maxReceiverFrames = 100;
@@ -415,16 +415,16 @@ public:
       * \return int indicating the number of channels.
       */
 	virtual int GetChannelQty() {return receiverChannelQty;};
-#if 0
-	/** \brief copy the channel data identified with a frameID to to a local copy (thread-safe)
+
+
+	/** \brief copy the frame identified by frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
-     * \param[in] inChannelID index of the required channel
-	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
+	   \param[out] outSensorFrame ChannelFram structure to which the data is copied.
 	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
-	virtual bool CopyReceiverChannelData(uint32_t inFrameID, int inChannelID, ChannelFrame::Ptr &outChannelFrame, Publisher::SubscriberID inSubscriberID);
-#else
+	bool ReceiverCapture::CopyReceiverFrame(uint32_t inFrameID, SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID);
+
 	/** \brief copy the raw detection data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
 	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
@@ -441,7 +441,6 @@ public:
      */
 	virtual bool CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
 
-#endif
 	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
@@ -601,7 +600,7 @@ public:
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect the current global setting.
 	* \return true if success.  false on error.
-	* \remarks uses the AWLSettings::global settings variables to call  SetMessageFilters(frameRate, channelMask, messageMask)
+	* \remarks uses settings variables to call  SetMessageFilters(frameRate, channelMask, messageMask)
 	*/
 		
 	virtual bool SetMessageFilters();
@@ -625,7 +624,7 @@ public:
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member and in globalSettings. 
+	  *          placed in the FPGA registerSet. 
 		*/
 	virtual bool QueryFPGARegister(uint16_t registerAddress) = 0;
 
@@ -633,7 +632,7 @@ public:
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member and in globalSettings. 
+	  *          placed in the ADC registerSet. 
 		*/
 	virtual bool QueryADCRegister(uint16_t registerAddress) = 0;
 
@@ -641,7 +640,7 @@ public:
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member and in the globalSettings. 
+	  *          placed in the GPIO registerSet. 
 		*/
 	virtual bool QueryGPIORegister(uint16_t registerAddress) = 0;
 
@@ -650,7 +649,7 @@ public:
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member and in the globalSettings. 
+	  *          placed in the algorithmParameters registerSet. 
 		*/
 	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress) = 0;
 
@@ -659,7 +658,7 @@ public:
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
-	  *          placed in the receiverStatus member and in the globalSettings. 
+	  *          placed in the algorithmParameters registerSet. 
 		*/
 	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) = 0;
 

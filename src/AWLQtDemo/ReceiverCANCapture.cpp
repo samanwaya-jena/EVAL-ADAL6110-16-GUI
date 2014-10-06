@@ -14,7 +14,7 @@
 #include "BlockingReader.h"
 
 #include "AWLSettings.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverCANCapture.h"
 

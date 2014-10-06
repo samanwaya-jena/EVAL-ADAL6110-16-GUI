@@ -5,13 +5,14 @@
 #define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
 #include <math.h>
 
-#include "AWLSettings.h"
-#include "Tracker.h"
-#include "awlcoord.h"
+#include "CoordinateSystem.h"
+#include "DetectionStruct.h"
 
 using namespace std;
 using namespace awl;
 
+
+#if 0
 
 	/** \brief Predict the time to collision (distance = 0) between sensor and obstacle,  
 	  *        given current distance and speed, assuming constant deceleration.
@@ -90,7 +91,7 @@ float PredictTTC(float distance, float speed, float acceleration, float time)  /
 	return(ttc);
 }
 
-
+#endif
 
 AcquisitionSequence::AcquisitionSequence():
 frameID(1)
@@ -113,8 +114,8 @@ uint32_t	AcquisitionSequence::GetLastFrameID()
 
 }
 
-
-bool AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
+#if 0
+bool AcquisitionSequence::CompleteTrackInfo(SensorFrame::Ptr currentFrame)
 {
 	bool bAllTracksComplete = true;
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
@@ -155,7 +156,7 @@ bool AcquisitionSequence::UpdateTrackInfo(SensorFrame::Ptr currentFrame)
 } 
 
 
-bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFrame)
+bool AcquisitionSequence::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr currentFrame)
 {
 	bool bAllTracksComplete = true;
 
@@ -211,6 +212,7 @@ bool AcquisitionSequence::BuildDetectionsFromTracks(SensorFrame::Ptr currentFram
 
 	return (bAllTracksComplete);
 }
+#endif
 
 bool AcquisitionSequence::FindTrack(SensorFrame::Ptr currentFrame, TrackID trackID, Track::Ptr &outTrack)
 {
@@ -273,24 +275,6 @@ timeStamp(0)
 {
 }
 
-
-#if 0
-Detection::Ptr SensorFrame::MakeUniqueDetection(int channelID, int detectionID)
-
-{
-	Detection::Ptr detection;
-	bool bExists = channelFrames[channelID]->FindDetection(detectionID, detection);
-	if (!bExists) 
-	{
-		detection = Detection::Ptr(new Detection(receiverID, channelID, detectionID));
-		channelFrames[channelID]->detections.push_back(detection);
-	}
-
-	return(detection);
-}
-
-#else
-
 Detection::Ptr SensorFrame::MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID)
 
 {
@@ -322,38 +306,6 @@ bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChanne
 
 	return(false);
 }
-
-#endif
-
-#if 0
-ChannelFrame::ChannelFrame(int inReceiverID, int inChannelID):
-receiverID(inReceiverID),
-channelID(inChannelID)
-{
-
-}
-
-
-
-bool ChannelFrame::FindDetection(int inDetectionID, Detection::Ptr &outDetection)
-
-{
-	Detection::Vector::iterator detectionIterator = detections.begin();
-	while (detectionIterator != detections.end())  
-	{
-		Detection::Ptr detection = *detectionIterator;
-		if (detection->detectionID == inDetectionID) 
-		{
-			outDetection = detection;
-			return(true);
-		}
-
-		detectionIterator++;
-	}
-
-	return(false);
-}
-#endif
 
 
 Detection::Detection():
@@ -400,16 +352,7 @@ relativeToVehicleSpherical(),
 relativeToWorldCart(),
 relativeToWorldSpherical()
 {
-	// Place the coordinates relative to all their respective reference systems
-	TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelID);
-	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
-	relativeToSensorCart = channelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	relativeToVehicleCart = channelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
-	relativeToWorldCart = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
-	relativeToSensorSpherical = relativeToSensorCart;
-	relativeToVehicleSpherical = relativeToVehicleCart;
-	relativeToWorldSpherical = relativeToWorldCart;
 }
 
 Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
@@ -436,16 +379,6 @@ relativeToWorldSpherical()
 
 
 {
-	// Place the coordinates relative to all their respective reference systems
-	TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelID);
-	SphericalCoord sphericalPointInChannel(distance, M_PI_2, 0);
-	relativeToSensorCart = channelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-	relativeToVehicleCart = channelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
-	relativeToWorldCart = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
-
-	relativeToSensorSpherical = relativeToSensorCart;
-	relativeToVehicleSpherical = relativeToVehicleCart;
-	relativeToWorldSpherical = relativeToWorldCart;
 }
 
 
@@ -467,7 +400,5 @@ part4Entered(false)
 {
 	channels = 0;
 }
-
-
 
  

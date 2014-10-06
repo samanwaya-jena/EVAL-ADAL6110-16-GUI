@@ -12,7 +12,7 @@
 #include <QEvent>
 
 #include "ReceiverCapture.h"
-
+#include "AWLSettings.h"
 
 using namespace std;
 using namespace awl;

@@ -80,9 +80,6 @@
     <ClCompile Include="Subscription.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tracker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VideoCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -173,6 +170,12 @@
     <ClCompile Include="CoordinateSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReceiverPostProcessor.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectionStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -231,9 +234,6 @@
     <ClInclude Include="Subscription.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tracker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VideoCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -280,6 +280,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CoordinateSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReceiverPostProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectionStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

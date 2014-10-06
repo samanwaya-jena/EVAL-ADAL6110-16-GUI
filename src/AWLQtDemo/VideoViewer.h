@@ -15,7 +15,7 @@ using namespace std;
 
 #include "LoopedWorker.h"
 #include "VideoCapture.h"
-#include "Tracker.h"
+#include "DetectionStruct.h"
 
 namespace awl
 {

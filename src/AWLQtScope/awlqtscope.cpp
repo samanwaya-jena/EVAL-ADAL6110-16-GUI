@@ -11,7 +11,8 @@
 
 #include "AWLSettings.h"
 #include "DebugPrintf.h"
-#include "tracker.h"
+#include "DetectionStruct.h"
+#include "ReceiverPostProcessor.h"
 
 
 int timerInterval = 30; // In ms.  So 30FPS
@@ -181,90 +182,42 @@ void AWLQtScope::updateCurveDataRaw()
 	Publisher::IssueID requestedFrameID = d_receiverCapture->GetConsumedIssueID(d_receiverCaptureSubscriberID);
 	Publisher::IssueID lastFrameID = d_receiverCapture->GetCurrentIssueID(d_receiverCaptureSubscriberID);
 
+	ReceiverPostProcessor postProcessor;
+
 	// Process all of the back issues 
 	do 
 	{
 		requestedFrameID++;  // Request the next issue.
-		if (d_receiverCapture->LockNews(d_receiverCaptureSubscriberID, requestedFrameID)) // Informs the publisher and locks the mutex; 
+		Detection::Vector detectionData;
+		if (postProcessor.GetEnhancedDetectionsFromFrame(d_receiverCapture, requestedFrameID, d_receiverCaptureSubscriberID, detectionData))
 		{
-			SensorFrame::Ptr sensorFrame;
-			if (acquisitionSequence->FindSensorFrame(requestedFrameID, sensorFrame))
+			Detection::Vector::iterator  detectionIterator = detectionData.begin();
+			boost::container::vector<int> detectionIndexes;
+			detectionIndexes.resize(d_receiverCapture->receiverChannelQty);
+
+			while (detectionIterator != detectionData.end()) 
 			{
+				Detection::Ptr detection = *detectionIterator++;
 
-				// Get the frame time
-				// Note that elapsed in in millisec and our curves expect seconds.
-				double elapsed = sensorFrame->timeStamp;
+				// Replace the new point to the end, with detected value
+				double elapsed = detection->timeStamp;
 				elapsed /= 1000;
+				const QPointF distancePoint(elapsed,  detection->distance);
+				d_distanceCurveDataArray[detection->channelID]->at(detectionIndexes[detection->channelID])->addValue(distancePoint);
 
-#if 0
-				int channelQty = d_distanceCurveDataArray.size();
-				for (int channelID = 0; channelID < channelQty; channelID++)
-				{
-					float maxDistance =settings->receiverSettings[d_receiverCapture->receiverID].channelsConfig[channelID].maxRange;
-					ChannelFrame::Ptr channelFrame = sensorFrame->channelFrames.at(channelID);
+				float velocity = detection->velocity;
+				if (settings->velocityUnits != eVelocityUnitsMS)
+					velocity = VelocityToKmH(velocity);
 
-					// Thread safe
-					int detectionQty = channelFrame->detections.size();
-					int detectionIndex = 0;
-					int maxDetections = d_distanceCurveDataArray[channelID]->size();
+				if (velocity > maxVelocity) velocity = maxVelocity;
+				if (velocity < -maxVelocity) velocity = -maxVelocity;
 
-					for (int i = 0; (i < detectionQty) && (i < maxDetections); i++)
-					{
-						Detection::Ptr detection = channelFrame->detections.at(i);
-						if ((detection->distance >= minDistance) && 
-							(detection->distance <= maxDistance)) 
-						{
-							// Replace the new point to the end, with detected value
-							const QPointF distancePoint(elapsed,  detection->distance);
-							d_distanceCurveDataArray[channelID]->at(detectionIndex++)->addValue(distancePoint);
+				const QPointF velocityPoint(elapsed,  velocity);
+				d_velocityCurveDataArray[detection->channelID]->at(detectionIndexes[detection->channelID])->addValue(velocityPoint);
 
-							float velocity = detection->velocity;
-							if (settings->velocityUnits != eVelocityUnitsMS)
-								velocity = VelocityToKmH(velocity);
-
-							if (velocity > maxVelocity) velocity = maxVelocity;
-							if (velocity < -maxVelocity) velocity = -maxVelocity;
-
-							const QPointF velocityPoint(elapsed,  velocity);
-							d_velocityCurveDataArray[channelID]->at(detectionIndex++)->addValue(velocityPoint);
-						} // If  
-					} // For i;
-				} // for channelID
-#else
-				Detection::Vector& detectionVector = sensorFrame->enhancedDetections;
-				Detection::Vector::iterator  detectionIterator = detectionVector.begin();
-				while (detectionIterator != detectionVector.end()) 
-				{
-					Detection::Ptr detection = *detectionIterator++;
-					float maxDistance =settings->receiverSettings[detection->receiverID].channelsConfig[detection->channelID].maxRange;
-					boost::container::vector<int> detectionIndexes;
-					detectionIndexes.resize(sensorFrame->channelQty);
-
-					if ((detection->distance >= minDistance) && 
-						(detection->distance <= maxDistance)) 
-					{
-						// Replace the new point to the end, with detected value
-						const QPointF distancePoint(elapsed,  detection->distance);
-						d_distanceCurveDataArray[detection->channelID]->at(detectionIndexes[detection->channelID])->addValue(distancePoint);
-
-						float velocity = detection->velocity;
-						if (settings->velocityUnits != eVelocityUnitsMS)
-							velocity = VelocityToKmH(velocity);
-
-						if (velocity > maxVelocity) velocity = maxVelocity;
-						if (velocity < -maxVelocity) velocity = -maxVelocity;
-
-						const QPointF velocityPoint(elapsed,  velocity);
-						d_velocityCurveDataArray[detection->channelID]->at(detectionIndexes[detection->channelID])->addValue(velocityPoint);
-
-						detectionIndexes[detection->channelID]++;
-					} // If  
-				} // while (detectionIterator
-#endif
-			} // if (acquisitionSequence->FindSensorFrame
-
-			d_receiverCapture->UnlockNews(d_receiverCaptureSubscriberID);
-		} //  if (d_receiverCapture->LockNews
+				detectionIndexes[detection->channelID]++;
+			} // while (detectionIterator
+		} // if (postProcessor.GetEnhanced
 
 	} while (requestedFrameID!= lastFrameID);
 }

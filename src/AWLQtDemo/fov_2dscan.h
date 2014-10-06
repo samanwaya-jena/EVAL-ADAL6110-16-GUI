@@ -7,7 +7,7 @@
 #include <QAction>
 #include <QActionGroup>
 
-#include "Tracker.h"
+#include "DetectionStruct.h"
 
 namespace awl
 {
