@@ -373,15 +373,6 @@ public:
 	typedef boost::container::vector<ReceiverCapture::Ptr> List;
 	typedef ReceiverCapture::List *ListPtr;
 
-	typedef enum  
-	{
-		eInjectRamp = 0,
-		eInjectNoisy = 1,
-		eInjectSlowMove = 2,
-		eInjectConstant = 3
-	}
-	InjectType;
-	
 	// public Methods
 public:
 	/** \brief ReceiverCapture constructor from user supplied values.
