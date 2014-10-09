@@ -131,6 +131,7 @@
     <ClCompile Include="ReceiverCapture.cpp" />
     <ClCompile Include="ReceiverEasySyncCapture.cpp" />
     <ClCompile Include="ReceiverPostProcessor.cpp" />
+    <ClCompile Include="ReceiverSimulatorCapture.cpp" />
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="Subscription.cpp" />
     <ClCompile Include="TableView.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="ReceiverCapture.h" />
     <ClInclude Include="ReceiverEasySyncCapture.h" />
     <ClInclude Include="ReceiverPostProcessor.h" />
+    <ClInclude Include="ReceiverSimulatorCapture.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sensor.h" />
     <ClInclude Include="Subscription.h" />

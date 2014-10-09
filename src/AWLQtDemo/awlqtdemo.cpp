@@ -30,6 +30,7 @@
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverEasySyncCapture.h"
+#include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
 #include "FusedCloudViewer.h"
 #include "DebugPrintf.h"
@@ -91,8 +92,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		// Create the LIDAR acquisition thread object
 		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
-			// EasySync CAN Capture is used if defined in the ini file, and by default
+			// EasySync CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
+		}
+		else 
+		{
+			// If the type is undefined, just use the dumb simulator, not using external device
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSimulatorCapture(receiverID, globalSettings->GetPropTree()));
 		}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
