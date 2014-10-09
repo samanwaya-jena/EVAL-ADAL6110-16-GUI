@@ -1,6 +1,21 @@
 #ifndef AWL_COORDINATESYSTEM_H
 #define AWL_COORDINATESYSTEM_H
 
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -152,9 +167,6 @@ public:
  *         phi is angle from x axis, counterclockwise					
  *  We use the notation that is common practice in physics, 
  *  As specified by ISO standard 31-11.
- *  This means use positive sign for azimuth angles that are measured in 
- *  the counter-clockwise sense from the reference direction on the 
- *  reference plane, as seen from the zenith side of the plane
  *
  * Conversions from spherical to cartesian are performed using formulas indicated 
  * in http://mathworld.wolfram.com/SphericalCoordinates.html

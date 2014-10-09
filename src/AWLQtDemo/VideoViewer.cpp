@@ -1,3 +1,18 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
@@ -250,7 +265,10 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	CvPoint topRight;
 	CvPoint bottomLeft;
 	CvPoint bottomRight;
-	GetChannelRect(detection, topLeft, topRight, bottomLeft, bottomRight);
+	if (!GetChannelRect(detection, topLeft, topRight, bottomLeft, bottomRight))
+	{
+		return;
+	}
 
 	// Inset the vertical lines horizontally, to compensate for line thickness.
 	//Draw the vertical lines
@@ -378,10 +396,11 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 	} // case
 }
 
-void VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
+bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
 {	
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	AWLCoordinates *globalCoordinates = AWLCoordinates::GetGlobalCoordinates();
+	bool bSomePointsInFront = false;
 
 	float x, y;
 	int receiverID = detection->receiverID;
@@ -393,19 +412,28 @@ void VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 
 	// Position of the topLeft corner of the channel FOV 
 	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
-	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topLeftInChannel, topLeft.x, topLeft.y);
+	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topLeftInChannel, topLeft.x, topLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topRightInChannel, topRight.x, topRight.y);
+	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topRightInChannel, topRight.x, topRight.y);
 
 	// Position of the bottomLeft corner of the channel FOV 
 	SphericalCoord bottomLeftInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
-	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
+	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord bottomRightInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomRightInChannel, bottomRight.x, bottomRight.y);
+	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomRightInChannel, bottomRight.x, bottomRight.y);
+
+	if (bSomePointsInFront)
+	{
+		return(true);
+	}
+	else
+	{
+		return(false);
+	}
 }
 
 void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)

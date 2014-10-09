@@ -1,4 +1,18 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <stdint.h>
 #include <iostream>
@@ -110,29 +124,47 @@ RelativePosition AWLCoordinates::SetCameraPosition(int cameraID, const RelativeP
 
 bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	bool bInFront = false;
 
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Channel description pointer
 	TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelID);
 	
 	// Camera FOV description
 	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
-	CartesianCoord cameraTopLeft(SphericalCoord(10, M_PI_2 - (cameraFovHeightInRad/2), +(cameraFovWidthInRad/2)));
-	CartesianCoord cameraBottomRight(SphericalCoord(10, M_PI_2 + (cameraFovHeightInRad/2), - (cameraFovWidthInRad/2)));
+	CartesianCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
+	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
+	if (coordInCameraCart.x < 0)
+	{
+		bInFront = false;
+	}
+	else
+	{   
+		bInFront = true;
+	}
+	
 
-	SphericalCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
-	SphericalCoord coordInCamera = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
-	coordInCamera.rho = 10.0;																				     // Place in projection Plane.
-	CartesianCoord coordInCameraCart(coordInCamera);
+	// Projection on a plane.
+
+	// For simplification, we assume projecting on a square plane with square pixels.
+	// The square plane is "extended" vertically to cover the width of camera.
+	// We also assume square pixels.
+	// We will introduce these other camera corrections at later date (JYD 2014-10-08)
+	float halfWidthAtPlane =  coordInCameraCart.x * abs(tan(cameraFovWidthInRad/2));
+	float halfHeightAtPlane =  coordInCameraCart.x * abs(tan(cameraFovWidthInRad/2));
+	float verticalOffsetInPixels = -(frameWidthInPixels - frameHeightInPixels) / 2;
+	frameHeightInPixels = frameWidthInPixels;
+	
+	CartesianCoord cameraTopLeft(coordInCameraCart.x, halfWidthAtPlane, halfHeightAtPlane);
+	CartesianCoord cameraBottomRight(coordInCameraCart.x,  -halfWidthAtPlane, -halfHeightAtPlane);
 
 	// Remember: In relation to a body the standard convention is
 	//  x forward, y left and z up.
 	// Careful when converting to projected plane, where X is right and y is up
 
 	cameraX = frameWidthInPixels * (coordInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	cameraY = frameHeightInPixels * (cameraTopLeft.up-coordInCameraCart.up) / (cameraTopLeft.up- cameraBottomRight.up);
-
-	return(true);
+	cameraY = verticalOffsetInPixels + (frameHeightInPixels * (cameraTopLeft.up-coordInCameraCart.up) / (cameraTopLeft.up- cameraBottomRight.up));
+	return(bInFront);
 }
 
 bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree)
@@ -235,8 +267,6 @@ TransformationNode::Ptr AWLCoordinates::GetGeometryFromChannelPropertyNode(boost
 		float centerX(0.0);
 		float roll(0.0);  
 		
-//		AWLSettings::Get2DPoint(channelNode.get_child("fov"), fovWidth, fovHeight);
-
 		// Read the orientation from the configuration file.
 		AWLSettings::GetOrientation(channelNode.get_child("orientation"), centerY, centerX, roll);
 

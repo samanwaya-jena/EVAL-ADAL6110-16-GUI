@@ -1,6 +1,20 @@
 #ifndef AWL_COORD_H
 #define AWL_COORD_H
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -18,7 +32,10 @@ using namespace std;
 
 namespace awl
 {
-// Class AWL Coordinates handles the specific AWL Coordinates arrangement.
+/** \brief The AWLCoordinates class provides utility methods to perform  application-specific coordinates conversions.
+  * \author Jean-Yves Deschênes
+  */
+
 class AWLCoordinates
 {
 public:
@@ -37,6 +54,11 @@ public:
 	AWLCoordinates(boost::property_tree::ptree &propTree);
 	bool BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree);
 
+    
+	/** \brief convert camera coordinates to sensor coordinates
+	 *  \returns Returns true if the point is in front of the camera.  Returns false for points behind the camera.
+	 * 
+	 */
 	static bool SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
 
 	static RelativePosition GetReceiverPosition(int receiverID);
@@ -49,8 +71,8 @@ public:
 
 
 protected:
-	TransformationNode::Ptr GetGeometryFromPropertyNode(boost::property_tree::ptree &propTree);
-	TransformationNode::Ptr GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode);
+	static  TransformationNode::Ptr GetGeometryFromPropertyNode(boost::property_tree::ptree &propTree);
+	static TransformationNode::Ptr GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode);
 
 protected:
 	static AWLCoordinates *globalCoordinates;

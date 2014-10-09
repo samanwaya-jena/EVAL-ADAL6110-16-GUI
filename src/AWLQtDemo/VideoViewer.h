@@ -1,6 +1,22 @@
 #ifndef _VIDEOVIEWER_H
 #define _VIDEOVIEWER_H
 
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 #define CV_NO_BACKWARD_COMPATIBILITY
 
 
@@ -116,7 +132,13 @@ protected:
 
 protected:
 	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
-	void GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
+	/** \brief get the four corners of the specified Detection's channel FOV, as projected at the Detection distance
+	  *         in the camera plane.
+	  *\return Returns false if all the points in the projection are behind the camera plane. Returns true
+	  *        if at least one of the points is in front of the camera.
+      */
+
+	bool GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
 
 	/** \brief Draw an "enhanced" detection line over the target frame.
 	           We take the original background from the source frame.  
