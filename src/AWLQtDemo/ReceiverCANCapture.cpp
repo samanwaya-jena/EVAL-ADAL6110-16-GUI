@@ -1,6 +1,18 @@
-//#include <iostream>
-//#include <cstdio>
-//#include <fstream>
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <string>
 #ifndef Q_MOC_RUN
@@ -387,7 +399,12 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
+
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
+
+	track->firstTimeStamp = currentFrame->timeStamp;
+	track->timeStamp = currentFrame->timeStamp;
+
 	track->channels = *(uint8_t *) &inMsg.data[2];
 	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
 	track->probability = *(uint8_t *) &inMsg.data[5];

@@ -1,9 +1,25 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <stdint.h>
 #include <string>
 #define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
 #include <math.h>
+
+#include <boost/foreach.hpp>
 
 #include "AWLSettings.h"
 #include "DetectionStruct.h"
@@ -101,6 +117,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 				detection->velocity = track->velocity;
 				detection->acceleration = track->acceleration;
 				detection->probability = track->probability;
+
 				detection->timeStamp = track->timeStamp;
 				detection->firstTimeStamp = track->timeStamp;  // TBD
 				detection->trackID = track->trackID;

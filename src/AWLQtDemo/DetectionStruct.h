@@ -1,6 +1,20 @@
 #ifndef AWL_DETECTION_STRUCT_H
 #define AWL_DETECTION_STRUCT_H
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <stdint.h>
 #include <string>
@@ -205,7 +219,6 @@ public:
 	int channelQty;
 
 	Detection::Vector rawDetections;		// Raw detections as acquired from device
-	Detection::Vector enhancedDetections;   // Detections enhanced with post-processing from the tracking algorithms and 3D positionning
 
 	Track::Vector tracks; 
 
@@ -241,18 +254,6 @@ public:
 	Track::Ptr MakeUniqueTrack(SensorFrame::Ptr currentFrame,TrackID trackID);
 
 	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
-
-#if 0
-	// Complete the track info that was not processed by the AWL Module.
-	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid channel info.
-	bool CompleteTrackInfo(SensorFrame::Ptr currentFrame);
-
-	// Rebuild processsed detections from the current track set.
-	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid channel info.
-	bool BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr currentFrame);
-#endif
 
 public: 
 	// Queue of the stored sensor frames.

@@ -1,6 +1,22 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #endif
 
@@ -159,15 +175,7 @@ bool ReceiverCapture::CopyReceiverFrame(uint32_t inFrameID,  SensorFrame::Ptr &o
 	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
 	if (bFound) 
 	{ 
-#if 1
 		*outSensorFrame = *sensorFrame;
-#else
-		int detectionQty = sensorFrame->enhancedDetections.size();
-		for (int i = 0; i< detectionQty; i++) 
-		{
- 			outDetections.push_back(sensorFrame->enhancedDetections[i]);
-		}	
-#endif
 	}
 
 	UnlockNews(inSubscriberID);
@@ -183,15 +191,7 @@ bool ReceiverCapture::CopyReceiverRawDetections(uint32_t inFrameID,  Detection::
 	if (bFound) 
 	{ 
 		outDetections.clear();
-#if 1
 		outDetections = sensorFrame->rawDetections;
-#else
-		int detectionQty = sensorFrame->rawDetections.size();
-		for (int i = 0; i< detectionQty; i++) 
-		{
- 			outDetections.push_back(sensorFrame->rawDetections[i]);
-		}	
-#endif
 	}
 
 	UnlockNews(inSubscriberID);
@@ -199,29 +199,7 @@ bool ReceiverCapture::CopyReceiverRawDetections(uint32_t inFrameID,  Detection::
 }
 
 
-bool ReceiverCapture::CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
-{
-	if (!LockNews(inSubscriberID)) return(false);
 
-	SensorFrame::Ptr sensorFrame;
-	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
-	if (bFound) 
-	{ 
-		outDetections.clear();
-#if 1
-		outDetections = sensorFrame->enhancedDetections;
-#else
-		int detectionQty = sensorFrame->enhancedDetections.size();
-		for (int i = 0; i< detectionQty; i++) 
-		{
- 			outDetections.push_back(sensorFrame->enhancedDetections[i]);
-		}	
-#endif
-	}
-
-	UnlockNews(inSubscriberID);
-	return(bFound);
-}
 
 bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID)
 {
@@ -347,22 +325,12 @@ void ReceiverCapture::ProcessCompletedFrame()
 	// timestamp the currentFrame
 	double elapsed = GetElapsed();
 
-	currentFrame->timeStamp = GetElapsed();
-#if 0
-	// Complete the track information that is not yet processed at the module level.
-	if (!acquisitionSequence->CompleteTrackInfo(currentFrame))
-	{
-		DebugFilePrintf(debugFile, "Incomplete frame in UpdateTrackInfo- %lu", frameID);
-		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
-	}
+	currentFrame->timeStamp = elapsed;
 
-	// Build distances from the tracks that were accumulated during the frame
-	if (!acquisitionSequence->BuildEnhancedDetectionsFromTracks(currentFrame))
-	{
-		DebugFilePrintf(debugFile, "Incomplete frame- %lu", frameID);
-		bFrameInvalidated = true;  // Don't call InvalidateFrame() because of the lock contention.
-	}
-#endif
+	// TimeStamp all detections and tracks
+	TimestampTracks(currentFrame);
+
+	TimestampDetections(currentFrame);
 
 	// Log Tracks?
 	if (receiverStatus.messageMask.bitFieldData.obstacle)
@@ -414,6 +382,25 @@ void ReceiverCapture::ProcessCompletedFrame()
 	}
 
 }
+
+
+void ReceiverCapture::TimestampTracks(SensorFrame::Ptr sourceFrame)
+{
+	BOOST_FOREACH(Track::Ptr &track, sourceFrame->tracks)
+	{
+		track->firstTimeStamp = currentFrame->timeStamp;
+		track->timeStamp = currentFrame->timeStamp;
+	} // BOOST_FOREACH(Track::Ptr track
+} 
+
+void ReceiverCapture::TimestampDetections(SensorFrame::Ptr sourceFrame)
+{
+	BOOST_FOREACH(Detection::Ptr &rawDetectionPtr, sourceFrame->rawDetections)
+	{
+		rawDetectionPtr->firstTimeStamp = currentFrame->timeStamp;
+		rawDetectionPtr->timeStamp = currentFrame->timeStamp;
+	} // BOOST_FOREACH(Detection::Ptr rawDetectionPtr
+} 
 
 int ReceiverCapture::FindRegisterByAddress(const RegisterSet &inRegisterSet, uint16_t inAddress)
 

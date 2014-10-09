@@ -131,7 +131,6 @@
     <ClCompile Include="ReceiverCapture.cpp" />
     <ClCompile Include="ReceiverEasySyncCapture.cpp" />
     <ClCompile Include="ReceiverPostProcessor.cpp" />
-    <ClCompile Include="ReceiverUDPCapture.cpp" />
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="Subscription.cpp" />
     <ClCompile Include="TableView.cpp" />

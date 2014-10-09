@@ -1,12 +1,30 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 #include <fstream>
 
 #include <pcl/common/common_headers.h>
 #include <pcl/common/io.h>
 
+#include <boost/foreach.hpp>
 
 #include "Sensor.h"
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
+#include "ReceiverPostProcessor.h"
 #include "AWLSettings.h"
 #include "AWLCoord.h"
 #include "awlcoord.h"
@@ -54,34 +72,16 @@ ReceiverChannel::~ReceiverChannel()
 
 }
 
-void ReceiverChannel::AddDistancesToCloud()
+void ReceiverChannel::AddDistancesToCloud(const Detection::Vector &detectionBuffer)
 {
-		AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-		float minDistance = globalSettings->receiverSettings[receiverID].displayedRangeMin;
-		float maxDistance = globalSettings->receiverSettings[receiverID].channelsConfig[channelID].maxRange;
-		
-		uint32_t lastDisplayedFrame = receiverCapture->GetCurrentIssueID(receiverCaptureSubscriberID);
-
-		// Thread safe
-		// The UI thread "Snaps" the frame ID for all other interface objects to display
-		Detection::Vector detectionBuffer;
-		if (receiverCapture->CopyReceiverEnhancedDetections(lastDisplayedFrame, detectionBuffer, receiverCaptureSubscriberID))
+		// Copy and filter the detection data to keep only those we need.
+		BOOST_FOREACH(Detection::Ptr detectionPtr, detectionBuffer)
 		{
-			// Copy and filter the detection data to keep only those we need.
-			Detection::Vector::iterator  detectionIterator = detectionBuffer.begin();
-			while (detectionIterator != detectionBuffer.end()) 
+			if (detectionPtr->channelID == channelID)			
 			{
-				Detection::Ptr detection = *detectionIterator;
-				if ((detection->channelID == channelID &&
-					detection->distance >= minDistance) && 
-					(detection->distance <=  maxDistance)) 
-				{
-					AddDistanceToCloud(detection->distance, 255);
-				}
-
-				detectionIterator++;
+				AddDistanceToCloud(detectionPtr->distance, 255);
 			}
-		} // If (receiver...
+		}
 }
 
 void ReceiverChannel::AddDistanceToCloud(float inDistance, uint8_t inIntensity)
@@ -419,14 +419,6 @@ void ReceiverChannel::SetCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &in
 	currentCloud = inCurrentCloud;
 }
 
-void ReceiverChannel::SetReceiver(ReceiverCapture::Ptr inReceiver, 
-	Publisher::SubscriberID inCurrentReceiverCaptureSubscriberID)
-{
-	receiverCapture = inReceiver;
-	receiverCaptureSubscriberID = inCurrentReceiverCaptureSubscriberID;
-}
-
-
 //*********************************************************************
 
 ReceiverProjector::ReceiverProjector(VideoCapture::Ptr videoCapture, pcl::PointCloud<pcl::PointXYZRGB>::Ptr & inCloud, 
@@ -545,6 +537,7 @@ void ReceiverProjector::SpinOnce()
 			
 			// Update the point-cloud data.
 			// Right now, we pace ourselves with the video frames
+
 			AddDistancesToCloud();
 			PutNews();
 		}
@@ -570,14 +563,20 @@ void ReceiverProjector::AddDistancesToCloud()
 		GetChannel(channelID)->SetCurrentCloud(cloud);
 		GetChannel(channelID)->SetDisplayUnderZero(displayUnderZero);
 		GetChannel(channelID)->SetDecimation(decimationX, decimationY);
-		GetChannel(channelID)->SetReceiver(receiverCapture, currentReceiverCaptureSubscriberID );
 	}
 
-	for (int i = 0; i < channelQty; i++) 
+	// Thread safe
+	// The UI thread "Snaps" the frame ID for all other interface objects to display
+	uint32_t lastDisplayedFrame = receiverCapture->GetCurrentIssueID(currentReceiverCaptureSubscriberID);
+	ReceiverPostProcessor postProcessor;
+	Detection::Vector detectionBuffer;
+	if (postProcessor.GetEnhancedDetectionsFromFrame(receiverCapture, lastDisplayedFrame, currentReceiverCaptureSubscriberID, detectionBuffer))
 	{
-		GetChannel(i)->AddDistancesToCloud();
+		for (int i = 0; i < channelQty; i++) 
+		{
+			GetChannel(i)->AddDistancesToCloud(detectionBuffer);
+		}
 	}
-
 	AddBackgroundToCloud();
 }
 

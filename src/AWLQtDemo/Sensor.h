@@ -1,6 +1,22 @@
 #ifndef _SENSOR_H
 #define _SENSOR_H
 
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 #ifndef Q_MOC_RUN
 #include <boost/container/vector.hpp>
 #include <pcl/range_image/range_image.h>
@@ -161,11 +177,6 @@ protected:
 	// point-Cloud used for frame reconstructio
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr currentCloud;
 
-	/** \brief The lidar data capture device. */
-	ReceiverCapture::Ptr receiverCapture;
-	/** \brief Our subscription identifier to access to lidar data. */
-	Publisher::SubscriberID receiverCaptureSubscriberID;
-
 	// public variables
 public:
 	// List of Receiver points in RGB image covered by FOV
@@ -206,7 +217,7 @@ public:
 	~ReceiverChannel();
 
 
-	void AddDistancesToCloud();
+	void AddDistancesToCloud(const Detection::Vector &detectionBuffer);
 
 	/** \brief Obtain the  channel's bounding rectange at maximum range, projected in 3D space.
 	           In current implementation, the value pairs may be un-ordered (minX may be greater than maxX).
@@ -288,11 +299,6 @@ public:
       */
 	void GetRangeMax(double &outRangeMax);
 
-	/** \brief Modify the viewer'sreceiver.
-      * \param[in] inReceiver pointer to receiver
-      */
-	void SetReceiver(ReceiverCapture::Ptr receiver, Publisher::SubscriberID inCurrentReceiverCaptureSubscriberID);
-
 	void SetBackgroundPtr(ReceiverChannel::FramePtr inBackgroundPtr);
 	void SetColorPtr(ReceiverChannel::FramePtr inColorPtr);
 	void SetCurrentCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &inCurrentCloud); 
@@ -358,7 +364,7 @@ public:
 
 
 	/** \brief Update the cloud with the current LIDAR data from each of the ReceiverChannels.
-	           The cloud will first be cleared.
+	         The cloud will first be cleared.
       */
 	void AddDistancesToCloud();
 

@@ -71,9 +71,6 @@
     <ClCompile Include="ReceiverCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverUDPCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sensor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -170,13 +167,13 @@
     <ClCompile Include="CoordinateSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverPostProcessor.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="DetectionStruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ReceiverEasySyncCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReceiverPostProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

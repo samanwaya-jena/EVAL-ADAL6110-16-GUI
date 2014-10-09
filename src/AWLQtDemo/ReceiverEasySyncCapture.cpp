@@ -1,6 +1,18 @@
-//#include <iostream>
-//#include <cstdio>
-//#include <fstream>
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <string>
 #ifndef Q_MOC_RUN
@@ -105,18 +117,14 @@ bool  ReceiverEasySyncCapture::OpenCANPort()
     // A blocking reader for this port that 
     // will time out a read after 500 milliseconds.
 	reader = new blocking_reader(*port, receiveTimeOutInMillisec);
-#if 1
 	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
-#endif
 
 	// Send the initialization strings
 	WriteString(sBitRate+"\r"); // Set CAN Rate ("S2"->50Kbps, "S3"->100Kbps, "S8"->1Gbps)
 	WriteString("O\r");  // Open
 	WriteString("Z0\r");  // Make sure no timestamps are attached
 	WriteString("E\r");  // Flush/ Resync
-#if 1
 	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
-#endif
 
 	if (reader) 
 		return(true);
@@ -150,6 +158,7 @@ bool  ReceiverEasySyncCapture::CloseCANPort()
 		if (port  && port->is_open()) port->close();
 		reader = NULL;
 		port = NULL;
+		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 	    closeCANReentryCount--;
 		return(true);
 }
@@ -217,6 +226,48 @@ void ReceiverEasySyncCapture::DoOneThreadIteration()
 			}
 
 		}
+
+#if 1
+	// Simulate some tracks for debug purposes
+	double elapsed = GetElapsed();
+	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, 0);
+
+	track->firstTimeStamp = currentFrame->timeStamp;
+	track->timeStamp = currentFrame->timeStamp;
+	track->distance = 2.0;
+	track->channels = 0X7f;
+
+	track->velocity = 22;
+	track->acceleration = 0;
+	track->part1Entered = true;
+	track->part2Entered = true;
+	track->part3Entered = true;
+	track->part4Entered = true;
+
+	track->probability = 99;
+	track->timeStamp = elapsed;
+	track->firstTimeStamp = elapsed;
+
+
+	track = acquisitionSequence->MakeUniqueTrack(currentFrame, 1);
+
+	track->firstTimeStamp = currentFrame->timeStamp;
+	track->timeStamp = currentFrame->timeStamp;
+	track->distance = 4;
+	track->channels = 0X7f;
+
+	track->velocity = -3;
+	track->acceleration = -3;
+	track->part1Entered = true;
+	track->part2Entered = true;
+	track->part3Entered = true;
+	track->part4Entered = true;
+
+	track->probability = 99;
+	track->timeStamp = elapsed;
+	track->firstTimeStamp = elapsed;
+	ProcessCompletedFrame();
+#endif
 
 	} // if  (!WasStoppped)
 }

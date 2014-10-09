@@ -1,8 +1,26 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 #include <QDesktopWidget>
 #include <QApplication>
 #include <qwt_plot_curve.h>
 #include <qlabel.h>
 #include <qlayout.h>
+
+#include <boost/foreach.hpp>
 
 #include "awlqtscope.h"
 #include "AWLScopePlot.h"
@@ -191,19 +209,17 @@ void AWLQtScope::updateCurveDataRaw()
 		Detection::Vector detectionData;
 		if (postProcessor.GetEnhancedDetectionsFromFrame(d_receiverCapture, requestedFrameID, d_receiverCaptureSubscriberID, detectionData))
 		{
-			Detection::Vector::iterator  detectionIterator = detectionData.begin();
 			boost::container::vector<int> detectionIndexes;
 			detectionIndexes.resize(d_receiverCapture->receiverChannelQty);
-
-			while (detectionIterator != detectionData.end()) 
+			BOOST_FOREACH(const Detection::Ptr &detection, detectionData)
 			{
-				Detection::Ptr detection = *detectionIterator++;
+				int detectionIndex = detectionIndexes[detection->channelID]++;
 
 				// Replace the new point to the end, with detected value
 				double elapsed = detection->timeStamp;
 				elapsed /= 1000;
 				const QPointF distancePoint(elapsed,  detection->distance);
-				d_distanceCurveDataArray[detection->channelID]->at(detectionIndexes[detection->channelID])->addValue(distancePoint);
+				d_distanceCurveDataArray[detection->channelID]->at(detectionIndex)->addValue(distancePoint);
 
 				float velocity = detection->velocity;
 				if (settings->velocityUnits != eVelocityUnitsMS)
@@ -213,9 +229,7 @@ void AWLQtScope::updateCurveDataRaw()
 				if (velocity < -maxVelocity) velocity = -maxVelocity;
 
 				const QPointF velocityPoint(elapsed,  velocity);
-				d_velocityCurveDataArray[detection->channelID]->at(detectionIndexes[detection->channelID])->addValue(velocityPoint);
-
-				detectionIndexes[detection->channelID]++;
+				d_velocityCurveDataArray[detection->channelID]->at(detectionIndex)->addValue(velocityPoint);
 			} // while (detectionIterator
 		} // if (postProcessor.GetEnhanced
 

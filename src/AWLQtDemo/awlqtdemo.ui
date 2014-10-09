@@ -891,7 +891,7 @@ stop: 0.3 #808080
        <widget class="QDoubleSpinBox" name="sensorDepthSpinBox">
         <property name="geometry">
          <rect>
-          <x>260</x>
+          <x>280</x>
           <y>19</y>
           <width>62</width>
           <height>22</height>
@@ -921,12 +921,12 @@ stop: 0.3 #808080
          <rect>
           <x>180</x>
           <y>20</y>
-          <width>71</width>
+          <width>81</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Sensor depth:</string>
+         <string>Sensor forward:</string>
         </property>
        </widget>
       </widget>

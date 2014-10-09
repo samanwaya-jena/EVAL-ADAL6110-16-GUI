@@ -1,6 +1,22 @@
 #ifndef AWL_RECEIVER_CAPTURE_H
 #define AWL_RECEIVER_CAPTURE_H
 
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 #include <stdint.h>
 #include <fstream>
 
@@ -433,14 +449,6 @@ public:
      */
 	virtual bool CopyReceiverRawDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
 
-	/** \brief copy the processed (enhanced) detection data identified with a frameID to to a local copy (thread-safe)
-     * \param[in] inFrameID frame identificator of the requiested frame
-	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
-	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
-     * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
-     */
-	virtual bool CopyReceiverEnhancedDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
-
 	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
@@ -754,6 +762,12 @@ protected:
 	  *         Currently, it is invoked on reception of message 36 (las distance from last channel)
       */
 	virtual void ProcessCompletedFrame();
+
+	/** \brief Timestamp all the Tracks of the sourceFrame with the timeStamp of the sourceFrame      */
+	void TimestampTracks(SensorFrame::Ptr sourceFrame);
+
+	/** \brief Timestamp all the detections of the sourceFrame with the timeStamp of the sourceFrameFrame      */
+	void TimestampDetections(SensorFrame::Ptr sourceFrame);
 
 	/** \brief Write all the tracks in the sourceFrameframe to the log file
  	  * \param[in] logFile		file to which the log is injected

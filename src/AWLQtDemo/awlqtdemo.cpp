@@ -1,4 +1,18 @@
+/*
+	Copyright 2014 Aerostar R&D Canada Inc.
 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
 
 #include <QTableWidget>
 #include <QDesktopWidget>
@@ -8,6 +22,8 @@
 #include <QListWidget>
 
 #include <string>
+#include <boost/foreach.hpp>
+
 
 #include "AWLSettings.h"
 #include "AWLCoord.h"
@@ -533,6 +549,11 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 		cloudViewer->SetPositionUp(height);
 	}
 
+	if (m2DScan && !m2DScan->isHidden())
+	{
+		m2DScan->slotConfigChanged(mCfgSensor);
+	}
+
 	// Restore the wait cursor
 	setCursor(Qt::ArrowCursor);
 }
@@ -543,7 +564,10 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 	double forward = ui.sensorDepthSpinBox->value();
 	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
 	if (abs(forward - sensorPosition.position.forward) < 0.001) return;
+
+	sensorPosition.position.forward = forward;
 	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
+
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -870,21 +894,14 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 		// Thread safe
 		// The UI thread "Snaps" the frame ID for all other interface objects to display
 		Detection::Vector detectionBuffer;
+
 		if (postProcessor.GetEnhancedDetectionsFromFrame(receiver, lastDisplayedFrame, subscriberID, detectionBuffer))
 		{
 			// Copy and filter the detection data to keep only those we need.
-			Detection::Vector::iterator  detectionIterator = detectionBuffer.begin();
-			while (detectionIterator != detectionBuffer.end()) 
+			BOOST_FOREACH(const Detection::Ptr &detection, detectionBuffer)
 			{
-				Detection::Ptr detection = *detectionIterator;
-				if ((detection->distance >= receiverSettings.displayedRangeMin) && 
-					(detection->distance <=  receiverSettings.channelsConfig[detection->channelID].maxRange)) 
-				{
-					Detection::Ptr storedDetection = detection;
-					detectionData.push_back(storedDetection);
-				}
-
-				detectionIterator++;
+				Detection::Ptr storedDetection = detection;
+				detectionData.push_back(storedDetection);
 			}
 		} // If (receiver...
 	}
