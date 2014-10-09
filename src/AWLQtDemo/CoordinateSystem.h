@@ -266,7 +266,7 @@ public:
 	TransformationArray matrix; 
 };
 
-/** \brief The TransformationMatrix class supports the basic operators on a 
+/** \brief The TransformationVector class supports the basic operators on a 
  *          1x4 vector.
  *  \notes	The vectors can be used as operands in affine transformation operations
  *          or as convenient placeholders for sub-sections of TransformationMatrix.

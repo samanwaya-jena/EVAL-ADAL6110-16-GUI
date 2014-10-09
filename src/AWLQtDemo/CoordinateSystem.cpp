@@ -426,22 +426,29 @@ TransformationMatrix TransformationMatrix::Reverse()
 	
 	 // Ref: http://www.cse.psu.edu/~rcollins/CSE486/lecture12.pdf
 
-	 // Transpose the rotation sub-matrix
-	 destinationMatrix.matrix[0][0] = matrix[0][0];
-	 destinationMatrix.matrix[0][1] = matrix[1][0];
-	 destinationMatrix.matrix[0][2] = matrix[2][0];
-	 destinationMatrix.matrix[1][0] = matrix[0][1];
-	 destinationMatrix.matrix[1][1] = matrix[1][1];
-	 destinationMatrix.matrix[1][2] = matrix[2][1];
-	 destinationMatrix.matrix[2][0] = matrix[0][2];
-	 destinationMatrix.matrix[2][1] = matrix[1][2];
-	 destinationMatrix.matrix[2][2] = matrix[2][2];
+	 // Inverse the rotation sub-matrix
+	 destinationMatrix.matrix[0][0] = matrix[0][0]?1/matrix[0][0]:0;
+	 destinationMatrix.matrix[0][1] = matrix[1][0]?1/matrix[1][0]:0;
+	 destinationMatrix.matrix[0][2] = matrix[2][0]?1/matrix[2][0]:0;
+	 destinationMatrix.matrix[1][0] = matrix[0][1]?1/matrix[0][1]:0;
+	 destinationMatrix.matrix[1][1] = matrix[1][1]?1/matrix[1][1]:0;
+	 destinationMatrix.matrix[1][2] = matrix[2][1]?1/matrix[2][1]:0;
+	 destinationMatrix.matrix[2][0] = matrix[0][2]?1/matrix[0][2]:0;
+	 destinationMatrix.matrix[2][1] = matrix[1][2]?1/matrix[1][2]:0;
+	 destinationMatrix.matrix[2][2] = matrix[2][2]?1/matrix[2][2]:0;
 	 
-	 // Negate the translations
-	 destinationMatrix.matrix[0][3] = -matrix[0][3];
-	 destinationMatrix.matrix[1][3] = -matrix[1][3];
-	 destinationMatrix.matrix[2][3] = -matrix[2][3];
+	 // Inverse the transformation matrix and apply the row rotation
+	 destinationMatrix.matrix[0][3] = -((destinationMatrix.matrix[0][0]*matrix[0][3])+
+									     (destinationMatrix.matrix[0][1]*matrix[1][3])+
+										 (destinationMatrix.matrix[0][2]*matrix[2][3]));
 
+ 	 destinationMatrix.matrix[1][3] = -((destinationMatrix.matrix[1][0]*matrix[0][3])+
+									     (destinationMatrix.matrix[1][1]*matrix[1][3])+
+										 (destinationMatrix.matrix[1][2]*matrix[2][3]));
+
+  	 destinationMatrix.matrix[2][3] = -((destinationMatrix.matrix[2][0]*matrix[0][3])+
+									     (destinationMatrix.matrix[2][1]*matrix[1][3])+
+										 (destinationMatrix.matrix[2][2]*matrix[2][3]));
 	 // Carry over the other matrix items
  	 destinationMatrix.matrix[3][0] = matrix[3][0];     
 	 destinationMatrix.matrix[3][1] = matrix[3][1];     
@@ -654,7 +661,7 @@ void TransformationNode::RefreshGlobal()
 	TransformationNode::Ptr ancesterNode = parent;
 	while (ancesterNode)
 	{
-		currentTransformation = currentTransformation * ancesterNode->transformations.at(ancesterNode->transformations.size()-1);
+		currentTransformation = ancesterNode->transformations.at(ancesterNode->transformations.size()-1) * currentTransformation;
 		transformations.push_front(currentTransformation);
 		ancesterNode = ancesterNode->parent;
 	}
