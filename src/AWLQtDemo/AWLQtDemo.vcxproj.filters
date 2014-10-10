@@ -65,16 +65,7 @@
     <ClCompile Include="range_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverCANCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ReceiverCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Subscription.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VideoCapture.cpp">
@@ -84,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FusedCloudViewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugPrintf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLQtScope\awlqtscope.cpp">
@@ -125,9 +113,6 @@
     <ClCompile Include="fov_2dscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="awlcoord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TableView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,28 +140,43 @@
     <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadedWorker.cpp">
+    <ClCompile Include="..\AWLCoreClasses\awlcoord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LoopedWorker.cpp">
+    <ClCompile Include="..\AWLCoreClasses\CoordinateSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Publisher.cpp">
+    <ClCompile Include="..\AWLCoreClasses\DebugPrintf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CoordinateSystem.cpp">
+    <ClCompile Include="..\AWLCoreClasses\DetectionStruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DetectionStruct.cpp">
+    <ClCompile Include="..\AWLCoreClasses\LoopedWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverEasySyncCapture.cpp">
+    <ClCompile Include="..\AWLCoreClasses\Publisher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverPostProcessor.cpp">
+    <ClCompile Include="..\AWLCoreClasses\ReceiverCANCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReceiverSimulatorCapture.cpp">
+    <ClCompile Include="..\AWLCoreClasses\ReceiverCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverEasySyncCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverSimulatorCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\Subscription.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -225,28 +225,13 @@
     <ClInclude Include="FusedCloudViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReceiverCANCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReceiverCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Subscription.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VideoCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VideoViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockingReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugPrintf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\AWLQtScope\signaldata.h">
@@ -267,34 +252,49 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="awlcoord.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_TableView.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadedWorker.h">
+    <ClInclude Include="..\AWLCoreClasses\awlcoord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LoopedWorker.h">
+    <ClInclude Include="..\AWLCoreClasses\BlockingReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Publisher.h">
+    <ClInclude Include="..\AWLCoreClasses\CoordinateSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CoordinateSystem.h">
+    <ClInclude Include="..\AWLCoreClasses\DebugPrintf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReceiverPostProcessor.h">
+    <ClInclude Include="..\AWLCoreClasses\DetectionStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DetectionStruct.h">
+    <ClInclude Include="..\AWLCoreClasses\LoopedWorker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReceiverEasySyncCapture.h">
+    <ClInclude Include="..\AWLCoreClasses\Publisher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ReceiverSimulatorCapture.h">
+    <ClInclude Include="..\AWLCoreClasses\ReceiverCANCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverEasySyncCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverSimulatorCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\Subscription.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ThreadedWorker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

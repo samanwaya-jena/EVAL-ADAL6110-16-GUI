@@ -38,7 +38,7 @@
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
 		       values currently possible are "EasySyncCAN" -->
-      <receiverType>EasySyncCAN</receiverType>
+      <receiverType>EasySyncCAN2</receiverType>
 
       <commPort>COM28</commPort>
       <frameRate>50</frameRate>
@@ -92,7 +92,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>7</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -111,7 +111,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>7</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -130,7 +130,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>7</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -149,7 +149,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>7</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -168,7 +168,7 @@
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>8</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -187,7 +187,7 @@
           <roll>0.0</roll>
           <yaw>0.0</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>8</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -206,7 +206,7 @@
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>8</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>

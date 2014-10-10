@@ -48,7 +48,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(PCL_ROOT)/include/pcl-1.6;$(PCL_ROOT)/3rdParty/Eigen/include;$(PCL_ROOT)/3rdParty/Boost/include;$(PCL_ROOT)/3rdParty/FLANN/include;$(PCL_ROOT)/3rdParty/Qhull/include;$(PCL_ROOT)/3rdParty/VTK/include/VTK-5.8;$(OPENCV_DIR)/modules/videostab/include;$(OPENCV_DIR)/modules/stitching/include;$(OPENCV_DIR)/modules/contrib/include;$(OPENCV_DIR)/modules/legacy/include;$(OPENCV_DIR)/modules/calib3d/include;$(OPENCV_DIR)/modules/features2d/include;$(OPENCV_DIR)/modules/nonfree/include;$(OPENCV_DIR)/modules/photo/include;$(OPENCV_DIR)/modules/objdetect/include;$(OPENCV_DIR)/modules/video/include;$(OPENCV_DIR)/modules/ml/include;$(OPENCV_DIR)/modules/highgui/include;$(OPENCV_DIR)/modules/imgproc/include;$(OPENCV_DIR)/modules/flann/include;$(OPENCV_DIR)/modules/core/include;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)\src;C:\XIMEA\API;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(PCL_ROOT)/include/pcl-1.6;$(PCL_ROOT)/3rdParty/Eigen/include;$(PCL_ROOT)/3rdParty/Boost/include;$(PCL_ROOT)/3rdParty/FLANN/include;$(PCL_ROOT)/3rdParty/Qhull/include;$(PCL_ROOT)/3rdParty/VTK/include/VTK-5.8;$(OPENCV_DIR)/modules/videostab/include;$(OPENCV_DIR)/modules/stitching/include;$(OPENCV_DIR)/modules/contrib/include;$(OPENCV_DIR)/modules/legacy/include;$(OPENCV_DIR)/modules/calib3d/include;$(OPENCV_DIR)/modules/features2d/include;$(OPENCV_DIR)/modules/nonfree/include;$(OPENCV_DIR)/modules/photo/include;$(OPENCV_DIR)/modules/objdetect/include;$(OPENCV_DIR)/modules/video/include;$(OPENCV_DIR)/modules/ml/include;$(OPENCV_DIR)/modules/highgui/include;$(OPENCV_DIR)/modules/imgproc/include;$(OPENCV_DIR)/modules/flann/include;$(OPENCV_DIR)/modules/core/include;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)\src;C:\XIMEA\API;..\AWLCoreClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -65,7 +65,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(PCL_ROOT)/include/pcl-1.6;$(PCL_ROOT)/3rdParty/Eigen/include;$(PCL_ROOT)/3rdParty/Boost/include;$(PCL_ROOT)/3rdParty/FLANN/include;$(PCL_ROOT)/3rdParty/Qhull/include;$(PCL_ROOT)/3rdParty/VTK/include/VTK-5.8;$(OPENCV_DIR)/modules/videostab/include;$(OPENCV_DIR)/modules/stitching/include;$(OPENCV_DIR)/modules/contrib/include;$(OPENCV_DIR)/modules/legacy/include;$(OPENCV_DIR)/modules/calib3d/include;$(OPENCV_DIR)/modules/features2d/include;$(OPENCV_DIR)/modules/nonfree/include;$(OPENCV_DIR)/modules/photo/include;$(OPENCV_DIR)/modules/objdetect/include;$(OPENCV_DIR)/modules/video/include;$(OPENCV_DIR)/modules/ml/include;$(OPENCV_DIR)/modules/highgui/include;$(OPENCV_DIR)/modules/imgproc/include;$(OPENCV_DIR)/modules/flann/include;$(OPENCV_DIR)/modules/core/include;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)\src;C:\XIMEA\API;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(PCL_ROOT)/include/pcl-1.6;$(PCL_ROOT)/3rdParty/Eigen/include;$(PCL_ROOT)/3rdParty/Boost/include;$(PCL_ROOT)/3rdParty/FLANN/include;$(PCL_ROOT)/3rdParty/Qhull/include;$(PCL_ROOT)/3rdParty/VTK/include/VTK-5.8;$(OPENCV_DIR)/modules/videostab/include;$(OPENCV_DIR)/modules/stitching/include;$(OPENCV_DIR)/modules/contrib/include;$(OPENCV_DIR)/modules/legacy/include;$(OPENCV_DIR)/modules/calib3d/include;$(OPENCV_DIR)/modules/features2d/include;$(OPENCV_DIR)/modules/nonfree/include;$(OPENCV_DIR)/modules/photo/include;$(OPENCV_DIR)/modules/objdetect/include;$(OPENCV_DIR)/modules/video/include;$(OPENCV_DIR)/modules/ml/include;$(OPENCV_DIR)/modules/highgui/include;$(OPENCV_DIR)/modules/imgproc/include;$(OPENCV_DIR)/modules/flann/include;$(OPENCV_DIR)/modules/core/include;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)\src;C:\XIMEA\API;..\AWLCoreClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -85,18 +85,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\AWLCoreClasses\awlcoord.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\CoordinateSystem.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\DebugPrintf.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\DetectionStruct.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\LoopedWorker.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\Publisher.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverCANCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverEasySyncCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\Subscription.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp" />
     <ClCompile Include="..\AWLQtScope\awlqtscope.cpp" />
     <ClCompile Include="..\AWLQtScope\awlscopeplot.cpp" />
     <ClCompile Include="..\AWLQtScope\curvedata.cpp" />
     <ClCompile Include="..\AWLQtScope\knob.cpp" />
     <ClCompile Include="..\AWLQtScope\signaldata.cpp" />
     <ClCompile Include="..\AWLQtScope\wheelbox.cpp" />
-    <ClCompile Include="DetectionStruct.cpp" />
-    <ClCompile Include="awlcoord.cpp" />
     <ClCompile Include="awlqtdemo.cpp" />
     <ClCompile Include="AWLSettings.cpp" />
-    <ClCompile Include="CoordinateSystem.cpp" />
-    <ClCompile Include="DebugPrintf.cpp" />
     <ClCompile Include="fov_2dscan.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_awlqtscope.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -124,18 +133,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp" />
-    <ClCompile Include="LoopedWorker.cpp" />
-    <ClCompile Include="Publisher.cpp" />
     <ClCompile Include="range_image.cpp" />
-    <ClCompile Include="ReceiverCANCapture.cpp" />
-    <ClCompile Include="ReceiverCapture.cpp" />
-    <ClCompile Include="ReceiverEasySyncCapture.cpp" />
-    <ClCompile Include="ReceiverPostProcessor.cpp" />
-    <ClCompile Include="ReceiverSimulatorCapture.cpp" />
     <ClCompile Include="Sensor.cpp" />
-    <ClCompile Include="Subscription.cpp" />
     <ClCompile Include="TableView.cpp" />
-    <ClCompile Include="ThreadedWorker.cpp" />
     <ClCompile Include="VideoCapture.cpp" />
     <ClCompile Include="VideoViewer.cpp" />
     <ClCompile Include="FusedCloudViewer.cpp" />
@@ -229,14 +229,23 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="..\AWLCoreClasses\awlcoord.h" />
+    <ClInclude Include="..\AWLCoreClasses\BlockingReader.h" />
+    <ClInclude Include="..\AWLCoreClasses\CoordinateSystem.h" />
+    <ClInclude Include="..\AWLCoreClasses\DebugPrintf.h" />
+    <ClInclude Include="..\AWLCoreClasses\DetectionStruct.h" />
+    <ClInclude Include="..\AWLCoreClasses\LoopedWorker.h" />
+    <ClInclude Include="..\AWLCoreClasses\Publisher.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverCANCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverEasySyncCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverSimulatorCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\Subscription.h" />
+    <ClInclude Include="..\AWLCoreClasses\ThreadedWorker.h" />
     <ClInclude Include="..\AWLQtScope\curvedata.h" />
     <ClInclude Include="..\AWLQtScope\signaldata.h" />
-    <ClInclude Include="DetectionStruct.h" />
-    <ClInclude Include="awlcoord.h" />
     <ClInclude Include="AWLSettings.h" />
-    <ClInclude Include="BlockingReader.h" />
-    <ClInclude Include="CoordinateSystem.h" />
-    <ClInclude Include="DebugPrintf.h" />
     <CustomBuild Include="fov_2dscan.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing fov_2dscan.h...</Message>
@@ -252,16 +261,8 @@
     <ClInclude Include="GeneratedFiles\ui_awlqtscope.h" />
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h" />
     <ClInclude Include="GeneratedFiles\ui_TableView.h" />
-    <ClInclude Include="LoopedWorker.h" />
-    <ClInclude Include="Publisher.h" />
-    <ClInclude Include="ReceiverCANCapture.h" />
-    <ClInclude Include="ReceiverCapture.h" />
-    <ClInclude Include="ReceiverEasySyncCapture.h" />
-    <ClInclude Include="ReceiverPostProcessor.h" />
-    <ClInclude Include="ReceiverSimulatorCapture.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sensor.h" />
-    <ClInclude Include="Subscription.h" />
     <CustomBuild Include="TableView.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing TableView.h...</Message>
@@ -272,7 +273,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
     </CustomBuild>
-    <ClInclude Include="ThreadedWorker.h" />
     <ClInclude Include="VideoCapture.h" />
     <ClInclude Include="VideoViewer.h" />
   </ItemGroup>
