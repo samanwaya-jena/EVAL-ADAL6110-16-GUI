@@ -1,3 +1,4 @@
+/* VideoViewer.cpp */
 /*
 	Copyright 2014 Aerostar R&D Canada Inc.
 

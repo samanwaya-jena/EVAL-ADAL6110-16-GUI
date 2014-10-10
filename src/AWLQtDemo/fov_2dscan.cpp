@@ -1,3 +1,4 @@
+/* Fov_2DScan.cpp */
 /*
 	Copyright 2014 Aerostar R&D Canada Inc.
 

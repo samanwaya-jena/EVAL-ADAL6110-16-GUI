@@ -1,3 +1,4 @@
+/* RangeImage.cpp */
 /*
  * Software License Agreement (BSD License)
  *
