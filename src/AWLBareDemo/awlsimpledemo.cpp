@@ -26,6 +26,7 @@
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverEasySyncCapture.h"
+#include "ReceiverKvaserCapture.h"
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
 #include "DebugPrintf.h"
@@ -51,11 +52,16 @@ AWLSimpleDemo::AWLSimpleDemo()
 	receiverCaptures.resize(receiverQty);
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		// Create the LIDAR acquisition thread object
+		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
 		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
+		}
+		else if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "KvaserLeaf"))
+		{
+			// Kvaser Leaf CAN Capture is used if defined in the ini file
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
 		}
 		else 
 		{

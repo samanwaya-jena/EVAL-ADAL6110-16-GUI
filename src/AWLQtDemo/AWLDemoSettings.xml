@@ -37,10 +37,11 @@
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
-		       values currently possible are "EasySyncCAN" -->
-      <receiverType>EasySyncCAN</receiverType>
+		       values currently possible are "EasySyncCAN" and "KvaserLeaf" -->
+      <receiverType>KvaserLeaf</receiverType>
 
       <commPort>COM28</commPort>
+      <kvaserChannel>0</kvaserChannel>
       <frameRate>50</frameRate>
 
 

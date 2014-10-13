@@ -179,6 +179,9 @@
     <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverKvaserCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -295,6 +298,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\AWLCoreClasses\ThreadedWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverKvaserCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
