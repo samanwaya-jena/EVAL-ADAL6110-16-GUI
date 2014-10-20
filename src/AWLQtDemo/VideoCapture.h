@@ -21,6 +21,7 @@
 
 #include <fstream>
 
+#include <boost/property_tree/ptree.hpp>
 using namespace std;
 
 #include "opencv2/core/core_c.h"
@@ -30,6 +31,7 @@ using namespace std;
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"
+#include "CoordinateSystem.h"
 
 
 namespace awl
@@ -54,8 +56,9 @@ public:
       * \param[in] inCameraID index of the camera in the configuration parameters.
       * \param[in] argc command-line argument count.  Used in OpenCV cvInit() call.
       * \param[in] argv command line argument strings. Used in OpenCV cvInit() call.
+	  * \param[in] propTree configuration property tree. Corresponds to configuration file contents.
       */
-	VideoCapture(int inCameraID, int argc, char** argv);
+	VideoCapture(int inCameraID, int argc, char** argv, boost::property_tree::ptree &propTree);
 
 	/** \brief Video Capture destructor.  Insures that the thread is stopped.
 
@@ -77,39 +80,14 @@ public:
       */
 	double GetFrameRate() {return(frameRate);};
 
-	/** \brief Return the video frame width.
-      * \return videoframe width in pixels.
-      */
-	int	   GetFrameWidth() {return(frameWidth);}
-
-	/** \brief Return the video frame width.
-      * \return videoframe height in pixels.
-      */
-	int	   GetFrameHeight() {return(frameHeight);}
-
-
-	/** \brief Return the image scale.
-      * \return image scaling factor.
-      */
-	double GetScale() { return(scale);}
-
-
-	/** \brief Return the  horizontal camera FOV.
-      * \return horizontal camera FOV in radians.
-      */
-	double GetCameraFovWidth() {return(cameraFovWidth);}
-
-	/** \brief Return the  vertical camera FOV.
-      * \return vertical camera FOV in radians.
-      */
-	double GetCameraFovHeight() {return(cameraFovHeight);}
-
 	/** \brief Copy the current frame to the targetFrame.  The current frame is thread-locked during transfer
       * \param[out] targetFrame pointer to the target frame that will get copied to.
       * \note Locking of the target frame is under the responsibility of the calling thread.
       */
 	void CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID subscriberID = -1);
 
+	/** \brief calibration information. */
+	CameraCalibration calibration;
 
 protected:
 	/** \brief Return the video acquisition thread status
@@ -122,29 +100,23 @@ protected:
       */
 	void  DoThreadIteration();
 
+	/** \brief Read the configuration from configuration file
+      */
+	bool ReadConfigFromPropTree(boost::property_tree::ptree &propTree);
+
 protected:
+	
+	/** \brief camera name */
+	std::string sCameraName;
+
 	/** \brief Index of the camera in the configuration parameter list */
 	int cameraID;
 	
     /** \brief Local flag indicating a request for termination */
 	volatile bool mStopRequested;
 
-    /** \brief Current video frame width. */
-	int frameWidth;
-
-    /** \brief Current video frame height. */
-	int frameHeight;
-
 	/** \brief Current video stram frame rate in FPS.  For still video, it defaults to 33FPS. */
 	double frameRate;
-
-	/** \brief Video scaling factor, that can be set on the command line. */
-	double scale;
-
-	/** \brief Horizontal field of view of the camera. */
-	float cameraFovWidth;
-	/** \brief Vertical field of view of the camera. */
-	float cameraFovHeight;
 
 	/** \brief Set cameraFlip to true for 180 degree rotation of the camera image. */
 	bool bCameraFlip;

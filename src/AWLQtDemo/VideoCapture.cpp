@@ -99,9 +99,10 @@ public:
     cv::Ptr<CvCaptureCAM_XIMEA> cap;
 };
 
-VideoCapture::VideoCapture(int inCameraID, int argc, char** argv):
+VideoCapture::VideoCapture(int inCameraID, int argc, char** argv, boost::property_tree::ptree &propTree):
 ThreadedWorker(),
 Publisher(), 
+calibration(),
 cameraID(inCameraID)
 
 {
@@ -111,20 +112,19 @@ cameraID(inCameraID)
 	// Initialize HighGUI
 	cvInitSystem(argc, argv);
 
-	CameraSettings cameraSettings = globalSettings->cameraSettings[cameraID];
+	ReadConfigFromPropTree(propTree);
 
-	std::string inputName = cameraSettings.sCameraName;
 	int inputID = 0;
-	if (!inputName.empty()) inputID = atoi(inputName.c_str());
+	if (!sCameraName.empty()) inputID = atoi(sCameraName.c_str());
 
 	// Determine capture source:  Camera, Single Frame or AVI
-    if( inputName.empty() || isdigit(inputName.c_str()[0]) )
+    if( sCameraName.empty() || isdigit(sCameraName.c_str()[0]) )
 	{
 		cam.open(inputID);
 	}
 	else 
 	{
-		cam.open(inputName);
+		cam.open(sCameraName);
 	}
 
 		
@@ -231,8 +231,8 @@ cameraID(inCameraID)
 			stat = xiSetParamInt(ximeaHandle, XI_PRM_BUFFERS_QUEUE_SIZE, numberOfFieldBuffers);
 		}
 
-		frameWidth = (int) cam.get(CV_CAP_PROP_FRAME_WIDTH);
-		frameHeight = (int) cam.get(CV_CAP_PROP_FRAME_HEIGHT);
+		calibration.frameWidthInPixels = (int) cam.get(CV_CAP_PROP_FRAME_WIDTH);
+		calibration.frameHeightInPixels = (int) cam.get(CV_CAP_PROP_FRAME_HEIGHT);
 		double framesPerSecond = cam.get(CV_CAP_PROP_FPS);
 
  		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
@@ -241,17 +241,11 @@ cameraID(inCameraID)
 	else // No camera
 	{
 		// Set default values not to be zeroes
-		frameWidth = 640;
-		frameHeight = 480;
+		calibration.frameWidthInPixels = 640;
+		calibration.frameHeightInPixels = 480;
+
 		frameRate = (double) 1.0/30.0;
 	}
-
-	// Field of view of the camera are in application seetings. 
-	// They are in degrees, so need to be converted in radians.
-
-	cameraFovWidth = DEG2RAD(cameraSettings.cameraFovWidthDegrees);
-	cameraFovHeight = DEG2RAD(cameraSettings.cameraFovHeightDegrees);
-	bCameraFlip = cameraSettings.cameraFlip; 
 }
 
 VideoCapture:: ~VideoCapture()
@@ -326,10 +320,10 @@ void VideoCapture::DoThreadIteration()
 
 		if (!bufferFrame.empty()) 
 		{
-#if 1
+#if 1  // Patch: Do not remove JYD 2014-07-07
 			// Force-set the bufferFrame dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera, after downsampling
-			bufferFrame.cols = frameWidth;
-			bufferFrame.rows = frameHeight;
+			bufferFrame.cols = calibration.frameWidthInPixels;
+			bufferFrame.rows = calibration.frameHeightInPixels;
 			bufferFrame.step = bufferFrame.cols*(bufferFrame.channels());
 			// End of the Ximea patch
 #endif
@@ -351,6 +345,40 @@ void VideoCapture::DoThreadIteration()
 
 
 	} // if( cam.isOpened() )
+}
+
+
+bool VideoCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
+{
+	char cameraKeyString[32];
+	sprintf(cameraKeyString, "config.cameras.camera%d", cameraID);
+	std::string cameraKey = cameraKeyString;
+
+	boost::property_tree::ptree &cameraNode =  propTree.get_child(cameraKey);
+
+	sCameraName = cameraNode.get<std::string>("cameraName");
+	bCameraFlip = cameraNode.get<bool>("cameraFlip");
+
+
+	/// Calibration parameters are optional
+	float cameraFovWidthDegrees;
+	float cameraFovHeightDegrees;
+	AWLSettings::Get2DPoint(cameraNode.get_child("fov"), cameraFovWidthDegrees, cameraFovHeightDegrees);
+	
+	calibration.fovWidth = DEG2RAD(cameraFovWidthDegrees);
+	calibration.fovHeight = DEG2RAD(cameraFovHeightDegrees);
+	calibration.CalculateFocalLengthsFromFOVs();
+
+	calibration.centerX = cameraNode.get<float>("centerCorrectionX", 0.0);
+	calibration.centerY = cameraNode.get<float>("centerCorrectionY", 0.0);
+	calibration.radialK1 = cameraNode.get<float>("radialCorrectionK1", 0.0);
+	calibration.radialK1 = cameraNode.get<float>("radialCorrectionK1", 0.0);
+	calibration.radialK2 = cameraNode.get<float>("radialCorrectionK2", 0.0);
+	calibration.radialK3 = cameraNode.get<float>("radialCorrectionK3", 0.0);
+	calibration.tangentialP1 = cameraNode.get<float>("tangentialCorrectionP1", 0.0);
+	calibration.tangentialP1 = cameraNode.get<float>("tangentialCorrectionP2", 0.0);
+
+	return(true);
 }
 
 

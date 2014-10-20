@@ -115,7 +115,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	int videoCaptureQty = globalSettings->cameraSettings.size();
 	for (int cameraID = 0; cameraID < videoCaptureQty; cameraID++)
 	{
-		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv)));
+		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	}
 
 	// Create the 3Dviewer.

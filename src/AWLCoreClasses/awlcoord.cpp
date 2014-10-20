@@ -123,7 +123,7 @@ RelativePosition AWLCoordinates::SetCameraPosition(int cameraID, const RelativeP
 }
 
 
-bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
+bool AWLCoordinates::SensorToCameraXY(int receiverID, int channelID, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
 {
 	bool bInFront = false;
 
@@ -135,37 +135,26 @@ bool AWLCoordinates::SensorToCamera(int receiverID, int channelID, int cameraID,
 	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
 	CartesianCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
 	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
-	if (coordInCameraCart.x < 0)
-	{
-		bInFront = false;
-	}
-	else
-	{   
-		bInFront = true;
-	}
+
+	bInFront = camera.ToFrameXY(coordInCameraCart, cameraX, cameraY);
+
+	return (bInFront);
+}
+
+
+bool AWLCoordinates::WorldToCameraXY(int cameraID, const CameraCalibration &camera, const CartesianCoord &worldCoord, int &cameraX, int &cameraY)
+{
+	bool bInFront = false;
+
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	
+	// Camera FOV description
+	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
+	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, worldCoord);		 // Convert to camera
 
-	// Projection on a plane.
+	bInFront = camera.ToFrameXY(coordInCameraCart, cameraX, cameraY);
 
-	// For simplification, we assume projecting on a square plane with square pixels.
-	// The square plane is "extended" vertically to cover the width of camera.
-	// We also assume square pixels.
-	// We will introduce these other camera corrections at later date (JYD 2014-10-08)
-	float halfWidthAtPlane =  coordInCameraCart.x * abs(tan(cameraFovWidthInRad/2));
-	float halfHeightAtPlane =  coordInCameraCart.x * abs(tan(cameraFovWidthInRad/2));
-	float verticalOffsetInPixels = -(frameWidthInPixels - frameHeightInPixels) / 2;
-	frameHeightInPixels = frameWidthInPixels;
-	
-	CartesianCoord cameraTopLeft(coordInCameraCart.x, halfWidthAtPlane, halfHeightAtPlane);
-	CartesianCoord cameraBottomRight(coordInCameraCart.x,  -halfWidthAtPlane, -halfHeightAtPlane);
-
-	// Remember: In relation to a body the standard convention is
-	//  x forward, y left and z up.
-	// Careful when converting to projected plane, where X is right and y is up
-
-	cameraX = frameWidthInPixels * (coordInCameraCart.left-cameraTopLeft.left) / (cameraBottomRight.left - cameraTopLeft.left);
-	cameraY = verticalOffsetInPixels + (frameHeightInPixels * (cameraTopLeft.up-coordInCameraCart.up) / (cameraTopLeft.up- cameraBottomRight.up));
-	return(bInFront);
+	return (bInFront);
 }
 
 bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree)

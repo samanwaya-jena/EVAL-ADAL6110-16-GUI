@@ -79,27 +79,6 @@ public:
       */
 	void SpinOnce();
 
-	/** \brief Return the video frame width.
-      * \return videoframe width in pixels.
-      */
-	int	   GetFrameWidth() {return(frameWidth);}
-
-	/** \brief Return the video frame width.
-      * \return videoframe height in pixels.
-      */
-	int	   GetFrameHeight() {return(frameHeight);}
-
-	/** \brief Return the  horizontal camera FOV.
-      * \return horizontal camera FOV in radians.
-      */
-	double GetCameraFovWidth() {return(cameraFovWidth);}
-
-	/** \brief Return the  vertical camera FOV.
-      * \return vertical camera FOV in radians.
-      */
-	double GetCameraFovHeight() {return(cameraFovHeight);}
-			
-
 	/** \brief Move the window at position left, top.
 	  * \remarks implemented for compatibility  with Qt (hence name convention).
       */
@@ -162,19 +141,7 @@ protected:
 	void DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight);
 
 protected:
-     /** \brief Current video frame width. */
-	int frameWidth;
-
-    /** \brief Current video frame height. */
-	int frameHeight;
-
-	/** \brief Horizontal field of view of the camera. */
-	float cameraFovWidth;
-
-	/** \brief Vertical field of view of the camera. */
-	float cameraFovHeight;
-
-	/** \brief Copy of the captured image. */
+ 	/** \brief Copy of the captured image. */
     VideoViewer::FramePtr cameraFrame;
 
 	/** \brief Frames used for painting and display. 

@@ -99,10 +99,6 @@ public:
       */
 	void GetPositionForward(double &outForward);
 
-	/** \brief Sets   horizontal camera FOV.
-      * \param[in] cameraFovWidth horizontal FOV of camera in radians.
-	      */
-	void  SetCameraFovWidth(double inCameraFovWidth);
 
 	/** \brief Return the  horizontal camera FOV.
       * \return horizontal camera FOV in radians.
@@ -478,32 +474,6 @@ public:
       */
 	int	   GetFrameHeight() {return(frameHeight);}
 
-
-	/** \brief Return the image scale.
-      * \return image scaling factor.
-      */
-	double GetScale() { return(scale);}
-
-	/** \brief Sets   horizontal camera FOV.
-      * \param[in] cameraFovWidth horizontal FOV of camera in radians.
-	      */
-	void  SetCameraFovWidth(double cameraFovWidth);
-
-	/** \brief Return the  horizontal camera FOV.
-      * \param[out] cameraFovWidth horizontal FOV of camera in radians.
-      */
-	void GetCameraFovWidth(double &outCameraFov);
-
-	/** \brief Sets   verticsl camera FOV.
-      * \param[in] cameraFovHeight vertical FOV of camera in radians.
-	      */
-	void  SetCameraFovHeight(double cameraFovHeight);
-
-	/** \brief Return the  vertical camera FOV.
-      * \param[out] cameraFovWidth vertical FOV of camera in radians.
-      */
-	void GetCameraFovHeight(double &outCameraFov);
-
 	// public variables
 public:
 	friend class ReceiverChannel;
@@ -573,14 +543,6 @@ protected:
 
 	/** \brief Current video stream frame rate in FPS.  For still video, it defaults to 33FPS. */
 	double frameRate;
-
-	/** \brief Video scaling factor, that can be set on the command line. */
-	double scale;
-
-	/** \brief Horizontal field of view of the camera. */
-	float cameraFovWidth;
-	/** \brief Vertical field of view of the camera. */
-	float cameraFovHeight;
 
 	/** \brief Our subscription identifier to access to video frame. */
 	Publisher::SubscriberID currentVideoSubscriberID;

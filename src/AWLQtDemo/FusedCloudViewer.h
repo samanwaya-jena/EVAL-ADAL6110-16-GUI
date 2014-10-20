@@ -337,11 +337,6 @@ protected:
 	double  forward;
 	/** \brief  maximum range (which is also distance at whick we project image place)*/
 	double  rangeMax;
-
-	/** \brief Horizontal field of view of the camera. */
-	float cameraFovWidth;
-	/** \brief Vertical field of view of the camera. */
-	float cameraFovHeight;
 };
 
 }; // namespace awl

@@ -125,57 +125,7 @@ bool AWLSettings::StoreReceiverCalibration()
     read_xml(sFileName, propTree);
 
 
-#if 0
-	// Loop for all Receiver Configurations
-	BOOST_FOREACH(ptree::value_type &receiversNode, propTree.get_child("config.receivers"))
-	{
-		if( receiversNode.first == "receiver" ) 
-		{
-			boost::property_tree::ptree &receiverNode = receiversNode.second;
-			ReceiverSettings receiver;
 
-			receiverNode.put<std::string>("receiverType", receiver.sReceiverType);
-			receiverNode.put<uint8_t>("channelMask", receiver.receiverChannelMask);
-			receiverNode.put<uint8_t>("frameRate", receiver.receiverFrameRate);
-
-			// Geometry
-			boost::property_tree::ptree &geometryNode = receiverNode.get_child("sensorGeometry");
-			PutGeometry(geometryNode, 
-				receiver.sensorForward, receiver.sensorLeft, receiver.sensorUp,
-				receiver.sensorPitch, receiver.sensorYaw, receiver.sensorRoll);
-
-			// Display
-			receiverNode.put<float>("displayedRangeMin", receiver.displayedRangeMin);
-			receiverNode.put<float>("displayedRangeMax", receiver.displayedRangeMax);
-			receiverNode.put<float>("rangeOffset", receiver.rangeOffset);
-
-			// All channel info for the receiver
-			BOOST_FOREACH(ptree::value_type &channelsNode, receiverNode)
-			{
-				if( channelsNode.first == "channel" ) 
-				{
-					boost::property_tree::ptree &channelNode = channelsNode.second;
-					ChannelConfig channelConfig;
-
-					channelNode.put<int>("index", channelConfig.channelIndex);
-					Put2DPoint(channelNode.get_child("fov"), channelConfig.fovWidth, channelConfig.fovHeight);
-					float roll = 0.0;
-					PutOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
-					channelNode.put<float>("maxRange", channelConfig.maxRange);
-
-					PutColor(channelNode.get_child("displayColor"), 
-						channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
-
-					channelsNode->add_child(channelNode);
-				}// if( receiversNode.first == "channel"
-
-			} // BOOST_FOREACH(ptree::value_type &channelsNode
-			receiverNode.put_child(channelsNode);
-		} // If receiversNode.first == "receiver"
-		receiversNode.put_child(receiverNode);
-	} // BOOST_FOREACH(ptree::value_type &receiversNode, propT
-	proptree->put_child(receiversNode);
-#endif
 	// Write the XML file into the property tree. If reading fails
     // (cannot open file, parse error), an exception is thrown.
 	 boost::property_tree::xml_writer_settings<char> set(' ', 4);

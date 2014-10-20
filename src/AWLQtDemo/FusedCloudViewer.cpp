@@ -358,9 +358,7 @@ void CloudViewerWin::CreateView()
   // Set Camera for isometric view
   viewer->initCameraParameters();
   pcl::visualization::Camera *camera = &viewer->camera_;
-  double cameraFovHeight;
-  sourceProjector->GetCameraFovHeight(cameraFovHeight);
-  camera->fovy = cameraFovHeight;
+  camera->fovy = videoCapture->calibration.fovHeight;
   SetCameraView(CloudViewerWin::eCameraIsometric); 
   
    //Size the window
@@ -633,8 +631,6 @@ void CloudViewerWin::CreateReceiverProjector(VideoCapture::Ptr inVideoCapture, R
 void CloudViewerWin::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
 	videoCapture = inVideoCapture;
-	cameraFovWidth = videoCapture->GetCameraFovWidth();
-	cameraFovHeight = videoCapture->GetCameraFovHeight();
 }
 
 void CloudViewerWin::SetReceiverCapture( ReceiverCapture::Ptr inReceiverCapture)

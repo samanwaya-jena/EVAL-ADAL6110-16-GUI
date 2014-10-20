@@ -124,6 +124,11 @@ bool AWLSettings::ReadSettings()
 		cameraPtr->sCameraName = cameraNode.get<std::string>("cameraName");
 		cameraPtr->cameraFlip = cameraNode.get<bool>("cameraFlip");
 		Get2DPoint(cameraNode.get_child("fov"), cameraPtr->cameraFovWidthDegrees, cameraPtr->cameraFovHeightDegrees);
+		cameraPtr->barrelK1 = 0.0;
+		cameraPtr->barrelK2 = 0.0;
+
+		cameraPtr->barrelK1 = cameraNode.get<float>("barrelCorrectionK1", 0.0);
+		cameraPtr->barrelK2 = cameraNode.get<float>("barrelCorrectionK2", 0.0);
 	}
 
 	// Debug and log file control

@@ -23,6 +23,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+#include "CoordinateSystem.h"
+
 #define VelocityToKmH(velocity) (velocity * 3.6)
 
 namespace awl
@@ -72,8 +74,11 @@ typedef struct CameraSettings
 	std::string sCameraName;
 	bool cameraFlip;
 
+	CameraCalibration calibration;
 	float cameraFovWidthDegrees;
 	float cameraFovHeightDegrees;
+	float barrelK1;
+	float barrelK2;
 	}
 	CameraSettings;
 

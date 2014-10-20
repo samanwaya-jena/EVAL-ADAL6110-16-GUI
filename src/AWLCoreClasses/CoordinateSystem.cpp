@@ -534,6 +534,31 @@ TransformationVector& TransformationVector::operator=(const Orientation &inOrien
 	return(*this);
 }
 
+awl::TransformationVector awl::operator * (float scalarLeft, const awl::TransformationVector& right)
+{
+	TransformationVector destinationVector;
+
+	destinationVector.vect[0] = scalarLeft * right.vect[0];
+	destinationVector.vect[1] = scalarLeft * right.vect[1];
+	destinationVector.vect[2] = scalarLeft * right.vect[2];
+	destinationVector.vect[3] = scalarLeft * right.vect[3];
+
+	return(destinationVector);
+}
+
+
+awl::TransformationVector awl::operator * (const awl::TransformationVector& left, float scalarRight)
+{
+	TransformationVector destinationVector;
+
+	destinationVector.vect[0] = scalarRight * left.vect[0];
+	destinationVector.vect[1] = scalarRight * left.vect[1];
+	destinationVector.vect[2] = scalarRight * left.vect[2];
+	destinationVector.vect[3] = scalarRight * left.vect[3];
+
+	return(destinationVector);
+}
+
 awl::TransformationMatrix awl::operator * (const awl::TransformationMatrix &left, const awl::TransformationMatrix &right) 
 {
 	TransformationMatrix destinationMatrix;
@@ -629,6 +654,23 @@ awl::TransformationVector awl::operator * (const awl::TransformationMatrix &left
 	return(destinationVector);
 }
 
+awl::TransformationVector awl::operator * (const awl::TransformationVector &left, const awl::TransformationMatrix &right) 
+{
+	TransformationVector destinationVector;
+
+	for(int i = 0; i < 4; i++)
+	 {    
+		 destinationVector.vect[i] = 0;
+		 for(int j = 0; j < 4; j++)
+		 {        
+			 destinationVector.vect[i] += left.vect[j] * right.matrix[j][i];
+		 }     
+	 } 
+
+	return(destinationVector);
+}
+
+
 TransformationNode::TransformationNode(const CartesianCoord &inCartesian, const Orientation &inOrientation):
 parent(),
 children(),
@@ -709,3 +751,179 @@ CartesianCoord TransformationNode::FromReferenceCoord(eCoordLevel inLevel, const
 	return (retCoord);
 }
 
+
+
+bool awl::CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY,  double barrelK1, double barrelK2)
+
+{
+	bool bInFront = false;
+
+	if (coordInCameraCart.x < 0)
+	{
+		bInFront = false;
+	}
+	else
+	{   
+		bInFront = true;
+	}
+
+	
+	// Insert all of the known camera parameters 
+	double focal = 1/(tan(cameraFovWidthInRad/2.0));
+	double principalX = 0; // Ignored. We assume sensor is centered perfectly in FOV
+	double principalY = 0; // Ignored.  We assume sensor is centered perfectly in FOV
+	double aspectRatioX = 1; // Ignored. We assume square pixels
+	double aspectRatioY = 1; // Ignored.  We assume square pixels.
+	double skew = 0.0;	// Ignored.  We assume perpendicular plane always
+	double far = -(coordInCameraCart.x * 1.5);
+	double near = -0.01;
+
+	// Make the Camera perpective transformation matrix
+	TransformationMatrix cameraMatrix;
+	cameraMatrix.matrix[0][0]= focal/aspectRatioX;
+	cameraMatrix.matrix[0][1]= skew;
+	cameraMatrix.matrix[0][2]= 0;
+	cameraMatrix.matrix[0][3]= principalX;
+	cameraMatrix.matrix[1][0]= 0;
+	cameraMatrix.matrix[1][1]= focal/aspectRatioY;
+	cameraMatrix.matrix[1][2]=0;
+	cameraMatrix.matrix[1][3]=principalY;
+	cameraMatrix.matrix[2][0]=0;
+	cameraMatrix.matrix[2][1]=0;
+	cameraMatrix.matrix[2][2]= -far/(far-near);
+	cameraMatrix.matrix[2][3]= -1;
+	cameraMatrix.matrix[3][0]= 0;
+	cameraMatrix.matrix[3][1]=0;
+	cameraMatrix.matrix[3][2]= - (far *near)/(far-near);
+	cameraMatrix.matrix[3][3]=0;
+	
+	// Here we have to change the coordinates order.
+	// Most of our camera projection equations areright handed, with Z facing behind camera.
+	// But here is the case were we use the 
+	TransformationVector position;
+	position.vect[0] = -coordInCameraCart.left;
+	position.vect[1] = coordInCameraCart.up;
+	position.vect[2] = -coordInCameraCart.forward;
+	position.vect[3] = 1;
+
+	//	Normalize
+	TransformationVector result = position * cameraMatrix;
+	if (result.vect[3] != 1.0) result = (1/result.vect[3]) * result ;
+
+	//	Calculate the barrel parameters
+	double xCalc = result.vect[0];
+	double yCalc = result.vect[1];
+
+	double r2 = (xCalc * xCalc) + (yCalc * yCalc);
+
+	double xBarrelled = xCalc * (1 + (barrelK1 * r2) + (barrelK2 * r2 * r2));
+	double yBarrelled = yCalc * (1 + (barrelK1 * r2) + (barrelK2 * r2 * r2));
+
+	// Convert to camera pixels
+
+	cameraX = (xBarrelled+1) * 0.5 * frameWidthInPixels;
+	cameraY = (1-(yBarrelled)) * 0.5 *  frameHeightInPixels;
+
+	return(bInFront);
+}
+
+
+CameraCalibration::CameraCalibration(int inFrameWidthInPixels, int inFrameHeightInPixels, 
+					  float inFovWidth, float inFovHeight, 
+					  float inFocalLengthX, float inFocalLengthY,
+					  float inCenterX, float inCenterY,  
+					  float inRadialK1, float inRadialK2, float inRadialK3, 
+					  float inTangentialP1, float inTangentialP2):
+frameWidthInPixels(inFrameWidthInPixels),
+frameHeightInPixels(inFrameHeightInPixels),
+focalLengthX(inFocalLengthX),
+focalLengthY(inFocalLengthY),
+centerX(inCenterX),
+centerY(inCenterY),
+radialK1(inRadialK1),
+radialK2(inRadialK2),
+radialK3(inRadialK3),
+tangentialP1(inTangentialP1),
+tangentialP2(inTangentialP2)
+{
+}
+
+void CameraCalibration::CalculateFocalLengthsFromFOVs()
+
+{
+	focalLengthX = 1/(tan(fovWidth/2.0));  // Right now, assume square pixels
+	focalLengthY = 1/(tan(fovWidth/2.0)); // Right now, assume square pixels. And symmetrical lens/sensor. This is why we use width on Y axis.
+}
+
+bool CameraCalibration::ToFrameXY(const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY) const
+{
+	bool bInFront = false;
+
+	if (coordInCameraCart.x < 0)
+	{
+		bInFront = false;
+	}
+	else
+	{   
+		bInFront = true;
+	}
+
+	
+	// Insert all of the known camera parameters 
+	float far = -(coordInCameraCart.x * 1.5);
+	float near = -0.01;
+
+	// Make the Camera perpective transformation matrix
+	TransformationMatrix cameraMatrix;
+	cameraMatrix.matrix[0][0]= focalLengthX;
+	cameraMatrix.matrix[0][1]= 0;
+	cameraMatrix.matrix[0][2]= centerX;
+	cameraMatrix.matrix[0][3]= 0;
+	cameraMatrix.matrix[1][0]= 0;
+	cameraMatrix.matrix[1][1]= focalLengthY;
+	cameraMatrix.matrix[1][2]=centerY;
+	cameraMatrix.matrix[1][3]= 0;
+	cameraMatrix.matrix[2][0]=0;
+	cameraMatrix.matrix[2][1]=0;
+	cameraMatrix.matrix[2][2]= -far/(far-near);
+	cameraMatrix.matrix[2][3]= -1;
+	cameraMatrix.matrix[3][0]= 0;
+	cameraMatrix.matrix[3][1]=0;
+	cameraMatrix.matrix[3][2]= - (far *near)/(far-near);
+	cameraMatrix.matrix[3][3]=0;
+	
+	// Here we have to change the coordinates order.
+	// Most of our camera projection equations are left handed, with X facing outside camera.
+	// But here is the case were we use the 
+	TransformationVector position;
+	position.vect[0] = -coordInCameraCart.left;
+	position.vect[1] = coordInCameraCart.up;
+	position.vect[2] = -coordInCameraCart.forward;
+	position.vect[3] = 1;
+
+	//	Normalize
+	TransformationVector result = position * cameraMatrix;
+	if (result.vect[3] != 1.0) result = (1/result.vect[3]) * result ;
+	float xCalc = result.vect[0];
+	float yCalc = result.vect[1];
+
+	//	Calculate the radial (barrel/pincushion) distorsion 
+
+	float r2 = (xCalc * xCalc) + (yCalc * yCalc);
+	float r2Squared = r2 * r2;
+	float r2Cubed = r2Squared * r2;
+
+	float xRadial = xCalc * (1 + (radialK1 * r2) + (radialK2 * r2Squared) + (radialK3 * r2Cubed));
+	float yRadial = yCalc * (1 + (radialK1 * r2) + (radialK2 * r2Squared) + (radialK3 * r2Cubed));
+
+	// Add the tangential distorsion (keystone)
+	float xTangential =  xRadial + ((2*tangentialP1*xRadial*yRadial)+tangentialP2 *(r2 + (2 * xRadial*xRadial)));
+	float yTangential = yRadial + (tangentialP1 * (r2  + (2 * yRadial * yRadial)) + (2 * tangentialP2 * xRadial * yRadial)); 
+
+	// Convert to camera pixel
+
+	cameraX = (xTangential+1) * 0.5 * frameWidthInPixels;
+	cameraY = (frameHeightInPixels/2.0) - (yTangential * frameWidthInPixels / 2.0);  // Remember: we assume square pixels. So we use witdh here also.
+
+	return(bInFront);
+}

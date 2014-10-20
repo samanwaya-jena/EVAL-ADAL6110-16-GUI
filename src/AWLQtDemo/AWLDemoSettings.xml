@@ -220,7 +220,88 @@
 
   <cameras>
     <cameraQty>1</cameraQty>
+
     <camera0>
+      <!-- cameraName:
+	    Camera index, as used in openCV.
+       Indexes start at 0, up to 99. 
+       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
+       XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
+       A non-numeric camera name can be used to specify a video file.-->
+      <cameraName>0</cameraName>
+      <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+
+      <!-- cameraFlip:
+       if true, 180 degree rotation of the camera image, 
+       for cameras that need to be fixed upside down. -->
+      <cameraFlip>false</cameraFlip>
+
+      <position>
+        <!-- positionFromBumper -->
+        <forward>0</forward>
+        <!-- lateral offet -->
+        <left>0</left>
+        <!-- height -->
+        <up>0</up>
+      </position>
+      <orientation>
+        <pitch>0.0</pitch>
+        <roll>0.0</roll>
+        <yaw>0.0</yaw>
+      </orientation>
+
+      <!-- Comment out unused cameras
+		< MS_LIFECAM_CINEMA >
+		<fov>
+			<x>47.4</x>
+			<y>30.6</y>
+		</fov>
+
+		< MS_LIFECAM_HD6000 @640x360 >
+		<fov>
+			<x>45.0</x>
+			<y>39.0</y>
+		</fov>
+
+		< MS_LIFECAM_HD5000 @640x360 >
+			<fov>
+			<x>45.0</x>
+			<y>39.0</y>
+		</fov>
+    
+     < LOGITECH_C270 @640 x 480 >
+    <fov>
+      <x>42.0</x>
+      <y>27.0</y>
+    </fov>
+
+     < XIMEA with 3.6mm lensing (M12 Lenses PT-03618MP)>
+    <fov>
+      <x>96.75</x>
+      <y>72.5</y>
+     </fov>
+
+ 
+      < XIMEA with 6mm lensing (M12 Lenses PT-0620BMP) >
+      <fov>
+        <x>54.6</x>
+        <y>41.3</y>
+      </fov>
+
+      End Comment out unused cameras -->
+
+
+      <!-- XIMEA with 6mm lensing -->
+      <fov>
+        <x>96.75</x>
+        <y>72.5</y>
+      </fov>
+      <!-- radial distorsion correction parameters -->
+      <radialCorrectionK1>-.16</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
+    </camera0>
+
+    <cameraWebcamSample>
       <!-- cameraName:
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
@@ -289,16 +370,18 @@
       End Comment out unused cameras -->
 
 
-      <!-- XIMEA with 6mm lensing -->
+      <!-- MS_LIFECAM_HD5000 @640x360 -->
       <fov>
-        <x>54.6</x>
-        <y>41.3</y>
+        <x>45.0</x>
+        <y>39.0</y>
       </fov>
+      <!-- radial distorsion correction parameters -->
+      <radialCorrectionK1>0.0</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
+    </cameraWebcamSample>
 
-    </camera0>
 
-
-    <camera1>
+    <cameraXimea3_6mmSample>
       <!-- cameraName:
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
@@ -331,7 +414,10 @@
         <x>96.75</x>
         <y>72.5</y>
       </fov>
-    </camera1>
+      <!-- radial distorsion correction parameters -->
+      <radialCorrectionK1>-.16</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
+    </cameraXimea3_6mmSample>
 
   </cameras>
   
@@ -414,7 +500,7 @@
     <cameraView>3</cameraView>
     <viewerDepth>-1.54</viewerDepth>
     <viewerHeight>1.30</viewerHeight>
-    <viewerMaxRange>30</viewerMaxRange>
+    <viewerMaxRange>50</viewerMaxRange>
   </display3D>
 
   <scope>

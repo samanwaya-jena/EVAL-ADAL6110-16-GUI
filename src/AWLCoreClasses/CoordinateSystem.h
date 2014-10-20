@@ -16,6 +16,10 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
+/* 
+	This module manages 3D coordinate transformations between frames of reference.
+	It also manages conversions from the 3D coordinates to the 2D camera pixel space.
+*/
 
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -59,6 +63,7 @@ class RotationMatrix;
 class TransformationVector;
 class TransformationMatrix;
 class TransformationNode;
+class CameraCalibration;
 
 
 typedef enum eCoordLevel
@@ -107,11 +112,12 @@ typedef float (TransformationRow)[4];
   * 
   *  Note that, in the case of cameras, there is often a different frame which uses a slightly 
   *  different convention, NOT USED HERE, where:
-  * •z forward
+  * •z backwards 
   * •x right
-  * •y down
+  * •y up
   * Excercice caution when specifying coordinates to make sure you always use the body standard, not the camera style reference.
   * X is always forward.
+  * The only exception to this rule is when we will get to convert Coordinates to camera pixels in the CameraCalibration class.
   */
 
 
@@ -300,13 +306,16 @@ public:
 	TransformationRow vect; 
 };
 
+TransformationVector operator * (float scalarLeft, const awl::TransformationVector& right);
+TransformationVector operator * (const awl::TransformationVector& left, float scalarRight);
+
 TransformationMatrix operator * (const TransformationMatrix &left, const TransformationMatrix &right);
 TransformationMatrix operator + (const TransformationMatrix &left, const TransformationMatrix &right);
 TransformationMatrix operator - (const TransformationMatrix &left, const TransformationMatrix &right);
 TransformationMatrix operator * (float scalarLeft, const TransformationMatrix &right);
 TransformationMatrix operator * (const TransformationMatrix &left, float scalarRight);
 TransformationVector operator * (const TransformationMatrix &left, const TransformationVector &right); 
-
+TransformationVector operator * (const TransformationVector &left, const TransformationMatrix &right); 
 
 /** \brief TransformationMatrixSteps define a sequence of affine transformations.
  *  \notes	Using a deque (1 sided list) the steps can identify a sequence
@@ -354,6 +363,65 @@ public:
 	RelativePosition relativePosition;
 	TransformationMatrixSteps transformations;
 };
+
+/** \brief CameraCalibration parameters are used to convert from CameraCoordinates to 
+  *        pixel coordinates in the image.
+  * 
+  * \reference: http://docs.opencv.org/doc/tutorials/calib3d/camera_calibration/camera_calibration.html
+
+  *	\Notes We use a calibration system that uses parameters similar to the OpenCV
+  *        distorsion matrixes and camera calibration matrix.
+  *		   This means we can use the results from OpenCV calibration procedures in configuration files.
+*/
+
+class CameraCalibration
+{
+public: 
+	CameraCalibration(int inFrameWidthInPixels = 640, int inFrameHeightInPixels = 480, 
+					  float inFovWidth = 0.0, float inFovHeight = 0.0, 
+					  float inFocalLengthX = 0.0, float inFocalLengthY = 0.0,
+					  float inCenterX = 0.0, float inCenterY = 0,  
+					  float inRadialK1 = 0, float inRadialK2 = 0, float inRadialK3 = 0, 
+					  float inTangentialP1 = 0, float inTangentialP2 = 0);
+
+	/** \brief convert camera coordinates to image (XY) coordinates of the camera
+	  *  \param[out] cameraX Position of the pixel in the X axis.
+	  *  \param[out] cameraY Position of the pixel in the Y axis with (0, 0) being top left.
+	  *  \returns Returns true if the point is in front of the camera.  Returns false for points behind the camera.
+	  * 
+	  */
+	bool ToFrameXY(const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY) const;
+
+	/** \brief Calculate the focalLengths calibration parameters from the FOVs that are already stored.
+	  */
+	void CalculateFocalLengthsFromFOVs();
+
+public:
+	/* \brief Effective FOV Width 
+	 *  \remarks FOV is typically related to focal length.  However, the effective FOV is used here for display purposes, 
+	 *           as FOV may be constrained by mechanical constraints on some devices.
+	 */
+	float fovWidth; 
+
+	/* \brief Effective FOV Height 
+	 *  \remarks FOV is typically related to focal length.  However, the effective FOV is used here for display purposes, 
+	 *           as FOV may be constrained by mechanical constraints on some devices 
+	 */
+	float fovHeight;
+	float frameWidthInPixels; /** \brief Camera frame width in pixels */
+	float frameHeightInPixels; /** \brief Camera frame height in pixels */
+	float focalLengthX; /** \brief Camera focal length and scaling (accounts for pixel size in x direction) */
+	float focalLengthY;/** \brief Camera focal length and scaling (accounts for pixel size in y direction) */
+	float centerX; /** \brief sensorCenter offset in x direction*/
+	float centerY; /** \brief sensorCenter offset in y direction*/
+	float radialK1; /** \brief radial distorsion (barrel and pincushion) parameter 1*/
+	float radialK2; /** \brief radial distorsion (barrel and pincushion) parameter 2*/
+	float radialK3; /** \brief radial distorsion (barrel and pincushion) parameter 3*/
+	float tangentialP1; /** \brief tangential distorsion (keystone) parameter 1*/
+	float tangentialP2; /** \brief tangential distorsion (keystone) parameter 2*/
+};
+
+bool CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY, double barrelK1 = 0.0, double barrelK2 = 0.0);
 
 } // namespace awl
 #endif // AWL_COORDINATESYSTEM_H

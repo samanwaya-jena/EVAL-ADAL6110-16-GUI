@@ -69,11 +69,7 @@ VideoViewer::~VideoViewer()
 void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
 	videoCapture = inVideoCapture;
-	frameWidth = videoCapture->GetFrameWidth();
-	frameHeight = videoCapture->GetFrameHeight();
-	cameraFovWidth = videoCapture->GetCameraFovWidth();
-	cameraFovHeight = videoCapture->GetCameraFovHeight();
-
+	
 	// Subscribe to the video capture's image feed to get information
 	// on when new frames are available
  	currentVideoSubscriberID = videoCapture->Subscribe();
@@ -159,7 +155,8 @@ void VideoViewer::SizeWindow()
 		const long nScreenWidth  = maxWindowWidth;
 		const long nScreenHeight = maxWindowHeight;
 
-		int height = frameHeight * 2, width = frameWidth * 2;
+		int height = videoCapture->calibration.frameHeightInPixels * 2;
+		int width  = videoCapture->calibration.frameWidthInPixels * 2;
 		while (width > nScreenWidth || height > nScreenHeight)
 		{
 			width /= 2;
@@ -299,6 +296,50 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	endPoint.x = bottomRight.x;
 	endPoint.y = bottomRight.y - thickness/2;
 	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+#if 0 // For test purposes
+	int cameraID = videoCapture->GetCameraID();
+	colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
+	colorDehance = cv::Vec3b(32, 0, 0);
+	thickness = 2;
+
+	CartesianCoord worldCoord1(10, 9,-8);
+	CartesianCoord worldCoord2(10, 7, -8);
+	CartesianCoord worldCoord3(10, 5,-8);
+	CartesianCoord worldCoord4(10, 3,-8);
+	CartesianCoord worldCoord5(10, 1, -8);
+	CartesianCoord worldCoord6(10,-1, -8);
+	CartesianCoord worldCoord7(10, -3, -8);
+	CartesianCoord worldCoord8(10, -5, -8);
+	CartesianCoord worldCoord9(10, -7, -8);
+	CartesianCoord worldCoord10(10, -9, -8);
+
+
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord1, startPoint.x, startPoint.y);
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord2, endPoint.x, endPoint.y);
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord3, startPoint.x, startPoint.y);
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord4, endPoint.x, endPoint.y);
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord5, startPoint.x, startPoint.y);
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord6, endPoint.x, endPoint.y);
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord7, startPoint.x, startPoint.y);
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord8, endPoint.x, endPoint.y);
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord9, startPoint.x, startPoint.y);
+	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord10, endPoint.x, endPoint.y);
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+#endif
 }
 
 void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame)
@@ -323,7 +364,9 @@ void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCa
 	CvPoint bottomCenter;
 	CvPoint middleLeft;
 	CvPoint middleRight;
-
+	
+	float frameWidth = videoCapture->calibration.frameWidthInPixels;
+	float frameHeight = videoCapture->calibration.frameHeightInPixels;
 	topCenter.x = frameWidth / 2;
 	topCenter.y = (frameHeight / 2) - (lineHeight / 2);
 
@@ -413,19 +456,19 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 
 	// Position of the topLeft corner of the channel FOV 
 	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
-	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topLeftInChannel, topLeft.x, topLeft.y);
+	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topLeftInChannel, topLeft.x, topLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
-	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, topRightInChannel, topRight.x, topRight.y);
+	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2)); 
+    bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topRightInChannel, topRight.x, topRight.y);
 
 	// Position of the bottomLeft corner of the channel FOV 
 	SphericalCoord bottomLeftInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
+	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord bottomRightInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= globalCoordinates->SensorToCamera(receiverID, channelID, cameraID, cameraFovWidth, cameraFovHeight, frameWidth, frameHeight, bottomRightInChannel, bottomRight.x, bottomRight.y);
+	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomRightInChannel, bottomRight.x, bottomRight.y);
 
 	if (bSomePointsInFront)
 	{
@@ -440,6 +483,9 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)
 {
 	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
+
+	float frameWidth = videoCapture->calibration.frameWidthInPixels;
+	float frameHeight = videoCapture->calibration.frameHeightInPixels;
 
 	// alternative way of iterating through the line
 	for(int i = 0; i < lineIter.count; i++, ++lineIter)
@@ -482,6 +528,9 @@ void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCa
 void VideoViewer::DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight)
 {
 	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
+
+	float frameWidth = videoCapture->calibration.frameWidthInPixels;
+	float frameHeight = videoCapture->calibration.frameHeightInPixels;
 
 	// alternative way of iterating through the line
 	for(int i = 0; i < lineIter.count; i++, ++lineIter)

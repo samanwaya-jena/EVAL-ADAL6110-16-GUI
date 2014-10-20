@@ -475,12 +475,11 @@ void ReceiverProjector::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 {
 	videoCapture = inVideoCapture;
 
-	frameWidth = videoCapture->GetFrameWidth();
-	frameHeight = videoCapture->GetFrameHeight();
+	frameWidth = videoCapture->calibration.frameWidthInPixels;
+	frameHeight = videoCapture->calibration.frameHeightInPixels;
 	frameRate = videoCapture->GetFrameRate();
-	scale = videoCapture->GetScale();
-	cameraFovWidth = videoCapture->GetCameraFovWidth();
-	cameraFovHeight = videoCapture->GetCameraFovHeight();
+	double cameraFovWidth = videoCapture->calibration.fovWidth;
+	double cameraFovHeight = videoCapture->calibration.fovHeight;
 
 	mViewerCoordinatesPtr = ViewerCoordinates::Ptr(new ViewerCoordinates(frameWidth, frameHeight, 
                                                 cameraFovWidth, cameraFovHeight, up, forward, rangeMax));
@@ -630,7 +629,7 @@ void ReceiverProjector::AddBackgroundToCloud()
 			float pointX = ((float) i);
 			float pointY = height - (float)j;
 
-			mViewerCoordinatesPtr->GetXYZFromRange(pointX, pointY, 50.0, newCloudPoint);
+			mViewerCoordinatesPtr->GetXYZFromRange(pointX, pointY, rangeMax, newCloudPoint);
 
 			cvColor = backgroundFrame->at<cv::Vec3b>(j, i); // extract color from Mat
 
@@ -739,28 +738,6 @@ void ReceiverProjector::SetRangeMax(double inRangeMax)
 #endif
 }
 
-void ReceiverProjector::SetCameraFovWidth(double inFovWidth)
-{
-	cameraFovWidth = inFovWidth;
-	mViewerCoordinatesPtr->SetCameraFovWidth(inFovWidth);
-}
-
-void ReceiverProjector::GetCameraFovHeight(double &outFovHeight)
-{
-	outFovHeight = cameraFovHeight;
-}
-
-void ReceiverProjector::SetCameraFovHeight(double inFovHeight)
-{
-	cameraFovHeight = inFovHeight;
-	mViewerCoordinatesPtr->SetCameraFovHeight(inFovHeight);
-}
-
-void ReceiverProjector::GetCameraFovWidth(double &outFovWidth)
-{
-	outFovWidth = cameraFovWidth;
-}
-
 void ReceiverProjector::ResetCloud()
 {
 	size_t cloudSize = frameWidth*frameHeight*2;
@@ -806,10 +783,11 @@ void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float in
 	getAnglesFromImagePoint(inPointX, inPointY, angle_x, angle_y);
 	float cosY = cosf (angle_y);
 
-	// We reverse the X coordinate to make this a left-handed projection
+	// We reverse the X coordinate to make this a right-handed projection with X looking forward
 	// the PCL viewer uses a right-handed coordinate system.
 
-	ioCloudPoint.x = -(inPointZ * sinf (angle_x) * cosY);
+
+	ioCloudPoint.x = -(inPointZ * sinf (angle_x) * cosY);  
 	ioCloudPoint.y = inPointZ * sinf (angle_y);
 	ioCloudPoint.z = inPointZ * cosf (angle_x)*cosY;
 
@@ -817,22 +795,6 @@ void ViewerCoordinates::GetXYZFromRange(float inPointX, float inPointY, float in
 	// We offset the values to the sensor offset position
 	// depth is compensated for at receiver level, so we undo the offset here. 
 	ioCloudPoint.z -= forward;
-}
-
-	/** \brief Sets   horizontal camera FOV.
-      * \param[in] cameraFovWidth horizontal FOV of camera in radians.
-	  */
-void ViewerCoordinates::SetCameraFovWidth(double inCameraFovWidth)
-{
-	fovWidth = inCameraFovWidth;
-}
-
-	/** \brief Sets   verticsl camera FOV.
-      * \param[in] cameraFovHeight vertical FOV of camera in radians.
-	      */
-void ViewerCoordinates::SetCameraFovHeight(double inCameraFovHeight)
-{
-	fovHeight = inCameraFovHeight;
 }
 
 void ViewerCoordinates::SetPositionUp(double inUp)

@@ -55,11 +55,17 @@ public:
 	bool BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree);
 
     
-	/** \brief convert camera coordinates to sensor coordinates
+	/** \brief convert sensor coordinates to image (XY) coordinates of the specified camera
 	 *  \returns Returns true if the point is in front of the camera.  Returns false for points behind the camera.
 	 * 
 	 */
-	static bool SensorToCamera(int receiverID, int channelID, int cameraID, double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
+	static bool SensorToCameraXY(int receiverID, int channelID, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
+
+	/** \brief convert world coordinates to image (XY) coordinates of the specified camera
+	 *  \returns Returns true if the point is in front of the camera.  Returns false for points behind the camera.
+	 * 
+	 */
+	static bool WorldToCameraXY(int cameraID, const CameraCalibration &camera, const CartesianCoord &worldCoord, int &cameraX, int &cameraY);
 
 	static RelativePosition GetReceiverPosition(int receiverID);
 	static RelativePosition GetChannelPosition(int receiverID, int channelID);
@@ -81,6 +87,5 @@ protected:
 	TransformationNode::List receivers;
 	TransformationNode::List cameras;
 };
-
 } // namespace awl
 #endif // AWL_COORD_H
