@@ -303,16 +303,16 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	colorDehance = cv::Vec3b(32, 0, 0);
 	thickness = 2;
 
-	CartesianCoord worldCoord1(10, 9,-8);
-	CartesianCoord worldCoord2(10, 7, -8);
-	CartesianCoord worldCoord3(10, 5,-8);
-	CartesianCoord worldCoord4(10, 3,-8);
-	CartesianCoord worldCoord5(10, 1, -8);
-	CartesianCoord worldCoord6(10,-1, -8);
-	CartesianCoord worldCoord7(10, -3, -8);
-	CartesianCoord worldCoord8(10, -5, -8);
-	CartesianCoord worldCoord9(10, -7, -8);
-	CartesianCoord worldCoord10(10, -9, -8);
+	CartesianCoord worldCoord1(10, 9,-1);
+	CartesianCoord worldCoord2(10, 7, -1);
+	CartesianCoord worldCoord3(10, 5,-1);
+	CartesianCoord worldCoord4(10, 3,-1);
+	CartesianCoord worldCoord5(10, 1, -1);
+	CartesianCoord worldCoord6(10,-1, -1);
+	CartesianCoord worldCoord7(10, -3, -1);
+	CartesianCoord worldCoord8(10, -5, -1);
+	CartesianCoord worldCoord9(10, -7, -1);
+	CartesianCoord worldCoord10(10, -9, -1);
 
 
 	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord1, startPoint.x, startPoint.y);

@@ -730,7 +730,6 @@ void ReceiverProjector::GetRangeMax(double &outRangeMax)
 void ReceiverProjector::SetRangeMax(double inRangeMax)
 {
 	rangeMax = inRangeMax;
-	int channelQty = receiverChannels.size();
 
 #if 0
 	// There is no management of the range max value in the coordinates ptr
