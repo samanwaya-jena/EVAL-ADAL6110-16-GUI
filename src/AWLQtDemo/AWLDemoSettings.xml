@@ -37,8 +37,8 @@
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
-		       values currently possible are "EasySyncCAN" and "KvaserLeaf" -->
-      <receiverType>KvaserLeaf</receiverType>
+		       values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
+      <receiverType>Simulator</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM28</commPort>
@@ -441,7 +441,7 @@
     <carLength>4.53</carLength>
     <!-- Car width in meters -->
     <carHeight>1.44</carHeight>
-    <!-- Car height in meters -->
+    <!-- LaneWidth in meters -->
     <laneWidth>3.7</laneWidth>
     <!--Lane width in meters -->
 
@@ -479,8 +479,9 @@
 
     <!-- measureMode
 	     0: Radial
-	     1: Longitudinal distance from bumper -->
-    <measureMode>1</measureMode>
+	     1: Longitudinal distance from bumper 
+       2: Cartesian coordinates from bumper -->
+    <measureMode>2</measureMode>
 
     <!-- colorCode
 	     0: Colors indicate distances

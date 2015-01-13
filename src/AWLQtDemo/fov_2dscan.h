@@ -71,7 +71,8 @@ public:
 	typedef enum MeasureMode
 	{
 		eMeasureRadial=0, //Radial distance from sensor
-		eMeasureLongitudinal=1 // Distance from bumper
+		eMeasureLongitudinal=1, // Distance from bumper
+		eMeasureCartesian=2 // Cartesian coordinates from bumper
 	} MeasureMode;
 	
 	typedef enum DisplayColorCode
@@ -146,6 +147,7 @@ private:
 	QActionGroup* groupMeasureMode;
 	QAction* measureRadialAction;
 	QAction* measureLongitudinalAction; 
+	QAction* measureCartesianAction;
 
 	QAction* showPaletteAction;
 
