@@ -84,7 +84,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="AWLSimpleDemoSettings.xml" />
+    <None Include="AWLSimpleDemoSettings.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

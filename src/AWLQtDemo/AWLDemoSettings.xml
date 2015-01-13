@@ -16,7 +16,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Aerostar-logo.jpg</logoFileName>
+    <logoFileName>Phantom-logo.jpg</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>AWLQtDemo.ico</iconFileName>
@@ -24,7 +24,7 @@
 
   <debug>
     <enableDebugFile>false</enableDebugFile>
-    <enableLogFile>false</enableLogFile>
+    <enableLogFile>true</enableLogFile>
   </debug>
 
    <video>
@@ -39,11 +39,14 @@
 		       This can influence comm port communicationsValid
 		       values currently possible are "EasySyncCAN" and "KvaserLeaf" -->
       <receiverType>KvaserLeaf</receiverType>
-
+      
+      <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM28</commPort>
-      <kvaserChannel>0</kvaserChannel>
-      <frameRate>50</frameRate>
 
+      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
+      <kvaserChannel>0</kvaserChannel>
+      
+      <frameRate>30</frameRate>
 
       <!-- Channel mask: Controls which channels are
 		       processed at AWL Unit Level -->
@@ -78,8 +81,8 @@
       </sensorGeometry>
 
       <displayedRangeMin>0.0</displayedRangeMin>
-      <displayedRangeMax>30</displayedRangeMax>
-      <rangeOffset>-1.14</rangeOffset>
+      <displayedRangeMax>15</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
 
       <channelQty>7</channelQty>
       <channel0>
@@ -228,13 +231,13 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName>
+      <cameraName>1100</cameraName>
       <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>false</cameraFlip>
+      <cameraFlip>true</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->
@@ -280,24 +283,29 @@
       <x>96.75</x>
       <y>72.5</y>
      </fov>
+     < radial distorsion correction parameters >
+     <radialCorrectionK1>-.16</radialCorrectionK1>
+     <radialCorrectionK2>0.0</radialCorrectionK2>
 
- 
-      < XIMEA with 6mm lensing (M12 Lenses PT-0620BMP) >
+
+     < XIMEA with 6mm lensing (M12 Lenses PT-0620BMP) >
       <fov>
         <x>54.6</x>
         <y>41.3</y>
       </fov>
-
+      <radialCorrectionK1>-.06</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
+      
       End Comment out unused cameras -->
 
 
       <!-- XIMEA with 6mm lensing -->
       <fov>
-        <x>96.75</x>
-        <y>72.5</y>
+        <x>54.6</x>
+        <y>41.3</y>
       </fov>
       <!-- radial distorsion correction parameters -->
-      <radialCorrectionK1>-.16</radialCorrectionK1>
+      <radialCorrectionK1>-.06</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
 
@@ -437,12 +445,12 @@
     <laneWidth>3.7</laneWidth>
     <!--Lane width in meters -->
 
-    <shortRangeDistance>13.0</shortRangeDistance>
-    <shortRangeDistanceStartLimited>13.0</shortRangeDistanceStartLimited>
+    <shortRangeDistance>15.0</shortRangeDistance>
+    <shortRangeDistanceStartLimited>15.0</shortRangeDistanceStartLimited>
     <shortRangeAngle>40.0</shortRangeAngle>
     <shortRangeAngleStartLimited>20.0</shortRangeAngleStartLimited>
 
-    <longRangeDistance>30.0</longRangeDistance>
+    <longRangeDistance>15.0</longRangeDistance>
     <longRangeDistanceStartLimited>20.0</longRangeDistanceStartLimited>
     <longRangeAngle>13.0</longRangeAngle>
     <longRangeAngleStartLimited>13.0</longRangeAngleStartLimited>
@@ -662,7 +670,7 @@
       <register>
         <index>R28</index>
         <address>112</address>
-        <description>SERDES Sync."</description>
+        <description>SERDES Sync.</description>
       </register>
 
       <register>
@@ -690,7 +698,14 @@
         <address>0</address>
         <description>Software Reset</description>
       </register>
+      
+      <register>
+        <index>1</index>
+        <address>1</address>
+        <description>Init Register 1</description>
+      </register>
 
+ 
       <register>
         <index>0x0F</index>
         <address>15</address>
@@ -704,7 +719,7 @@
       </register>
 
       <register>
-        <index>¸0x12</index>
+        <index>0x12</index>
         <address>18</address>
         <description>LVDS Internal Termination</description>
       </register>
@@ -740,12 +755,6 @@
       </register>
 
       <register>
-        <index>0x45</index>
-        <address>69</address>
-        <description>LVDS Test Patterns D</description>
-      </register>
-
-      <register>
         <index>0x2A</index>
         <address>42</address>
         <description>Programmable Gain A</description>
@@ -764,10 +773,23 @@
       </register>
 
       <register>
+        <index>0x45</index>
+        <address>69</address>
+        <description>LVDS Test Patterns Deskew-Sync</description>
+      </register>
+
+      <register>
         <index>0x46</index>
         <address>70</address>
         <description>Clock, Reference, Data out mode B</description>
       </register>
+
+      <register>
+        <index>0xE2</index>
+        <address>226</address>
+        <description>Init Register 2</description>
+      </register>
+
     </registersADC>
 
     <GPIOs>

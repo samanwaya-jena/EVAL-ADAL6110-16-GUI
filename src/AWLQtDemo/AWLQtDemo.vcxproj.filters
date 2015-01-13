@@ -829,5 +829,8 @@
       <Filter>Installable DLLs</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="Phantom-logo.jpg">
+      <Filter>Installable Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
