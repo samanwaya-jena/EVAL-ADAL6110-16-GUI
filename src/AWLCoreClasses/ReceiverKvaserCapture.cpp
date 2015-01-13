@@ -263,7 +263,7 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 					}
 				}
 			}
-
+#if 0
 			// canRead returned an error.  
 			// This means we have an error on the port.
 			// Try to repoen the port
@@ -276,8 +276,19 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 					ReceiverCapture::SetMessageFilters();
 				}
 			}
-		} // if (port->is_open)
-		else 
+#else
+			// canRead returned an error.  
+			// This means we have an error on the port.
+			// Let the port reconnect after time-out naturally
+			else 
+			{
+				DebugFilePrintf(debugFile,  "Error on canRead.  Resetting CAN Port"); 
+				CloseCANPort();
+				reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+			}
+#endif
+		} // if (kvaserHandle > 0)
+		else //(KVaserHandle <= 0)
 		{
 			// Port is not opened.  Try to repoen after a certain delay.
 			if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
