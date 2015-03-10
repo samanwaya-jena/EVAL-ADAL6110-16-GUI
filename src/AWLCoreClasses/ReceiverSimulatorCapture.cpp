@@ -72,6 +72,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	track->firstTimeStamp = currentFrame->timeStamp;
 	track->timeStamp = currentFrame->timeStamp;
 	track->distance = 2.0;
+	track->intensity = 7500;
 	track->channels = 0X7f;
 
 	track->velocity = 22;
@@ -91,6 +92,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	track->firstTimeStamp = currentFrame->timeStamp;
 	track->timeStamp = currentFrame->timeStamp;
 	track->distance = 4;
+	track->intensity= 2200;
 	track->channels = 0X7f;
 
 	track->velocity = -3;
