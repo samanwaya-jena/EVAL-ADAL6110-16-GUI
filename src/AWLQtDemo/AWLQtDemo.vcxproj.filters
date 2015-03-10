@@ -128,15 +128,6 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_awlscopeplot.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_knob.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\awlcoord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

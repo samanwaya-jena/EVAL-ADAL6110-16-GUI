@@ -125,15 +125,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_awlqtscope.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_awlscopeplot.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_fov_2dscan.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_knob.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_TableView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp" />
     <ClCompile Include="range_image.cpp" />
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="TableView.cpp" />
