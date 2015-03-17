@@ -75,8 +75,9 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	track->intensity = 7500;
 	track->channels = 0X7f;
 
-	track->velocity = 22;
+	track->velocity = 3.0;
 	track->acceleration = 0;
+	track->threatLevel = Detection::eThreatLow;
 	track->part1Entered = true;
 	track->part2Entered = true;
 	track->part3Entered = true;
@@ -97,6 +98,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 	track->velocity = -3;
 	track->acceleration = -3;
+	track->threatLevel = Detection::eThreatLow;
 	track->part1Entered = true;
 	track->part2Entered = true;
 	track->part3Entered = true;

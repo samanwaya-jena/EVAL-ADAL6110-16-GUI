@@ -164,11 +164,13 @@ public:
 	int mergeDisplayMode;
 	int measureMode;
 	int displayDistanceMode2D;
+	int displayZoomMode2D;
 	float mergeAcceptanceX;
 	float mergeAcceptanceY;
 	int colorCode2D;
 	float maxVelocity2D;
 	float zeroVelocity;
+
 
 
 	// 3D display options

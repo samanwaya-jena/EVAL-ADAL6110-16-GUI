@@ -78,7 +78,8 @@ public:
 	typedef enum DisplayColorCode
 	{	
 		eColorCodeDistance= 0, // ColorCode distances
-		eColorCodeVelocity = 1  // Color code speeds
+		eColorCodeVelocity = 1,  // Color code speeds
+		eColorCodeIntensity = 2  // Color codes intensity/detection type
 	} DisplayColorCode;
 
 	typedef enum DisplayDistanceMode
@@ -86,6 +87,13 @@ public:
 		eDisplayDistanceModeHide = 0, // Hide all distances
 		eDisplayDistanceModeShow = 1  // Show all distances
 	} DisplayDistanceMode;
+
+	typedef enum DisplayZoomMode
+	{
+		eDisplayZoomModeFront = 0, // Show only front of vehicle
+		eDisplayZoomMode360 = 1 // Show front and back: Objects can look smaller
+	} DisplayZoomMode;
+
 
 signals:
     void closed();
@@ -99,6 +107,7 @@ public slots:
 	void slotMeasureModeAction();
 	void slotColorCodeAction();
 	void slotDisplayDistanceModeAction();
+	void slotDisplayZoomModeAction();
 
 protected :
     void paintEvent(QPaintEvent *p);
@@ -127,6 +136,7 @@ private:
 	MeasureMode measureMode;
 	DisplayColorCode colorCode;
 	DisplayDistanceMode displayDistanceMode;
+	DisplayZoomMode displayZoomMode;
 
 	float mergeAcceptanceX;
 	float mergeAcceptanceY;
@@ -154,22 +164,30 @@ private:
 	QActionGroup* groupColorCode;
 	QAction* colorCodeDistanceAction;
 	QAction* colorCodeVelocityAction;
+	QAction* colorCodeIntensityAction;
 
 	QActionGroup* groupDisplayDistanceMode;
 	QAction* displayDistanceModeShowAction;
 	QAction* displayDistanceModeHideAction;
 
+	QActionGroup* groupDisplayZoomMode;
+	QAction* displayZoomModeFrontAction;
+	QAction* displayZoomMode360Action;
+
+
 	void drawArc(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset = 0, float yOffset = 0);
     void drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset);
     void drawLine(QPainter* p, float angle, float startRadius, float length);
-    void drawText(QPainter* p,float angle, float pos, QString text);
-    void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, bool drawEllipse = false, QColor backgroundcolor = Qt::white);
-    void drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor foregroundColor = Qt::black, QColor backgroundcolor = Qt::white, bool drawTarget = true, bool drawLegend = true);
+    void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black);
+    void drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor, bool drawTarget = true, bool drawLegend = true);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
+	Detection::ThreatLevel getMaxThreat();
 	bool isInRange(const Detection::Ptr &detection1, const Detection::Ptr &detection2 );
-    QColor getColorFromDistance(float distance);
-	QColor FOV_2DScan::getColorFromVelocity(float velocity);
+    void getColorFromDistance(float distance, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromVelocity(float velocity, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromIntensity(int channel, float distance, float intensity, Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 
     void drawPalette(QPainter* p);
 

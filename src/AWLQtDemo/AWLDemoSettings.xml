@@ -24,7 +24,7 @@
 
   <debug>
     <enableDebugFile>false</enableDebugFile>
-    <enableLogFile>true</enableLogFile>
+    <enableLogFile>false</enableLogFile>
   </debug>
 
    <video>
@@ -38,7 +38,7 @@
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
 		       values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+      <receiverType>KvaserLeaf</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM28</commPort>
@@ -67,7 +67,7 @@
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0</forward>
+          <forward>0.0</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
@@ -80,7 +80,7 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>0.0</displayedRangeMin>
+      <displayedRangeMin>0.5</displayedRangeMin>
       <displayedRangeMax>15</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
 
@@ -96,7 +96,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>10</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -115,7 +115,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>10</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -134,7 +134,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>10</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -153,7 +153,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>10</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -485,8 +485,23 @@
 
     <!-- colorCode
 	     0: Colors indicate distances
-	     1: Colors indicate speed -->
-    <colorCode>1</colorCode>
+	     1: Colors indicate speed 
+       2: Colors indicate obstacle type
+     -->
+    <colorCode>2</colorCode>
+
+    <!-- displayDistances
+	     0: Hide all distances
+	     1: Show all distances 
+     -->
+    <displayDistances>1</displayDistances>
+
+
+    <!-- displayZoom
+	     0: Display only area to the front of car
+	     1: Display front and rear of car 
+     -->
+    <displayZoom>0</displayZoom>
 
     <!-- mergeAcceptance
        distance before we merge targets
@@ -498,8 +513,14 @@
       <y>1.0</y>
     </mergeAcceptance>
 
+    <!-- showPalette
+       Rectangle color code indicator to the side is hiiden/displayed.
+       0: Hide
+       1: Show
+     -->
     <showPalette>1</showPalette>
-    <displayDistances>1</displayDistances>
+    
+    
   </display2D>
 
   <display3D>

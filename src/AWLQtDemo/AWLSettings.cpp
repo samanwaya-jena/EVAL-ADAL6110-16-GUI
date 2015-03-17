@@ -179,6 +179,7 @@ bool AWLSettings::ReadSettings()
 	maxVelocity2D = propTree.get<float>("config.display2D.maxVelocity");
 	zeroVelocity = propTree.get<float>("config.display2D.zeroVelocity");
 	displayDistanceMode2D = propTree.get<int>("config.display2D.displayDistances");
+	displayZoomMode2D = propTree.get<int>("config.display2D.displayZoom");
 
 	scopeTimerInterval = propTree.get<int>("config.scope.timerInterval");
 	bDisplayScopeDistance = propTree.get<bool>("config.scope.displayScopeDistance");

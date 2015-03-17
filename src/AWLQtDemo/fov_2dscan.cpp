@@ -34,9 +34,130 @@
 
 using namespace awl;
 
+//----------------------Intensity Classifier
+#if 1
 
-const int transitionLightness= 160;  // Lightness at which we start to write in ligther shade
+typedef enum ClassificationType
+{
+	eClassifyUnknown = 0,
+	eClassifyMiner = 1,
+	eClassifyMineWall = 2,
+	eClassifyPedestrian = 3,
+	eClassifyCar = 4
+}
+ClassificationType;
+
+const unsigned int channel0Mask = 0x01;
+const unsigned int channel1Mask = 0x02;
+const unsigned int channel2Mask = 0x04;
+const unsigned int channel3Mask = 0x08;
+const unsigned int channel4Mask = 0x10;
+const unsigned int channel5Mask = 0x20;
+const unsigned int channel6Mask = 0x40;
+
+
+typedef struct 
+{
+	unsigned int channelMask;
+	float minDistance;
+	float maxDistance;
+	float minIntensity;
+	float maxIntensity;
+	ClassificationType classificationType;
+}
+ClassificationEntry;
+
+ClassificationEntry classificationEntries[] = 
+{
+	// Long range
+	{channel4Mask|channel5Mask|channel6Mask, 0.5, 2.5, 73.50, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 2.5, 3.5, 69.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 3.5, 4.5, 67.50, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 4.5, 5.5, 63.50, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 5.5, 6.5, 60.50, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 6.5, 7.5, 59.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 7.5, 8.5, 54.50, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 8.5, 9.5, 51.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 9.5, 10.5, 47.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 10.5, 11.5, 44.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 11.5, 12.5, 44.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 12.5, 13.5, 44.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 13.5, 14.5, 48.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 14.5, 15.5, 47.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 15.5, 16.5, 44.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 16.5, 17.5, 43.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 17.5, 18.5, 36.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 18.5, 19.5, 36.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 19.5, 20.5, 32.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 20.5, 21.5, 31.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 21.5, 22.5, 32.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 22.5, 23.5, 29.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 23.5, 24.5, 26.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 24.5, 25.5, 21.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 25.5, 26.5, 22.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 26.5, 27.5, 20.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 27.5, 28.5, 19.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 28.5, 29.5, 15.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 29.5, 30.5, 11.00, 80.00, eClassifyMiner},
+
+	// Side short-range
+	{channel0Mask|channel3Mask, 0.5, 2.5, 58.80, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 2.5, 3.5, 55.20, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 3.5, 4.5, 54.00, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 4.5, 5.5, 50.80, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 5.5, 6.5, 48.4, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 6.5, 7.5, 47.20, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 7.5, 8.5, 45.60, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 8.5, 9.5, 40.8, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 9.5, 10.5, 36.80, 80.00, eClassifyMiner},
+
+	// Center short-range
+	{channel1Mask|channel2Mask, 0.5, 2.5, 58.80, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 2.5, 3.5, 55.20, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 3.5, 4.5, 54.50, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 4.5, 5.5, 52.80, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 5.5, 6.5, 50.4, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 6.5, 7.5, 49.20, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 7.5, 8.5, 47.6, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 8.5, 9.5, 42.8, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 9.5, 10.5, 38.80, 80.00, eClassifyMiner},
+
+	{0, 0, 0, 0, 0, eClassifyUnknown}
+};
+
+ClassificationType classifyFromIntensity(int channel, float distance, float intensity)
+
+{
+	unsigned int channelMask = 0x0001 << channel;
+	ClassificationEntry *entry = &classificationEntries[0];
+
+	for (ClassificationEntry *entry = &classificationEntries[0]; entry->channelMask != 0; entry++) 
+	{
+		if (distance >=8.0 && distance <= 9.0)
+		{
+			int test = 1;
+		}
+
+		if (entry->channelMask & channelMask) {
+			if (distance >= entry->minDistance && distance < entry->maxDistance) {
+				if (intensity >= entry->minIntensity && intensity < entry->maxIntensity)
+				{
+					return(entry->classificationType);
+				}
+			}
+		}
+	}
+
+	return(eClassifyUnknown);
+}
+
+#endif
+//----------------------End of Intensity Classifier
+
+
+const int transitionLightness= 127;  // Lightness at which we start to write in ligther shade
 const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
+const QColor rgbRulerLight(192, 192, 192, 127); // Transparent gray
 const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
 const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
 
@@ -49,8 +170,10 @@ const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
 // "forward, left, up" nomenclature.
 
 
-float logoAspectRatio = 1.0;
+const float gridOffset = 1.0;  // Grid spacing in Cartesian Display
 const int paletteWidth = 50;
+
+float logoAspectRatio = 1.0;
 
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
@@ -61,6 +184,7 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	mergeDisplayMode = (MergeDisplayMode)globalSettings->mergeDisplayMode;
 	measureMode = (MeasureMode)globalSettings->measureMode;
 	displayDistanceMode = (DisplayDistanceMode) globalSettings->displayDistanceMode2D;
+	displayZoomMode = (DisplayZoomMode) globalSettings->displayZoomMode2D;
 	mergeAcceptanceX = globalSettings->mergeAcceptanceX;
 	mergeAcceptanceY = globalSettings->mergeAcceptanceY;
 	ShowPalette = globalSettings->showPalette;
@@ -205,7 +329,7 @@ void FOV_2DScan::createAction()
 	groupColorCode = new QActionGroup( this );
 	colorCodeDistanceAction = new QAction("Distances", this);
 	colorCodeVelocityAction = new QAction("Velocity", this);
-	
+	colorCodeIntensityAction = new QAction("Intensity/Threat", this);
 	
 	colorCodeDistanceAction->setCheckable(true);
 	colorCodeDistanceAction->setActionGroup(groupColorCode);
@@ -213,13 +337,20 @@ void FOV_2DScan::createAction()
 	colorCodeVelocityAction->setCheckable(true);
 	colorCodeVelocityAction->setActionGroup(groupColorCode);
 
+	colorCodeIntensityAction->setCheckable(true);
+	colorCodeIntensityAction->setActionGroup(groupColorCode);
+
 	if (colorCode == eColorCodeDistance)
 	{
 		colorCodeDistanceAction->setChecked(true);
 	}
-	else
+	else if (colorCode == eColorCodeVelocity)
 	{
 		colorCodeVelocityAction->setChecked(true);
+	}
+	else
+	{
+		colorCodeIntensityAction->setChecked(true);
 	}
 
 	connect(groupColorCode, SIGNAL(triggered(QAction*)), this, SLOT(slotColorCodeAction()));
@@ -245,6 +376,29 @@ void FOV_2DScan::createAction()
 	}
 
 	connect(groupDisplayDistanceMode, SIGNAL(triggered(QAction*)), this, SLOT(slotDisplayDistanceModeAction()));
+
+
+	//****
+	groupDisplayZoomMode = new QActionGroup( this );
+	displayZoomModeFrontAction = new QAction("Front only", this);
+	displayZoomMode360Action = new QAction("Front and Rear", this);
+	
+	displayZoomModeFrontAction->setCheckable(true);
+	displayZoomModeFrontAction->setActionGroup(groupDisplayZoomMode);
+
+	displayZoomMode360Action->setCheckable(true);
+	displayZoomMode360Action->setActionGroup(groupDisplayZoomMode);
+
+	if (displayZoomMode == eDisplayZoomModeFront)
+	{
+		displayZoomModeFrontAction->setChecked(true);
+	}
+	else
+	{
+		displayZoomMode360Action->setChecked(true);
+	}
+
+	connect(groupDisplayZoomMode, SIGNAL(triggered(QAction*)), this, SLOT(slotDisplayZoomModeAction()));
 }
 
 void FOV_2DScan::slotPaletteAction()
@@ -301,6 +455,7 @@ void FOV_2DScan::slotMeasureModeAction()
 		measureMode = eMeasureCartesian;
 	}
 
+	slotConfigChanged(config);
 }
 
 void FOV_2DScan::slotColorCodeAction()
@@ -309,12 +464,14 @@ void FOV_2DScan::slotColorCodeAction()
 	{
 		colorCode = eColorCodeDistance;
 	}
-	else
+	else if (colorCodeVelocityAction->isChecked())
 	{
 		colorCode = eColorCodeVelocity;
 	}
-
-
+	else
+	{
+		colorCode = eColorCodeIntensity;
+	}
 }
 
 void FOV_2DScan::slotDisplayDistanceModeAction()
@@ -329,6 +486,20 @@ void FOV_2DScan::slotDisplayDistanceModeAction()
 	}
 }
 
+void FOV_2DScan::slotDisplayZoomModeAction()
+{
+	if (displayZoomModeFrontAction->isChecked())
+	{
+		 displayZoomMode = eDisplayZoomModeFront;
+	}
+	else
+	{
+		 displayZoomMode = eDisplayZoomMode360;
+	}
+
+	slotConfigChanged(config);
+}
+
 double zeroY = 0.0;
 double zeroX = 0.0;
 
@@ -338,11 +509,12 @@ void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
     config = inConfig;
 
 	// All distances reported are relative to bumper
-#ifndef squareGrid
 	double totalDistance = config.longRangeDistance+config.spareDepth;
-#else
-	double totalDistance = (config.longRangeDistance * 2) + carLength;
-#endif
+	if (displayZoomMode == eDisplayZoomMode360) 
+	{
+		totalDistance = (config.longRangeDistance * 2) + carLength;
+	}
+
 	// Calculate minimum window size;
 	float minHeight = 240;
 	Ratio = (minHeight-(minHeight*0.1)) / totalDistance;
@@ -367,23 +539,26 @@ void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
 //	move(scr.right()-(recommendedWidth + horizontalDecorationsWidth), scr.top());
 	move(scr.left(), scr.top());
 
-#ifndef squareGrid
-	zeroY = height() - (config.spareDepth * Ratio);
-	zeroX = width()/2;
-#else
-	zeroY = height() *0.6; // .1 x height offcenter to the bottom
-	zeroX = width()/2;
-#endif
+    if (displayZoomMode == eDisplayZoomModeFront) 
+	{
+		zeroY = height() - (config.spareDepth * Ratio);
+		zeroX = width()/2;
+	}
+	else
+	{
+		zeroY = height() *0.5; // .1 x height offcenter to the bottom
+		zeroX = width()/2;
+	}
+
     update();
 }
 
 void FOV_2DScan::resizeEvent(QResizeEvent * event)
 {
-#ifndef squareGrid
 	double totalDistance = config.longRangeDistance+config.spareDepth;
-#else
-	double totalDistance = (config.longRangeDistance * 2) + carLength;
-#endif
+	if (displayZoomMode == eDisplayZoomMode360)
+		totalDistance = (config.longRangeDistance * 2) + carLength;
+
 	Ratio = (height()-(height()*0.1)) / totalDistance;
 
 	int labelWidth = width() * 0.3;
@@ -392,14 +567,16 @@ void FOV_2DScan::resizeEvent(QResizeEvent * event)
 	logoLabel->resize(labelWidth, labelHeight);
 	logoLabel->move(55, height() - labelHeight);
 
-#ifndef squareGrid
-	zeroY = height() - (config.spareDepth * Ratio);
+	if (displayZoomMode == eDisplayZoomModeFront)
+	{
+		zeroY = height() - (config.spareDepth * Ratio);
+		zeroX = width()/2;
+	}
+	else
+	{
+	zeroY = height() *0.5; // .1 x height offcenter to the bottom
 	zeroX = width()/2;
-#else
-	zeroY = height() *0.6; // .1 x height offcenter to the bottom
-	zeroX = width()/2;
-#endif
-
+	}
 }
 
 void FOV_2DScan::paintEvent(QPaintEvent *)
@@ -436,22 +613,56 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 		}
 	}
 
-    //Angular Ruler
-    painter.setPen(QPen(rgbRuler));
-
-    for (int i = config.longRangeDistance; i > 0; i-=5)
+	if (measureMode != eMeasureCartesian)
 	{
-		// All distances are relative to bumper  
-        drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
-	}
+		//Angular Ruler
+		painter.setPen(QPen(rgbRuler));
 
-    painter.setPen(QPen(rgbRuler));
-    for (int i = config.shortRangeAngle; i >= 0; i-=5)
+		for (int i = config.longRangeDistance; i > 0; i-=5)
+		{
+			// All distances are relative to bumper  
+			drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
+		}
+
+		painter.setPen(QPen(rgbRuler));
+		for (int i = config.shortRangeAngle; i >= 0; i-=5)
+		{
+			drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
+		}
+
+		drawAngularRuler(&painter);
+	}
+	else 
 	{
-        drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
-	}
+		// Grid Ruler
 
-    drawAngularRuler(&painter);
+		float gridWidth = (width() / Ratio) / 2;
+		float rangeWidth = config.longRangeDistance + (carWidth/2);  // Grid width is maximum of the range of sensor
+		if (gridWidth > rangeWidth) gridWidth = rangeWidth;
+
+		gridWidth = (1+((int) (gridWidth / gridOffset))) * gridOffset;
+		gridWidth *= Ratio;
+
+		float gridYSpacing = gridOffset * Ratio;
+		float gridXSpacing = gridYSpacing;
+
+		
+		painter.setPen(QPen(rgbRulerLight));
+		for (float gridY = 0; gridY <= (config.longRangeDistance*Ratio); gridY += gridYSpacing)
+		{ 
+			painter.drawLine(zeroX - gridWidth, zeroY - gridY,  zeroX + gridWidth, zeroY - gridY);
+		}
+
+		for (float gridY = - gridYSpacing; gridY >= -((config.longRangeDistance+ carLength)*Ratio); gridY -= gridYSpacing)
+		{ 
+			painter.drawLine(zeroX - gridWidth, zeroY - gridY,  zeroX + gridWidth, zeroY - gridY);
+		}
+
+		for (float gridX = -(gridWidth); gridX <= (gridWidth); gridX += gridXSpacing)
+		{ 
+			painter.drawLine(zeroX + gridX, zeroY-(config.longRangeDistance*Ratio),  zeroX + gridX, zeroY+((config.longRangeDistance+ carLength)*Ratio));
+		}
+	}
 
 
 	//Paint Draw bumper area
@@ -553,6 +764,11 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 	float leftMin = config.longRangeDistance;
 	float leftMax = -config.longRangeDistance;
 
+	float intensityMax = 0;
+	int channelForIntensityMax = 0;
+	float distanceForIntensityMax = 0.0;
+	Detection::ThreatLevel threatLevelMax = Detection::eThreatNone;
+
 	QPolygon poly;
 
 	BOOST_FOREACH(const Detection::Ptr detection, data)
@@ -576,6 +792,15 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 		distanceForwardAverage += detection->relativeToVehicleCart.forward;
 
 		if (detection->velocity < velocityMin) velocityMin = detection->velocity;
+
+		if (detection->intensity > intensityMax) 
+		{
+			intensityMax = detection->intensity;
+			channelForIntensityMax = detection->channelID;
+			distanceForIntensityMax = detection->distance;
+		}
+
+		if (detection->threatLevel > threatLevelMax) threatLevelMax = detection->threatLevel;
 	} // BOOST_FOREACH (detection)
 
 	if (data.size()) 
@@ -605,15 +830,19 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 	}
 
 	QColor backColor;
+	Qt::BrushStyle backPattern;
+	QColor lineColor;
+	QColor textColor;
 
 	if (colorCode == eColorCodeVelocity)
-		backColor = getColorFromVelocity(velocityMin);
+		getColorFromVelocity(velocityMin, backColor, backPattern, lineColor, textColor);
+	else if (colorCode == eColorCodeDistance)
+		getColorFromDistance(distanceDisplayed, backColor, backPattern, lineColor, textColor);
 	else
-		backColor = getColorFromDistance(distanceDisplayed);
-	p->setBrush(backColor);
+		getColorFromIntensity(channelForIntensityMax, distanceForIntensityMax, intensityMax, threatLevelMax, backColor, backPattern, lineColor, textColor);
 
-	QColor pencolor = backColor.darker(180);
-	p->setPen(pencolor);
+	p->setBrush(QBrush(backColor, backPattern));
+	p->setPen(lineColor);
 
 	// Draw the legend and target, according to the flags
 	if (mergeDisplayMode == eNoMergeDisplay || mergeDisplayMode == eIndividualDistanceDisplay)
@@ -626,26 +855,19 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 	if (measureMode != eMeasureCartesian)
 		textToDisplay = "Dist: " + QString::number(distanceDisplayed, 'f', 1)+" m | Vel: "+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
 	else
-		textToDisplay = QString::number(-(leftMin+(leftMax-leftMin/2)), 'f', 1)+", "+ QString::number(distanceDisplayed, 'f', 1)+ " | Vel: "+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
-
-
-		if (backColor.lightness() < transitionLightness) 
-			pencolor = Qt::white;
-		else
-			pencolor = Qt::black;
+		textToDisplay = "X:" + QString::number(-(leftMin+(leftMax-leftMin/2)), 'f', 1)+" Y:"+ QString::number(distanceDisplayed, 'f', 1)+ " V:"+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
 
 		// Draw the detection, but without the legend
 		const Detection::Ptr detection = data.at(0);
-		drawTextDetection(p, detection, textToDisplay, pencolor, backColor, drawTarget, drawLegend);
+		drawTextDetection(p, detection, textToDisplay, backColor, backPattern, lineColor, textColor, drawTarget, drawLegend);
 	}
 
 
 	// Now draw the bounding rectangle
 	if (drawBoundingBox) 
 	{
-		pencolor = backColor.darker(180);
-		p->setPen(pencolor);
-
+		p->setBrush(QBrush(backColor, backPattern));
+		p->setPen(lineColor);
 
 		// Remember coordinate axes X and Y are not in same orientation as QT drawing axes!
 		QPoint bottomLeft(-leftMax * Ratio , -(height()-zeroY)-((forwardMin)*Ratio));
@@ -689,8 +911,6 @@ void FOV_2DScan::drawAngularRuler(QPainter* p)
 
 void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, bool drawTarget, bool drawLegend)
 {
-	QColor backColor;
-	QColor penColor = Qt::black;
 	QString textToDisplay;
 
 	float distanceToDisplay;
@@ -716,18 +936,27 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 	if (measureMode != eMeasureCartesian)
 		textToDisplay = "Dist: " + QString::number(distanceToDisplay, 'f', 1)+" m | Vel: "+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
 	else
-		textToDisplay = QString::number(-detection->relativeToVehicleCart.left, 'f', 1)+", "+ QString::number(detection->relativeToVehicleCart.forward, 'f', 1)+ " | Vel: "+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
+		textToDisplay = "X:" + QString::number(-detection->relativeToVehicleCart.left, 'f', 1)+" Y:"+ QString::number(detection->relativeToVehicleCart.forward, 'f', 1)+ " V:"+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
+
+	QColor backColor;
+	Qt::BrushStyle backPattern;
+	QColor lineColor;
+	QColor textColor;
 
 	if (colorCode == eColorCodeVelocity)
-		backColor = getColorFromVelocity(detection->velocity);
+		getColorFromVelocity(detection->velocity, backColor, backPattern, lineColor, textColor);
+	else if (colorCode == eColorCodeDistance)
+		getColorFromDistance(distanceToDisplay, backColor, backPattern, lineColor, textColor);
 	else
-		backColor = getColorFromDistance(distanceToDisplay);
-	if (backColor.lightness() < transitionLightness) penColor = Qt::white;
+		getColorFromIntensity(detection->channelID, detection->distance, detection->intensity, detection->threatLevel, backColor, backPattern, lineColor, textColor);
 
-    drawTextDetection(p, detection, textToDisplay, penColor,backColor, drawTarget, drawLegend);
+	p->setBrush(QBrush(backColor, backPattern));
+	p->setPen(lineColor);
+
+    drawTextDetection(p, detection, textToDisplay, backColor, backPattern, lineColor, textColor, drawTarget, drawLegend);
 }
 
-void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor foregroundColor, QColor backgroundcolor,
+void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor,
 	                                bool drawTarget, bool drawLegend)
 {
 	// Our detection Y axis is positive left, so we negate the lateral coordinate.
@@ -743,9 +972,8 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	int windowHeight = height();
 
     rect.moveTo(start + QPoint((width()/2)-rect.width()/2, zeroY-rect.height()));
-	QColor pencolor = backgroundcolor.darker(180);
-    p->setPen(pencolor);
-    p->setBrush(backgroundcolor);
+    p->setPen(lineColor);
+    p->setBrush(QBrush(backColor, backPattern));
 
     tempRect = rect;
 
@@ -760,7 +988,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	{
 
 		// Next polygon draws a line between the target and the distance indicator
-		p->setPen(Qt::NoPen); 
+		p->setPen(lineColor); 
 		poly.append(QPoint(rect.center().x()-2,rect.center().y()+5));
 		poly.append(QPoint(tempRect.center().x()-51,tempRect.center().y()-1));
 		poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
@@ -771,7 +999,8 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		p->drawPolygon(poly);
 
 		// Draw the ellipse around the distance indication text
-		p->setPen(pencolor);
+		p->setPen(lineColor);
+		p->setBrush(QBrush(backColor));
 		p->drawEllipse(QPoint(width()-(tempRect.width()/2)-5, tempRect.bottom()-tempRect.size().height()/2), tempRect.size().width()/2, tempRect.size().height()/2);
 
 
@@ -780,17 +1009,15 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		rightQty++;
 
 
-		p->setPen(foregroundColor);
+		p->setPen(textColor);
 		p->drawText(tempRect, Qt::AlignCenter, text);
 	}
 
 	if (drawTarget)
 	{
 		// Draw the ellipse that represents the target on the scan
-		if (backgroundcolor.lightness() < transitionLightness) pencolor = backgroundcolor.lighter(180);
-		else pencolor = backgroundcolor.darker(180);
- 		p->setPen(pencolor);
-		p->setBrush(backgroundcolor);
+ 		p->setPen(lineColor);
+		p->setBrush(QBrush(backColor, backPattern));
 
 		if (detection->velocity >= zeroVelocity)
 		{
@@ -819,7 +1046,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	}
 }
 
-void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, bool drawEllipse, QColor backgroundcolor)
+void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor)
 {
 	float angleInRad = DEG2RAD(angle+180);
 	// Real position of object, from sensor on  the grid is postion + bumperOffset.
@@ -837,13 +1064,6 @@ void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QCol
 	rect.moveTo(start + QPoint((width()/2)-rect.width()/2, zeroY-rect.height()));
 
     p->setPen(foregroundColor);
-    p->setBrush(backgroundcolor);
-
-    if (drawEllipse)
-    {
-        p->drawEllipse(rect.center(), rect.size().width()/2, rect.size().height()/2);
-    }
-
     p->drawText(rect, Qt::AlignCenter, text);
 
 }
@@ -903,7 +1123,7 @@ void FOV_2DScan::drawLine(QPainter* p, float angle, float startRadius, float len
     p->drawLine(start + zeroPoint, end + zeroPoint);
 }
 
-QColor FOV_2DScan::getColorFromDistance(float distance)
+void FOV_2DScan::getColorFromDistance(float distance, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
     QLinearGradient myGradient;
     QGradientStops myStopPoints;
@@ -920,10 +1140,22 @@ QColor FOV_2DScan::getColorFromDistance(float distance)
     painter.setBrush(myGradient);
     painter.drawRect(0, -2, 10, config.longRangeDistance+3 );
     painter.end();
-    return QColor(myImage.pixel(QPoint(1, distance)));
+    backColor = QColor(myImage.pixel(QPoint(1, distance)));
+	backStyle = Qt::SolidPattern;
+
+	if (backColor.lightness() < transitionLightness) 
+	{
+		lineColor = backColor.darker(120);
+		textColor = Qt::black;
+	}
+	else
+	{
+		lineColor = backColor.lighter(120);
+		textColor = Qt::white;
+	}
 }
 
-QColor FOV_2DScan::getColorFromVelocity(float velocity)
+void FOV_2DScan::getColorFromVelocity(float velocity, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
     QLinearGradient myGradient;
     QGradientStops myStopPoints;
@@ -945,48 +1177,142 @@ QColor FOV_2DScan::getColorFromVelocity(float velocity)
     painter.setBrush(myGradient);
     painter.drawRect(0, -2, 10, maxAbsVelocity+3 );
     painter.end();
-    return QColor(myImage.pixel(QPoint(1, maxAbsVelocity - velocity)));
+    backColor =QColor(myImage.pixel(QPoint(1, maxAbsVelocity - velocity)));
+	backStyle = Qt::SolidPattern;
+	
+	if (backColor.lightness() < transitionLightness) 
+	{
+		lineColor = backColor.darker(120);
+		textColor = Qt::black;
+	}
+	else
+	{
+		lineColor = backColor.lighter(120);
+		textColor = Qt::white;
+	}
+}
+
+void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intensity, Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+{
+	ClassificationType classificationType = classifyFromIntensity(channel, distance, intensity);
+
+	if (classificationType != eClassifyMiner)  
+	{
+		getColorFromThreatLevel(threatLevel, backColor, backStyle, lineColor, textColor);
+		backColor = QColor(Qt::white);
+		backStyle = Qt::Dense4Pattern;
+		textColor = QColor(Qt::darkGray);
+	}
+	else 
+	{
+		getColorFromThreatLevel(threatLevel, backColor, backStyle, lineColor, textColor);
+	}
+}
+
+void FOV_2DScan::getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+{
+	switch (threatLevel) 
+	{
+	case Detection::eThreatNone:
+		backColor = Qt::darkBlue;
+		break;
+	case Detection::eThreatLow:
+		backColor = Qt::green;
+		break;
+	case Detection::eThreatWarn:
+		backColor = Qt::yellow;
+		break;
+	case Detection::eThreatCritical:
+		backColor = Qt::red;
+		break;
+	default:
+		backColor = Qt::darkBlue;
+		break;
+	}
+
+	backStyle = Qt::SolidPattern;
+	int lightness = backColor.lightness();
+
+	if (backColor.lightness() > transitionLightness) 
+	{
+		lineColor = backColor.darker(120);
+		textColor = Qt::black;
+	}
+	else
+	{
+		lineColor = backColor.lighter(120);
+		textColor = Qt::white;
+	}
 }
 
 void FOV_2DScan::drawPalette(QPainter* p)
 {
-    QLinearGradient myGradient;
-    QGradientStops myStopPoints;
-
-    myStopPoints.append(QGradientStop(0.0,Qt::blue));
-    myStopPoints.append(QGradientStop(0.33,Qt::green));
-    myStopPoints.append(QGradientStop(0.66,Qt::yellow));
-    myStopPoints.append(QGradientStop(1.0,Qt::red));
-    myGradient.setStops(myStopPoints);
-    myGradient.setStart(width()-40, height()*0.1);
-    myGradient.setFinalStop(width()-40, height()*0.9);
-    p->setPen(Qt::black);
-    p->setBrush(myGradient);
-    p->drawRect(0, height()*0.1, paletteWidth, height()*0.9);
-
-	// Put a legend
-	p->setPen(Qt::white);
-
-	QString text;
+  	QString text;
 	if (colorCode == eColorCodeDistance)
-	{
+	{  
+		QLinearGradient myGradient;
+		QGradientStops myStopPoints;
+
+		myStopPoints.append(QGradientStop(0.0,Qt::blue));
+		myStopPoints.append(QGradientStop(0.33,Qt::green));
+		myStopPoints.append(QGradientStop(0.66,Qt::yellow));
+		myStopPoints.append(QGradientStop(1.0,Qt::red));
+		myGradient.setStops(myStopPoints);
+		myGradient.setStart(width()-40, height()*0.1);
+		myGradient.setFinalStop(width()-40, height()*0.9);
+		p->setPen(Qt::black);
+		p->setBrush(myGradient);
+		p->drawRect(0, height()*0.1, paletteWidth, height()*0.9);
+
+		// Put a legend
+		p->setPen(Qt::white);
 		text = QString::number(config.longRangeDistance, 'f',  1)+ " m";
 		QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
  
 		p->drawText(QPoint(5, height()*0.1 + rect.height()), text);
 		p->drawText(QPoint(5, height()-5), "0 m");
 	}
-	else
+	else if (colorCode == eColorCodeVelocity)
 	{
+		QLinearGradient myGradient;
+		QGradientStops myStopPoints;
+
+		myStopPoints.append(QGradientStop(0.0,Qt::blue));
+		myStopPoints.append(QGradientStop(0.33,Qt::green));
+		myStopPoints.append(QGradientStop(0.66,Qt::yellow));
+		myStopPoints.append(QGradientStop(1.0,Qt::red));
+		myGradient.setStops(myStopPoints);
+		myGradient.setStart(width()-40, height()*0.1);
+		myGradient.setFinalStop(width()-40, height()*0.9);
+		p->setPen(Qt::black);
+		p->setBrush(myGradient);
+		p->drawRect(0, height()*0.1, paletteWidth, height()*0.9);
+
+		// Put a legend
+		p->setPen(Qt::white);
 		text = QString::number(VelocityToKmH(maxAbsVelocity), 'f',  1)+ " km/h";
 		QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
  
 		p->drawText(QPoint(5, height()*0.1 + rect.height()), "0 km/h");
 		p->drawText(QPoint(5, height()-5), text);
 	}
+	else
+	{
+		// Draw palette as alert level
+		Detection::ThreatLevel maxThreatLevel = getMaxThreat();
+		QColor backColor;
+		Qt::BrushStyle backPattern;
+		QColor lineColor;
+		QColor textColor;
+		getColorFromThreatLevel(maxThreatLevel, backColor, backPattern, lineColor, textColor);
+
+		p->setPen(Qt::black);
+		p->setBrush(QBrush(backColor, backPattern));
+		p->drawRect(0, height()*0.1, paletteWidth, height()*0.9);
+	}
 }
 
-bool sortDetectionsBottomLeftTopRight (Detection::Ptr &left, Detection::Ptr &right) 
+bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &right) 
 
 { 
 	// Same X (forward)  position, sort from left to right
@@ -995,11 +1321,11 @@ bool sortDetectionsBottomLeftTopRight (Detection::Ptr &left, Detection::Ptr &rig
 		// Remember vehicle Y is positive going left, So we reverse the < operator.
 		if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
 		{
-				return(true);
+				return(false);
 		}
 		else
 		{
-			return(false);
+			return(true);
 		}
 	}
 	// Not same depth, compare forward
@@ -1025,7 +1351,7 @@ void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
 
 
 	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
-	std::sort(copyData.begin(), copyData.end(), sortDetectionsBottomLeftTopRight);
+	std::sort(copyData.begin(), copyData.end(), sortDetectionsBottomRightTopLeft);
 
 	//Merge detections according to distance criteria
 	mergeDetection();
@@ -1077,6 +1403,19 @@ void FOV_2DScan::mergeDetection()
 
 }
 
+Detection::ThreatLevel FOV_2DScan::getMaxThreat()
+{
+	Detection::ThreatLevel maxThreatLevel = Detection::eThreatNone;
+
+	// Draw the individual detections
+	BOOST_FOREACH(const Detection::Ptr &detection, copyData)
+	{
+		if (detection->threatLevel > maxThreatLevel) maxThreatLevel = detection->threatLevel;
+    }
+
+	return(maxThreatLevel);
+}
+
 bool FOV_2DScan::isInRange(const Detection::Ptr &detection1, const Detection::Ptr &detection2 )
 {
 	bool distInRange = false;
@@ -1117,7 +1456,8 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	QMenu* menuMeasureMode = mainMenu.addMenu("Distance calculation");
 	QMenu* menuColorCode = mainMenu.addMenu("Distance vs velocity");
 	QMenu* menuDistanceDisplayMode = mainMenu.addMenu("Distance display");
-   
+	QMenu* menuZoomDisplayMode = mainMenu.addMenu("Zoom");
+
 	//menuMergeDetection->addAction(noMergeAction);
 	//menuMergeDetection->addAction(radialAction);
 	//menuMergeDetection->addAction(distanceAction);
@@ -1135,10 +1475,15 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	menuDistanceDisplayMode->addAction(displayDistanceModeHideAction);
 	menuDistanceDisplayMode->addAction(displayDistanceModeShowAction);
 
+	menuZoomDisplayMode->addAction(displayZoomModeFrontAction);
+	menuZoomDisplayMode->addAction(displayZoomMode360Action);
+
 	mainMenu.addAction(showPaletteAction);
 
 	menuColorCode->addAction(colorCodeDistanceAction);
 	menuColorCode->addAction(colorCodeVelocityAction);
+	menuColorCode->addAction(colorCodeIntensityAction);
 	
     mainMenu.exec(globalPos);
 }
+
