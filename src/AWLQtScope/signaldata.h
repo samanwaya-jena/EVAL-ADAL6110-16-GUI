@@ -2,7 +2,7 @@
 #define _SIGNAL_DATA_H_ 1
 
 /*
-	Copyright 2014 Aerostar R&D Canada Inc.
+	Copyright 2014, 2015 Phantom Intelligence Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.

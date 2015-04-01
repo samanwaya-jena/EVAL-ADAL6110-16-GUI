@@ -16,7 +16,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Aerostar-logo.jpg</logoFileName>
+    <logoFileName>Phantom-logo.jpg</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>AWLQtDemo.ico</iconFileName>
