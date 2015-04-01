@@ -34,7 +34,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_60CD924D563A4B07A857E78889EEABA6"
+        "OwnerKey" = "8:_E2622384198E43599E1F20AE812E88DE"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -211,7 +211,7 @@
             "{1525181F-901A-416C-8A58-119130FE478E}:_4022576F7A3A46E18A29791CE9822246"
             {
             "Name" = "8:#1916"
-            "AlwaysCreate" = "11:FALSE"
+            "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Property" = "8:DesktopFolder"
@@ -228,11 +228,22 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_2CB3E69FC4BA4F7ABB8046F739195223"
+                    {
+                    "Name" = "8:Phantom Intelligence"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_84D3445C1ADA4FED86940C8486ACE5BB"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_E672C28D37124FBB8CE315D0DFF3C192"
             {
-            "DefaultLocation" = "8:[WindowsVolume]\\[Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -268,9 +279,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Aerostar AWLQtDemo"
+        "ProductName" = "8:Phantom Intelligence LiDAR Demo"
         "ProductCode" = "8:{B31B59F4-3C34-4B65-98D3-02828BF04CC1}"
-        "PackageCode" = "8:{11BE2C1B-36B4-43A4-A015-EA2B0B8C9AAD}"
+        "PackageCode" = "8:{6D8D8BFD-7E15-4865-94FE-0E5955AC8784}"
         "UpgradeCode" = "8:{6759E55C-25AE-4E89-8ABF-1AB789FB6717}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -278,12 +289,12 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Aerostar"
+        "Manufacturer" = "8:Phantom Intelligence"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:AWLQtDemo Setup"
+        "Title" = "8:LiDAR Demo Setup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Aerostar"
+        "ARPCONTACT" = "8:Phantom Intelligence"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
@@ -390,6 +401,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0FC65BAC794B45EFBE24BFBB6C997580"
+            {
+            "Name" = "8:Phantom Intelligence LiDAR Demo"
+            "Arguments" = "8:"
+            "Description" = "8:Phantom Intelligence LiDAR Demo"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_E2622384198E43599E1F20AE812E88DE"
+            "Folder" = "8:_2CB3E69FC4BA4F7ABB8046F739195223"
+            "WorkingFolder" = "8:_E672C28D37124FBB8CE315D0DFF3C192"
+            "Icon" = "8:_9D7CAFDA76D14DF3A357DF3C5EC67EFF"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_AC1CCA1790A242C48D7FC433518BECA1"
+            {
+            "Name" = "8:Phantom Intelligence LiDAR Demo"
+            "Arguments" = "8:"
+            "Description" = "8:Phantom Intelligence LiDAR Demo"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_E2622384198E43599E1F20AE812E88DE"
+            "Folder" = "8:_4022576F7A3A46E18A29791CE9822246"
+            "WorkingFolder" = "8:_E672C28D37124FBB8CE315D0DFF3C192"
+            "Icon" = "8:_9D7CAFDA76D14DF3A357DF3C5EC67EFF"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
@@ -817,9 +856,9 @@
                 {
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_60CD924D563A4B07A857E78889EEABA6"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E2622384198E43599E1F20AE812E88DE"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\Win32\\Release\\AWLQtDemo.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E672C28D37124FBB8CE315D0DFF3C192"
