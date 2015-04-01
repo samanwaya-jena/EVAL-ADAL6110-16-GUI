@@ -41,7 +41,7 @@
       <receiverType>KvaserLeaf</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
-      <commPort>COM28</commPort>
+      <commPort>COM15</commPort>
 
       <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
       <kvaserChannel>0</kvaserChannel>
@@ -96,7 +96,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>10</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -115,7 +115,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>10</maxRange>
+        <maxRange>15</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -134,7 +134,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>10</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -153,7 +153,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>10</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -172,7 +172,7 @@
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>40</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -191,7 +191,7 @@
           <roll>0.0</roll>
           <yaw>0.0</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>40</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -210,7 +210,7 @@
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>30</maxRange>
+        <maxRange>40</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -481,14 +481,14 @@
 	     0: Radial
 	     1: Longitudinal distance from bumper 
        2: Cartesian coordinates from bumper -->
-    <measureMode>2</measureMode>
+    <measureMode>1</measureMode>
 
     <!-- colorCode
 	     0: Colors indicate distances
 	     1: Colors indicate speed 
        2: Colors indicate obstacle type
      -->
-    <colorCode>2</colorCode>
+    <colorCode>1</colorCode>
 
     <!-- displayDistances
 	     0: Hide all distances
