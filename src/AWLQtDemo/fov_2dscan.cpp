@@ -1,6 +1,6 @@
 /* Fov_2DScan.cpp */
 /*
-	Copyright 2014 Aerostar R&D Canada Inc.
+	Copyright (C) 2014, 2015  Phantom Intelligence Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ ClassificationType classifyFromIntensity(int channel, float distance, float inte
 //----------------------End of Intensity Classifier
 
 
-const int transitionLightness= 127;  // Lightness at which we start to write in ligther shade
+const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
 const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
 const QColor rgbRulerLight(192, 192, 192, 127); // Transparent gray
 const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
@@ -1316,7 +1316,7 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 
 { 
 	// Same X (forward)  position, sort from left to right
-	if (qFuzzyCompare(left->relativeToVehicleCart.forward,  right->relativeToVehicleCart.forward))
+	if (left->relativeToVehicleCart.forward == right->relativeToVehicleCart.forward)
 	{
 		// Remember vehicle Y is positive going left, So we reverse the < operator.
 		if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
@@ -1328,11 +1328,11 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 			return(true);
 		}
 	}
-	// Not same depth, compare forward
-	else if (left->relativeToVehicleCart.forward < right->relativeToVehicleCart.forward)
+	else if (left->relativeToVehicleCart.forward <= right->relativeToVehicleCart.forward)
 	{
 		return(true);
 	}
+	// Not same depth, compare forward
 	else 
 	{
 		return(false);
