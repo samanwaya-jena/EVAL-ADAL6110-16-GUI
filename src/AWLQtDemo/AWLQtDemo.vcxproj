@@ -833,6 +833,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="Phantom-Black-logo.jpg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Phantom-logo.jpg">
       <DeploymentContent>true</DeploymentContent>
     </None>

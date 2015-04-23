@@ -80,7 +80,7 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>0.5</displayedRangeMin>
+      <displayedRangeMin>1.5</displayedRangeMin>
       <displayedRangeMax>15</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
 
@@ -96,7 +96,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>8</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -115,7 +115,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>8</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -134,7 +134,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>8</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -153,7 +153,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>8</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -172,7 +172,7 @@
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>40</maxRange>
+        <maxRange>12</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -191,7 +191,7 @@
           <roll>0.0</roll>
           <yaw>0.0</yaw>
         </orientation>
-        <maxRange>40</maxRange>
+        <maxRange>12</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -210,7 +210,7 @@
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>40</maxRange>
+        <maxRange>12</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -231,13 +231,13 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName>
+      <cameraName>0</cameraName>
       <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>true</cameraFlip>
+      <cameraFlip>false</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->
@@ -299,10 +299,10 @@
       End Comment out unused cameras -->
 
 
-      <!-- XIMEA with 6mm lensing -->
+      <!-- MS_LIFECAM_HD6000 @640x360 -->
       <fov>
-        <x>54.6</x>
-        <y>41.3</y>
+        <x>45.0</x>
+        <y>39.0</y>
       </fov>
       <!-- radial distorsion correction parameters -->
       <radialCorrectionK1>-.06</radialCorrectionK1>
@@ -316,7 +316,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1110</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -488,7 +488,7 @@
 	     1: Colors indicate speed 
        2: Colors indicate obstacle type
      -->
-    <colorCode>1</colorCode>
+    <colorCode>2</colorCode>
 
     <!-- displayDistances
 	     0: Hide all distances

@@ -69,6 +69,9 @@ ClassificationEntry;
 
 ClassificationEntry classificationEntries[] = 
 {
+#if 1 // All types
+	{channel0Mask | channel1Mask | channel2Mask | channel3Mask | channel4Mask|channel5Mask|channel6Mask, 0, 300, 0, 100.00, eClassifyMiner},
+#endif
 	// Long range
 	{channel4Mask|channel5Mask|channel6Mask, 0.5, 2.5, 73.50, 80.00, eClassifyMiner},
 	{channel4Mask|channel5Mask|channel6Mask, 2.5, 3.5, 69.00, 80.00, eClassifyMiner},
@@ -154,13 +157,28 @@ ClassificationType classifyFromIntensity(int channel, float distance, float inte
 #endif
 //----------------------End of Intensity Classifier
 
-
+#if 1
 const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
+const QColor rgbBackground(Qt::white);
 const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
 const QColor rgbRulerLight(192, 192, 192, 127); // Transparent gray
+const QColor rgbRulerText(Qt::red);
 const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
 const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
+const int    fovTransparency= 128;  // Transparency level of the FOVs
+const int    lineTransparency = 128;
+#else
+const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
 
+const QColor rgbBackground(0, 0, 10, 255); // DK Blue
+const QColor rgbRuler(128, 128, 128, 255); // Transparent gray dark
+const QColor rgbRulerLight(192, 192, 192, 255); // Transparent gray light
+const QColor rgbRulerText(Qt::red);
+const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
+const QColor rgbLaneMarkings(192, 192 , 255, 196);  // Light blue
+const int    fovTransparency = 128;  // Transparency level of the FOVs
+const int    lineTransparency = 64;
+#endif
 #define squareGrid 1
 
 // Tricky part of the code:
@@ -583,7 +601,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 {
 
     QPainter painter(this);
-    painter.fillRect(0,0,width(),height(),QBrush(Qt::white));
+    painter.fillRect(0,0,width(),height(),QBrush(rgbBackground));
 
 	// Draw sensor FOVs
 	painter.setPen(Qt::NoPen);
@@ -599,7 +617,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
 			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID,channelID);
 
-			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, 192);
+			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, fovTransparency);
 			painter.setBrush(QBrush(channelColor));
 
 			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
@@ -895,7 +913,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 
 void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
-	p->setPen(QPen(Qt::red));
+	p->setPen(QPen(rgbRulerText));
 
 	double pos = config.longRangeDistance;
 
@@ -905,7 +923,7 @@ void FOV_2DScan::drawAngularRuler(QPainter* p)
 		drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
 
 		// drawText removes the spareDepthAlready. 
-		drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", Qt::red);
+		drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", rgbRulerText);
 	}
 }
 
@@ -972,8 +990,14 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	int windowHeight = height();
 
     rect.moveTo(start + QPoint((width()/2)-rect.width()/2, zeroY-rect.height()));
-    p->setPen(lineColor);
-    p->setBrush(QBrush(backColor, backPattern));
+	
+	QColor lineLineColor = lineColor;
+	lineLineColor.setAlpha(lineTransparency);
+	QColor lineBackColor(backColor); 
+	lineBackColor.setAlpha(lineTransparency);
+
+    p->setPen(lineLineColor);
+    p->setBrush(QBrush(lineBackColor, backPattern));
 
     tempRect = rect;
 
@@ -988,7 +1012,9 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	{
 
 		// Next polygon draws a line between the target and the distance indicator
-		p->setPen(lineColor); 
+		p->setPen(lineLineColor);
+		p->setBrush(QBrush(lineBackColor, backPattern));
+
 		poly.append(QPoint(rect.center().x()-2,rect.center().y()+5));
 		poly.append(QPoint(tempRect.center().x()-51,tempRect.center().y()-1));
 		poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
@@ -1199,7 +1225,8 @@ void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intens
 	if (classificationType != eClassifyMiner)  
 	{
 		getColorFromThreatLevel(threatLevel, backColor, backStyle, lineColor, textColor);
-		backColor = QColor(Qt::white);
+
+		backColor = rgbBackground;
 		backStyle = Qt::Dense4Pattern;
 		textColor = QColor(Qt::darkGray);
 	}
@@ -1328,7 +1355,7 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 			return(true);
 		}
 	}
-	else if (left->relativeToVehicleCart.forward <= right->relativeToVehicleCart.forward)
+	else if (left->relativeToVehicleCart.forward < right->relativeToVehicleCart.forward)
 	{
 		return(true);
 	}
