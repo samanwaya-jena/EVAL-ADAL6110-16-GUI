@@ -43,6 +43,10 @@ using namespace awl;
 #define FRAME_RATE	33.0
 
 const int ximeaDefaultBinningMode  = 4; // Binning mode on the ximea camera for 648x486 resolution
+const int reopenCameraDelaylMillisec = 5000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
+										   // To see if the system reconnects
+
+boost::posix_time::ptime reconnectTime;
 
 class CvCaptureCAM_XIMEA
 {
@@ -114,10 +118,143 @@ cameraID(inCameraID)
 
 	ReadConfigFromPropTree(propTree);
 
+	OpenCamera();
+}
+
+VideoCapture:: ~VideoCapture()
+
+{
+	if (!WasStopped()) Stop();
+}
+
+void  VideoCapture::Go() 
+{
+	assert(!mThread);
+    mWorkerRunning = true;
+
+	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
+}
+ 
+void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID inSubscriberID) 
+{
+	if (LockNews(inSubscriberID)) 
+	{
+		//Instead of simply cloning, make sure the target comes out as a 3 channel BGR image.
+		targetFrame->create(currentFrame.rows, currentFrame.cols, CV_8UC3);
+		cv::cvtColor(currentFrame, *targetFrame, CV_BGRA2BGR);
+		UnlockNews(inSubscriberID);
+	}
+};
+
+
+void VideoCapture::DoThreadLoop()
+
+{
+	while (!WasStopped())
+    {
+
+		// Acquire one frame from camera source or AVI
+
+		// Do not lock the thread. We should not be blocking
+		//		boost::mutex::scoped_lock threadLock(GetMutex());
+
+		DoThreadIteration();
+		
+		//		threadLock.unlock();
+
+		// Messages must be at leat 1ms apart.
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2));	
+	}
+
+  	boost::mutex::scoped_lock threadLock(GetMutex());
+	if (cam.isOpened()) 
+	{
+		cam.release();
+	}
+	threadLock.unlock();
+}
+
+
+void VideoCapture::DoThreadIteration()
+
+{
+
+	// If camera is not opened, check to see if we must try to reopen
+	if (!cam.isOpened() && boost::posix_time::microsec_clock::local_time() > reconnectTime)
+	{
+		OpenCamera();
+	}
+
+	// Acquire from camera source or AVI
+	if( cam.isOpened() )
+	{
+		if (!cam.read(bufferFrame)) 
+		{
+			cam.release();
+			currentFrame.create(calibration.frameHeightInPixels, calibration.frameWidthInPixels, CV_8UC3);
+			currentFrame.setTo(cv::Scalar(128, 128, 128));;
+			return;
+		}
+
+		// cvQueryFrame (cam.read) is blocking, while waiting for the frame.  
+		//Check again if we were stopped in the meantime 
+		if (WasStopped()) 
+		{
+			return;
+		}
+
+		if (!bufferFrame.empty()) 
+		{
+#if 1  // Patch: Do not remove JYD 2014-07-07
+			// Force-set the bufferFrame dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera, after downsampling
+			bufferFrame.cols = calibration.frameWidthInPixels;
+			bufferFrame.rows = calibration.frameHeightInPixels;
+			bufferFrame.step = bufferFrame.cols*(bufferFrame.channels());
+			// End of the Ximea patch
+#endif
+
+
+			boost::mutex::scoped_lock currentLock(GetMutex());
+			if (bCameraFlip) 
+			{
+				cv::flip(bufferFrame, currentFrame, -1);
+			}
+			else 
+			{
+				bufferFrame.copyTo(currentFrame);
+			}
+			currentLock.unlock();
+			PutNews();
+
+		} // if (!bufferFrame.empty()) 
+
+	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
+	} // if( cam.isOpened() )
+	else  
+	{ 
+		    // No cam opened.  Show blank image
+			boost::mutex::scoped_lock currentLock(GetMutex());
+
+			if (currentFrame.empty()) 
+			{
+				currentFrame.create(calibration.frameHeightInPixels, calibration.frameWidthInPixels, CV_8UC3);
+				//currentFrame.ones(calibration.frameHeightInPixels, calibration.frameWidthInPixels,CV_8UC3);
+				currentFrame.setTo(cv::Scalar(128, 128, 128));
+
+			} 
+			currentLock.unlock();
+			PutNews();
+	}
+
+}
+
+bool VideoCapture::OpenCamera()
+
+{
 	int inputID = 0;
 	if (!sCameraName.empty()) inputID = atoi(sCameraName.c_str());
 
-	// Determine capture source:  Camera, Single Frame or AVI
+		// Determine capture source:  Camera, Single Frame or AVI
     if( sCameraName.empty() || isdigit(sCameraName.c_str()[0]) )
 	{
 		cam.open(inputID);
@@ -238,6 +375,9 @@ cameraID(inCameraID)
 
  		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
 		frameRate = (double) 1.0/framesPerSecond;
+		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
+
+		return(true);
 	}
 	else // No camera
 	{
@@ -246,108 +386,11 @@ cameraID(inCameraID)
 		calibration.frameHeightInPixels = 480;
 
 		frameRate = (double) 1.0/30.0;
+		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
+
+		return(false);
 	}
 }
-
-VideoCapture:: ~VideoCapture()
-
-{
-	if (!WasStopped()) Stop();
-}
-
-void  VideoCapture::Go() 
-{
-	assert(!mThread);
-    mWorkerRunning = true;
-
-	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
-}
- 
-void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID inSubscriberID) 
-{
-	if (LockNews(inSubscriberID)) 
-	{
-		//Instead of simply cloning, make sure the target comes out as a 3 channel BGR image.
-		targetFrame->create(currentFrame.rows, currentFrame.cols, CV_8UC3);
-		cv::cvtColor(currentFrame, *targetFrame, CV_BGRA2BGR);
-		UnlockNews(inSubscriberID);
-	}
-};
-
-
-void VideoCapture::DoThreadLoop()
-
-{
-	while (!WasStopped())
-    {
-
-		// Acquire one frame from camera source or AVI
-
-		// Do not lock the thread. We should not be blocking
-		//		boost::mutex::scoped_lock threadLock(GetMutex());
-
-		DoThreadIteration();
-		
-		//		threadLock.unlock();
-
-		// Messages must be at leat 1ms apart.
-		boost::this_thread::sleep(boost::posix_time::milliseconds(2));	
-	}
-
-  	boost::mutex::scoped_lock threadLock(GetMutex());
-	if (cam.isOpened()) 
-	{
-		cam.release();
-	}
-	threadLock.unlock();
-}
-
-
-
-void VideoCapture::DoThreadIteration()
-
-{
-	// Acquire from camera source or AVI
-	if( cam.isOpened() )
-	{
-		cam.read(bufferFrame);
-
-		// cvQuery frame is blocking, while waiting for the frame.  
-		//Check again if we were stopped in the meantime 
-		if (WasStopped()) 
-		{
-			return;
-		}
-
-		if (!bufferFrame.empty()) 
-		{
-#if 1  // Patch: Do not remove JYD 2014-07-07
-			// Force-set the bufferFrame dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera, after downsampling
-			bufferFrame.cols = calibration.frameWidthInPixels;
-			bufferFrame.rows = calibration.frameHeightInPixels;
-			bufferFrame.step = bufferFrame.cols*(bufferFrame.channels());
-			// End of the Ximea patch
-#endif
-
-
-			boost::mutex::scoped_lock currentLock(GetMutex());
-			if (bCameraFlip) 
-			{
-				cv::flip(bufferFrame, currentFrame, -1);
-			}
-			else 
-			{
-				bufferFrame.copyTo(currentFrame);
-			}
-			currentLock.unlock();
-			PutNews();
-
-		} // if (!bufferFrame.empty()) 
-
-
-	} // if( cam.isOpened() )
-}
-
 
 bool VideoCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
