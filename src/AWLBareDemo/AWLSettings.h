@@ -57,6 +57,9 @@ namespace awl
 
 	float displayedRangeMin;
 	float displayedRangeMax;
+
+	float lineWrapAround; // For sensors that use the "line wraparound trick".
+	int   channelsPerLine;
 	}
 	ReceiverSettings;
 

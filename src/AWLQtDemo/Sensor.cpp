@@ -206,6 +206,13 @@ void ReceiverChannel::UpdateViewerCoordinates(ViewerCoordinates::Ptr &inViewerCo
 	if (bottomRightX >= imageWidth) bottomRightX = imageWidth - 1;
 	if (bottomRightY >= imageHeight) bottomRightY = imageHeight - 1;
 
+	if (bottomRightX < topLeftX)
+	{
+		int tmp = bottomRightX;
+		bottomRightX = topLeftX;
+		topLeftX = tmp;
+	}
+
 	BuildPixelMask();
 }
 
@@ -241,7 +248,7 @@ void ReceiverChannel::BuildPixelMask()
 			CvPoint2D32f thePoint;
 			thePoint.x = x;
 			thePoint.y = y;
-
+#if 0
 			if (IsPtInCircle(thePoint, center, radius))
 			{
 				CvPoint maskPoint;
@@ -249,6 +256,16 @@ void ReceiverChannel::BuildPixelMask()
 				maskPoint.y = y;
 				maskPoints.push_back(maskPoint);
 			}
+#else
+			if ((thePoint.x >= topLeftX && thePoint.x <= bottomRightX) &&
+				(thePoint.y >= topLeftY && thePoint.y <= bottomRightY))
+			{
+				CvPoint maskPoint;
+				maskPoint.x = x;
+				maskPoint.y = y;
+				maskPoints.push_back(maskPoint);
+			}
+#endif
 		}
 	}
 }
@@ -278,6 +295,13 @@ void ReceiverChannel::GetChannelLimits(ViewerCoordinates::Ptr &inViewerCoordinat
 	if (topLeftY < 0) topLeftY = 0;
 	if (bottomRightX >= imageWidth) bottomRightX = imageWidth - 1;
 	if (bottomRightY >= imageHeight) bottomRightY = imageHeight - 1;
+
+	if (bottomRightX < topLeftX)
+	{
+		int tmp = bottomRightX;
+		bottomRightX = topLeftX;
+		topLeftX = tmp;
+	}
 
 	PointXYZRGB topLeftPoint;
 	inViewerCoordinates->GetXYZFromRange((float)topLeftX, (float)topLeftY, rangeMax, topLeftPoint);

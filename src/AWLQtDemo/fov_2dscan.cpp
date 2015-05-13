@@ -165,7 +165,7 @@ const QColor rgbRulerLight(192, 192, 192, 127); // Transparent gray
 const QColor rgbRulerText(Qt::red);
 const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
 const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
-const int    fovTransparency= 128;  // Transparency level of the FOVs
+const int    fovTransparency= 64;  // Transparency level of the FOVs
 const int    lineTransparency = 128;
 #else
 const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
@@ -348,6 +348,7 @@ void FOV_2DScan::createAction()
 	colorCodeDistanceAction = new QAction("Distances", this);
 	colorCodeVelocityAction = new QAction("Velocity", this);
 	colorCodeIntensityAction = new QAction("Intensity/Threat", this);
+	colorCodeChannelAction = new QAction("Channel color", this);
 	
 	colorCodeDistanceAction->setCheckable(true);
 	colorCodeDistanceAction->setActionGroup(groupColorCode);
@@ -358,6 +359,9 @@ void FOV_2DScan::createAction()
 	colorCodeIntensityAction->setCheckable(true);
 	colorCodeIntensityAction->setActionGroup(groupColorCode);
 
+	colorCodeChannelAction->setCheckable(true);
+	colorCodeChannelAction->setActionGroup(groupColorCode);
+
 	if (colorCode == eColorCodeDistance)
 	{
 		colorCodeDistanceAction->setChecked(true);
@@ -366,9 +370,13 @@ void FOV_2DScan::createAction()
 	{
 		colorCodeVelocityAction->setChecked(true);
 	}
-	else
+	else if (colorCode == eColorCodeIntensity)
 	{
 		colorCodeIntensityAction->setChecked(true);
+	}
+	else 
+	{
+		colorCodeChannelAction->setChecked(true);
 	}
 
 	connect(groupColorCode, SIGNAL(triggered(QAction*)), this, SLOT(slotColorCodeAction()));
@@ -486,9 +494,13 @@ void FOV_2DScan::slotColorCodeAction()
 	{
 		colorCode = eColorCodeVelocity;
 	}
-	else
+	else if (colorCodeIntensityAction->isChecked())
 	{
 		colorCode = eColorCodeIntensity;
+	}
+	else 
+	{
+		colorCode = eColorCodeChannel;
 	}
 }
 
@@ -856,8 +868,10 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 		getColorFromVelocity(velocityMin, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeDistance)
 		getColorFromDistance(distanceDisplayed, backColor, backPattern, lineColor, textColor);
-	else
+	else if (colorCode == eColorCodeIntensity)
 		getColorFromIntensity(channelForIntensityMax, distanceForIntensityMax, intensityMax, threatLevelMax, backColor, backPattern, lineColor, textColor);
+	else //if (colorCode == eColorCodeChannel)
+		getColorFromChannel(-1, -1, backColor, backPattern, lineColor, textColor);
 
 	p->setBrush(QBrush(backColor, backPattern));
 	p->setPen(lineColor);
@@ -965,8 +979,10 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 		getColorFromVelocity(detection->velocity, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeDistance)
 		getColorFromDistance(distanceToDisplay, backColor, backPattern, lineColor, textColor);
-	else
+	else if (colorCode == eColorCodeIntensity)
 		getColorFromIntensity(detection->channelID, detection->distance, detection->intensity, detection->threatLevel, backColor, backPattern, lineColor, textColor);
+	else // if (colorCode == eColorCodeChannel)
+		getColorFromChannel(detection->receiverID, detection->channelID, backColor, backPattern, lineColor, textColor);
 
 	p->setBrush(QBrush(backColor, backPattern));
 	p->setPen(lineColor);
@@ -1272,6 +1288,37 @@ void FOV_2DScan::getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QCo
 	}
 }
 
+
+void FOV_2DScan::getColorFromChannel(int receiverID, int channelID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+{
+
+	if (receiverID < 0 || channelID < 0) 
+	{
+		backColor = QColor(64, 64, 64);
+	}
+	else 
+	{
+		ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+		ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
+		backColor = QColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
+	}
+
+	backStyle = Qt::SolidPattern;
+	int lightness = backColor.lightness();
+
+	if (backColor.lightness() > transitionLightness) 
+	{
+		lineColor = backColor.darker(120);
+		textColor = Qt::black;
+	}
+	else
+	{
+		lineColor = backColor.lighter(120);
+		textColor = Qt::white;
+	}
+}
+
+
 void FOV_2DScan::drawPalette(QPainter* p)
 {
   	QString text;
@@ -1323,7 +1370,7 @@ void FOV_2DScan::drawPalette(QPainter* p)
 		p->drawText(QPoint(5, height()*0.1 + rect.height()), "0 km/h");
 		p->drawText(QPoint(5, height()-5), text);
 	}
-	else
+	else // Intensity or Channel color Codes
 	{
 		// Draw palette as alert level
 		Detection::ThreatLevel maxThreatLevel = getMaxThreat();
@@ -1345,6 +1392,17 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 	// Same X (forward)  position, sort from left to right
 	if (left->relativeToVehicleCart.forward == right->relativeToVehicleCart.forward)
 	{
+		if (left->relativeToVehicleCart.left == right->relativeToVehicleCart.left)
+		{
+			if (left->channelID < right->channelID)
+			{
+				return(true);
+			}
+			else
+			{
+				return(false);
+			}
+		}
 		// Remember vehicle Y is positive going left, So we reverse the < operator.
 		if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
 		{
@@ -1510,7 +1568,8 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	menuColorCode->addAction(colorCodeDistanceAction);
 	menuColorCode->addAction(colorCodeVelocityAction);
 	menuColorCode->addAction(colorCodeIntensityAction);
-	
-    mainMenu.exec(globalPos);
+	menuColorCode->addAction(colorCodeChannelAction);
+
+	mainMenu.exec(globalPos);
 }
 

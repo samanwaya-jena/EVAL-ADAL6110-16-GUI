@@ -79,7 +79,8 @@ public:
 	{	
 		eColorCodeDistance= 0, // ColorCode distances
 		eColorCodeVelocity = 1,  // Color code speeds
-		eColorCodeIntensity = 2  // Color codes intensity/detection type
+		eColorCodeIntensity = 2,  // Color codes intensity/detection type
+		eColorCodeChannel = 3 // Color codes from Channel/layer
 	} DisplayColorCode;
 
 	typedef enum DisplayDistanceMode
@@ -165,6 +166,7 @@ private:
 	QAction* colorCodeDistanceAction;
 	QAction* colorCodeVelocityAction;
 	QAction* colorCodeIntensityAction;
+	QAction* colorCodeChannelAction;
 
 	QActionGroup* groupDisplayDistanceMode;
 	QAction* displayDistanceModeShowAction;
@@ -188,6 +190,7 @@ private:
 	void getColorFromVelocity(float velocity, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromIntensity(int channel, float distance, float intensity, Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromChannel(int receiverID, int channelID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 
     void drawPalette(QPainter* p);
 

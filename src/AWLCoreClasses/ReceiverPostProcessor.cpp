@@ -81,7 +81,6 @@ bool ReceiverPostProcessor::CompleteTrackInfo(SensorFrame::Ptr currentFrame)
 } 
 
 
-
 bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr currentFrame, Detection::Vector &outDetections)
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
@@ -105,14 +104,27 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 		while (trackIterator != currentFrame->tracks.end()) 
 		{
 			Track::Ptr track = *trackIterator;
+
+#if 1 // Process channel wraparound
+				int lineOffset = track->distance / receiverSettings.lineWrapAround;
+				if (lineOffset >=  currentFrame->channelQty/receiverSettings.channelsPerLine)
+				{
+					lineOffset = 0;
+				}
+				
+				float trackDistance = track->distance - (lineOffset * receiverSettings.lineWrapAround);
+				int trackChannel = (channelIndex%receiverSettings.channelsPerLine) + (lineOffset * receiverSettings.channelsPerLine);
+#endif
+
 			if ( track->IsComplete() && (track->channels & channelMask) &&
-				(track->distance >= receiverSettings.displayedRangeMin) && 
-				(track->distance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
+				(trackDistance >= receiverSettings.displayedRangeMin) && 
+				(trackDistance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
  			{
 				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, channelIndex, detectionIndex++));
 				outDetections.push_back(detection);
-				detection->channelID = channelIndex;
-				detection->distance = track->distance;
+
+				detection->channelID = trackChannel;
+				detection->distance = trackDistance;
 
 				detection->intensity = track->intensity; 
 				detection->velocity = track->velocity;
