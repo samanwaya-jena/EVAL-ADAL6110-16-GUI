@@ -327,7 +327,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
 
 	// Calibration 
-	ui.calibrationBetaDoubleSpinBox->setValue(1.0);
+	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
 }
 
 AWLQtDemo::~AWLQtDemo()
