@@ -445,9 +445,7 @@
     <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_videostab249.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
+    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll" />
     <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>

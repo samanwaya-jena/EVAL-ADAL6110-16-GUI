@@ -816,15 +816,15 @@
     <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_videostab249.dll">
       <Filter>Installable DLLs</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
     <None Include="ClassDiagram1.cd" />
     <None Include="Phantom-logo.jpg">
       <Filter>Installable Files</Filter>
     </None>
     <None Include="Phantom-Black-logo.jpg">
       <Filter>Installable Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
+      <Filter>Installable DLLs</Filter>
     </None>
   </ItemGroup>
 </Project>
