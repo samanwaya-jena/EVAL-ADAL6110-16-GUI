@@ -36,9 +36,9 @@
     <receiver0>
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
-		       This can influence comm port communicationsValid
-		       values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KvaserLeaf</receiverType>
+		       This can influence comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
+      <receiverType>KVaserLeaf</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -80,9 +80,16 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>1.5</displayedRangeMin>
+      <displayedRangeMin>0.5</displayedRangeMin>
       <displayedRangeMax>15</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
+
+      <!-- For multi-line sensors define wraparound and number of sensors per line.
+           If sensor does not support wrap around, write a wierdly high number that 
+           exceeds sensor physical range -->
+      <lineWrapAround>2000.0</lineWrapAround>
+      <channelsPerLine>8</channelsPerLine>
+
 
       <channelQty>7</channelQty>
       <channel0>
@@ -96,7 +103,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>8</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -115,7 +122,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>8</maxRange>
+        <maxRange>15</maxRange>
          <displayColor>
           <red>54</red>
           <green>166</green>
@@ -127,14 +134,14 @@
         <!--channel 2: short range - middle right -->
         <fov>
           <x>9.0</x>
-          <y>9.0</y>3
+          <y>9.0</y>
         </fov>
         <orientation>
           <pitch>6.8</pitch>
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>8</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>54</red>
           <green>166</green>
@@ -153,7 +160,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>8</maxRange>
+        <maxRange>15</maxRange>
         <displayColor>
           <red>128</red>
           <green>216</green>
@@ -172,7 +179,7 @@
           <roll>0.0</roll>
           <yaw>4.6</yaw>
         </orientation>
-        <maxRange>12</maxRange>
+        <maxRange>30</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -191,7 +198,7 @@
           <roll>0.0</roll>
           <yaw>0.0</yaw>
         </orientation>
-        <maxRange>12</maxRange>
+        <maxRange>30</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -210,7 +217,7 @@
           <roll>0.0</roll>
           <yaw>-4.6</yaw>
         </orientation>
-        <maxRange>12</maxRange>
+        <maxRange>30</maxRange>
         <displayColor>
           <red>172</red>
           <green>192</green>
@@ -218,8 +225,7 @@
         </displayColor>
       </channel6>
     </receiver0>
-
-  </receivers>
+    </receivers>
 
   <cameras>
     <cameraQty>1</cameraQty>
@@ -231,13 +237,13 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName>
+      <cameraName>1100</cameraName>
       <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>false</cameraFlip>
+      <cameraFlip>true</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->
@@ -295,14 +301,23 @@
       </fov>
       <radialCorrectionK1>-.06</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
-      
+  
+  
+     < XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) >
+      <fov>
+        <x>45.0</x>
+        <y>34.0</y>
+      </fov>
+      <radialCorrectionK1>-.04</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
+
       End Comment out unused cameras -->
 
 
-      <!-- MS_LIFECAM_HD6000 @640x360 -->
+      <!-- XIMEA with 6mm lensing (M12 Lenses PT-0620BMP)  -->
       <fov>
-        <x>45.0</x>
-        <y>39.0</y>
+        <x>54.6</x>
+        <y>41.3</y>
       </fov>
       <!-- radial distorsion correction parameters -->
       <radialCorrectionK1>-.06</radialCorrectionK1>
@@ -487,8 +502,9 @@
 	     0: Colors indicate distances
 	     1: Colors indicate speed 
        2: Colors indicate obstacle type
+       3: Colors correspond to channel "color"
      -->
-    <colorCode>2</colorCode>
+    <colorCode>1</colorCode>
 
     <!-- displayDistances
 	     0: Hide all distances
