@@ -118,6 +118,7 @@ cameraID(inCameraID)
 
 	ReadConfigFromPropTree(propTree);
 
+//	ListCameras();
 	OpenCamera();
 }
 
@@ -248,10 +249,55 @@ void VideoCapture::DoThreadIteration()
 
 }
 
+void VideoCapture::ListCameras()
+
+{
+	HANDLE hMV;
+
+	AWLSettings::GetGlobalSettings()->bWriteDebugFile = true;
+
+	DebugFilePrintf("Requested Camera: %s", sCameraName.c_str());
+	DWORD dwNumDevices;												
+	//num of connected SHT devices	
+	
+	if(xiGetNumberDevices(&dwNumDevices) == XI_OK)
+	{
+		int dwSerial = 0;
+
+		if(xiOpenDevice( 0, &hMV) != XI_OK)
+		{ 
+			DebugFilePrintf("Cannot Open Ximea Cam");
+		}
+
+		xiGetParamInt( hMV, XI_PRM_DEVICE_SN, &dwSerial);
+	
+		char camName[512];
+	
+		xiGetParamString( hMV, XI_PRM_DEVICE_NAME, camName, 256);
+				
+		DebugFilePrintf("%s %08X", camName, dwSerial);
+	}
+
+
+
+	for (int i = 1100; i < 2000; i++) 
+	{
+		DebugFilePrintf("Open %d", i);
+		cam.open(i);
+		if (cam.isOpened())
+		{
+			DebugFilePrintf("Found %d", i);
+			cam.release();
+		}
+	}
+}
+
 bool VideoCapture::OpenCamera()
 
 {
 	int inputID = 0;
+
+
 	if (!sCameraName.empty()) inputID = atoi(sCameraName.c_str());
 
 		// Determine capture source:  Camera, Single Frame or AVI

@@ -100,6 +100,12 @@ protected:
       */
 	void  DoThreadIteration();
 
+	/** \brief List all of the available cameras in file "CameraList.txt".
+	           For debug purposes onlyle, the image is assumed to be 640x480 @ 30FPS.
+  */
+	void ListCameras();
+
+
 	/** \brief With the configuration variable initialized, try to open the camera channel.
 	           Set the calibration frameWidthInPixels, frameHeightInPixels and frameRate according 
 			   to the information returned by the camera.
