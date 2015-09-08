@@ -169,7 +169,7 @@ public:
 /** \brief The SpericalCoord class defines a position, in spherical coordinates. 
  *  \notes spherical coordinates are using right-handed notation				
  *         rho is distance.												
- *         theta is angle from z axis, clockwise.						
+ *         theta is angle from z axis, clockwise. 						
  *         phi is angle from x axis, counterclockwise					
  *  We use the notation that is common practice in physics, 
  *  As specified by ISO standard 31-11.

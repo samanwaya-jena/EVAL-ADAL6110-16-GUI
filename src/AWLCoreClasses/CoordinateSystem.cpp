@@ -894,7 +894,7 @@ bool CameraCalibration::ToFrameXY(const CartesianCoord &coordInCameraCart, int &
 	
 	// Here we have to change the coordinates order.
 	// Most of our camera projection equations are left handed, with X facing outside camera.
-	// But here is the case were we use the 
+	// But our local equations have 
 	TransformationVector position;
 	position.vect[0] = -coordInCameraCart.left;
 	position.vect[1] = coordInCameraCart.up;
