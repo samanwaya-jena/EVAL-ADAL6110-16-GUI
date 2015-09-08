@@ -44,6 +44,17 @@ const int  workFrameQty = 3;  // Number of buffers. That may depend on the displ
 const int maxWindowWidth = 900;
 const int maxWindowHeight = 900;
 
+// Colors enhancements on individual pixels.
+const cv::Vec3b colorEnhanceBlue = cv::Vec3b(128, 0, 0);  // Blue
+const cv::Vec3b colorDehanceBlue = cv::Vec3b(0, 128, 128);
+const cv::Vec3b colorEnhanceGreen = cv::Vec3b(0, 190, 0); // Green
+const cv::Vec3b colorDehanceGreen = cv::Vec3b(190, 0,190);
+const cv::Vec3b colorEnhanceYellow = cv::Vec3b(0, 160, 160); // Yellow
+const cv::Vec3b colorDehanceYellow = cv::Vec3b(192, 0, 0);
+const cv::Vec3b colorEnhanceRed = cv::Vec3b(0, 0, 128);  // Red
+const cv::Vec3b colorDehanceRed = cv::Vec3b(128, 128, 0);
+
+
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
 LoopedWorker(),
 cameraFrame(new (cv::Mat)),
@@ -297,90 +308,126 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	endPoint.y = bottomRight.y - thickness/2;
 	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
 
-#if 0 // For test purposes
-	int cameraID = videoCapture->GetCameraID();
-	colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
-	colorDehance = cv::Vec3b(32, 0, 0);
-	thickness = 2;
-
-	CartesianCoord worldCoord1(10, 9,-1);
-	CartesianCoord worldCoord2(10, 7, -1);
-	CartesianCoord worldCoord3(10, 5,-1);
-	CartesianCoord worldCoord4(10, 3,-1);
-	CartesianCoord worldCoord5(10, 1, -1);
-	CartesianCoord worldCoord6(10,-1, -1);
-	CartesianCoord worldCoord7(10, -3, -1);
-	CartesianCoord worldCoord8(10, -5, -1);
-	CartesianCoord worldCoord9(10, -7, -1);
-	CartesianCoord worldCoord10(10, -9, -1);
-
-
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord1, startPoint.x, startPoint.y);
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord2, endPoint.x, endPoint.y);
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
-
-
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord3, startPoint.x, startPoint.y);
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord4, endPoint.x, endPoint.y);
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
-
-
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord5, startPoint.x, startPoint.y);
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord6, endPoint.x, endPoint.y);
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
-
-
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord7, startPoint.x, startPoint.y);
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord8, endPoint.x, endPoint.y);
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
-
-
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration, worldCoord9, startPoint.x, startPoint.y);
-	AWLCoordinates::WorldToCameraXY(cameraID, videoCapture->calibration,worldCoord10, endPoint.x, endPoint.y);
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
-
-#endif
 }
 
 void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame)
 {
-	int top;
-	int left;
-	int bottom;
-	int right;
-
-	CvRect rect;
-
-	cv::Vec3b color;
-	cv::Vec3b colorEnhance(255, 0, 255); // Yellow
-	cv::Vec3b colorDehance(0, 255, 0);
-	int thickness = 1;
-
-	// Paint a crosshair in the center of the image
-	int lineWidth = 30;
-	int lineHeight = 10;
-
-	CvPoint topCenter;
-	CvPoint bottomCenter;
-	CvPoint middleLeft;
-	CvPoint middleRight;
+	float tickIncrement = 2.5; // 1 tick every 2.5 degrees.
 	
-	float frameWidth = videoCapture->calibration.frameWidthInPixels;
-	float frameHeight = videoCapture->calibration.frameHeightInPixels;
-	topCenter.x = frameWidth / 2;
-	topCenter.y = (frameHeight / 2) - (lineHeight / 2);
+	// Draw horizontal ticks
+	float longTick = 25;  // Tick length in pixels
+	float mediumTick = 15;
+	float shortTick = 5;
 
-	bottomCenter.x = frameWidth / 2;
-	bottomCenter.y = (frameHeight / 2) + (lineHeight / 2);
+	int tickQty =  1+ ((RAD2DEG(videoCapture->calibration.fovHeight) /2) / tickIncrement); // Add 1 for the tick at position 0
+	for (int tickIndex = -tickQty; tickIndex <= tickQty; tickIndex++)
+	{
+		// Short tick every 2.5 degree.
+		// Medium tick every 5 degree
+		//  Long tick every 10 degree
+		float tickLength = shortTick;
+		int tickWidth = 1;
+		if ((tickIndex % 4) == 0) 
+		{
+			tickLength = longTick;
+			tickWidth = 2;
+		}
+		else if ((tickIndex % 2) == 0) 
+		{
+		tickLength = mediumTick;
+		}
 
-	middleLeft.x = (frameWidth / 2) - (lineWidth/2);
-	middleLeft.y = (frameHeight / 2);
+		DrawHorizontalTicks(sourceFrame, targetFrame, tickIndex * tickIncrement, tickLength, tickWidth);
+	}
 
-	middleRight.x = (frameWidth / 2) + (lineWidth/2);
-	middleRight.y = (frameHeight / 2);
 
-	DrawContrastingLine(sourceFrame, targetFrame, topCenter, bottomCenter, thickness, 1);
-	DrawContrastingLine(sourceFrame, targetFrame, middleLeft, middleRight,  1, thickness);
+	// Draw vertical ticks
+	longTick = 25;  // Tick length in pixels (not the same as horizontal ticks)
+	mediumTick = 15;
+	shortTick = 8;
+	tickQty = 1+ ((RAD2DEG(videoCapture->calibration.fovWidth) /2) / tickIncrement); // Add 1 for the tick at position 0
+	for (int tickIndex = -tickQty; tickIndex <= tickQty; tickIndex++)
+	{
+		// Short tick every 2.5 degree.
+		// Medium tick every 5 degree
+		//  Long tick every 10 degree
+		float tickLength = shortTick;
+		int tickWidth = 1;
+		if ((tickIndex % 4) == 0) 
+		{
+			tickLength = longTick;
+			tickWidth = 2;
+		}
+		else if ((tickIndex % 2) == 0) 
+		{
+		tickLength = mediumTick;
+		}
+
+		DrawVerticalTicks(sourceFrame, targetFrame, tickIndex * tickIncrement, tickLength, tickWidth);
+	}
+}
+
+void VideoViewer::DrawHorizontalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness)
+
+{
+	cv::Vec3b colorEnhance = colorEnhanceGreen; // Yellow
+	cv::Vec3b colorDehance = colorDehanceGreen;
+
+	CvPoint startPoint;
+	CvPoint endPoint;
+
+	// Cartesian coord at the outer edge of screen
+	CartesianCoord lineCart(SphericalCoord(10, M_PI_2 - DEG2RAD(tickAngle), (videoCapture->calibration.fovWidth/2)));
+	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);
+	startPoint.x = videoCapture->calibration.frameWidthInPixels-1;
+	endPoint.y = startPoint.y;
+	endPoint.x = startPoint.x - tickLength;
+
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+
+	startPoint.x = 0;
+	endPoint.x = startPoint.x + tickLength;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+	
+
+	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
+	lineCart = SphericalCoord(10, M_PI_2 - DEG2RAD(tickAngle), 0);
+	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
+	startPoint.x = (videoCapture->calibration.frameWidthInPixels- tickLength) /2;
+	endPoint.y = startPoint.y;
+	endPoint.x = startPoint.x + tickLength;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+}
+
+void VideoViewer::DrawVerticalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness)
+
+{
+	cv::Vec3b colorEnhance = colorEnhanceGreen; // Yellow
+	cv::Vec3b colorDehance = colorDehanceGreen;
+
+	CvPoint startPoint;
+	CvPoint endPoint;
+
+	// Cartesian coord at the outer edge of the screen
+	CartesianCoord lineCart(SphericalCoord(10, M_PI_2-(videoCapture->calibration.fovHeight/2), DEG2RAD(-tickAngle)));
+	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);
+	startPoint.y = videoCapture->calibration.frameHeightInPixels-1;
+	endPoint.y = startPoint.y - tickLength;
+	endPoint.x = startPoint.x;
+
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+	startPoint.y = 0;
+	endPoint.y = startPoint.y + tickLength;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+
+	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
+	lineCart = SphericalCoord(10, M_PI_2, DEG2RAD(-tickAngle));
+	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
+	startPoint.y = (videoCapture->calibration.frameHeightInPixels - tickLength) / 2;
+	endPoint.y = startPoint.y + tickLength;
+	endPoint.x = startPoint.x;
+	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
 }
 
 void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness)
@@ -401,23 +448,23 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 	{
 	case Detection::eThreatNone: 
 		{
-			colorEnhance = cv::Vec3b(128, 0, 0);  // Blue
-			colorDehance = cv::Vec3b(0, 64, 64);
+			colorEnhance = colorEnhanceBlue;  // Blue
+			colorDehance = colorDehanceBlue;
 			iThickness = 5;
 		}
 		break;
 	case Detection::eThreatLow:
 		{
-			colorEnhance = cv::Vec3b(0, 128, 0); // Green
-			colorDehance = cv::Vec3b(64, 0,64);
+			colorEnhance = colorEnhanceGreen; // Green
+			colorDehance = colorDehanceGreen;
 			iThickness = 5;
 		}
 		break;
 
 	case Detection::eThreatWarn:
 		{
-			colorEnhance = cv::Vec3b(0, 64, 64); // Yellow
-			colorDehance = cv::Vec3b(32, 0, 0);
+			colorEnhance = colorEnhanceYellow; // Yellow
+			colorDehance = colorDehanceYellow;
 			iThickness = 15;
 			if (bFlash) iThickness = 5;	
 		}
@@ -425,8 +472,8 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 
 	case Detection::eThreatCritical:
 		{
-	 		colorEnhance = cv::Vec3b(0, 0, 128);  // Red
-			colorDehance = cv::Vec3b(32, 32, 0);
+			colorEnhance = colorEnhanceRed;  // Red
+			colorDehance = colorDehanceRed;
 			iThickness = 15;
 			if (bFlash) iThickness = 5;
 		}
@@ -435,6 +482,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 	default:
 		{
 			colorEnhance = cv::Vec3b(0, 0, 0);
+			colorDehance = cv::Vec3b(255, 255, 255);
 		}
 
 	} // case
@@ -502,10 +550,17 @@ void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCa
 				{
 					cv::Vec3b	color = sourceFrame->at<cv::Vec3b>(pixelPos);
 
-					int r = (int)color[0]+ (int)colorEnhance[0] - (int)colorDehance[0];
-					int g = (int)color[1] + (int)colorEnhance[1] - (int)colorDehance[1];
-					int b = (int)color[2] + (int)colorEnhance[2] - (int)colorDehance[2];
-
+					int r = (int)color[0];
+					int g = (int)color[1];
+					int b = (int)color[2];
+					float lightness = ((r+g+b) / (3*255.0)); // Value from 0 (Dark) to 1.0 (Light)
+					r -= (colorDehance[0]) * lightness;
+					g -= (colorDehance[1]) * lightness;
+					b -= (colorDehance[2]) * lightness;
+					r += (colorEnhance[0]) * (1.0-lightness);
+					g += (colorEnhance[1]) * (1.0-lightness);
+					b += (colorEnhance[2]) * (1.0-lightness);
+	
 					if (r > 255) color[0] = 255;
 					else if (r < 0) color[0] = 0;
 					else		 color[0] = r;
@@ -517,6 +572,7 @@ void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCa
 					if (b > 255) color[2] = 255;
 					else if (b < 0) color[2] = 0;
 					else		 color[2] = b;
+
 					targetFrame->at<cv::Vec3b>(pixelPos) = color;
 				}
 			}

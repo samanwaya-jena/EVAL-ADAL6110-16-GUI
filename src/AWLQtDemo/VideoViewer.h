@@ -140,6 +140,9 @@ protected:
 
 	void DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight);
 
+	void DrawHorizontalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness);
+	void DrawVerticalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness);
+
 protected:
  	/** \brief Copy of the captured image. */
     VideoViewer::FramePtr cameraFrame;
