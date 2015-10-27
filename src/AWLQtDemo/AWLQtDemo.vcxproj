@@ -445,7 +445,9 @@
     <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_videostab249.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll" />
+    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -831,10 +833,10 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Phantom-Black-logo.jpg">
+    <None Include="Phantom-Black-logo.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Phantom-logo.jpg">
+    <None Include="Phantom-logo.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="plugin1.bin" />

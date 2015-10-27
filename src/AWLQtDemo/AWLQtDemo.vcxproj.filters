@@ -817,14 +817,14 @@
       <Filter>Installable DLLs</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Phantom-logo.jpg">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="Phantom-Black-logo.jpg">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
       <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="Phantom-Black-logo.bmp">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="Phantom-logo.bmp">
+      <Filter>Installable Files</Filter>
     </None>
   </ItemGroup>
 </Project>

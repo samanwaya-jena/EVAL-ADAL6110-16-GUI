@@ -281,7 +281,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phantom Intelligence LiDAR Demo"
         "ProductCode" = "8:{B31B59F4-3C34-4B65-98D3-02828BF04CC1}"
-        "PackageCode" = "8:{6D8D8BFD-7E15-4865-94FE-0E5955AC8784}"
+        "PackageCode" = "8:{5A1AEE1A-0C02-469E-AB32-C996C362209D}"
         "UpgradeCode" = "8:{6759E55C-25AE-4E89-8ABF-1AB789FB6717}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
