@@ -76,7 +76,6 @@ bool AWLSettings::ReadSettings()
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
-		receiverPtr->lineWrapAround = receiverNode.get<float>("lineWrapAround", 2000);
 		receiverPtr->lineWrapAround = receiverNode.get<float>("lineWrapAround", 32767.0);
 		receiverPtr->channelsPerLine = receiverNode.get<int>("channelsPerLine", 1);
 

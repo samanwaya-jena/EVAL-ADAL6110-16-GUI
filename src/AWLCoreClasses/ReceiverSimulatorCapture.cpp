@@ -69,15 +69,13 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		// Simulate some tracks for debug purposes
 		double elapsed = GetElapsed();
 
-		if (threadCount != 0) 
-		{ 
 			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, 0);
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 2.0;
+			track->distance = 10.0;
 			track->intensity = 7500;
-			track->channels = 0X7f;
+			track->channels = 0X09;
 
 			track->velocity = 3.0;
 			track->acceleration = 0;
@@ -96,12 +94,12 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 4;
+			track->distance = 25.0;
 			track->intensity= 2200;
-			track->channels = 0X7f;
+			track->channels = 0X09;
 
-			track->velocity = -3;
-			track->acceleration = -3;
+			track->velocity = 3;
+			track->acceleration = 0;
 			track->threatLevel = Detection::eThreatLow;
 			track->part1Entered = true;
 			track->part2Entered = true;
@@ -111,7 +109,46 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->probability = 99;
 			track->timeStamp = elapsed;
 			track->firstTimeStamp = elapsed;
-		}
+
+			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 2);
+			track->firstTimeStamp = currentFrame->timeStamp;
+
+			track->timeStamp = currentFrame->timeStamp;
+			track->distance = 40;
+			track->intensity= 2200;
+			track->channels = 0X09;
+
+			track->velocity = 3;
+			track->acceleration = 0;
+			track->threatLevel = Detection::eThreatLow;
+			track->part1Entered = true;
+			track->part2Entered = true;
+			track->part3Entered = true;
+			track->part4Entered = true;
+
+			track->probability = 99;
+			track->timeStamp = elapsed;
+			track->firstTimeStamp = elapsed;
+
+			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 3);
+
+			track->firstTimeStamp = currentFrame->timeStamp;
+			track->timeStamp = currentFrame->timeStamp;
+			track->distance = 55;
+			track->intensity= 2200;
+			track->channels = 0X09;
+
+			track->velocity = 3;
+			track->acceleration = 0;
+			track->threatLevel = Detection::eThreatLow;
+			track->part1Entered = true;
+			track->part2Entered = true;
+			track->part3Entered = true;
+			track->part4Entered = true;
+
+			track->probability = 99;
+			track->timeStamp = elapsed;
+			track->firstTimeStamp = elapsed;
 
 		threadCount = ++ threadCount % 7;
 		ProcessCompletedFrame();
