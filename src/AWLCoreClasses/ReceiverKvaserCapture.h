@@ -49,7 +49,8 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
 		* \param[in] inKvaserChannel CAN Channel ID at the Kvaser level
-	    * \param[in] inFrameRate frameRate of the receiver
+		* \param[in] inCANRate bit rate of the Receiver Unit (in kBPS).  See ReceiverCANCapture for allowable values (default should be 1MBps).
+		* \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
@@ -60,7 +61,7 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int &inKvaserChannel,
+	ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int inKvaserChannel, ReceiverCANCapture::eReceiverCANRate inCANRate, 
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 
@@ -119,10 +120,17 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
+	/** \brief Converts the ReceiverCANCapture canRate into a KVaser-specific rate code, stored in the canBitRateCode member.
+      */
+	void ConvertKvaserCANBitRateCode();
+
 // Protected variables
 protected:
 	    /** \brief KVaser CAN Channel */
 		int canChannelID;
+
+	    /** \brief KVaser CAN BitRate code, as defined in canlib.h. Default is canBITRATE_1M*/
+		long canBitRateCode;
 
 		/** \brief KVaser hndlke to the commPort */
 		KvaserHandle kvaserHandle;

@@ -50,19 +50,18 @@ const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh ra
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
-const int defaultKvaserBitRate = canBITRATE_1M;
-
-ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int &inKvaserChannel, 
+ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int inKvaserChannel, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCANCapture(receiverID, inReceiverChannelQty, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+ReceiverCANCapture(receiverID, inReceiverChannelQty, inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
 canChannelID(inKvaserChannel),
 kvaserHandle(-1),
 closeCANReentryCount(0)
 
 {
-
+	ConvertKvaserCANBitRateCode();
 }
+
 
 
 ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, boost::property_tree::ptree &propTree):
@@ -75,6 +74,7 @@ closeCANReentryCount(0)
 	// Read the configuration from the configuration file
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
+	ConvertKvaserCANBitRateCode();
 }
 
 ReceiverKvaserCapture::~ReceiverKvaserCapture()
@@ -128,7 +128,7 @@ bool  ReceiverKvaserCapture::OpenCANPort()
     // controller data sheets, and on the web at
     // http://www.kvaser.se.
     //
-    status = canSetBusParams(kvaserHandle, defaultKvaserBitRate, 0, 0, 0, 0, 0);
+    status = canSetBusParams(kvaserHandle, canBitRateCode, 0, 0, 0, 0, 0);
     if (status < 0) 
 	{
        CheckStatus("canSetBusParam", status);
@@ -336,3 +336,52 @@ bool ReceiverKvaserCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 		return(true);
 }
 
+void ReceiverKvaserCapture::ConvertKvaserCANBitRateCode()
+{
+	switch (canRate)
+	{		
+	case canRate1Mbps: 
+		{
+			canBitRateCode = canBITRATE_1M;
+		}
+		break;
+	case canRate500kbps:
+		{
+			canBitRateCode = canBITRATE_500K;
+		}
+		break;
+
+	case canRate250kbps:
+		{
+			canBitRateCode = canBITRATE_250K;
+		}
+		break;
+
+	case canRate125kbps:
+		{
+			canBitRateCode = canBITRATE_125K;
+		}
+		break;
+	case canRate100kbps:
+		{
+			canBitRateCode = canBITRATE_100K;
+		}
+		break;
+	case canRate50kbps:
+		{
+			canBitRateCode = canBITRATE_50K;
+		}
+		break;
+
+	case canRate10kps:
+		{
+			canBitRateCode = canBITRATE_10K;
+		}
+		break;
+	default:
+		{
+			canBitRateCode = canBITRATE_1M;
+		}
+		break;
+	}
+}

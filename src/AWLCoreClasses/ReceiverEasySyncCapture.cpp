@@ -39,13 +39,13 @@ const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh ra
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
-const std::string	sDefaultEasySyncBitRate = "S8";  // Bit rate command for EasySDync CAN Adapter: "S2" = 50Kbps,  "S8" = 1Mbps
+
 const long		    defaultSerialPortRate = 921600;  // Default PC Serial Port rate for EasySync CAN adapter.
 
-ReceiverEasySyncCapture::ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, 
+ReceiverEasySyncCapture::ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCANCapture(receiverID, inReceiverChannelQty, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+ReceiverCANCapture(receiverID, inReceiverChannelQty, inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
 port(NULL),
 reader(NULL),
 io(),
@@ -58,7 +58,8 @@ closeCANReentryCount(0)
 
 
 	serialPortRate = defaultSerialPortRate;
-	sBitRate = sDefaultEasySyncBitRate;// "S2" = 50Kbps,  "S8" = 1Mbps
+
+	ConvertEasySyncCANBitRateCode();
 }
 
 
@@ -77,7 +78,7 @@ closeCANReentryCount(0)
 
 	// Default values that are not in the configuration file anymore
 	serialPortRate = defaultSerialPortRate;
-	sBitRate = sDefaultEasySyncBitRate;// "S2" = 50Kbps,  "S8" = 1Mbps
+	ConvertEasySyncCANBitRateCode();
 }
 
 ReceiverEasySyncCapture::~ReceiverEasySyncCapture()
@@ -121,7 +122,7 @@ bool  ReceiverEasySyncCapture::OpenCANPort()
 	port->set_option(boost::asio::serial_port_base::baud_rate(serialPortRate));
 
 	// Send the initialization strings
-	WriteString(sBitRate+"\r"); // Set CAN Rate ("S2"->50Kbps, "S3"->100Kbps, "S8"->1Gbps)
+	WriteString(sCANBitRateCode+"\r"); // Set CAN Rate ("S2"->50Kbps, "S3"->100Kbps, "S8"->1Gbps)
 	WriteString("O\r");  // Open
 	WriteString("Z0\r");  // Make sure no timestamps are attached
 	WriteString("E\r");  // Flush/ Resync
@@ -413,3 +414,56 @@ bool ReceiverEasySyncCapture::ReadConfigFromPropTree(boost::property_tree::ptree
 		return(true);
 }
 
+void ReceiverEasySyncCapture::ConvertEasySyncCANBitRateCode()
+{
+	switch (canRate)
+	{		
+	case canRate1Mbps: 
+		{
+			sCANBitRateCode = "S8";
+		}
+		break;
+
+	case canRate500kbps:
+		{
+			sCANBitRateCode = "S6";
+		}
+		break;
+
+	case canRate250kbps:
+		{
+			sCANBitRateCode = "S5";
+		}
+		break;
+
+	case canRate125kbps:
+		{
+			sCANBitRateCode = "S4";
+		}
+		break;
+
+	case canRate100kbps:
+		{
+			sCANBitRateCode = "S3";
+		}
+		break;
+
+	case canRate50kbps:
+		{
+			sCANBitRateCode = "S2";
+		}
+		break;
+
+	case canRate10kps:
+		{
+			sCANBitRateCode = "S0";
+		}
+		break;
+
+	default:
+		{
+			sCANBitRateCode = "S8";  // Default is 1Mbps
+		}
+		break;
+	}
+}

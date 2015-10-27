@@ -36,15 +36,16 @@ const float maxIntensity = 1024.0;
 
 const uint16_t		defaultYearOffset = 1900;		// On AWL, all CAN Dates are sent as offsets from 1900 
 const uint16_t		defaultMonthOffset = 1;		// On AWL, all CAN months start at 0.  Posix months start at 1.
-
+const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::canRate1Mbps;
 
 #define ConvertIntensityToSNR(v) (((v)/2.0) - 21.0)
 
 
-ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, 
+ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, eReceiverCANRate inCANRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
 ReceiverCapture(receiverID, inReceiverChannelQty, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+canRate(inCANRate),
 closeCANReentryCount(0)
 
 {
@@ -1543,7 +1544,7 @@ bool ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &pro
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
 		// Get the parameters here
-
+		canRate = (eReceiverCANRate) receiverNode.get<int>("canBitRate", defaultCANRate);
 		return(true);
 }
 

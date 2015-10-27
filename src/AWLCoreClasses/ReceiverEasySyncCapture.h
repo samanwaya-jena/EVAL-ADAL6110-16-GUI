@@ -53,6 +53,7 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
 		* \param[in] inSerialPort name of the serial port for the receiver
+		* \param[in] inCANRate bit rate of the Receiver Unit (in kBPS).  See ReceiverCANCapture for allowable values (default should be 1MBps).
 	    * \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
@@ -64,7 +65,7 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, 
+	ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 
@@ -148,10 +149,11 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
+	/** \brief Converts the ReceiverCANCapture canRate into a EasySync-specific rate string, stored in the canBitRateCode member.
+      */
+	void ConvertEasySyncCANBitRateCode();
 // Protected variables
 protected:
-	    /** \brief String sent to the EasySync to control the bitRate of the CAN to USB converter */
-		std::string	sBitRate;
 	    /** \brief Operating system identification string for the communications port (ex: "COM16") */
 		std::string sCommPort;
 	    /** \brief Commmunications rate, in baud.*/
@@ -173,6 +175,9 @@ protected:
 
 		/** \brief counter in the closeCanPort() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
+
+		/** \brief EasySync CAN BitRate string.  Default should be "S8" for 1MBPS (see EasySync "Set CAN Channel Timing – simple" command). */
+		std::string sCANBitRateCode;
 };
 
 } // namespace AWL

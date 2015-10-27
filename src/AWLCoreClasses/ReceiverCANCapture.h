@@ -67,11 +67,24 @@ public:
 	typedef boost::shared_ptr<ReceiverCANCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCANCapture> ConstPtr;
 
+	typedef enum eReceiverCANRate 
+	{
+		canRate1Mbps = 1000,
+		canRate500kbps = 500,
+		canRate250kbps = 250,
+		canRate125kbps = 125,
+		canRate100kbps = 100,
+		canRate50kbps = 50,
+		canRate10kps = 10
+	}
+	eReceiverCANRate;
+
 // public Methods
 public:
 	/** \brief ReceiverCANCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
+	    * \param[in] inCANRate CAN Communitcations baud rate of the receiver
 	    * \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
@@ -83,7 +96,7 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, 
+	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, eReceiverCANRate inCANRate, 
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 
@@ -456,6 +469,11 @@ protected:
 
 		/** \brief counter in the closeCanPort() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
+
+		/** \brief CAN Rate
+		  *
+		 */
+		eReceiverCANRate canRate;
 };
 
 } // namespace AWL
