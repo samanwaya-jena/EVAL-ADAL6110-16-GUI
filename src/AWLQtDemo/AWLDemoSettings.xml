@@ -16,7 +16,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Phantom-logo.jpg</logoFileName>
+    <logoFileName>Phantom-logo.bmp</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>AWLQtDemo.ico</iconFileName>
@@ -45,7 +45,20 @@
 
       <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
       <kvaserChannel>0</kvaserChannel>
-      
+
+      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+           Supported Values are:
+              		canRate1Mbps = 1000,
+		              canRate500kbps = 500,
+		              canRate250kbps = 250,
+		              canRate125kbps = 125,
+		              canRate100kbps = 100,
+		              canRate50kbps = 50,
+		              canRate10kps = 10
+            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
+           -->
+      <canBitRate>1000</canBitRate>
+
       <frameRate>30</frameRate>
 
       <!-- Channel mask: Controls which channels are
