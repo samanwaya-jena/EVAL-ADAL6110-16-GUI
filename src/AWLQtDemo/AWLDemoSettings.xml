@@ -4,11 +4,12 @@
   <layout>
     <!-- default layout at startup.  Tells which windows and parts of
 	       screen are displayed. -->
+    <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
-    <displayTableViewWindow>false</displayTableViewWindow>
+    <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>false</displayScopeWindow>
-    <displayCameraWindow>true</displayCameraWindow>
+    <displayCameraWindow>false</displayCameraWindow>
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
@@ -16,10 +17,20 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Phantom-logo.bmp</logoFileName>
+    <logoFileName>Phantom-Black-logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>AWLQtDemo.ico</iconFileName>
+
+    <!-- displayShowSize:: Default display mode for the main window
+         Possible values are:
+         "FullScreen" - Show full screen
+         "Maximized" - Show maximized
+         "Minimized" - Show Minimized
+         "Normal" = Show normal
+         Defaults to "Normal"
+         -->
+    <displayShowSize>Maximized</displayShowSize>
   </layout>
 
   <debug>
@@ -38,7 +49,7 @@
 		       Receiver is used in the configuration.
 		       This can influence comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KVaserLeaf</receiverType>
+      <receiverType>Simulator</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -93,7 +104,7 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>0.5</displayedRangeMin>
+      <displayedRangeMin>1.0</displayedRangeMin>
       <displayedRangeMax>15</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
 
@@ -118,9 +129,9 @@
         </orientation>
         <maxRange>15</maxRange>
         <displayColor>
-          <red>128</red>
-          <green>216</green>
-          <blue>168</blue>
+          <red>192</red>
+          <green>192</green>
+          <blue>192</blue>
         </displayColor>
       </channel0>
 
@@ -137,10 +148,10 @@
         </orientation>
         <maxRange>15</maxRange>
          <displayColor>
-          <red>54</red>
-          <green>166</green>
-          <blue>38</blue>
-        </displayColor>
+           <red>192</red>
+           <green>192</green>
+           <blue>192</blue>
+         </displayColor>
       </channel1>
 
       <channel2>
@@ -156,9 +167,9 @@
         </orientation>
         <maxRange>15</maxRange>
         <displayColor>
-          <red>54</red>
-          <green>166</green>
-          <blue>38</blue>
+          <red>192</red>
+          <green>192</green>
+          <blue>192</blue>
         </displayColor>
       </channel2>
 
@@ -175,9 +186,9 @@
         </orientation>
         <maxRange>15</maxRange>
         <displayColor>
-          <red>128</red>
-          <green>216</green>
-          <blue>168</blue>
+          <red>192</red>
+          <green>192</green>
+          <blue>192</blue>
         </displayColor>
       </channel3>
 
@@ -194,9 +205,9 @@
         </orientation>
         <maxRange>30</maxRange>
         <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
         </displayColor>
       </channel4>
 
@@ -213,9 +224,9 @@
         </orientation>
         <maxRange>30</maxRange>
         <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
         </displayColor>
       </channel5>
 
@@ -232,9 +243,9 @@
         </orientation>
         <maxRange>30</maxRange>
         <displayColor>
-          <red>172</red>
-          <green>192</green>
-          <blue>217</blue>
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
         </displayColor>
       </channel6>
     </receiver0>
@@ -250,13 +261,13 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName>
+      <cameraName>0</cameraName>
       <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>true</cameraFlip>
+      <cameraFlip>false</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->
@@ -460,7 +471,7 @@
 
   
   <displayTableView>
-    <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
+    <displayedDetectionsPerChannelInTableView>4</displayedDetectionsPerChannelInTableView>
   </displayTableView>
 
   <display2D>
@@ -517,13 +528,13 @@
        2: Colors indicate obstacle type
        3: Colors correspond to channel "color"
      -->
-    <colorCode>1</colorCode>
+    <colorCode>3</colorCode>
 
     <!-- displayDistances
 	     0: Hide all distances
 	     1: Show all distances 
      -->
-    <displayDistances>1</displayDistances>
+    <displayDistances>0</displayDistances>
 
 
     <!-- displayZoom
@@ -547,7 +558,7 @@
        0: Hide
        1: Show
      -->
-    <showPalette>1</showPalette>
+    <showPalette>0</showPalette>
     
     
   </display2D>

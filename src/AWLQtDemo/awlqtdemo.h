@@ -113,6 +113,7 @@ private slots:
 	void on_globalParametersSetPushButton_clicked();
 	void on_globalParametersGetPushButton_clicked();
 
+	void on_viewSettingsActionToggled();
 	void on_view3DActionToggled();
 	void on_view2DActionToggled();
 	void on_viewTableViewActionToggled();

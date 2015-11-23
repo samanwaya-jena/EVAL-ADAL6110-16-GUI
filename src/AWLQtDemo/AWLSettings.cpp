@@ -140,6 +140,7 @@ bool AWLSettings::ReadSettings()
 	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile");
 
 	// Other settings
+	bDisplaySettingsWindow = propTree.get<bool>("config.layout.displaySettingsWindow");
 	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow");
 	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow");
 	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow");;
@@ -150,6 +151,7 @@ bool AWLSettings::ReadSettings()
 
 	sLogoFileName = propTree.get<std::string>("config.layout.logoFileName");
 	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
+	sDisplayShowSize = propTree.get<std::string>("config.layout.displayShowSize", "Normal");
 
 	decimation = propTree.get<int>("config.display3D.decimation");
 	pixelSize = propTree.get<int>("config.display3D.pixelSize");

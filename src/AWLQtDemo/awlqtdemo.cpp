@@ -57,6 +57,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 {
 	ui.setupUi(this);
 
+//	ui.horizontalLayout->addStretch(3);
+//	ui.horizontalLayout->addStretch(3);
+//	ui.horizontalLayout->addStretch(2);
+
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
@@ -72,16 +76,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Build a reference coodinate system from the settings
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings(globalSettings->GetPropTree());
-
-	// Position the main widget on the top left corner
-	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
-	QRect frame = frameGeometry();
-	QRect client = geometry();
-	int verticalDecorationsHeight = frame.height() - client.height();
-	int horizontalDecorationsWidth = frame.width() - client.width();
-
-	show();
-	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
 
 	// Adjust the default displayed ranges depending on the sensor capabilities
 	AdjustDefaultDisplayedRanges();
@@ -129,7 +123,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		QString cameraName(this->windowTitle()+" Camera");
 		cameraName.append(QString().sprintf(" %02d", videoViewerID));
 		
-		videoViewers.push_back(VideoViewer::Ptr(new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID])));
+		VideoViewer *viewer =  new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID]);
+		videoViewers.push_back(VideoViewer::Ptr(viewer));
 	}
 
 	// Fill the parameters  tables from the settings
@@ -225,10 +220,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
 	 scopeWindow = new AWLQtScope();
-	 if (ui.actionGraph->isChecked()) 
-	 {
-		 scopeWindow->show();
-	 }
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
@@ -304,7 +295,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		break;
 
 	}
-		// Menu items signals and slots
+
+	// Menu items signals and slots
+	connect(ui.actionSettings, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
+	ui.actionSettings->setChecked(globalSettings->bDisplaySettingsWindow);
+
 	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
 	ui.action2D->setChecked(globalSettings->bDisplay2DWindow);
 
@@ -328,6 +323,100 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
+
+	// Position the objects in the layout in order
+#if 0
+	ui.horizontalLayout->addWidget(m2DScan, 0, Qt::AlignTop);
+	ui.horizontalLayout->addWidget(mTableView, 0,  Qt::AlignTop);
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		ui.horizontalLayout->addWidget(videoViewers[videoViewerID].get(), 0,  Qt::AlignTop);
+	}
+#else
+	ui.horizontalLayout->addWidget(m2DScan);
+	ui.horizontalLayout->addWidget(mTableView, 0, Qt::AlignTop);
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		ui.horizontalLayout->addWidget(videoViewers[videoViewerID].get(), 0 , Qt::AlignTop);
+	}
+#endif
+	// Show hide the windows according to menu
+	// Scope
+	if (ui.actionGraph->isChecked()) 
+	 {
+		 scopeWindow->show();
+	 }
+	else 
+	{
+		scopeWindow->hide();
+	}
+
+	// Interface parameters
+	if (ui.actionSettings->isChecked()) 
+	{   
+		ui.interfaceTabs->show();
+	}
+	else
+	{
+		ui.interfaceTabs->hide();
+	}
+
+	// 2D View
+	if (ui.action2D->isChecked())
+	{
+		m2DScan->show();
+	}
+	else
+	{		
+		m2DScan->hide();
+	}
+
+
+	// Table view
+	if (ui.actionTableView->isChecked()) 
+	{
+		mTableView->show();
+	}
+	else
+	{
+		mTableView->hide();
+	}
+
+
+	// Camera views
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		if (ui.actionCamera->isChecked())
+		{
+			videoViewers[videoViewerID]->show();
+		}
+		else 
+		{
+			videoViewers[videoViewerID]->hide();
+		}
+	}
+
+
+	// Position the main widget on the top left corner
+	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
+	QRect frame = frameGeometry();
+	QRect client = geometry();
+	int verticalDecorationsHeight = frame.height() - client.height();
+	int horizontalDecorationsWidth = frame.width() - client.width();
+	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
+
+	if (boost::iequals(globalSettings->sDisplayShowSize, "FullScreen"))
+		showFullScreen();
+	else if (boost::iequals(globalSettings->sDisplayShowSize, "Maximized"))
+		showMaximized();
+	else if (boost::iequals(globalSettings->sDisplayShowSize, "Minimized"))
+		showMinimized();
+	else if (boost::iequals(globalSettings->sDisplayShowSize, "Normal"))
+		showNormal();
+	else
+		showNormal();
+
+
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -371,11 +460,6 @@ void AWLQtDemo::on_destroy()
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
-	}
-
-	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
-	{
-		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
 	}
 
 	if (m2DScan) delete m2DScan;
@@ -853,7 +937,7 @@ void AWLQtDemo::on_timerTimeout()
 		// Always spin the video viewers.
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
-			if (videoViewers[viewerID] && !videoViewers[viewerID]->WasStopped()) videoViewers[viewerID]->SpinOnce();
+			if (videoViewers[viewerID]) videoViewers[viewerID]->slotImageChanged();
 		}
 	}
 
@@ -1608,21 +1692,31 @@ void AWLQtDemo::on_viewTableViewActionToggled()
 {
 	if (ui.actionTableView->isChecked()) 
 	{
-		// Place the table view in the top left of screen
-		QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
-
-		mTableView->move(scr.left(), scr.top());
 		mTableView->show();
-		QRect frame = mTableView->frameGeometry();
-		QRect client = mTableView->geometry();
-		int verticalDecorationsHeight = frame.height() - client.height();
-		int horizontalDecorationsWidth = frame.width() - client.width();		
-		mTableView->resize(client.width(), scr.height() - verticalDecorationsHeight);
-
 		mTableView->slotConfigChanged();
 	}
 	else
 		mTableView->hide();
+}
+
+void AWLQtDemo::on_viewSettingsActionToggled()
+{
+//	QSize size = this->geometry().size();
+//	setBaseSize(size);
+//	updateGeometry();
+//	QLayout::SizeConstraint oldContraint = layout()->sizeConstraint();
+//	layout()->setSizeConstraint(QLayout::SetFixedSize);
+	if (ui.actionSettings->isChecked()) 
+	{
+	
+		ui.interfaceTabs->show();
+	}
+	else 
+	{
+		ui.interfaceTabs->hide();
+	}
+
+//	setMaximumSize(65535, 65535);
 }
 
 void AWLQtDemo::on_viewGraphActionToggled()
@@ -1645,13 +1739,15 @@ void AWLQtDemo::on_viewCameraActionToggled()
 	{
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
-			if (videoViewers[viewerID]) videoViewers[viewerID]->Go();
+			if (videoViewers[viewerID]) {
+				videoViewers[viewerID]->show();
+			}
 
 		// Position the video viewer.
 		// This has to be done agfter the Go(), to make sure the window is created
-		QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
-		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
-		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
+//		QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
+//		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
+//		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
 		}
 	}
 
@@ -1659,7 +1755,10 @@ void AWLQtDemo::on_viewCameraActionToggled()
 	{
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
-			if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
+			if (videoViewers[viewerID]) 
+			{
+				videoViewers[viewerID]->hide();
+			}
 		}
 	}
 }
@@ -1946,11 +2045,6 @@ void AWLQtDemo::closeEvent(QCloseEvent * event)
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
-	}
-
-	for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
-	{
-		if (videoViewers[viewerID]) videoViewers[viewerID]->Stop();
 	}
 
 	qApp->closeAllWindows();

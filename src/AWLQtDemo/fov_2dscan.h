@@ -23,6 +23,7 @@
 #include <QAction>
 #include <QActionGroup>
 
+#include "ui_FOV_2dScan.h"
 #include "DetectionStruct.h"
 
 namespace awl
@@ -96,9 +97,12 @@ public:
 	} DisplayZoomMode;
 
 
+	QSize sizeHint() const;
+	QSize minimumSizeHint() const;
+	QSize maximumSizeHint() const;
+
 signals:
     void closed();
-
 public slots:
     void slotConfigChanged(const ConfigSensor &inConfig);
     void slotDetectionDataChanged(const Detection::Vector & data);
@@ -110,11 +114,15 @@ public slots:
 	void slotDisplayDistanceModeAction();
 	void slotDisplayZoomModeAction();
 
+
+
 protected :
     void paintEvent(QPaintEvent *p);
 	void closeEvent(QCloseEvent * event);
 	void resizeEvent(QResizeEvent * event);
 private:
+	//Action Item
+	Ui::FOV_2DScanFrame ui;
 
 	float carWidth;
 	float carLength;
@@ -180,7 +188,7 @@ private:
 	void drawArc(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset = 0, float yOffset = 0);
     void drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset);
     void drawLine(QPainter* p, float angle, float startRadius, float length);
-    void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black);
+    void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, int xOffset = 0);
     void drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor, bool drawTarget = true, bool drawLegend = true);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
@@ -198,7 +206,7 @@ private:
 	void drawMergedData(QPainter* p, const Detection::Vector &data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
 
 	void createAction();
-	
+	void calculateResize();
 };
 
 

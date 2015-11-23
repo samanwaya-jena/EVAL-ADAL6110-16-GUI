@@ -38,9 +38,9 @@ public:
 		eRealTimeReceiverIDColumn = 0,
 		eRealTimeChannelIDColumn = 1,
 		eRealTimeDetectionIDColumn = 2,
-		eRealTimeDistanceColumn = 3,
-		eRealTimeIntensityColumn = 4,
-		eRealTimeTrackColumn = 5,
+		eRealTimeTrackColumn = 3,
+		eRealTimeDistanceColumn = 4,
+		eRealTimeIntensityColumn = 5,
 		eRealTimeVelocityColumn = 6,
 		eRealTimeCollisionLevelColumn = 7
 	};
@@ -48,7 +48,9 @@ public:
 
 public:
     explicit TableView(QWidget *parent = 0);
-
+	QSize sizeHint() const;
+	QSize minimumSizeHint() const;
+	QSize maximumSizeHint() const;
 
 signals:
     void closed();
@@ -64,7 +66,11 @@ protected :
 	void resizeEvent(QResizeEvent * event);
 
 private:
+	QSize unconstrainedTableSize() const;
+
 	void PrepareTableViews();
+	void AdjustTableSize();
+
 	void DisplayReceiverValues(const Detection::Vector &data);
 	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,

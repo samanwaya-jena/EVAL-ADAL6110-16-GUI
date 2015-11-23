@@ -29,9 +29,12 @@ using namespace std;
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
 
-#include "LoopedWorker.h"
 #include "VideoCapture.h"
 #include "DetectionStruct.h"
+
+#include <QWidget>
+#include <QFrame>
+#include <QImage>
 
 namespace awl
 {
@@ -40,9 +43,19 @@ namespace awl
   *        The video display class is a non-threaded class based on OpenCV.
   * \author Jean-Yves Deschênes
   */
-class VideoViewer: public LoopedWorker 
+class VideoViewer: public QFrame
+
 {
+	Q_OBJECT
 public:
+	/** \brief Video Viewer constructor.
+      * \param[in] inCameraName string used to identify camera and used as window title
+
+	  * \param[in] inVideoCapture videoCaptureDevice we feed image from.
+	  * \param[in] inProjector receiverProjector that supplies us with range info
+      */
+	explicit VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget=0);
+
 	typedef boost::shared_ptr<cv::Mat> FramePtr;
 	typedef boost::container::vector<FramePtr> FrameList;
 	
@@ -51,12 +64,6 @@ public:
 	typedef boost::container::vector<VideoViewer::Ptr> List;
 	typedef VideoViewer::List *ListPtr;
 
-	/** \brief Video Viewer constructor.
-      * \param[in] inCameraName string used to identify camera and used as window title
-      * \param[in] inVideoCapture videoCaptureDevice we feed image from.
-	  * \param[in] inProjector receiverProjector that supplies us with range info
-      */
-	VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture);
 
 	/** \brief Video Viewer destructor. Insures that the viewer is Stopped()
       */
@@ -75,18 +82,15 @@ public:
       */
 	bool  WasStopped();
 
-	/** \brief Perform the video display update
-      */
-	void SpinOnce();
+	QSize sizeHint() const;
+	QSize minimumSizeHint() const;
+	QSize maximumSizeHint() const;
 
-	/** \brief Move the window at position left, top.
-	  * \remarks implemented for compatibility  with Qt (hence name convention).
-      */
-	void move(int left, int top); 
-
-	/** \brief Update the detection positions.
+public slots:
+   	/** \brief Update the detection positions.
       */
 	void slotDetectionDataChanged(const Detection::Vector & data);
+	void slotImageChanged();
 
 protected:
 	/** \brief Modify the videoCapture source. 
@@ -98,19 +102,15 @@ protected:
 
 
 	/** \brief Resize the window to fit the screen.
-	  * \remarks implemented for compatibility  with Qt.
       */
-	void SizeWindow();
+	void resizeEvent(QResizeEvent * event);
 
-	void DisplayReceiverValues(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & data);
-
-
-	void DisplayTarget(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection);
-
-	void DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame);
+	void DisplayReceiverValues(QImage &sourceFame, QPainter& painter, const Detection::Vector & data);
 
 protected:
-	void GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness);
+	void paintEvent(QPaintEvent* /*event*/); 
+
+	void GetDetectionColors(const Detection::Ptr &detection, QColor &colorEnhance,  int &iThickness);
 	/** \brief get the four corners of the specified Detection's channel FOV, as projected at the Detection distance
 	  *         in the camera plane.
 	  *\return Returns false if all the points in the projection are behind the camera plane. Returns true
@@ -119,43 +119,33 @@ protected:
 
 	bool GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
 
+	
+
+	void DisplayTarget(QImage &sourceFame, QPainter& painter, const Detection::Ptr &detection);
+
+	void DisplayCrossHairs(QImage &sourceFame, QPainter& painter);
+
 	/** \brief Draw an "enhanced" detection line over the target frame.
 	           We take the original background from the source frame.  
 			   This way, we avoid a "pile-up" of enhancements that can be confusing.
 			   Since the detections are sorted in order of threatLevel, this insures that the most menacing threats 
 			   are always displayed correctly.
       */
-    void DrawDetectionLine(VideoCapture::FramePtr &sourceFame, VideoCapture::FramePtr &targetFrame, 
+    void DrawDetectionLine(QImage &sourceFame, QPainter& painter,
 						 const CvPoint &startPoint, const CvPoint &endPoint,  
-						 const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, 
-						 int iWidth, int iHeight);
+						 QColor &colorEnhance,
+						 int penWidth);
 
-	/** \brief Draw a contrasting lineline over the target frame.
-	           We take the original background from the source frame. And paint the line gray: ligther on dark pixel, darker on light pixels;
-
-			   This way, we avoid a "pile-up" of enhancements that can be confusing.
-			   Since the detections are sorted in order of threatLevel, this insures that the most menacing threats 
-			   are always displayed correctly.
-      */
-
-	void DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight);
-
-	void DrawHorizontalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness);
-	void DrawVerticalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness);
+	void DrawHorizontalTicks(QImage &sourceFrame, QPainter& painter, float tickAngle, float tickLength, int thickness);
+	void DrawVerticalTicks(QImage &sourceFrame,  QPainter& painter, float tickAngle, float tickLength, int thickness);
 
 protected:
- 	/** \brief Copy of the captured image. */
-    VideoViewer::FramePtr cameraFrame;
+	/** \brief Copy of the captured image. */
+    QImage qtCameraFrame;
 
-	/** \brief Frames used for painting and display. 
-	           As we are double-buffering, the displayed frame is
-			   never the one that is being painted on.
-	*/
-	FrameList workFrames;
+	/** \brief Copy of the captured image, but with the image enhancements */
+    QImage qtEnhancedFrame;
 
-	/** \brief Index of frame currently being used for work, previous to display
-	*/
-	int currentWorkFrameIndex;
 
 	/** \brief Camera name, also used as the window title */
 	std::string cameraName;
@@ -171,6 +161,9 @@ protected:
 
 	/** \brief Vector containing the detections to be displayed */
    Detection::Vector detectionData;
+
+   /** \brief Screen scale factor in Qt Widget */
+   float displayScaleFactor;
 }; // VideoViewer
 
 } // namespace awl

@@ -19,6 +19,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QTableWidget>
+#include <QScrollBar>
 #include <QListWidget>
 
 #include <boost/foreach.hpp>
@@ -34,6 +35,8 @@ TableView::TableView(QWidget *parent) :
     QFrame(parent)
 {
 	ui.setupUi(this);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	ui.distanceTable->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded); 
 	setWindowIcon(QApplication::windowIcon());
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -84,6 +87,7 @@ void TableView::createAction()
 
 	connect(groupDetectionsPerChannel, SIGNAL(triggered(QAction*)), this, SLOT(slotDetectionsPerChannelAction()));
 	PrepareTableViews();
+	AdjustTableSize();
 }
 
 void TableView::slotDetectionsPerChannelAction()
@@ -115,11 +119,13 @@ void TableView::slotDetectionsPerChannelAction()
 	}
 
 	PrepareTableViews();
+	AdjustTableSize();
 }
 
 void TableView::slotConfigChanged()
 {
 	PrepareTableViews();
+	AdjustTableSize();
 }
 
 void TableView::slotDetectionDataChanged(const Detection::Vector &data)
@@ -135,7 +141,9 @@ void TableView::closeEvent(QCloseEvent * event)
 
 void TableView::resizeEvent(QResizeEvent * event)
 {
-	ui.distanceTable->resize(ui.distanceTable->width(), height() -10);
+//	setMaximumSize(maximumSizeHint());
+//	ui.distanceTable->resize(ui.distanceTable->width(), height() -10);
+	PrepareTableViews();
 }
 
 void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
@@ -156,14 +164,105 @@ void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
 	mainMenu.exec(globalPos);
 }
 
+typedef struct 
+{
+		TableView::RealTimeColumn columnID;
+		int columnWidth;
+		int alignment;
+}
+TableColumSettings;
+
+TableColumSettings columSettings[] = {
+	{TableView::eRealTimeReceiverIDColumn,		40, Qt::AlignHCenter},
+	{TableView::eRealTimeChannelIDColumn,		40, Qt::AlignHCenter},
+	{TableView::eRealTimeDetectionIDColumn,		40, Qt::AlignHCenter},
+	{TableView::eRealTimeTrackColumn,			60, Qt::AlignHCenter},
+	{TableView::eRealTimeDistanceColumn,		65, Qt::AlignRight},
+	{TableView::eRealTimeIntensityColumn,		85, Qt::AlignRight},
+	{TableView::eRealTimeVelocityColumn,		65, Qt::AlignRight},
+	{TableView::eRealTimeCollisionLevelColumn,	50, Qt::AlignRight}
+};
+
+QSize TableView::sizeHint() const 
+{
+	return (maximumSizeHint());
+}
+
+const int scrollBarWidth = 6;
+
+QSize TableView::minimumSizeHint() const 
+
+{
+	// Calculate the dimensions of the table widget
+	QSize newSize = unconstrainedTableSize();
+
+	//Calculate height
+	QTableWidget *tableWidget = ui.distanceTable;
+	int rowCount = 4;
+	int tableHeight = 0;
+	newSize.setHeight(rowCount * (tableWidget->rowHeight(1)+1) + tableWidget->horizontalHeader()->height());
+
+	// Calculate the size of the frame around it.
+	int leftMargin, rightMargin, topMargin, bottomMargin;
+	layout()->getContentsMargins(&leftMargin, &topMargin, &rightMargin, &bottomMargin);
+	newSize.setWidth(newSize.width() + leftMargin + rightMargin); 
+	newSize.setHeight(newSize.height() + topMargin + bottomMargin);
+	return (newSize);
+}
+
+QSize TableView::maximumSizeHint() const 
+
+{
+	QSize newSize = unconstrainedTableSize();
+	// Calculate the size of the frame around it.
+	int leftMargin, rightMargin, topMargin, bottomMargin;
+	layout()->getContentsMargins(&leftMargin, &topMargin, &rightMargin, &bottomMargin);
+	newSize.setWidth(newSize.width() + leftMargin + rightMargin); 
+	newSize.setHeight(newSize.height() + topMargin + bottomMargin);
+	return(newSize);
+}
+
+QSize TableView::unconstrainedTableSize() const 
+
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	// Calculate the dimensions of the table widget
+
+	// Calculate width
+	QTableWidget *tableWidget = ui.distanceTable;
+	// Adjust column width
+	int columnQty =  tableWidget->columnCount();
+	int tableWidth = 0;
+	for (int column = 0; column < columnQty; column++) 
+	{
+		tableWidth += columSettings[column].columnWidth;
+	}
+
+	tableWidth += scrollBarWidth + 4;
+
+	//Calculate height
+	int rowCount = 0;
+	int tableHeight = 0;
+	int receiverCount = globalSettings->receiverSettings.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		rowCount += globalSettings->receiverSettings[receiverID].channelsConfig.size()*displayedDetectionsPerChannel;
+	} // for receiverID
+	tableHeight = rowCount * (tableWidget->rowHeight(1));
+	tableHeight += tableWidget->horizontalHeader()->height() + 4;
+	
+	// Calculate the size of the frame around it.
+	return (QSize(tableWidth, tableHeight));
+}
+
 
 void TableView::PrepareTableViews()
 
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
-	QTableWidget *tableWidget;
-	tableWidget = ui.distanceTable;
+	QTableWidget *tableWidget = ui.distanceTable;
 	tableWidget->clearContents();
 	tableWidget->setRowCount(1);
 
@@ -172,32 +271,28 @@ void TableView::PrepareTableViews()
 
 	// Adjust column width
 	int columnQty =  tableWidget->columnCount();
+	int tableWidth = 0;
 	for (int column = 0; column < columnQty; column++) 
 	{
-		if (column <= eRealTimeDetectionIDColumn) 
-		{
-			tableWidget->setColumnWidth(column, tableWidget->horizontalHeader()->minimumSectionSize());
-		}
-		else
-		{
-			tableWidget->setColumnWidth(column, tableWidget->horizontalHeader()->defaultSectionSize());
-		}
+		tableWidget->setColumnWidth(column, columSettings[column].columnWidth);
+		tableWidth += columSettings[column].columnWidth;
 	}
 
 	// Adjust the velocity title to display units
 	bool bDisplayVelocityKmh = (globalSettings->velocityUnits == eVelocityUnitsKMH);
 	if (bDisplayVelocityKmh) 
 	{
-		tableWidget->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("Vel km/h");
+		tableWidget->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("km/h");
 	}
 	else
 	{
-		tableWidget->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("Vel m/s");
+		tableWidget->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("m/s");
 	}
 
 
 	// Create the table widgets that will hold the data.  If required, add additional rows.
 	int row = 0;
+	int tableHeight = 0;
 	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
@@ -212,13 +307,13 @@ void TableView::PrepareTableViews()
 				if (row >= tableWidget->rowCount())
 				{
 					tableWidget->insertRow(tableWidget->rowCount());
-					tableWidget->rowHeight(row);
 				}
 
 				// Create the table items
 				for (int column = 0; column < tableWidget->columnCount(); column++)
 				{
 					QTableWidgetItem *newItem = new QTableWidgetItem("");
+					newItem->setTextAlignment(columSettings[column].alignment);
 					tableWidget->setItem(row, column, newItem);
 				}  // for column
 
@@ -227,30 +322,15 @@ void TableView::PrepareTableViews()
 		} // for channelID
 	} // for receiverID
 
-	// Resize the window to reflect the size of the updated table
-	int tableHeight = 2 + tableWidget->horizontalHeader()->height(); 
-	for(int row = 0; row < tableWidget->rowCount(); row++)
-	{ 
-	    tableHeight += tableWidget->rowHeight(row); 
-	} 
-
-	QRect scr = QApplication::desktop()->availableGeometry(/*QApplication::desktop()->primaryScreen()*/);
-	QRect frame = frameGeometry();
-	QRect client = geometry();
-	int verticalDecorationsHeight = frame.height() - client.height();
-	int horizontalDecorationsWidth = frame.width() - client.width();
-
-	float recommendedHeight =  scr.height() - verticalDecorationsHeight;
-	float recommendedWidth = scr.width() - horizontalDecorationsWidth;
-
-	int width = tableWidget->width() + 10;
-	int height = tableHeight + 10;
-	if (height > recommendedHeight) height = recommendedHeight;
-
-	setMinimumSize(width,height);
-	resize(width, height);
+	QSize newSize = unconstrainedTableSize();
+//	tableWidget->resize(newSize);
 }
 
+void TableView::AdjustTableSize()
+{
+	setMinimumSize(minimumSizeHint());
+	setMaximumSize(maximumSizeHint());
+}
 
 void TableView::DisplayReceiverValues(const Detection::Vector &data)
 {
@@ -318,7 +398,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 	QString threatStr;
 	QColor  threatBackgroundColor;
 	QColor  threatTextColor(Qt::white);
-	QColor  threatEmptyColor(0x60, 0x60, 0x60);
+	QColor  threatEmptyColor = Qt::transparent;
 
 	if (rowIndex >= pTable->rowCount()) return;
 

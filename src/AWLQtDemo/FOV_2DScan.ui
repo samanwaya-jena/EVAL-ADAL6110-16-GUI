@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Frame</class>
- <widget class="QFrame" name="Frame">
+ <class>FOV_2DScanFrame</class>
+ <widget class="QFrame" name="FOV_2DScanFrame">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>480</height>
+    <width>250</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>1</horstretch>
     <verstretch>2</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>480</width>
-    <height>480</height>
+    <width>250</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>500</width>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -29,17 +35,15 @@
    <iconset>
     <normaloff>AWLQtDemo.ico</normaloff>AWLQtDemo.ico</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
-    <widget class="QGraphicsView" name="FOV_2DScan"/>
-   </item>
-  </layout>
  </widget>
  <resources/>
  <connections/>

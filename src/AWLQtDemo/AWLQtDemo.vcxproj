@@ -121,6 +121,7 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_TableView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_awlqtscope.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -129,6 +130,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_TableView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VideoViewer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="range_image.cpp" />
@@ -273,7 +277,16 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
     </CustomBuild>
     <ClInclude Include="VideoCapture.h" />
-    <ClInclude Include="VideoViewer.h" />
+    <CustomBuild Include="VideoViewer.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing VideoViewer.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing VideoViewer.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.qrc">

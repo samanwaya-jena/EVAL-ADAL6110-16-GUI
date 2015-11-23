@@ -172,7 +172,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 	{
 		// Get to the receiver in the configuration tree. It will be our anchor in the loop
 		char receiverKeyString[32];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
+		sprintf(receiverKeyString,  "config.receivers.receiver%d", receiverID);
 		std::string receiverKey = receiverKeyString;
 		boost::property_tree::ptree &receiverPropNode =  propTree.get_child(receiverKey);
 

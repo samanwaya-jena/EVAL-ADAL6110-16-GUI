@@ -129,6 +129,7 @@ public:
 
 
 	// Layout
+	bool bDisplaySettingsWindow;
 	bool bDisplay3DWindow;
 	bool bDisplay2DWindow;
 	bool bDisplayTableViewWindow;
@@ -137,6 +138,7 @@ public:
 
 	bool bDisplayScopeDistance;
 	bool bDisplayScopeVelocity;
+	std::string sDisplayShowSize;
 
 	VelocityUnits velocityUnits; 
 

@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QEvent>
 
 #include <boost/foreach.hpp>
 
@@ -157,7 +158,7 @@ ClassificationType classifyFromIntensity(int channel, float distance, float inte
 #endif
 //----------------------End of Intensity Classifier
 
-#if 1
+#if 0
 const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
 const QColor rgbBackground(Qt::white);
 const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
@@ -170,14 +171,22 @@ const int    lineTransparency = 128;
 #else
 const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
 
-const QColor rgbBackground(0, 0, 10, 255); // DK Blue
-const QColor rgbRuler(128, 128, 128, 255); // Transparent gray dark
-const QColor rgbRulerLight(192, 192, 192, 255); // Transparent gray light
-const QColor rgbRulerText(Qt::red);
-const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
+const QColor rgbBackground(0, 0, 0, 255); // Black
+const QColor rgbRuler(192, 192, 192, 128); // Transparent gray dark
+const QColor rgbRulerLight(255, 255, 255, 128); // Transparent gray light
+const QColor rgbRulerText(255, 170, 0);
+const QColor rgbBumper(32, 32, 32, 196); // Transparent gray
 const QColor rgbLaneMarkings(192, 192 , 255, 196);  // Light blue
-const int    fovTransparency = 128;  // Transparency level of the FOVs
-const int    lineTransparency = 64;
+const int    fovTransparency = 32;  // Transparency level of the FOVs
+const int    lineTransparency = 128;
+//const QColor rgbBackground(0, 0, 10, 255); // DK Blue
+//const QColor rgbRuler(128, 128, 128, 255); // Transparent gray dark
+//const QColor rgbRulerLight(192, 192, 192, 255); // Transparent gray light
+//const QColor rgbRulerText(Qt::red);
+//const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
+//const QColor rgbLaneMarkings(192, 192 , 255, 196);  // Light blue
+//const int    fovTransparency = 128;  // Transparency level of the FOVs
+//const int    lineTransparency = 64;
 #endif
 #define squareGrid 1
 
@@ -193,10 +202,22 @@ const int paletteWidth = 50;
 
 float logoAspectRatio = 1.0;
 
+double zeroY = 0.0;
+double zeroX = 0.0;
+const int topInPixels = 50;
+const int rightInPixels = 200;
+
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
 {
-    Ratio = 1;
+	ui.setupUi(this);
+
+	setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+//	sizePolicy().setHorizontalStretch(4);
+	//	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); 
+//	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored); 
+
+	Ratio = 1;
     ShowPalette = true;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	mergeDisplayMode = (MergeDisplayMode)globalSettings->mergeDisplayMode;
@@ -213,10 +234,6 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	carLength = globalSettings->carLength;
 	carHeight = globalSettings->carHeight;
 	laneWidth = globalSettings->laneWidth;
-
-
-	// Position the widget on the top right side
-	setMinimumSize(480,480);
 
     rgblongRangeLimited = qRgba(188,205,203,127);
     rgblongRange = qRgba(58,126,209,127);
@@ -530,72 +547,80 @@ void FOV_2DScan::slotDisplayZoomModeAction()
 	slotConfigChanged(config);
 }
 
-double zeroY = 0.0;
-double zeroX = 0.0;
-
 
 void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
 {
     config = inConfig;
-
-	// All distances reported are relative to bumper
-	double totalDistance = config.longRangeDistance+config.spareDepth;
-	if (displayZoomMode == eDisplayZoomMode360) 
-	{
-		totalDistance = (config.longRangeDistance * 2) + carLength;
-	}
-
-	// Calculate minimum window size;
-	float minHeight = 240;
-	Ratio = (minHeight-(minHeight*0.1)) / totalDistance;
- 
-	float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
-	float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
-
-	int minWidth = (xWidth*2)+125;
-    setMinimumSize(minWidth, minHeight);
-
-	QRect scr = QApplication::desktop()->availableGeometry();
-	QRect frame = frameGeometry();
-	QRect client = geometry();
-	int verticalDecorationsHeight = frame.height() - client.height();
-	int horizontalDecorationsWidth = frame.width() - client.width();
-
-	float recommendedHeight =  scr.height() - verticalDecorationsHeight;
-	Ratio = (recommendedHeight -(recommendedHeight*0.1)) / totalDistance;
-	xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
-	float recommendedWidth = (xWidth*2)+125;
-	resize(recommendedWidth, recommendedHeight);
-//	move(scr.right()-(recommendedWidth + horizontalDecorationsWidth), scr.top());
-	move(scr.left(), scr.top());
-
-    if (displayZoomMode == eDisplayZoomModeFront) 
-	{
-		zeroY = height() - (config.spareDepth * Ratio);
-		zeroX = width()/2;
-	}
-	else
-	{
-		zeroY = height() *0.5; // .1 x height offcenter to the bottom
-		zeroX = width()/2;
-	}
+	setMinimumSize(minimumSizeHint());
+	calculateResize();
 
     update();
 }
 
-void FOV_2DScan::resizeEvent(QResizeEvent * event)
+QSize FOV_2DScan::sizeHint() const 
+{ 
+	return (maximumSizeHint());
+}
+
+QSize FOV_2DScan::minimumSizeHint() const 
+
+{ 
+	float maxHeight = 300;
+	double totalDistance = config.longRangeDistance+config.spareDepth;
+	float hintRatio = (maxHeight-topInPixels) / totalDistance;
+
+	float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
+	float xWidth = abs((totalDistance*hintRatio)*sinf(angleInRad));
+
+	float maxWidth = (xWidth*2)+rightInPixels;
+	return(QSize((int)maxWidth, (int)maxHeight));
+}
+
+QSize FOV_2DScan::maximumSizeHint() const 
+
+{ 
+#if 0
+	QRect scr = QApplication::desktop()->availableGeometry();
+	float maxHeight = scr.height();
+	float maxWidth = scr.width();
+	return(QSize((int)maxWidth, (int)maxHeight));
+#else
+	QRect scr = QApplication::desktop()->availableGeometry();
+	float maxHeight = scr.height() * 1;
+	float maxWidth = scr.width()*0.6;
+	return(QSize((int)maxWidth, (int)maxHeight));	
+#endif
+}
+
+
+void FOV_2DScan::resizeEvent(QResizeEvent * theEvent)
 {
+	calculateResize();
+}
+
+void FOV_2DScan::calculateResize()
+{
+
 	double totalDistance = config.longRangeDistance+config.spareDepth;
 	if (displayZoomMode == eDisplayZoomMode360)
 		totalDistance = (config.longRangeDistance * 2) + carLength;
 
-	Ratio = (height()-(height()*0.1)) / totalDistance;
+	float maxWidth = width() + 1;
+	float maxHeight = height();
 
-	int labelWidth = width() * 0.3;
-	int labelHeight = labelWidth / logoAspectRatio;
+	while (maxWidth > width()) 
+	{
+		Ratio = (maxHeight-topInPixels) / totalDistance;
 
-	logoLabel->resize(labelWidth, labelHeight);
-	logoLabel->move(55, height() - labelHeight);
+		float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
+		float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
+
+		maxWidth = (xWidth*2)+rightInPixels;
+		if (maxWidth > width())
+		{
+			maxHeight = (maxHeight * (width() / maxWidth)) -1;
+		}
+	}
 
 	if (displayZoomMode == eDisplayZoomModeFront)
 	{
@@ -605,61 +630,56 @@ void FOV_2DScan::resizeEvent(QResizeEvent * event)
 	else
 	{
 	zeroY = height() *0.5; // .1 x height offcenter to the bottom
-	zeroX = width()/2;
+	zeroX = maxWidth/2;
 	}
+
+	int labelWidth = width() * 0.3;
+	int labelHeight = labelWidth / logoAspectRatio;
+
+	logoLabel->resize(labelWidth, labelHeight);
+	logoLabel->move(55, height() - labelHeight);
 }
 
-void FOV_2DScan::paintEvent(QPaintEvent *)
+void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 {
 
     QPainter painter(this);
-    painter.fillRect(0,0,width(),height(),QBrush(rgbBackground));
+	int maxWidth = width();
+	int maxHeight = height();
 
-	// Draw sensor FOVs
-	painter.setPen(Qt::NoPen);
+//	painter.fillRect(0,0,width(),height(),Qt::LinearGradientPattern);
 
-	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
-	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
-	{
-		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
-		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
-		{
-			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
-			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
-			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID,channelID);
-
-			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, fovTransparency);
-			painter.setBrush(QBrush(channelColor));
-
-			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
-				               RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth/2);
-
-			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
-			// All distances are relative to bumper, subtract the sensor depth  
-			// Angles are drawn from sensor position add the sensor depth
-			drawPie(&painter, startAngle, -channelConfig.fovWidth, channelConfig.maxRange,
-				-receiverPosition.position.left, -receiverPosition.position.forward);
-		}
-	}
+	// Draw ruler
 
 	if (measureMode != eMeasureCartesian)
 	{
 		//Angular Ruler
 		painter.setPen(QPen(rgbRuler));
+		float angleIncrement = 5.0;
+		float distanceIncrement = 1.0;
+		if (config.longRangeDistance >= 100.0) distanceIncrement = 10;
+		else if (config.longRangeDistance > 10.0) distanceIncrement = 5; 
+		else distanceIncrement = 1.0;
 
-		for (int i = config.longRangeDistance; i > 0; i-=5)
+		for (float i = config.longRangeDistance; i > 0; i-=distanceIncrement)
 		{
 			// All distances are relative to bumper  
 			drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
 		}
 
 		painter.setPen(QPen(rgbRuler));
-		for (int i = config.shortRangeAngle; i >= 0; i-=5)
+		for (float i = config.shortRangeAngle; i >= 0; i-=angleIncrement)
 		{
 			drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
 		}
 
+		// Draw the distance indicators 
+		for (float i = config.longRangeDistance; i > 0; i-=distanceIncrement)
+		{
+			drawText(&painter, -(config.shortRangeAngle/2), i, QString::number(i)+"m", rgbRulerText, -20);
+		}
+
+		// Draw the angle indicators
 		drawAngularRuler(&painter);
 	}
 	else 
@@ -694,6 +714,33 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 		}
 	}
 
+		// Draw sensor FOVs
+	painter.setPen(Qt::NoPen);
+
+	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	{
+		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
+		for (int channelID = 0; channelID < channelQty; channelID++)
+		{
+			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
+			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID,channelID);
+
+			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, fovTransparency);
+			painter.setBrush(QBrush(channelColor));
+
+			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
+				               RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth/2);
+
+			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
+			// All distances are relative to bumper, subtract the sensor depth  
+			// Angles are drawn from sensor position add the sensor depth
+			drawPie(&painter, startAngle, -channelConfig.fovWidth, channelConfig.maxRange,
+				-receiverPosition.position.left, -receiverPosition.position.forward);
+		}
+	}
 
 	//Paint Draw bumper area
 	painter.setBrush(QBrush(rgbBumper));
@@ -719,11 +766,14 @@ void FOV_2DScan::paintEvent(QPaintEvent *)
 	painter.setPen(lanePen);
 	int laneWidthScreen = (int) (laneWidth * Ratio); // Car width in displayUnits. 
 
-	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), 0);
-	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), 0);
+//	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), 0);
+//	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), 0);
 
+	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), zeroY-(config.longRangeDistance*Ratio));
+	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), zeroY-(config.longRangeDistance*Ratio));
+	
     if (ShowPalette)
-        drawPalette(&painter);
+        drawPalette(&painter); 
 
     lastRightTextHeight = height();
 
@@ -1031,13 +1081,13 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		p->setPen(lineLineColor);
 		p->setBrush(QBrush(lineBackColor, backPattern));
 
-		poly.append(QPoint(rect.center().x()-2,rect.center().y()+5));
+		poly.append(QPoint(rect.center().x()-2,rect.center().y()+12));
 		poly.append(QPoint(tempRect.center().x()-51,tempRect.center().y()-1));
 		poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
 		poly.append(QPoint(tempRect.center().x(),tempRect.center().y()+1));
 		poly.append(QPoint(tempRect.center().x()-49,tempRect.center().y()+1));
 
-		poly.append(QPoint(rect.center().x()+2,rect.center().y()+7));
+		poly.append(QPoint(rect.center().x()+2,rect.center().y()+14));
 		p->drawPolygon(poly);
 
 		// Draw the ellipse around the distance indication text
@@ -1057,6 +1107,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 
 	if (drawTarget)
 	{
+	    int lineWidth = 4;
 		// Draw the ellipse that represents the target on the scan
  		p->setPen(lineColor);
 		p->setBrush(QBrush(backColor, backPattern));
@@ -1064,7 +1115,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		if (detection->velocity >= zeroVelocity)
 		{
 			// Moving away from sensor is an uparrow
-			QRect pieRect(rect.center().x() - 10, rect.bottom()-24, 20, 24);
+			QRect pieRect(rect.center().x() - 5, rect.bottom()-24-(lineWidth/2), 10, 24);
 			int startAngle = -55 * 16;
 			int spanAngle = -70 * 16;
 
@@ -1073,22 +1124,35 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		else if (detection->velocity < -zeroVelocity)
 		{
 			// Moving towards sensor is a downarrow
-			QRect pieRect(rect.center().x() - 10, rect.bottom()-12, 20, 24);
+			QRect pieRect(rect.center().x() - 5, rect.bottom(), 10, 24);
 			int startAngle = 55 * 16;
 			int spanAngle = 70 * 16;
 
 			p->drawPie(pieRect, startAngle, spanAngle);
 		}
-		else
-		{
-			// Static object is an ellipse
-			p->drawEllipse(QPoint(rect.center().x(), rect.bottom()-6), 6, 6);
-		}
 
+		QPen thePen(lineColor);
+		thePen.setBrush(QBrush(backColor, backPattern));
+		thePen.setWidth(lineWidth);
+		p->setPen(thePen);
+		int receiverID = detection->GetReceiverID();
+		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+		ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+		ChannelConfig channelConfig =receiverSettings.channelsConfig[detection->channelID];
+		RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, detection->channelID);
+
+		float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
+			               RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth/2);
+
+		// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
+		// All distances are relative to bumper, subtract the sensor depth  
+		// Angles are drawn from sensor position add the sensor depth
+		drawArc(p, startAngle, -channelConfig.fovWidth, detection->distance,
+			-receiverPosition.position.left, -receiverPosition.position.forward);
 	}
 }
 
-void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor)
+void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, int xOffset)
 {
 	float angleInRad = DEG2RAD(angle+180);
 	// Real position of object, from sensor on  the grid is postion + bumperOffset.
@@ -1103,7 +1167,7 @@ void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QCol
     QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
     rect.setSize(rect.size()+QSize(10,10));
 
-	rect.moveTo(start + QPoint((width()/2)-rect.width()/2, zeroY-rect.height()));
+	rect.moveTo(start + QPoint((width()/2)-rect.width()/2 + xOffset, zeroY-rect.height()));
 
     p->setPen(foregroundColor);
     p->drawText(rect, Qt::AlignCenter, text);
@@ -1254,6 +1318,7 @@ void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intens
 
 void FOV_2DScan::getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
+#if 0
 	switch (threatLevel) 
 	{
 	case Detection::eThreatNone:
@@ -1272,7 +1337,26 @@ void FOV_2DScan::getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QCo
 		backColor = Qt::darkBlue;
 		break;
 	}
-
+#else
+	switch (threatLevel) 
+	{
+	case Detection::eThreatNone:
+		backColor = QColor(160, 160, 255, 255);
+		break;
+	case Detection::eThreatLow:
+		backColor = Qt::green;
+		break;
+	case Detection::eThreatWarn:
+		backColor = Qt::yellow;
+		break;
+	case Detection::eThreatCritical:
+		backColor = Qt::red;
+		break;
+	default:
+		backColor = QColor(160, 160, 255, 255);
+		break;
+	}
+#endif
 	backStyle = Qt::SolidPattern;
 	int lightness = backColor.lightness();
 

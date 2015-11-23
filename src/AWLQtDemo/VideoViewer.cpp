@@ -22,7 +22,7 @@
 #include "DebugPrintf.h"
 #include "DetectionStruct.h"
 
-#include <boost/foreach.hpp>
+
 
 #include "opencv2/core/core_c.h"
 #include "opencv2/core/core.hpp"
@@ -32,48 +32,52 @@
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
+#if 0
+#include <boost/foreach.hpp>
+#endif
+
 using namespace std;
 using namespace awl;
 
 #include <windows.h>
 
+#include <QPainter>
+#include <QPaintDevice>
+#include <QFrame>
+#include <QMenu>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QEvent>
+
 const long flashPeriodMillisec = 300;		 // Period of the flashes used in the target display
 
-const int  workFrameQty = 3;  // Number of buffers. That may depend on the display lag of the systems.
-
-const int maxWindowWidth = 900;
-const int maxWindowHeight = 900;
+const int maxWindowWidth = 320;
+const int maxWindowHeight = 320;
 
 // Colors enhancements on individual pixels.
-const cv::Vec3b colorEnhanceBlue = cv::Vec3b(128, 0, 0);  // Blue
-const cv::Vec3b colorDehanceBlue = cv::Vec3b(0, 128, 128);
-const cv::Vec3b colorEnhanceGreen = cv::Vec3b(0, 190, 0); // Green
-const cv::Vec3b colorDehanceGreen = cv::Vec3b(190, 0,190);
-const cv::Vec3b colorEnhanceYellow = cv::Vec3b(0, 160, 160); // Yellow
-const cv::Vec3b colorDehanceYellow = cv::Vec3b(192, 0, 0);
-const cv::Vec3b colorEnhanceRed = cv::Vec3b(0, 0, 128);  // Red
-const cv::Vec3b colorDehanceRed = cv::Vec3b(128, 128, 0);
+const QColor rgbEnhanceBlue(0, 0, 255, 128); 
+const QColor rgbEnhanceGreen(0, 255, 0, 128);
+const QColor rgbEnhanceYellow(128 ,128, 0, 128);
+const QColor rgbEnhanceRed(255, 0, 0, 128);
 
-
-VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture):
-LoopedWorker(),
-cameraFrame(new (cv::Mat)),
-currentWorkFrameIndex(0),
+VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget):
+QFrame(parentWidget),
 cameraName(inCameraName),
-videoCapture(inVideoCapture)
+videoCapture(inVideoCapture),
+displayScaleFactor(1.0)
 
 {
-	SetVideoCapture(videoCapture);
+	qtCameraFrame = QImage(videoCapture->calibration.frameWidthInPixels, videoCapture->calibration.frameHeightInPixels, QImage::Format_RGB888);
+	QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+	setSizePolicy(sizePolicy); 
+	
 
-	for (int frameID = 0; frameID < workFrameQty; frameID++)
-	{
-		workFrames.push_back(new (cv::Mat));
-	}
+	SetVideoCapture(videoCapture);
+	startTime = boost::posix_time::microsec_clock::local_time();
 }
 
 VideoViewer::~VideoViewer()
 {
-	Stop();
 }
 
 
@@ -86,103 +90,100 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
  	currentVideoSubscriberID = videoCapture->Subscribe();
 }
 
-void  VideoViewer::Go() 
-{
-	if (WasStopped())
-	{
-		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-		// Create output window, only if it does not already exist
-		if (windowPtr == NULL)
-		{
-//			cv::namedWindow(cameraName.c_str(), cv::WINDOW_NORMAL);
-//			cvNamedWindow(cameraName.c_str(), CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);//
-//			cv::namedWindow(cameraName.c_str(),  CV_NORMAL);
-			cv::namedWindow(cameraName.c_str(), cv::WINDOW_AUTOSIZE | CV_GUI_NORMAL);
-			cv::setWindowProperty(cameraName.c_str(), cv::WND_PROP_ASPECT_RATIO, 1);
-			SizeWindow();
-		}
+void VideoViewer::slotImageChanged()
 
-		startTime = boost::posix_time::microsec_clock::local_time();
-		LoopedWorker::Go();
-	}
-}
-	
-void  VideoViewer::Stop() 
-{
-	if (!mWorkerRunning) return;
-
-	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-	if (windowPtr != NULL) cv::destroyWindow(cameraName.c_str());
-
-	LoopedWorker::Stop();
-}
-
-bool  VideoViewer::WasStopped()
-{
-	if (LoopedWorker::WasStopped()) return (true);
-	void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-	if (windowPtr == NULL) return(true);
-
-	return(false);
-}
-
-
-void VideoViewer::SpinOnce()
 
 {
-	if (WasStopped()) return;
-
 	// Update the video frame
 	if (videoCapture != NULL && videoCapture->HasNews(currentVideoSubscriberID)) 
 	{
+
+		VideoCapture::FramePtr cameraFrame(new (cv::Mat));
+		cv::Mat tmpFrame;
+
 		// Copy the contents of the cv::Mat
 		videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
 
-		// Copy to the working area
-		cameraFrame->copyTo(*workFrames[currentWorkFrameIndex]);
+		// Convert the image to the RGB888 format
+        switch (cameraFrame->type()) {
+        case CV_8UC1:
+            cvtColor(*cameraFrame, tmpFrame, CV_GRAY2RGB);
+            break;
+        case CV_8UC3:
+            cvtColor(*cameraFrame, tmpFrame, CV_BGR2RGB);
+            break;
+        }
 
-		DisplayReceiverValues(cameraFrame, workFrames[currentWorkFrameIndex], detectionData);
+        // QImage needs the data to be stored continuously in memory
+        assert(tmpFrame.isContinuous());
+
+        // Assign OpenCV's image buffer to the QImage. Note that the bytesPerLine parameter
+        // (http://qt-project.org/doc/qt-4.8/qimage.html#QImage-6) is 3*width because each pixel
+        // has three bytes.
+        qtCameraFrame = QImage(tmpFrame.data, tmpFrame.cols, tmpFrame.rows, tmpFrame.cols*3, QImage::Format_RGB888);
+		qtEnhancedFrame = qtCameraFrame;
+
+		QPainter painter(&qtEnhancedFrame);
+		DisplayReceiverValues(qtCameraFrame, painter, detectionData);
 		if (AWLSettings::GetGlobalSettings()->bDisplayVideoCrosshair)
 		{
-			DisplayCrossHairs(cameraFrame, workFrames[currentWorkFrameIndex]);
+			DisplayCrossHairs(qtCameraFrame, painter);
 		}
 
-		//  Get the window handle. IOf it is null, may be that the window was closed or destroyed.
-		//  In that case, do NOT reopen it.  The thread may be terminating.
-		void *windowPtr = cvGetWindowHandle(cameraName.c_str());
-		// The current work frame becomes the display frame
-		if (windowPtr != NULL) cv::imshow(cameraName, *workFrames[currentWorkFrameIndex]);
-
-		// And we select a new work frame for later.
-		currentWorkFrameIndex = ++currentWorkFrameIndex % workFrameQty;
+		repaint();
 	}
 }
 
-
-void VideoViewer::SizeWindow()
-
+QSize VideoViewer::sizeHint() const 
 {
-		// Size the window to fit the maximum width specified
-		const long nScreenWidth  = maxWindowWidth;
-		const long nScreenHeight = maxWindowHeight;
+	return(maximumSizeHint());
+}
 
-		int height = videoCapture->calibration.frameHeightInPixels * 2;
-		int width  = videoCapture->calibration.frameWidthInPixels * 2;
-		while (width > nScreenWidth || height > nScreenHeight)
-		{
-			width /= 2;
-			height /=2;
-		}
+QSize VideoViewer::minimumSizeHint() const 
 
-		cv::resizeWindow(cameraName.c_str(), nScreenWidth, nScreenHeight);
+{ 
+	QSize size = qtCameraFrame.size();
+	size.setHeight(size.height()/8);
+	size.setWidth(size.width()/8);
+
+	return size;
+}
+
+QSize VideoViewer::maximumSizeHint() const 
+
+{ 
+	QSize size = qtCameraFrame.size();
+
+	return size;
 }
 
 
-void VideoViewer::move(int left, int top)
+void VideoViewer::paintEvent(QPaintEvent* /*event*/) 
 {
-	cv::moveWindow(cameraName.c_str(), left, top);
+	// Display the image
+    QPainter painter(this);
+	int newWidth = width();
+	int newHeight = height();
+    painter.drawImage(QPoint(0,0), qtEnhancedFrame.scaled(size(), Qt::KeepAspectRatio));
+    painter.end();
 }
 
+void VideoViewer::resizeEvent(QResizeEvent * theEvent)
+{
+	displayScaleFactor = 1.0;
+	setBaseSize(sizeHint());
+	setMinimumSize(minimumSizeHint());
+	setMaximumSize(maximumSizeHint());
+
+	// Size the window to fit the maximum width specified
+	long nScreenWidth  = size().width();
+	long nScreenHeight = size().height();
+
+	float scaleWidth = videoCapture->calibration.frameWidthInPixels / nScreenWidth;
+	float scaleHeight = videoCapture->calibration.frameWidthInPixels / nScreenHeight;
+
+	displayScaleFactor = min(scaleWidth, scaleHeight);
+}
 
 bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right) 
 
@@ -240,17 +241,26 @@ void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
 }
 
 
-void VideoViewer::DisplayReceiverValues(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const Detection::Vector & iDetectionData)
+void VideoViewer::DisplayReceiverValues(QImage &sourceFrame, QPainter &painter, const Detection::Vector & iDetectionData)
 
 {
+#if 0
 	// Draw the individual detections
 	BOOST_FOREACH(const Detection::Ptr &detection, iDetectionData)
 	{
-			DisplayTarget(sourceFrame, targetFrame, detection);
+			DisplayTarget(sourceFrame, painter, detection);
 	}
+#else
+
+	int detectionQty = iDetectionData.size();
+	for (int i = 0; i < detectionQty; i++) 
+	{
+		DisplayTarget(sourceFrame, painter, iDetectionData[i]);
+	}
+#endif
 }
 
-void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const Detection::Ptr &detection)
+void VideoViewer::DisplayTarget(QImage &sourceFrame, QPainter &painter, const Detection::Ptr &detection)
 {
 	int top;
 	int left;
@@ -258,16 +268,10 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	int right;
 
 	CvRect rect;
-
-	cv::Vec3b color;
-	cv::Vec3b colorEnhance;
-	cv::Vec3b colorDehance;
+	QColor colorEnhance(Qt::black);
 	bool bFlash = false;
-
 	int thickness = -1;
-	colorEnhance = cv::Vec3b(0, 0, 0);
-	colorDehance = cv::Vec3b(0, 0, 0);
-	GetDetectionColors(detection, colorEnhance, colorDehance, thickness);
+	GetDetectionColors(detection, colorEnhance, thickness);
 
 	// Paint a square that corresponds to the receiver FOV, with the given line thickness
 	CvPoint topLeft;
@@ -288,29 +292,28 @@ void VideoViewer::DisplayTarget(VideoCapture::FramePtr &sourceFrame, VideoCaptur
 	startPoint.y = topLeft.y;
 	endPoint.x = topRight.x  + thickness/2;
 	endPoint.y = topRight.y;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	startPoint.x = bottomLeft.x - thickness/2;
 	startPoint.y = bottomLeft.y;
 	endPoint.x =bottomRight.x  + thickness/2;
 	endPoint.y = bottomRight.y;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	startPoint.x = topLeft.x;
 	startPoint.y = topLeft.y + thickness/2;
 	endPoint.x = bottomLeft.x;
 	endPoint.y = bottomLeft.y - thickness/2;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	startPoint.x = topRight.x;
 	startPoint.y = topRight.y + thickness/2;
 	endPoint.x = bottomRight.x;
 	endPoint.y = bottomRight.y - thickness/2;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
-
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 }
 
-void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame)
+void VideoViewer::DisplayCrossHairs(QImage &sourceFrame, QPainter &painter)
 {
 	float tickIncrement = 2.5; // 1 tick every 2.5 degrees.
 	
@@ -337,7 +340,7 @@ void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCa
 		tickLength = mediumTick;
 		}
 
-		DrawHorizontalTicks(sourceFrame, targetFrame, tickIndex * tickIncrement, tickLength, tickWidth);
+		DrawHorizontalTicks(sourceFrame, painter, tickIndex * tickIncrement, tickLength, 1 + floor(tickWidth * displayScaleFactor));
 	}
 
 
@@ -363,15 +366,14 @@ void VideoViewer::DisplayCrossHairs(VideoCapture::FramePtr &sourceFrame, VideoCa
 		tickLength = mediumTick;
 		}
 
-		DrawVerticalTicks(sourceFrame, targetFrame, tickIndex * tickIncrement, tickLength, tickWidth);
+		DrawVerticalTicks(sourceFrame, painter, tickIndex * tickIncrement, tickLength, 1 + floor(tickWidth * displayScaleFactor));
 	}
 }
 
-void VideoViewer::DrawHorizontalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness)
+void VideoViewer::DrawHorizontalTicks(QImage &sourceFrame, QPainter &painter, float tickAngle, float tickLength, int thickness)
 
 {
-	cv::Vec3b colorEnhance = colorEnhanceGreen; // Yellow
-	cv::Vec3b colorDehance = colorDehanceGreen;
+	QColor colorEnhance = rgbEnhanceGreen; // Yellow
 
 	CvPoint startPoint;
 	CvPoint endPoint;
@@ -383,11 +385,11 @@ void VideoViewer::DrawHorizontalTicks(VideoCapture::FramePtr &sourceFrame, Video
 	endPoint.y = startPoint.y;
 	endPoint.x = startPoint.x - tickLength;
 
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	startPoint.x = 0;
 	endPoint.x = startPoint.x + tickLength;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, painter,  startPoint, endPoint, colorEnhance, thickness);
 	
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
@@ -396,14 +398,13 @@ void VideoViewer::DrawHorizontalTicks(VideoCapture::FramePtr &sourceFrame, Video
 	startPoint.x = (videoCapture->calibration.frameWidthInPixels- tickLength) /2;
 	endPoint.y = startPoint.y;
 	endPoint.x = startPoint.x + tickLength;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, 1, thickness);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 }
 
-void VideoViewer::DrawVerticalTicks(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, float tickAngle, float tickLength, int thickness)
+void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  float tickAngle, float tickLength, int thickness)
 
 {
-	cv::Vec3b colorEnhance = colorEnhanceGreen; // Yellow
-	cv::Vec3b colorDehance = colorDehanceGreen;
+	QColor colorEnhance = rgbEnhanceGreen; // Yellow
 
 	CvPoint startPoint;
 	CvPoint endPoint;
@@ -415,11 +416,11 @@ void VideoViewer::DrawVerticalTicks(VideoCapture::FramePtr &sourceFrame, VideoCa
 	endPoint.y = startPoint.y - tickLength;
 	endPoint.x = startPoint.x;
 
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	startPoint.y = 0;
 	endPoint.y = startPoint.y + tickLength;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
 	lineCart = SphericalCoord(10, M_PI_2, DEG2RAD(-tickAngle));
@@ -427,10 +428,10 @@ void VideoViewer::DrawVerticalTicks(VideoCapture::FramePtr &sourceFrame, VideoCa
 	startPoint.y = (videoCapture->calibration.frameHeightInPixels - tickLength) / 2;
 	endPoint.y = startPoint.y + tickLength;
 	endPoint.x = startPoint.x;
-	DrawDetectionLine(sourceFrame, targetFrame, startPoint, endPoint, colorEnhance, colorDehance, thickness, 1);
+	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 }
 
-void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b &colorEnhance, cv::Vec3b &colorDehance, int &iThickness)
+void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &colorEnhance, int &iThickness)
 
 {
 	bool bFlash = false;
@@ -448,23 +449,20 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 	{
 	case Detection::eThreatNone: 
 		{
-			colorEnhance = colorEnhanceBlue;  // Blue
-			colorDehance = colorDehanceBlue;
+			colorEnhance = rgbEnhanceBlue;  // Blue
 			iThickness = 5;
 		}
 		break;
 	case Detection::eThreatLow:
 		{
-			colorEnhance = colorEnhanceGreen; // Green
-			colorDehance = colorDehanceGreen;
+			colorEnhance = rgbEnhanceGreen; // Green
 			iThickness = 5;
 		}
 		break;
 
 	case Detection::eThreatWarn:
 		{
-			colorEnhance = colorEnhanceYellow; // Yellow
-			colorDehance = colorDehanceYellow;
+			colorEnhance = rgbEnhanceYellow; // Yellow
 			iThickness = 15;
 			if (bFlash) iThickness = 5;	
 		}
@@ -472,8 +470,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 
 	case Detection::eThreatCritical:
 		{
-			colorEnhance = colorEnhanceRed;  // Red
-			colorDehance = colorDehanceRed;
+			colorEnhance = rgbEnhanceRed;  // Red
 			iThickness = 15;
 			if (bFlash) iThickness = 5;
 		}
@@ -481,8 +478,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, cv::Vec3b 
 
 	default:
 		{
-			colorEnhance = cv::Vec3b(0, 0, 0);
-			colorDehance = cv::Vec3b(255, 255, 255);
+			colorEnhance = Qt::black;
 		}
 
 	} // case
@@ -528,101 +524,29 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 	}
 }
 
-void VideoViewer::DrawDetectionLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  const cv::Vec3b &colorEnhance, const cv::Vec3b &colorDehance, int iWidth, int iHeight)
+void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, const CvPoint &startPoint, const CvPoint &endPoint,  QColor &colorEnhance, int penWidth)
 {
-	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
 
-	float frameWidth = videoCapture->calibration.frameWidthInPixels;
-	float frameHeight = videoCapture->calibration.frameHeightInPixels;
 
-	// alternative way of iterating through the line
-	for(int i = 0; i < lineIter.count; i++, ++lineIter)
-	{
-		cv::Point centerPos = lineIter.pos();
-		cv::Point pixelPos = centerPos;
-		pixelPos.x = centerPos.x - (iWidth /2);
-		for (int width = 0; width < iWidth; width++, pixelPos.x++)
-		{
-			pixelPos.y = centerPos.y + (iHeight / 2); 
-			for (int height = 0; height < iHeight; height++, pixelPos.y--)
-			{
-				if (pixelPos.x >= 0 && pixelPos.x < frameWidth && pixelPos.y >= 0 && pixelPos.y < frameHeight)
-				{
-					cv::Vec3b	color = sourceFrame->at<cv::Vec3b>(pixelPos);
+	QBrush backBrush;
+	backBrush.setTextureImage(sourceFrame);
+	painter.setBrush(backBrush);
 
-					int r = (int)color[0];
-					int g = (int)color[1];
-					int b = (int)color[2];
-					float lightness = ((r+g+b) / (3*255.0)); // Value from 0 (Dark) to 1.0 (Light)
-					r -= (colorDehance[0]) * lightness;
-					g -= (colorDehance[1]) * lightness;
-					b -= (colorDehance[2]) * lightness;
-					r += (colorEnhance[0]) * (1.0-lightness);
-					g += (colorEnhance[1]) * (1.0-lightness);
-					b += (colorEnhance[2]) * (1.0-lightness);
-	
-					if (r > 255) color[0] = 255;
-					else if (r < 0) color[0] = 0;
-					else		 color[0] = r;
+	QPen pen(colorEnhance);
+	pen.setWidth(penWidth);
+	pen.setBrush(backBrush);
+	painter.setPen(pen);
 
-					if (g > 255) color[1] = 255;
-					else if (g < 0) color[1] = 0;
-					else		 color[1] = g;
+	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
 
-					if (b > 255) color[2] = 255;
-					else if (b < 0) color[2] = 0;
-					else		 color[2] = b;
+	QBrush frontBrush(colorEnhance);
+	painter.setBrush(Qt::NoBrush);
 
-					targetFrame->at<cv::Vec3b>(pixelPos) = color;
-				}
-			}
-		}
-	}
+	pen.setColor(penWidth);
+	pen.setBrush(QBrush(colorEnhance));
+	painter.setPen(pen);
+
+	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
 }
 
 
-void VideoViewer::DrawContrastingLine(VideoCapture::FramePtr &sourceFrame, VideoCapture::FramePtr &targetFrame, const CvPoint &startPoint, const CvPoint &endPoint,  int iWidth, int iHeight)
-{
-	cv::LineIterator lineIter(*targetFrame, startPoint, endPoint, 8);
-
-	float frameWidth = videoCapture->calibration.frameWidthInPixels;
-	float frameHeight = videoCapture->calibration.frameHeightInPixels;
-
-	// alternative way of iterating through the line
-	for(int i = 0; i < lineIter.count; i++, ++lineIter)
-	{
-		cv::Point centerPos = lineIter.pos();
-		cv::Point pixelPos = centerPos;
-		pixelPos.x = centerPos.x - (iWidth /2);
-		for (int width = 0; width < iWidth; width++, pixelPos.x++)
-		{
-			pixelPos.y = centerPos.y + (iHeight / 2); 
-			for (int height = 0; height < iHeight; height++, pixelPos.y--)
-			{
-				if (pixelPos.x >= 0 && pixelPos.x < frameWidth && pixelPos.y >= 0 && pixelPos.y < frameHeight)
-				{
-					cv::Vec3b	color = sourceFrame->at<cv::Vec3b>(pixelPos);
-
-					int r = (int)color[0];
-					int g = (int)color[1];
-					int b = (int)color[2];
-
-					if (r + g + b > (3*128)) 
-					{
-						r = g = b  = 0;
-					}
-					else 
-					{
-						r = g = b = 255;
-					}
-
-					color[0] = r;
-					color[1] = g;
-					color[2] = b;
-
-					targetFrame->at<cv::Vec3b>(pixelPos) = color;
-				}
-			}
-		}
-	}
-}

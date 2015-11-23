@@ -225,8 +225,6 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
     {
 		AWLCANMessage msg;
 		KvaserCanMessage inMessage;
-		float distance;
-
 		if (kvaserHandle >= 0) 
 		{
 
@@ -326,7 +324,7 @@ bool ReceiverKvaserCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 		ReceiverCANCapture::ReadConfigFromPropTree(propTree);
 
 		char receiverKeyString[32];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
+		sprintf_s(receiverKeyString, "config.receivers.receiver%d", receiverID);
 		std::string receiverKey = receiverKeyString;
 
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);

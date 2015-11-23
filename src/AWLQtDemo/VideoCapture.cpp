@@ -193,7 +193,7 @@ void VideoCapture::DoThreadIteration()
 		{
 			cam.release();
 			currentFrame.create(calibration.frameHeightInPixels, calibration.frameWidthInPixels, CV_8UC3);
-			currentFrame.setTo(cv::Scalar(128, 128, 128));;
+			currentFrame.setTo(cv::Scalar(0, 0, 0));;
 			return;
 		}
 
@@ -240,7 +240,7 @@ void VideoCapture::DoThreadIteration()
 			{
 				currentFrame.create(calibration.frameHeightInPixels, calibration.frameWidthInPixels, CV_8UC3);
 				//currentFrame.ones(calibration.frameHeightInPixels, calibration.frameWidthInPixels,CV_8UC3);
-				currentFrame.setTo(cv::Scalar(128, 128, 128));
+				currentFrame.setTo(cv::Scalar(0, 0, 0));
 
 			} 
 			currentLock.unlock();

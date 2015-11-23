@@ -173,6 +173,12 @@
     <ClCompile Include="range_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VideoViewer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -211,6 +217,9 @@
     <CustomBuild Include="TableView.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="VideoViewer.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_awlqtdemo.h">
@@ -225,9 +234,6 @@
     <ClInclude Include="VideoCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VideoViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\AWLQtScope\signaldata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -239,9 +245,6 @@
     </ClInclude>
     <ClInclude Include="AWLSettings.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
@@ -293,6 +296,9 @@
     </ClInclude>
     <ClInclude Include="..\AWLCoreClasses\ReceiverKvaserCapture.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

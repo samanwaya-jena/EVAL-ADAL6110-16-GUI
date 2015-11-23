@@ -69,7 +69,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		// Simulate some tracks for debug purposes
 		double elapsed = GetElapsed();
 
-			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, 0);
+			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, 1);
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
@@ -90,7 +90,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->firstTimeStamp = elapsed;
 
 
-			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 1);
+			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 2);
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
@@ -110,7 +110,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = elapsed;
 			track->firstTimeStamp = elapsed;
 
-			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 2);
+			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 3);
 			track->firstTimeStamp = currentFrame->timeStamp;
 
 			track->timeStamp = currentFrame->timeStamp;
@@ -130,7 +130,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = elapsed;
 			track->firstTimeStamp = elapsed;
 
-			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 3);
+			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 4);
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;

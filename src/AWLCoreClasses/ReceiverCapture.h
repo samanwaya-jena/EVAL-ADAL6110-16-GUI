@@ -839,9 +839,6 @@ protected:
 
 	/** \brief  Log file. */
 	ofstream logFile;
-
-	// Variable used to keep track of the allocated trackIDs.  Incremented for each new track created.
-	TrackID trackIDGenerator;
 };
 
 
