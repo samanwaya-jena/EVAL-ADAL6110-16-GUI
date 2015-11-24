@@ -35,6 +35,8 @@ using namespace std;
 #include <QWidget>
 #include <QFrame>
 #include <QImage>
+#include <QAction>
+#include <QActionGroup>
 
 namespace awl
 {
@@ -87,10 +89,13 @@ public:
 	QSize maximumSizeHint() const;
 
 public slots:
-   	/** \brief Update the detection positions.
+	void ShowContextMenu(const QPoint& pos);
+	/** \brief Update the detection positions.
       */
 	void slotDetectionDataChanged(const Detection::Vector & data);
 	void slotImageChanged();
+	void slotVideoOptionsChangedAction();
+
 
 protected:
 	/** \brief Modify the videoCapture source. 
@@ -164,6 +169,15 @@ protected:
 
    /** \brief Screen scale factor in Qt Widget */
    float displayScaleFactor;
+
+   /** displayCrosshair, as initially spaecified in configuration file */
+   bool bDisplayCrosshair;
+
+private:
+	void createAction();
+
+	QActionGroup* groupVideoOptions;
+	QAction* crosshairOptionAction;
 }; // VideoViewer
 
 } // namespace awl

@@ -845,7 +845,16 @@
       <DeploymentContent>true</DeploymentContent>
       <SubType>Designer</SubType>
     </None>
+    <None Include="Camera.png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="Grid.png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Maximize.png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Phantom-Black-logo.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -864,6 +873,15 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
+    <None Include="Quit.png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Scan.png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Settings.png">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="InstallableDLLs\D3DCompiler_43.dll">

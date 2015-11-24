@@ -296,26 +296,57 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	}
 
-	// Menu items signals and slots
-	connect(ui.actionSettings, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
-	ui.actionSettings->setChecked(globalSettings->bDisplaySettingsWindow);
-
-	connect(ui.action2D, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
-	ui.action2D->setChecked(globalSettings->bDisplay2DWindow);
-
-	connect(ui.actionTableView, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
-	ui.actionTableView->setChecked(globalSettings->bDisplayTableViewWindow);
-
-	connect(ui.actionCamera, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
-	ui.actionCamera->setChecked(globalSettings->bDisplayCameraWindow);
-
 	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
 	ui.actionGraph->setChecked(globalSettings->bDisplayScopeWindow);
 
 	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
 	ui.action3D_View->setChecked(globalSettings->bDisplay3DWindow);
 
-	connect(ui.actionQuitter, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
+
+#if 1
+	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
+	// Toolbar items signals and slots
+	action2DButton = new QAction(QIcon("scan.png"), "2D View", 0);
+	action2DButton->setCheckable(true);
+	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
+	ui.mainToolBar->addAction(action2DButton);
+
+	actionTableButton = new QAction(QIcon("Grid.png"), "Table View", 0);
+	actionTableButton->setCheckable(true);
+	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
+	ui.mainToolBar->addAction(actionTableButton);
+
+	actionCameraButton = new QAction(QIcon("Camera.png"), "Camera View", 0);
+	actionCameraButton->setCheckable(true);
+	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
+	ui.mainToolBar->addAction(actionCameraButton);
+
+	actionSettingsButton = new QAction(QIcon("settings.png"), "Settings", 0);
+	actionSettingsButton->setCheckable(true);
+	actionSettingsButton->setChecked(globalSettings->bDisplaySettingsWindow);
+	ui.mainToolBar->addAction(actionSettingsButton);
+
+	// Adding the space will force the buttons placed after the spacer to be right-aligned
+	QWidget* spacerRightAligned = new QWidget();
+	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	ui.mainToolBar->addWidget(spacerRightAligned);
+
+	actionResizeButton = new QAction(QIcon("Maximize.png"), "Quit Application", 0);
+	actionResizeButton->setCheckable(true);
+	actionResizeButton->setChecked(boost::iequals(globalSettings->sDisplayShowSize, "FullScreen"));
+	ui.mainToolBar->addAction(actionResizeButton);
+
+	actionQuitButton = new QAction(QIcon("Quit.png"), "Quit Application", 0);
+	ui.mainToolBar->addAction(actionQuitButton);
+
+	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
+	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
+	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
+	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
+	connect(actionResizeButton, SIGNAL(toggled(bool )), this, SLOT(on_resizeActionToggled()));
+	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
+
+#endif
 	// View signals and slots on close
 	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
 	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
@@ -325,21 +356,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
 
 	// Position the objects in the layout in order
-#if 0
-	ui.horizontalLayout->addWidget(m2DScan, 0, Qt::AlignTop);
-	ui.horizontalLayout->addWidget(mTableView, 0,  Qt::AlignTop);
-	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		ui.horizontalLayout->addWidget(videoViewers[videoViewerID].get(), 0,  Qt::AlignTop);
-	}
-#else
 	ui.horizontalLayout->addWidget(m2DScan);
 	ui.horizontalLayout->addWidget(mTableView, 0, Qt::AlignTop);
 	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
 		ui.horizontalLayout->addWidget(videoViewers[videoViewerID].get(), 0 , Qt::AlignTop);
 	}
-#endif
+
 	// Show hide the windows according to menu
 	// Scope
 	if (ui.actionGraph->isChecked()) 
@@ -352,7 +375,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	// Interface parameters
-	if (ui.actionSettings->isChecked()) 
+	if (actionSettingsButton->isChecked()) 
 	{   
 		ui.interfaceTabs->show();
 	}
@@ -362,7 +385,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	// 2D View
-	if (ui.action2D->isChecked())
+	if (action2DButton->isChecked())
 	{
 		m2DScan->show();
 	}
@@ -373,7 +396,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 
 	// Table view
-	if (ui.actionTableView->isChecked()) 
+	if (actionTableButton->isChecked()) 
 	{
 		mTableView->show();
 	}
@@ -386,7 +409,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Camera views
 	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
-		if (ui.actionCamera->isChecked())
+		if (actionCameraButton->isChecked())
 		{
 			videoViewers[videoViewerID]->show();
 		}
@@ -862,12 +885,6 @@ void AWLQtDemo::on_distanceLogCheckBox_setChecked(bool  bChecked)
 		if (receiverCaptures[0]) receiverCaptures[0]->EndDistanceLog();
 		AWLSettings::GetGlobalSettings()->bWriteLogFile = bChecked;
 	}
-}
-
-void AWLQtDemo::on_videoCrosshairCheckBox_setChecked(bool  bChecked)
-{
-
-	AWLSettings::GetGlobalSettings()->bDisplayVideoCrosshair = bChecked;
 }
 
 void AWLQtDemo::on_timerTimeout()
@@ -1679,44 +1696,47 @@ void AWLQtDemo::on_view3DActionToggled()
 
 void AWLQtDemo::on_view2DActionToggled()
 {
-	if (ui.action2D->isChecked())
+	if (action2DButton->isChecked())
 	{
 		m2DScan->show();
 		m2DScan->slotConfigChanged(mCfgSensor);  // Force redraw with the current video parameters
+		action2DButton->setChecked(true);
 	}
-	else
+	else 
+	{
 		m2DScan->hide();
+		action2DButton->setChecked(false);
+	}
 }
 
 void AWLQtDemo::on_viewTableViewActionToggled()
 {
-	if (ui.actionTableView->isChecked()) 
+	if (actionTableButton->isChecked()) 
 	{
 		mTableView->show();
 		mTableView->slotConfigChanged();
+		actionTableButton->setChecked(true);
 	}
 	else
+	{
 		mTableView->hide();
+		actionTableButton->setChecked(false);
+	}
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()
 {
-//	QSize size = this->geometry().size();
-//	setBaseSize(size);
-//	updateGeometry();
-//	QLayout::SizeConstraint oldContraint = layout()->sizeConstraint();
-//	layout()->setSizeConstraint(QLayout::SetFixedSize);
-	if (ui.actionSettings->isChecked()) 
+	if (actionSettingsButton->isChecked()) 
 	{
 	
 		ui.interfaceTabs->show();
+		actionSettingsButton->setChecked(true);
 	}
 	else 
 	{
 		ui.interfaceTabs->hide();
+		actionSettingsButton->setChecked(false);
 	}
-
-//	setMaximumSize(65535, 65535);
 }
 
 void AWLQtDemo::on_viewGraphActionToggled()
@@ -1735,20 +1755,15 @@ void AWLQtDemo::on_viewGraphActionToggled()
 
 void AWLQtDemo::on_viewCameraActionToggled()
 {
-	if (ui.actionCamera->isChecked())
+	if (actionCameraButton->isChecked())
 	{
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) {
 				videoViewers[viewerID]->show();
 			}
-
-		// Position the video viewer.
-		// This has to be done agfter the Go(), to make sure the window is created
-//		QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
-//		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
-//		videoViewers[viewerID]->move(scr.left()+580, scr.top()+(viewerID*10));
 		}
+		actionCameraButton->setChecked(true);
 	}
 
 	else
@@ -1760,17 +1775,33 @@ void AWLQtDemo::on_viewCameraActionToggled()
 				videoViewers[viewerID]->hide();
 			}
 		}
+		actionCameraButton->setChecked(false);
+	}
+}
+
+void AWLQtDemo::on_resizeActionToggled()
+{
+	if (actionResizeButton->isChecked()) 
+	{
+	
+		showFullScreen();
+		actionResizeButton->setChecked(true);
+	}
+	else 
+	{
+		showMaximized();
+		actionResizeButton->setChecked(false);
 	}
 }
 
 void AWLQtDemo::on_view2DClose()
 {
-	ui.action2D->setChecked(false);
+	action2DButton->setChecked(false);
 }
 
 void AWLQtDemo::on_viewTableViewClose()
 {
-	ui.actionTableView->setChecked(false);
+	actionTableButton->setChecked(false);
 }
 
 void AWLQtDemo::on_viewGraphClose()

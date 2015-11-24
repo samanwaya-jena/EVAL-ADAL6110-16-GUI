@@ -1,3 +1,4 @@
+
 /* Fov_2DScan.cpp */
 /*
 	Copyright (C) 2014, 2015  Phantom Intelligence Inc.
@@ -211,11 +212,7 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
 {
 	ui.setupUi(this);
-
 	setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-//	sizePolicy().setHorizontalStretch(4);
-	//	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); 
-//	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored); 
 
 	Ratio = 1;
     ShowPalette = true;
@@ -579,17 +576,10 @@ QSize FOV_2DScan::minimumSizeHint() const
 QSize FOV_2DScan::maximumSizeHint() const 
 
 { 
-#if 0
-	QRect scr = QApplication::desktop()->availableGeometry();
-	float maxHeight = scr.height();
-	float maxWidth = scr.width();
-	return(QSize((int)maxWidth, (int)maxHeight));
-#else
 	QRect scr = QApplication::desktop()->availableGeometry();
 	float maxHeight = scr.height() * 1;
 	float maxWidth = scr.width()*0.6;
 	return(QSize((int)maxWidth, (int)maxHeight));	
-#endif
 }
 
 
@@ -646,8 +636,6 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
     QPainter painter(this);
 	int maxWidth = width();
 	int maxHeight = height();
-
-//	painter.fillRect(0,0,width(),height(),Qt::LinearGradientPattern);
 
 	// Draw ruler
 

@@ -67,6 +67,9 @@ videoCapture(inVideoCapture),
 displayScaleFactor(1.0)
 
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	bDisplayCrosshair = globalSettings->bDisplayVideoCrosshair;
+
 	qtCameraFrame = QImage(videoCapture->calibration.frameWidthInPixels, videoCapture->calibration.frameHeightInPixels, QImage::Format_RGB888);
 	QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	setSizePolicy(sizePolicy); 
@@ -74,6 +77,10 @@ displayScaleFactor(1.0)
 
 	SetVideoCapture(videoCapture);
 	startTime = boost::posix_time::microsec_clock::local_time();
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));
+	createAction();
 }
 
 VideoViewer::~VideoViewer()
@@ -88,6 +95,59 @@ void VideoViewer::SetVideoCapture( VideoCapture::Ptr inVideoCapture)
 	// Subscribe to the video capture's image feed to get information
 	// on when new frames are available
  	currentVideoSubscriberID = videoCapture->Subscribe();
+}
+
+void VideoViewer::createAction()
+{
+	groupVideoOptions = new QActionGroup( this );
+	groupVideoOptions->setExclusive(false);
+	crosshairOptionAction = new QAction("Crosshairs", this);
+	crosshairOptionAction->setCheckable(true);
+	crosshairOptionAction->setShortcut(QKeySequence(tr("Alt+H")));
+    crosshairOptionAction->setShortcutContext(Qt::ApplicationShortcut);
+	addAction(crosshairOptionAction);
+
+	crosshairOptionAction->setActionGroup(groupVideoOptions);
+
+	if (bDisplayCrosshair)
+	{
+		crosshairOptionAction->setChecked(true);
+	}
+	else
+	{
+		crosshairOptionAction->setChecked(false);
+	}
+
+	connect(groupVideoOptions, SIGNAL(triggered(QAction*)), this, SLOT(slotVideoOptionsChangedAction()));
+}
+
+void VideoViewer::ShowContextMenu(const QPoint& pos) // this is a slot
+{
+    // for most widgets
+    QPoint globalPos = mapToGlobal(pos);
+    // for QAbstractScrollArea and derived classes you would use:
+    // QPoint globalPos = myWidget->viewport()->mapToGlobal(pos); 
+
+
+	QMenu mainMenu;
+	QMenu* menuVideoOptions = mainMenu.addMenu("VideoOptions");
+ 	menuVideoOptions->addAction(crosshairOptionAction);
+ 
+	mainMenu.exec(globalPos);
+}
+
+void VideoViewer::slotVideoOptionsChangedAction()
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	if (crosshairOptionAction->isChecked())
+	{
+		bDisplayCrosshair = true;
+	}
+	else
+	{
+		bDisplayCrosshair = false;
+	}
 }
 
 void VideoViewer::slotImageChanged()
@@ -125,7 +185,7 @@ void VideoViewer::slotImageChanged()
 
 		QPainter painter(&qtEnhancedFrame);
 		DisplayReceiverValues(qtCameraFrame, painter, detectionData);
-		if (AWLSettings::GetGlobalSettings()->bDisplayVideoCrosshair)
+		if (bDisplayCrosshair)
 		{
 			DisplayCrossHairs(qtCameraFrame, painter);
 		}
@@ -244,20 +304,11 @@ void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
 void VideoViewer::DisplayReceiverValues(QImage &sourceFrame, QPainter &painter, const Detection::Vector & iDetectionData)
 
 {
-#if 0
-	// Draw the individual detections
-	BOOST_FOREACH(const Detection::Ptr &detection, iDetectionData)
-	{
-			DisplayTarget(sourceFrame, painter, detection);
-	}
-#else
-
 	int detectionQty = iDetectionData.size();
 	for (int i = 0; i < detectionQty; i++) 
 	{
 		DisplayTarget(sourceFrame, painter, iDetectionData[i]);
 	}
-#endif
 }
 
 void VideoViewer::DisplayTarget(QImage &sourceFrame, QPainter &painter, const Detection::Ptr &detection)

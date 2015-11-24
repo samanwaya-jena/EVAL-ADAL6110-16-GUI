@@ -832,5 +832,23 @@
     <None Include="Phantom-logo.bmp">
       <Filter>Installable Files</Filter>
     </None>
+    <None Include="Camera.png">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="Grid.png">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="Maximize.png">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="Quit.png">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="Scan.png">
+      <Filter>Installable Files</Filter>
+    </None>
+    <None Include="Settings.png">
+      <Filter>Installable Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -141,9 +141,7 @@ void TableView::closeEvent(QCloseEvent * event)
 
 void TableView::resizeEvent(QResizeEvent * event)
 {
-//	setMaximumSize(maximumSizeHint());
-//	ui.distanceTable->resize(ui.distanceTable->width(), height() -10);
-	PrepareTableViews();
+
 }
 
 void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
@@ -172,7 +170,7 @@ typedef struct
 }
 TableColumSettings;
 
-TableColumSettings columSettings[] = {
+TableColumSettings columnSettings[] = {
 	{TableView::eRealTimeReceiverIDColumn,		40, Qt::AlignHCenter},
 	{TableView::eRealTimeChannelIDColumn,		40, Qt::AlignHCenter},
 	{TableView::eRealTimeDetectionIDColumn,		40, Qt::AlignHCenter},
@@ -188,7 +186,7 @@ QSize TableView::sizeHint() const
 	return (maximumSizeHint());
 }
 
-const int scrollBarWidth = 6;
+const int scrollBarWidth = 30;
 
 QSize TableView::minimumSizeHint() const 
 
@@ -228,18 +226,7 @@ QSize TableView::unconstrainedTableSize() const
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 	// Calculate the dimensions of the table widget
-
-	// Calculate width
 	QTableWidget *tableWidget = ui.distanceTable;
-	// Adjust column width
-	int columnQty =  tableWidget->columnCount();
-	int tableWidth = 0;
-	for (int column = 0; column < columnQty; column++) 
-	{
-		tableWidth += columSettings[column].columnWidth;
-	}
-
-	tableWidth += scrollBarWidth + 4;
 
 	//Calculate height
 	int rowCount = 0;
@@ -252,6 +239,16 @@ QSize TableView::unconstrainedTableSize() const
 	tableHeight = rowCount * (tableWidget->rowHeight(1));
 	tableHeight += tableWidget->horizontalHeader()->height() + 4;
 	
+	
+	// Calculate width
+	int tableWidth =0;
+	for (int column = 0; column < tableWidget->columnCount(); column++)
+	{
+		tableWidth += columnSettings[column].columnWidth;
+	}
+	tableWidth += scrollBarWidth;
+	tableWidth += tableWidget->frameWidth() * 2;
+
 	// Calculate the size of the frame around it.
 	return (QSize(tableWidth, tableHeight));
 }
@@ -274,8 +271,8 @@ void TableView::PrepareTableViews()
 	int tableWidth = 0;
 	for (int column = 0; column < columnQty; column++) 
 	{
-		tableWidget->setColumnWidth(column, columSettings[column].columnWidth);
-		tableWidth += columSettings[column].columnWidth;
+		tableWidget->setColumnWidth(column, columnSettings[column].columnWidth);
+		tableWidth += columnSettings[column].columnWidth;
 	}
 
 	// Adjust the velocity title to display units
@@ -313,7 +310,7 @@ void TableView::PrepareTableViews()
 				for (int column = 0; column < tableWidget->columnCount(); column++)
 				{
 					QTableWidgetItem *newItem = new QTableWidgetItem("");
-					newItem->setTextAlignment(columSettings[column].alignment);
+					newItem->setTextAlignment(columnSettings[column].alignment);
 					tableWidget->setItem(row, column, newItem);
 				}  // for column
 
@@ -321,9 +318,6 @@ void TableView::PrepareTableViews()
 			} // for detectionID
 		} // for channelID
 	} // for receiverID
-
-	QSize newSize = unconstrainedTableSize();
-//	tableWidget->resize(newSize);
 }
 
 void TableView::AdjustTableSize()

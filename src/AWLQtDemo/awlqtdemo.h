@@ -89,7 +89,6 @@ private slots:
 	void on_targetHintDistanceSpin_editingFinished();
 	void on_targetHintAngleSpin_editingFinished();
 	void on_distanceLogCheckBox_setChecked(bool  bChecked);
-	void on_videoCrosshairCheckBox_setChecked(bool  bChecked);
 
 	void on_receiverCalibStorePushButton_clicked();
 	void on_calibratePushButton_clicked();
@@ -119,6 +118,7 @@ private slots:
 	void on_viewTableViewActionToggled();
 	void on_viewGraphActionToggled();
 	void on_viewCameraActionToggled();
+	void on_resizeActionToggled();
 
 	void on_view2DClose();
 	void on_viewTableViewClose();
@@ -162,6 +162,13 @@ private:
 	TableView * mTableView;
 	ConfigSensor mCfgSensor;
 	AWLQtScope* scopeWindow;
+
+	QAction *actionSettingsButton;
+	QAction *action2DButton;
+	QAction *actionTableButton;
+	QAction *actionCameraButton;
+	QAction *actionResizeButton;
+	QAction *actionQuitButton;
 
 	ReceiverCapture::List receiverCaptures;
 	VideoCapture::List videoCaptures;
