@@ -9,12 +9,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1097</width>
+    <width>1020</width>
     <height>562</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Fixed" vsizetype="Ignored">
     <horstretch>1</horstretch>
     <verstretch>1</verstretch>
    </sizepolicy>
@@ -5371,14 +5371,7 @@ color: rgb(255,255,255);</string>
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="leftMargin">
-         <number>3</number>
-        </property>
-        <property name="rightMargin">
-         <number>3</number>
-        </property>
-       </layout>
+       <layout class="QGridLayout" name="gridDisplayLayout"/>
       </item>
      </layout>
     </item>
@@ -5388,7 +5381,7 @@ color: rgb(255,255,255);</string>
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
      <horstretch>0</horstretch>
-     <verstretch>65</verstretch>
+     <verstretch>40</verstretch>
     </sizepolicy>
    </property>
    <property name="minimumSize">
@@ -5400,13 +5393,13 @@ color: rgb(255,255,255);</string>
    <property name="baseSize">
     <size>
      <width>0</width>
-     <height>65</height>
+     <height>40</height>
     </size>
    </property>
    <property name="iconSize">
     <size>
-     <width>60</width>
-     <height>60</height>
+     <width>40</width>
+     <height>40</height>
     </size>
    </property>
    <attribute name="toolBarArea">

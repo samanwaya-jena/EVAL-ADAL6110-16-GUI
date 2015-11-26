@@ -18,7 +18,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QTimer>
-
+#include <QLabel>
 #ifndef Q_MOC_RUN
 #include <boost/container/vector.hpp>
 #endif
@@ -130,6 +130,12 @@ private slots:
 	void on_timerTimeout();
 
 protected:
+	// Setup toolbar layout and events
+	void SetupToolBar();
+
+	// Setup Diplay Grid for Layout
+	void SetupDisplayGrid();
+
 	// Adjust the default displayed ranges depending on the sensor capabilities
 	void AdjustDefaultDisplayedRanges();
 
@@ -162,7 +168,9 @@ private:
 	TableView * mTableView;
 	ConfigSensor mCfgSensor;
 	AWLQtScope* scopeWindow;
-
+#if 0
+	QLabel	mLogoLabel;
+#endif
 	QAction *actionSettingsButton;
 	QAction *action2DButton;
 	QAction *actionTableButton;

@@ -57,10 +57,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 {
 	ui.setupUi(this);
 
-//	ui.horizontalLayout->addStretch(3);
-//	ui.horizontalLayout->addStretch(3);
-//	ui.horizontalLayout->addStretch(2);
-
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
@@ -296,72 +292,25 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	}
 
+	// Calibration 
+	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
+
+	// Configure the Toolbar
+	SetupToolBar();
+
+	// View signals and slots on close
+	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
+	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
+	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
+
 	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
 	ui.actionGraph->setChecked(globalSettings->bDisplayScopeWindow);
 
 	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
 	ui.action3D_View->setChecked(globalSettings->bDisplay3DWindow);
 
-
-#if 1
-	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
-	// Toolbar items signals and slots
-	action2DButton = new QAction(QIcon("scan.png"), "2D View", 0);
-	action2DButton->setCheckable(true);
-	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
-	ui.mainToolBar->addAction(action2DButton);
-
-	actionTableButton = new QAction(QIcon("Grid.png"), "Table View", 0);
-	actionTableButton->setCheckable(true);
-	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
-	ui.mainToolBar->addAction(actionTableButton);
-
-	actionCameraButton = new QAction(QIcon("Camera.png"), "Camera View", 0);
-	actionCameraButton->setCheckable(true);
-	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
-	ui.mainToolBar->addAction(actionCameraButton);
-
-	actionSettingsButton = new QAction(QIcon("settings.png"), "Settings", 0);
-	actionSettingsButton->setCheckable(true);
-	actionSettingsButton->setChecked(globalSettings->bDisplaySettingsWindow);
-	ui.mainToolBar->addAction(actionSettingsButton);
-
-	// Adding the space will force the buttons placed after the spacer to be right-aligned
-	QWidget* spacerRightAligned = new QWidget();
-	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	ui.mainToolBar->addWidget(spacerRightAligned);
-
-	actionResizeButton = new QAction(QIcon("Maximize.png"), "Quit Application", 0);
-	actionResizeButton->setCheckable(true);
-	actionResizeButton->setChecked(boost::iequals(globalSettings->sDisplayShowSize, "FullScreen"));
-	ui.mainToolBar->addAction(actionResizeButton);
-
-	actionQuitButton = new QAction(QIcon("Quit.png"), "Quit Application", 0);
-	ui.mainToolBar->addAction(actionQuitButton);
-
-	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
-	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
-	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
-	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
-	connect(actionResizeButton, SIGNAL(toggled(bool )), this, SLOT(on_resizeActionToggled()));
-	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
-
-#endif
-	// View signals and slots on close
-	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
-	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
-	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
-
-	// Calibration 
-	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
-
-	// Position the objects in the layout in order
-	ui.horizontalLayout->addWidget(m2DScan);
-	ui.horizontalLayout->addWidget(mTableView, 0, Qt::AlignTop);
-	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		ui.horizontalLayout->addWidget(videoViewers[videoViewerID].get(), 0 , Qt::AlignTop);
-	}
+	// Setup the display grid and position the objects in the grid
+	SetupDisplayGrid();
 
 	// Show hide the windows according to menu
 	// Scope
@@ -471,6 +420,99 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 }
 
+
+void AWLQtDemo::SetupToolBar()
+
+{
+	// Read the settigs from the configuration file
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
+	// Toolbar items signals and slots
+	action2DButton = new QAction(QIcon("scan.png"), "2D View", 0);
+	action2DButton->setCheckable(true);
+	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
+	ui.mainToolBar->addAction(action2DButton);
+
+	actionTableButton = new QAction(QIcon("Grid.png"), "Table View", 0);
+	actionTableButton->setCheckable(true);
+	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
+	ui.mainToolBar->addAction(actionTableButton);
+
+	actionCameraButton = new QAction(QIcon("Camera.png"), "Camera View", 0);
+	actionCameraButton->setCheckable(true);
+	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
+	ui.mainToolBar->addAction(actionCameraButton);
+
+	actionSettingsButton = new QAction(QIcon("settings.png"), "Settings", 0);
+	actionSettingsButton->setCheckable(true);
+	actionSettingsButton->setChecked(globalSettings->bDisplaySettingsWindow);
+	ui.mainToolBar->addAction(actionSettingsButton);
+
+	// Adding the space will force the buttons placed after the spacer to be right-aligned
+	QWidget* spacerRightAligned = new QWidget();
+	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	ui.mainToolBar->addWidget(spacerRightAligned);
+
+	actionResizeButton = new QAction(QIcon("Maximize.png"), "Quit Application", 0);
+	actionResizeButton->setCheckable(true);
+	actionResizeButton->setChecked(boost::iequals(globalSettings->sDisplayShowSize, "FullScreen"));
+	ui.mainToolBar->addAction(actionResizeButton);
+
+	actionQuitButton = new QAction(QIcon("Quit.png"), "Quit Application", 0);
+	ui.mainToolBar->addAction(actionQuitButton);
+
+	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
+	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
+	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
+	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
+	connect(actionResizeButton, SIGNAL(toggled(bool )), this, SLOT(on_resizeActionToggled()));
+	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
+}
+
+void AWLQtDemo::SetupDisplayGrid()
+
+{
+	// Read the settigs from the configuration file
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+
+	// Position the objects in the layout in order
+#if 0
+		// Create a label to hold a logo, only if there is one specified in INI file.
+
+	QLabel *mLogoLabel = new QLabel(this);
+	QPixmap *myPix = NULL;
+	if (!globalSettings->sLogoFileName.empty()) 
+	{
+		myPix = new QPixmap(globalSettings->sLogoFileName.c_str());
+	}
+	
+	float logoAspectRatio = 3.0/1.0;
+	if (myPix && !myPix->isNull())
+	{
+		float pixWidth = myPix->width();
+		float pixHeight = myPix->height();
+		float logoAspectRatio = pixWidth / pixHeight;
+		mLogoLabel->setPixmap(*myPix);
+	}
+
+	if (myPix) delete myPix;
+
+	mLogoLabel->setScaledContents(true);
+	ui.gridDisplayLayout->addWidget(mLogoLabel, 2, 0, 1, 1, Qt::AlignBottom | Qt::AlignLeft);
+
+#endif
+
+
+	ui.gridDisplayLayout->addWidget(m2DScan, 0, 0, 3, 3, Qt::AlignTop);
+	ui.gridDisplayLayout->addWidget(mTableView, 0, 4, 3, 1, Qt::AlignTop);
+
+	int videoViewerQty = videoCaptures.size();
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 5, 1, 1, Qt::AlignTop);
+	}
+}
 
 void AWLQtDemo::on_destroy()
 {
