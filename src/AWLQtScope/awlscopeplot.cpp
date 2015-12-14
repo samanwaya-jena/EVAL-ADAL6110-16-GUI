@@ -16,6 +16,10 @@
 */
 
 #include "AWLScopePlot.h"
+
+#include "ReceiverCapture.h"
+#include "AWLSettings.h"
+
 #include "curvedata.h"
 #include "signaldata.h"
 
@@ -28,8 +32,7 @@
 #include <qwt_painter.h>
 #include <QEvent>
 
-#include "ReceiverCapture.h"
-#include "AWLSettings.h"
+
 
 using namespace std;
 using namespace awl;

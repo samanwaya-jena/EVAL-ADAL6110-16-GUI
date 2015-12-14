@@ -31,12 +31,6 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E2622384198E43599E1F20AE812E88DE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
     }
     "Configurations"
     {
@@ -69,10 +63,15 @@
                     "Name" = "8:Microsoft .NET Framework 4 (x86 and x64)"
                     "ProductCode" = "8:.NETFramework,Version=v4.0"
                     }
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.12.0.x86"
                     {
-                    "Name" = "8:Windows Installer 3.1"
-                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    "Name" = "8:Visual C++ 2013 Runtime Libraries (x86)"
+                    "ProductCode" = "8:Microsoft.Visual.C++.12.0.x86"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.4.5"
+                    {
+                    "Name" = "8:Windows Installer 4.5"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.4.5"
                     }
                 }
             }
@@ -281,7 +280,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phantom Intelligence LiDAR Demo"
         "ProductCode" = "8:{B31B59F4-3C34-4B65-98D3-02828BF04CC1}"
-        "PackageCode" = "8:{5A1AEE1A-0C02-469E-AB32-C996C362209D}"
+        "PackageCode" = "8:{46E7C274-AB06-4E3C-85B8-27B7C4966BAF}"
         "UpgradeCode" = "8:{6759E55C-25AE-4E89-8ABF-1AB789FB6717}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -858,7 +857,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E2622384198E43599E1F20AE812E88DE"
             {
-            "SourcePath" = "8:..\\Win32\\Release\\AWLQtDemo.exe"
+            "SourcePath" = "8:..\\Win32\\Debug\\AWLQtDemo.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_E672C28D37124FBB8CE315D0DFF3C192"

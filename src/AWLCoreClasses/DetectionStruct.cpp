@@ -17,11 +17,12 @@
 
 #include <stdint.h>
 #include <string>
-#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
-#include <math.h>
 
 #include "CoordinateSystem.h"
 #include "DetectionStruct.h"
+
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
+#include <math.h>
 
 using namespace std;
 using namespace awl;

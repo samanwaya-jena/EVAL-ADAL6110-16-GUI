@@ -17,8 +17,7 @@
 
 #include <stdint.h>
 #include <string>
-#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
-#include <math.h>
+
 
 #include <boost/foreach.hpp>
 
@@ -28,6 +27,9 @@
 #include "awlcoord.h"
 #include "DebugPrintf.h"
 #include "ReceiverCapture.h"
+
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
+#include <math.h>
 
 using namespace std;
 using namespace awl;

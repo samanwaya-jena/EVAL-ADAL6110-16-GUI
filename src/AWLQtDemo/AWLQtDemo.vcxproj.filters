@@ -62,16 +62,10 @@
     <ClCompile Include="GeneratedFiles\qrc_awlqtdemo.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VideoCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VideoViewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FusedCloudViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLQtScope\awlqtscope.cpp">
@@ -168,9 +162,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverKvaserCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="range_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp">
@@ -308,372 +299,6 @@
     <None Include="InstallableDLLs\CopyDLLDependencies.BAT">
       <Filter>HelperTools</Filter>
     </None>
-    <None Include="..\InstallableDLLs\D3DCompiler_43.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\FTCJTAG.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\icudt49.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\icudt49d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\icuin49.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\icuin49d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\icuuc49.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\icuuc49d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\libEGL.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\libEGLd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\libGLESv2.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\libGLESv2d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\libMPSSE.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\nimCodecs.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\nimMockNodes.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\nimRecorder.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\OpenNI.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\OpenNI.jni.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\OpenNI.Net.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\OpenNIFilter.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_apps_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_apps_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_common_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_common_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_features_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_features_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_filters_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_filters_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_geometry_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_geometry_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_io_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_io_ply_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_io_ply_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_io_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_kdtree_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_kdtree_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_keypoints_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_keypoints_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_octree_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_octree_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_registration_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_registration_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_sample_consensus_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_sample_consensus_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_search_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_search_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_segmentation_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_segmentation_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_surface_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_surface_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_tracking_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_tracking_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_visualization_debug.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\pcl_visualization_release.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Policy.1.1.OpenNI.Net.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Policy.1.2.OpenNI.Net.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Policy.1.3.OpenNI.Net.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\PublisherPolicy.config">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\PublisherPolicy1.1.config">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\PublisherPolicy1.2.config">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\PublisherPolicy1.3.config">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5CLucene.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5CLucened.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Concurrent.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Concurrentd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Core.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Cored.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Declarative.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Declaratived.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Designer.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5DesignerComponents.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5DesignerComponentsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Designerd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Gui.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Guid.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Help.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Helpd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Multimedia.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Multimediad.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5MultimediaQuick_p.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5MultimediaQuick_pd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5MultimediaWidgets.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5MultimediaWidgetsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Network.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Networkd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5OpenGL.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5OpenGLd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5PrintSupport.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5PrintSupportd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Qml.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Qmld.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Quick.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Quickd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickParticles.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickParticlesd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickTest.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickTestd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Script.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Scriptd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5ScriptTools.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5ScriptToolsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Sql.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Sqld.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Svg.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Svgd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Test.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Testd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5V8.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5V8d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebKit.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebKitd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebKitWidgets.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebKitWidgetsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Widgets.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Widgetsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Xml.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Xmld.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5XmlPatterns.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5XmlPatternsd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\qwt.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\qwtd.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="Aerostar-logoForIcon128.bmp">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="AWLQtDemo.ico">
       <Filter>Installable Files</Filter>
     </None>
@@ -684,148 +309,10 @@
     <None Include="..\InstallableDLLs\platforms\qwindowsd.dll">
       <Filter>Installable Files\Installable Plugins</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcp100d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\..\Windows\System32\msvcr100d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="Aerostar-logo.jpg">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="AWLQtDemo-US.ico">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="AerostarIndustry-logo.jpg">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="AWLDemoSettings.xml">
       <Filter>Installable Files</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_calib3d249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_contrib249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_core249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_features2d249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_ffmpeg249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_flann249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_gpu249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_highgui249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_imgproc249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_legacy249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_ml249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_nonfree249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_objdetect249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_ocl249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_photo249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_stitching249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_superres249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_video249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Debug\opencv_videostab249d.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_ffmpeg249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_calib3d249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_contrib249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_core249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_features2d249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_flann249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_gpu249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_highgui249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_imgproc249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_legacy249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_ml249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_nonfree249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_objdetect249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_ocl249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_photo249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_stitching249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_superres249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_video249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\OpenCV2.4.9\opencv\build\bin\Release\opencv_videostab249.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
     <None Include="ClassDiagram1.cd" />
-    <None Include="..\..\..\..\..\..\XIMEA\API\x86\m3api.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
     <None Include="Phantom-Black-logo.bmp">
       <Filter>Installable Files</Filter>
     </None>
@@ -849,6 +336,198 @@
     </None>
     <None Include="Settings.png">
       <Filter>Installable Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Links\Downloads.lnk">
+      <Filter>HelperTools</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\canlib32.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\d3dcompiler_47.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Enginio.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\icudt54.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\icuin54.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\icuuc54.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\libEGL.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\libGLESv2.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\m3api.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_ffmpeg300.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\opencv_world300.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\opengl32sw.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Bluetooth.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5CLucene.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Concurrent.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Core.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5DBus.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Declarative.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Designer.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5DesignerComponents.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Gui.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Help.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Location.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Multimedia.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5MultimediaQuick_p.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5MultimediaWidgets.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Network.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Nfc.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5OpenGL.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Positioning.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5PrintSupport.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Qml.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Quick.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickParticles.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickTest.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5QuickWidgets.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Script.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5ScriptTools.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Sensors.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5SerialPort.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Sql.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Svg.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Test.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebChannel.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebEngine.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebEngineCore.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebEngineWidgets.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebKit.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebKitWidgets.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebSockets.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WebView.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Widgets.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5WinExtras.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5Xml.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt5XmlPatterns.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DCollision.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DCore.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DInput.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DLogic.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DQuick.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DQuickRenderer.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\Qt53DRenderer.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="..\InstallableDLLs\qwt.dll">
+      <Filter>Installable DLLs</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -15,14 +15,13 @@
 	limitations under the License.
 */
 
-#include "AWLSettings.h"
 
+#include "AWLSettings.h"
 #include <string>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
-
 
 using namespace awl;
 using namespace std;
@@ -120,6 +119,7 @@ bool AWLSettings::ReadSettings()
 bool AWLSettings::StoreReceiverCalibration()
 
 {
+#if 0
 	// Create an empty property tree object
     using boost::property_tree::ptree;
     ptree propTree;
@@ -134,7 +134,7 @@ bool AWLSettings::StoreReceiverCalibration()
     // (cannot open file, parse error), an exception is thrown.
 	 boost::property_tree::xml_writer_settings<char> set(' ', 4);
 	write_xml("test.xml", propTree, std::locale(), set);
-
+#endif
 	return (true);
 }
 

@@ -15,16 +15,14 @@
 	limitations under the License.
 */
 
-#include <QDesktopWidget>
-#include <QApplication>
-#include <qwt_plot_curve.h>
-#include <qlabel.h>
-#include <qlayout.h>
+
+
 
 #include <boost/foreach.hpp>
 
 #include "awlqtscope.h"
 #include "AWLScopePlot.h"
+
 #include "knob.h"
 #include "wheelbox.h"
 
@@ -32,6 +30,12 @@
 #include "DebugPrintf.h"
 #include "DetectionStruct.h"
 #include "ReceiverPostProcessor.h"
+
+#include <QDesktopWidget>
+#include <QApplication>
+#include <qwt_plot_curve.h>
+#include <qlabel.h>
+#include <qlayout.h>
 
 
 int timerInterval = 30; // In ms.  So 30FPS

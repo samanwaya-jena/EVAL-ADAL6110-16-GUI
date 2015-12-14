@@ -176,17 +176,6 @@ public:
 	float maxVelocity2D;
 	float zeroVelocity;
 
-
-
-	// 3D display options
-	int decimation;
-	int pixelSize;
-	int colorStyle;
-	int cameraView;
-	float viewerDepth; 
-	float viewerHeight;
-	float viewerMaxRange;
-
 	// Video display options
 	bool bDisplayVideoCrosshair;
 

@@ -28,11 +28,12 @@
 
 #include <boost/foreach.hpp>
 
-#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
-#include <math.h>
 
 #include "awlcoord.h"
 #include "AWLSettings.h"
+
+#define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
+#include <math.h>
 
 using namespace awl;
 
@@ -134,7 +135,6 @@ ClassificationType classifyFromIntensity(int channel, float distance, float inte
 
 {
 	unsigned int channelMask = 0x0001 << channel;
-	ClassificationEntry *entry = &classificationEntries[0];
 
 	for (ClassificationEntry *entry = &classificationEntries[0]; entry->channelMask != 0; entry++) 
 	{
@@ -738,7 +738,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 	// Sensor depth is a negative offset from bumper!
 	int carWidthScreen = (int) (carWidth * Ratio); // Car width in displayUnits. 
 												   // Always should be an odd number to be spread equally across center
-	if (!carWidthScreen & 0x01) carWidthScreen++;
+	if (!(carWidthScreen & 0x01)) carWidthScreen++;
 
 	int centerX = width() / 2;
 

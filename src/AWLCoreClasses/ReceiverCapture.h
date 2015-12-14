@@ -17,17 +17,23 @@
 	limitations under the License.
 */
 
+
 #include <stdint.h>
+
 #include <fstream>
 
 #ifndef Q_MOC_RUN
+
 #include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <boost/container/vector.hpp>
 #include <boost/property_tree/ptree.hpp>
+
 #endif
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"
+
 #include "DetectionStruct.h"
 
 using namespace std;

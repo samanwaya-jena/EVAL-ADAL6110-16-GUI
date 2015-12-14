@@ -19,6 +19,7 @@
 
 #include <string>
 #include <stdint.h>
+
 #include <boost/container/vector.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>

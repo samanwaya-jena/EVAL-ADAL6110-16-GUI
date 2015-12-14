@@ -5123,251 +5123,6 @@ color: rgb(255,255,255);</string>
           </widget>
          </widget>
         </widget>
-        <widget class="QWidget" name="threeDOptionsTab">
-         <attribute name="title">
-          <string>3D display options</string>
-         </attribute>
-         <widget class="QGroupBox" name="viewerColorGroupBox">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>661</width>
-            <height>191</height>
-           </rect>
-          </property>
-          <widget class="QGroupBox" name="viewColorGroupBox">
-           <property name="geometry">
-            <rect>
-             <x>200</x>
-             <y>10</y>
-             <width>171</width>
-             <height>81</height>
-            </rect>
-           </property>
-           <property name="title">
-            <string>3D color style</string>
-           </property>
-           <widget class="QRadioButton" name="colorImageRadioButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>28</y>
-              <width>82</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>I&amp;mage</string>
-            </property>
-            <property name="shortcut">
-             <string>M</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="rangeImageRadioButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>48</y>
-              <width>82</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>&amp;Range</string>
-            </property>
-            <property name="shortcut">
-             <string>R</string>
-            </property>
-           </widget>
-          </widget>
-          <widget class="QGroupBox" name="cameraViewGroupBox">
-           <property name="geometry">
-            <rect>
-             <x>390</x>
-             <y>10</y>
-             <width>111</width>
-             <height>171</height>
-            </rect>
-           </property>
-           <property name="title">
-            <string>Camera view angle</string>
-           </property>
-           <widget class="QPushButton" name="viewSidePushButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>20</y>
-              <width>81</width>
-              <height>23</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>&amp;Side</string>
-            </property>
-            <property name="shortcut">
-             <string>S</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="viewTopPushButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>50</y>
-              <width>81</width>
-              <height>23</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>&amp;Top</string>
-            </property>
-            <property name="shortcut">
-             <string>T</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="viewIsoPushButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>80</y>
-              <width>81</width>
-              <height>23</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>&amp;Isometric</string>
-            </property>
-            <property name="shortcut">
-             <string>I</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="viewFrontPushButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>110</y>
-              <width>81</width>
-              <height>23</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>&amp;Front</string>
-            </property>
-            <property name="shortcut">
-             <string>F</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="viewFrontPushButton_2">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>140</y>
-              <width>81</width>
-              <height>23</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>&amp;Zoom</string>
-            </property>
-            <property name="shortcut">
-             <string>F</string>
-            </property>
-           </widget>
-          </widget>
-          <widget class="QGroupBox" name="displayOptionsGroupBox">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>10</y>
-             <width>171</width>
-             <height>81</height>
-            </rect>
-           </property>
-           <property name="title">
-            <string>Display options</string>
-           </property>
-           <widget class="QSpinBox" name="decimationSpinBox">
-            <property name="geometry">
-             <rect>
-              <x>90</x>
-              <y>20</y>
-              <width>61</width>
-              <height>22</height>
-             </rect>
-            </property>
-            <property name="frame">
-             <bool>true</bool>
-            </property>
-            <property name="suffix">
-             <string> pixel</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>8</number>
-            </property>
-            <property name="singleStep">
-             <number>1</number>
-            </property>
-           </widget>
-           <widget class="QLabel" name="decimationLabel">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>23</y>
-              <width>61</width>
-              <height>20</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Decimation:</string>
-            </property>
-           </widget>
-           <widget class="QLabel" name="pixelSizeLabel">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>50</y>
-              <width>61</width>
-              <height>20</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Pixel size:</string>
-            </property>
-           </widget>
-           <widget class="QSpinBox" name="pixelSizeSpinBox">
-            <property name="geometry">
-             <rect>
-              <x>90</x>
-              <y>50</y>
-              <width>61</width>
-              <height>22</height>
-             </rect>
-            </property>
-            <property name="frame">
-             <bool>true</bool>
-            </property>
-            <property name="suffix">
-             <string> pixel</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>15</number>
-            </property>
-            <property name="singleStep">
-             <number>1</number>
-            </property>
-           </widget>
-          </widget>
-         </widget>
-        </widget>
        </widget>
       </item>
       <item>
@@ -5416,14 +5171,6 @@ color: rgb(255,255,255);</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
-   </property>
-  </action>
-  <action name="action3D_View">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>3D</string>
    </property>
   </action>
   <action name="actionGraph">
@@ -5478,14 +5225,6 @@ color: rgb(255,255,255);</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>decimationSpinBox</tabstop>
-  <tabstop>pixelSizeSpinBox</tabstop>
-  <tabstop>colorImageRadioButton</tabstop>
-  <tabstop>rangeImageRadioButton</tabstop>
-  <tabstop>viewSidePushButton</tabstop>
-  <tabstop>viewTopPushButton</tabstop>
-  <tabstop>viewIsoPushButton</tabstop>
-  <tabstop>viewFrontPushButton</tabstop>
   <tabstop>sensorHeightSpinBox</tabstop>
   <tabstop>sensorDepthSpinBox</tabstop>
   <tabstop>sensorRangeMinSpinBox</tabstop>
@@ -5580,7 +5319,6 @@ color: rgb(255,255,255);</string>
   <tabstop>globalParametersTable</tabstop>
   <tabstop>globalParametersSetPushButton</tabstop>
   <tabstop>globalParametersGetPushButton</tabstop>
-  <tabstop>viewFrontPushButton_2</tabstop>
  </tabstops>
  <resources>
   <include location="awlqtdemo.qrc"/>
@@ -5651,22 +5389,6 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>sensorRangeMinSpinBox</sender>
-   <signal>editingFinished()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>150</x>
-     <y>206</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>127</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>recordButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5678,6 +5400,22 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorRangeMinSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>127</x>
      <y>275</y>
     </hint>
    </hints>
@@ -5795,6 +5533,22 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
+   <sender>sensorRangeMax2SpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_calibrationRangeMax2Spin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>442</x>
+     <y>236</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>415</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>registerGPIOSetPushButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5827,22 +5581,6 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>algoParametersSetPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algoParametersSetPushButton_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>322</x>
-     <y>255</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>325</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>algoParametersGetPushButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5854,6 +5592,22 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algoParametersSetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algoParametersSetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>322</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
      <y>275</y>
     </hint>
    </hints>
@@ -6046,22 +5800,6 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>481</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sensorRangeMax2SpinBox</sender>
-   <signal>editingFinished()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_calibrationRangeMax2Spin_editingFinished()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>442</x>
-     <y>236</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>415</x>
      <y>275</y>
     </hint>
    </hints>

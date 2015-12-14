@@ -29,7 +29,7 @@
 #include "VideoCapture.h"
 #include "ReceiverCapture.h"
 #include "VideoViewer.h"
-#include "FusedCloudViewer.h"
+
 #include "FOV_2DScan.h"
 #include "TableView.h"
 #include "..\awlqtscope\awlqtscope.h"
@@ -60,15 +60,6 @@ public:
 	~AWLQtDemo();
 
 private slots:
-	void on_colorImageRadioButton_setChecked(bool bChecked);
-	void on_rangeImageRadioButton_setChecked(bool bChecked);
-
-	void on_viewSidePushButton_pressed();
-	void on_viewTopPushButton_pressed();
-	void on_viewFrontPushButton_pressed();
-	void on_viewIsoPushButton_pressed();
-	void on_viewZoomPushButton_pressed();
-
 	void on_recordPushButton_clicked();
 	void on_playbackPushButton_clicked();
 	void on_stopPushButton_clicked();
@@ -84,8 +75,7 @@ private slots:
 	void on_calibrationRangeMax5Spin_editingFinished();
 	void on_calibrationRangeMax6Spin_editingFinished();
 	void on_measurementOffsetSpin_editingFinished();
-	void on_decimationSpin_editingFinished();
-	void on_pixelSizeSpin_editingFinished();
+
 	void on_targetHintDistanceSpin_editingFinished();
 	void on_targetHintAngleSpin_editingFinished();
 	void on_distanceLogCheckBox_setChecked(bool  bChecked);
@@ -113,7 +103,7 @@ private slots:
 	void on_globalParametersGetPushButton_clicked();
 
 	void on_viewSettingsActionToggled();
-	void on_view3DActionToggled();
+
 	void on_view2DActionToggled();
 	void on_viewTableViewActionToggled();
 	void on_viewGraphActionToggled();
@@ -181,8 +171,6 @@ private:
 	ReceiverCapture::List receiverCaptures;
 	VideoCapture::List videoCaptures;
 	VideoViewer::List  videoViewers;
-
-	CloudViewerWin::Ptr cloudViewer;
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;

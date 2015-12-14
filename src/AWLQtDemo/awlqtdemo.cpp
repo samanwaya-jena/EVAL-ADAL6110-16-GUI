@@ -15,14 +15,7 @@
 	limitations under the License.
 */
 
-#include <QTableWidget>
-#include <QDesktopWidget>
-#include <QApplication>
-#include <QTime>
-#include <QMessageBox>
-#include <QListWidget>
 
-#include <string>
 #include <boost/foreach.hpp>
 
 
@@ -34,9 +27,18 @@
 #include "ReceiverKvaserCapture.h"
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
-#include "FusedCloudViewer.h"
+
 #include "DebugPrintf.h"
 #include "awlqtdemo.h"
+
+#include <QTableWidget>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QTime>
+#include <QMessageBox>
+#include <QListWidget>
+
+#include <string>
 
 
 #include "tableview.h"
@@ -82,12 +84,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
-		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
+
+		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
 		}
-		else if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "KvaserLeaf"))
+		else if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "KvaserLeaf"))
 		{
 			// Kvaser Leaf CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
@@ -107,10 +110,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	}
-
+#if 0
 	// Create the 3Dviewer.
 	cloudViewer = CloudViewerWin::Ptr(new CloudViewerWin(videoCaptures[0], receiverCaptures[0], this->windowTitle().toStdString() + " 3D View"));
-
+#endif
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
 	int videoViewerQty = videoCaptures.size();
@@ -151,9 +154,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	ui.targetHintDistanceSpinBox->setValue(receiverCaptures[0]->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
-
-	ui.pixelSizeSpinBox->setValue(globalSettings->pixelSize);	
-	ui.decimationSpinBox->setValue(globalSettings->decimation);
 
 	// Default values
 	ChannelMask channelMask;
@@ -200,17 +200,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.frameRateSpinBox->setValue(0);
 	}
 
-	CloudViewerWin::ColorHandlerType defaultColorType = (CloudViewerWin::ColorHandlerType) globalSettings->colorStyle;
-	switch (defaultColorType) 
-	{
-	case CloudViewerWin::eHandlerRGB:
-		ui.colorImageRadioButton->setChecked(true);
-		break;
-
-	case CloudViewerWin::eHandlerZ:
-		ui.rangeImageRadioButton->setChecked(true);
-		break;
-	}
 
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
@@ -306,9 +295,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
 	ui.actionGraph->setChecked(globalSettings->bDisplayScopeWindow);
 
-	connect(ui.action3D_View, SIGNAL(toggled(bool )), this, SLOT(on_view3DActionToggled()));
-	ui.action3D_View->setChecked(globalSettings->bDisplay3DWindow);
-
 	// Setup the display grid and position the objects in the grid
 	SetupDisplayGrid();
 
@@ -377,13 +363,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	int horizontalDecorationsWidth = frame.width() - client.width();
 	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
 
-	if (boost::iequals(globalSettings->sDisplayShowSize, "FullScreen"))
+	if (globalSettings->sDisplayShowSize == std::string("FullScreen"))
 		showFullScreen();
-	else if (boost::iequals(globalSettings->sDisplayShowSize, "Maximized"))
+	else if (globalSettings->sDisplayShowSize == std::string("Maximized"))
 		showMaximized();
-	else if (boost::iequals(globalSettings->sDisplayShowSize, "Minimized"))
+	else if (globalSettings->sDisplayShowSize == std::string("Minimized"))
 		showMinimized();
-	else if (boost::iequals(globalSettings->sDisplayShowSize, "Normal"))
+	else if (globalSettings->sDisplayShowSize == std::string("Normal"))
 		showNormal();
 	else
 		showNormal();
@@ -456,7 +442,7 @@ void AWLQtDemo::SetupToolBar()
 
 	actionResizeButton = new QAction(QIcon("Maximize.png"), "Quit Application", 0);
 	actionResizeButton->setCheckable(true);
-	actionResizeButton->setChecked(boost::iequals(globalSettings->sDisplayShowSize, "FullScreen"));
+	actionResizeButton->setChecked(globalSettings->sDisplayShowSize == std::string("FullScreen"));
 	ui.mainToolBar->addAction(actionResizeButton);
 
 	actionQuitButton = new QAction(QIcon("Quit.png"), "Quit Application", 0);
@@ -516,7 +502,6 @@ void AWLQtDemo::SetupDisplayGrid()
 
 void AWLQtDemo::on_destroy()
 {
-	if (cloudViewer) cloudViewer->Stop();
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
@@ -532,68 +517,6 @@ void AWLQtDemo::on_destroy()
 	if (scopeWindow) delete scopeWindow;
 }
 
-
-void AWLQtDemo::on_colorImageRadioButton_setChecked(bool bChecked)
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCurrentColorHandlerType(CloudViewerWin::eHandlerRGB);
-	}
-}
-
-
-void AWLQtDemo::on_rangeImageRadioButton_setChecked(bool bChecked)
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCurrentColorHandlerType(CloudViewerWin::eHandlerZ);
-	}
-}
-
-
-void AWLQtDemo::on_viewSidePushButton_pressed()
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCameraView(CloudViewerWin::eCameraSide);
-	}
-}
-
-
-void AWLQtDemo::on_viewTopPushButton_pressed()
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCameraView(CloudViewerWin::eCameraTop);
-	}
-}
-
-
-void AWLQtDemo::on_viewZoomPushButton_pressed()
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCameraView(CloudViewerWin::eCameraZoom);
-	}
-}
-
-
-void AWLQtDemo::on_viewFrontPushButton_pressed()
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCameraView(CloudViewerWin::eCameraFront);
-	}
-}
-
-
-void AWLQtDemo::on_viewIsoPushButton_pressed()
-{
-	if (cloudViewer) 
-	{
-		cloudViewer->SetCameraView(CloudViewerWin::eCameraIsometric);
-	}
-}
 
 
 void AWLQtDemo::on_recordPushButton_clicked()
@@ -671,27 +594,6 @@ void AWLQtDemo::on_stopPushButton_clicked()
 	DisplayReceiverStatus(0);
 }
 
-
-void AWLQtDemo::on_decimationSpin_editingFinished()
-{
-	if (cloudViewer) 
-	{
-		int decimation = ui.decimationSpinBox->value();
-		cloudViewer->SetDecimation(decimation);
-	}
-}
-
-
-void AWLQtDemo::on_pixelSizeSpin_editingFinished()
-{
-	if (cloudViewer) 
-	{
-		int pixelSize =ui.pixelSizeSpinBox->value();
-		cloudViewer->SetPixelSize(pixelSize);
-	}
-}
-
-
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	double height = ui.sensorHeightSpinBox->value();
@@ -706,11 +608,6 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	QApplication::processEvents();
 
 	// Process
-	if (cloudViewer) 
-	{
-		cloudViewer->SetPositionUp(height);
-	}
-
 	if (m2DScan && !m2DScan->isHidden())
 	{
 		m2DScan->slotConfigChanged(mCfgSensor);
@@ -736,11 +633,6 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 	QApplication::processEvents();
 
 	// Process
-	if (cloudViewer) 
-	{
-		cloudViewer->SetPositionForward(forward);
-	}
-
 	if (m2DScan && !m2DScan->isHidden())
 	{
 		mCfgSensor.spareDepth = -forward;
@@ -782,11 +674,6 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 
 
 	// Update user interface parts
-	if (cloudViewer) 
-	{
-		cloudViewer->UpdateFromGlobalConfig();	
-	}
-
 	
 	if (m2DScan && !m2DScan->isHidden())
 	{
@@ -999,19 +886,6 @@ void AWLQtDemo::on_timerTimeout()
 			if (videoViewers[viewerID]) videoViewers[viewerID]->slotImageChanged();
 		}
 	}
-
-		// Always spin the cloud viewer.
-	if (bContinue && cloudViewer && !cloudViewer->WasStopped()) 
-	{
-		cloudViewer->SpinOnce();
-	}
-
-	// Update the menus for the 3D view and camera view, since we do not get any notifiocation from them
-	if (ui.action3D_View->isChecked() && (!cloudViewer || cloudViewer->WasStopped())) 
-	{
-		ui.action3D_View->toggle();
-	}
-
 
 	// Let's go for the next run
 	if (bContinue)
@@ -1352,7 +1226,7 @@ void AWLQtDemo::PrepareParametersView()
 void AWLQtDemo::UpdateParametersView()
 
 {
-	int currentAlgo;
+	int currentAlgo = 0;
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
@@ -1407,7 +1281,7 @@ void AWLQtDemo::UpdateParametersView()
 }
 void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 {
-	int currentAlgo;
+	int currentAlgo = 0;
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
@@ -1465,7 +1339,7 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 
 void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 {
-	int currentAlgo;
+	int currentAlgo = 0;
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
@@ -1717,23 +1591,6 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 			receiverCaptures[0]->QueryGlobalAlgoParameter(parameterAddress); 
 		} // if checked
 	} // for 
-}
-
-
-void AWLQtDemo::on_view3DActionToggled()
-{
-
-	if (ui.action3D_View->isChecked())
-		cloudViewer->Go();
-	else
-	{
-		cloudViewer->Stop();
-
-		// For some reason, the closing of the 3D window messes up with our timer.
-		//Restart it
-//		Sleep(100);
-//		myTimer->start(LOOP_RATE);
-	}
 }
 
 void AWLQtDemo::on_view2DActionToggled()
@@ -2107,8 +1964,6 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 
 void AWLQtDemo::closeEvent(QCloseEvent * event)
 {
-	if (cloudViewer) cloudViewer->Stop();
-
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();

@@ -34,16 +34,11 @@ AWLSettings *AWLSettings::globalSettings=NULL;
 
 AWLSettings::AWLSettings():
 sFileName(sDefaultSettingsFileName),
-decimation(3),
-pixelSize(1),
-colorStyle(0),
-cameraView(3),
 sLogoFileName(""),
 sIconFileName(""),
 bDisplayVideoCrosshair(false)
 
 {
-	cameraView = 3;
 }
 
 AWLSettings * AWLSettings::InitSettings()
@@ -153,14 +148,6 @@ bool AWLSettings::ReadSettings()
 	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
 	sDisplayShowSize = propTree.get<std::string>("config.layout.displayShowSize", "Normal");
 
-	decimation = propTree.get<int>("config.display3D.decimation");
-	pixelSize = propTree.get<int>("config.display3D.pixelSize");
-	colorStyle =propTree.get<int>("config.display3D.colorStyle");
-	cameraView =propTree.get<int>("config.display3D.cameraView");
-	viewerDepth =  propTree.get<float>("config.display3D.viewerDepth");
-	viewerHeight = propTree.get<float>("config.display3D.viewerHeight");
-	viewerMaxRange =  propTree.get<float>("config.display3D.viewerMaxRange");
-
 	displayedDetectionsPerChannelInTableView = propTree.get<int>("config.displayTableView.displayedDetectionsPerChannelInTableView");
 
 	carWidth = propTree.get<float>("config.display2D.carWidth");
@@ -264,12 +251,12 @@ bool AWLSettings::StoreReceiverCalibration()
 		receiversNode.put_child(receiverNode);
 	} // BOOST_FOREACH(ptree::value_type &receiversNode, propT
 	proptree->put_child(receiversNode);
-#endif
+
 	// Write the XML file into the property tree. If reading fails
     // (cannot open file, parse error), an exception is thrown.
 	 boost::property_tree::xml_writer_settings<char> set(' ', 4);
 	write_xml("test.xml", propTree, std::locale(), set);
-
+#endif
 	return (true);
 }
 

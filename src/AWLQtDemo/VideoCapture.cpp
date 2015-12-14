@@ -142,7 +142,11 @@ void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publishe
 	{
 		//Instead of simply cloning, make sure the target comes out as a 3 channel BGR image.
 		targetFrame->create(currentFrame.rows, currentFrame.cols, CV_8UC3);
+#if 0
 		cv::cvtColor(currentFrame, *targetFrame, CV_BGRA2BGR);
+#else
+		*targetFrame = currentFrame.clone();
+#endif	
 		UnlockNews(inSubscriberID);
 	}
 };

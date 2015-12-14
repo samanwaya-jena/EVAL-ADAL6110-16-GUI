@@ -406,15 +406,6 @@
     <displayDistances>1</displayDistances>
   </display2D>
 
-  <display3D>
-    <decimation>3</decimation>
-    <pixelSize>1</pixelSize>
-    <colorStyle>0</colorStyle>
-    <cameraView>3</cameraView>
-    <viewerDepth>-1.54</viewerDepth>
-    <viewerHeight>1.30</viewerHeight>
-    <viewerMaxRange>30</viewerMaxRange>
-  </display3D>
 
   <scope>
     <!-- interval in ms -->

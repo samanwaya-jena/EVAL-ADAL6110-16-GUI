@@ -29,7 +29,7 @@ using namespace std;
 namespace awl
 {
 
-const float NAN = std::numeric_limits<float>::quiet_NaN ();
+//const float NAN = std::numeric_limits<float>::quiet_NaN ();
 #define isNAN(val) (val == NAN)
 
 typedef uint16_t TrackID;

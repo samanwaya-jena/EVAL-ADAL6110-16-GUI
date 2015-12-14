@@ -17,6 +17,13 @@
 	limitations under the License.
 */
 
+
+
+
+#include "ReceiverCapture.h"
+#include "ReceiverPostProcessor.h"
+
+
 #include <QtWidgets/QWidget>
 #include <qwt_plot_curve.h>
 
@@ -25,8 +32,6 @@
 #include "awlscopeplot.h"
 #include "curvedata.h"
 
-#include "ReceiverCapture.h"
-#include "ReceiverPostProcessor.h"
 
 
 

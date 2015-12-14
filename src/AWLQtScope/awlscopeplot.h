@@ -17,14 +17,16 @@
 	limitations under the License.
 */
 
+
+
+
+#include "ReceiverCapture.h"
+
+#include "curvedata.h"
 #include <qwt_plot.h>
 #include <qwt_interval.h>
 #include <qwt_system_clock.h>
 #include <qwt_plot_curve.h>
-
-#include "curvedata.h"
-#include "ReceiverCapture.h"
-
 
 using namespace std;
 using namespace awl;
