@@ -614,13 +614,22 @@ void FOV_2DScan::calculateResize()
 
 	if (displayZoomMode == eDisplayZoomModeFront)
 	{
+#if 0
 		zeroY = height() - (config.spareDepth * Ratio);
+#else
+		zeroY = maxHeight - (config.spareDepth * Ratio);
+#endif
 		zeroX = width()/2;
+
 	}
 	else
 	{
+#if 0
 	zeroY = height() *0.5; // .1 x height offcenter to the bottom
-	zeroX = maxWidth/2;
+#else
+	zeroY = maxHeight * 0.5; // .1 x height offcenter to the bottom
+#endif
+	zeroX = width() / 2;
 	}
 
 	int labelWidth = width() * 0.3;
