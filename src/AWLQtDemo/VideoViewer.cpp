@@ -165,13 +165,18 @@ void VideoViewer::slotImageChanged()
 		videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
 
 		// Convert the image to the RGB888 format
-        switch (cameraFrame->type()) {
+		int frameType = cameraFrame->type();
+        switch (frameType) {
         case CV_8UC1:
             cvtColor(*cameraFrame, tmpFrame, CV_GRAY2RGB);
             break;
         case CV_8UC3:
             cvtColor(*cameraFrame, tmpFrame, CV_BGR2RGB);
             break;
+		default:
+			cvtColor(*cameraFrame, tmpFrame, CV_BGR2RGB);
+			break;
+
         }
 
         // QImage needs the data to be stored continuously in memory
@@ -333,6 +338,7 @@ void VideoViewer::DisplayTarget(QImage &sourceFrame, QPainter &painter, const De
 	{
 		return;
 	}
+
 
 	// Inset the vertical lines horizontally, to compensate for line thickness.
 	//Draw the vertical lines
@@ -577,8 +583,8 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 
 void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, const CvPoint &startPoint, const CvPoint &endPoint,  QColor &colorEnhance, int penWidth)
 {
-
-
+	// To avoid overlapping colors for alarms, only the last line is displayed.
+	// To make dure there is no other line displayed below, redraw the source frame behind the line
 	QBrush backBrush;
 	backBrush.setTextureImage(sourceFrame);
 	painter.setBrush(backBrush);
@@ -586,15 +592,18 @@ void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, cons
 	QPen pen(colorEnhance);
 	pen.setWidth(penWidth);
 	pen.setBrush(backBrush);
+	pen.setCapStyle(Qt::FlatCap);
 	painter.setPen(pen);
 
 	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
 
+	// When lines behind are erased, , we can draw the line.
 	QBrush frontBrush(colorEnhance);
 	painter.setBrush(Qt::NoBrush);
 
 	pen.setColor(penWidth);
 	pen.setBrush(QBrush(colorEnhance));
+	pen.setCapStyle(Qt::FlatCap);
 	painter.setPen(pen);
 
 	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
