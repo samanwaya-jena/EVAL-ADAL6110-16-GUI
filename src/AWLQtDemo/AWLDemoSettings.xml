@@ -261,13 +261,12 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName>
-      <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1100</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>false</cameraFlip>
+      <cameraFlip>true</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->
@@ -355,7 +354,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1110</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -376,48 +375,7 @@
         <yaw>0.0</yaw>
       </orientation>
 
-      <!-- Comment out unused cameras
-		< MS_LIFECAM_CINEMA >
-		<fov>
-			<x>47.4</x>
-			<y>30.6</y>
-		</fov>
-
-		< MS_LIFECAM_HD6000 @640x360 >
-		<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-
-		< MS_LIFECAM_HD5000 @640x360 >
-			<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-    
-     < LOGITECH_C270 @640 x 480 >
-    <fov>
-      <x>42.0</x>
-      <y>27.0</y>
-    </fov>
-
-     < XIMEA with 3.6mm lensing >
-    <fov>
-      <x>96.75</x>
-      <y>72.5</y>
-     </fov>
-
- 
-      < XIMEA with 6mm lensing >
-      <fov>
-        <x>54.6</x>
-        <y>41.3</y>
-      </fov>
-
-      End Comment out unused cameras -->
-
-
-      <!-- MS_LIFECAM_HD5000 @640x360 -->
+        <!-- MS_LIFECAM_HD5000 @640x360 -->
       <fov>
         <x>45.0</x>
         <y>39.0</y>
