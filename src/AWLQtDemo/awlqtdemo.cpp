@@ -110,10 +110,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	}
-#if 0
-	// Create the 3Dviewer.
-	cloudViewer = CloudViewerWin::Ptr(new CloudViewerWin(videoCaptures[0], receiverCaptures[0], this->windowTitle().toStdString() + " 3D View"));
-#endif
+
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
 	int videoViewerQty = videoCaptures.size();
@@ -459,12 +456,12 @@ void AWLQtDemo::SetupToolBar()
 void AWLQtDemo::SetupDisplayGrid()
 
 {
-	// Read the settigs from the configuration file
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 	// Position the objects in the layout in order
 #if 0
-		// Create a label to hold a logo, only if there is one specified in INI file.
+	// Read the settigs from the configuration file
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	// Create a label to hold a logo, only if there is one specified in INI file.
 
 	QLabel *mLogoLabel = new QLabel(this);
 	QPixmap *myPix = NULL;
@@ -489,8 +486,8 @@ void AWLQtDemo::SetupDisplayGrid()
 
 #endif
 
-
-	ui.gridDisplayLayout->addWidget(m2DScan, 0, 0, 3, 3, Qt::AlignTop);
+#if 0
+	ui.gridDisplayLayout->addWidget((m2DScan, 0, 0, 3, 3, Qt::AlignTop);
 	ui.gridDisplayLayout->addWidget(mTableView, 0, 4, 3, 1, Qt::AlignTop);
 
 	int videoViewerQty = videoCaptures.size();
@@ -498,6 +495,16 @@ void AWLQtDemo::SetupDisplayGrid()
 	{
 		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 5, 1, 1, Qt::AlignTop);
 	}
+#else
+	ui.gridDisplayLayout->addWidget(m2DScan, 0, 0, Qt::AlignTop);
+	ui.gridDisplayLayout->addWidget(mTableView, 0, 1, Qt::AlignTop);
+
+	int videoViewerQty = videoCaptures.size();
+	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	{
+		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 2, Qt::AlignTop);
+	}
+#endif
 }
 
 void AWLQtDemo::on_destroy()
