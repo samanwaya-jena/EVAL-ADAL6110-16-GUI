@@ -49,7 +49,7 @@
 		       Receiver is used in the configuration.
 		       This can influence comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KVaserLeaf</receiverType>
+      <receiverType>KvaserLeaf</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
