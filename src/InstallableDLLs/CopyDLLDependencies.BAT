@@ -5,16 +5,17 @@ REM
 REM This assumes that the following environment variables have been set:
 REM    QTDIR
 REM    QWTDir
-REM    PCL_Root
-REM    OPEN_NI_BIN
 REM    OPENCV_DIR
 REM 
 
-COPY "%OPENCV_DIR%"\bin\Debug\*.dll
-COPY "%OPENCV_DIR%"\bin\Release\*.dll
-COPY "%OPEN_NI_BIN%"\*.dll"
-COPY "%OPEN_NI_BIN%"\*.config"
-COPY "%PCL_Root%"\bin\*.dll
-COPY "%QTDir%"\bin\*.dll
-COPY "%QWTDir%"\lib\*.dll
-COPY "C:\FTDI\DLLs\*.dll"
+COPY "%QTDir%"\bin\QT5core.dll
+COPY "%QTDir%"\bin\QT5Gui.dll
+COPY "%QTDir%"\bin\QT5OpenGL.dll
+COPY "%QTDir%"\bin\QT5PrintSupport.dll
+COPY "%QTDir%"\bin\QT5SVG.dll
+COPY "%QTDir%"\bin\QT5Widgets.dll
+COPY "%OPENCV_DIR%"\x86\vc12\bin\opencv_world300.dll
+COPY "%QWTDir%"\build-qwt-Desktop_Qt_5_5_1_MSVC2013_32bit-Release\lib\qwt.dll
+del *d.dll
+COPY "C:\XIMEA\API\x86\m3api.dll"
+COPY "C:\Program Files (x86)\Kvaser\Canlib\Bin\canlib32.dll"
