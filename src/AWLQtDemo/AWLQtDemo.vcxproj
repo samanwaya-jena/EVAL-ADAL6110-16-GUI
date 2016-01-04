@@ -65,7 +65,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)/x86/vc12/lib;$(BOOST_DIR)/Stage/lib;c:/EasySync;$(QWTDir)\build-qwt-Desktop_Qt_5_5_1_MSVC2013_32bit-Debug\lib;c:\ximea\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Concurrentd.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwtd.lib;m3api.lib;canlib32.lib;opencv_ts300d.lib;opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwtd.lib;m3api.lib;canlib32.lib;opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
@@ -89,7 +89,7 @@
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)/x86/vc12/lib;$(BOOST_DIR)/Stage/lib;c:/EasySync;$(QWTDir)\build-qwt-Desktop_Qt_5_5_1_MSVC2013_32bit-Release\lib;$(ProgramFiles)\Kvaser\Canlib\lib\MS;c:\ximea\API\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Concurrent.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwt.lib;m3api.lib;canlib32.lib;opencv_ts300.lib;opencv_world300.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwt.lib;m3api.lib;canlib32.lib;opencv_world300.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <EntryPointSymbol>
@@ -124,27 +124,42 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_awlscopeplot.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UNICODE;WIN32;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_fov_2dscan.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_knob.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_knob.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_TableView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_awlqtscope.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_awlscopeplot.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_fov_2dscan.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_knob.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_TableView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_VideoViewer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="TableView.cpp" />
@@ -196,39 +211,31 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\AWLQtScope\knob.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="..\AWLQtScope\awlscopeplot.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename).h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="..\AWLQtScope\awlqtscope.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
@@ -343,195 +350,36 @@
   <ItemGroup>
     <None Include="..\..\..\..\..\Links\Downloads.lnk" />
     <None Include="..\InstallableDLLs\canlib32.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\d3dcompiler_47.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Enginio.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\icudt54.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\icuin54.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\icuuc54.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\libEGL.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\libGLESv2.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\m3api.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\opencv_ffmpeg300.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\opencv_world300.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\opengl32sw.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\platforms\qwindows.dll" />
     <None Include="..\InstallableDLLs\platforms\qwindowsd.dll" />
-    <None Include="..\InstallableDLLs\Qt53DCollision.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt53DCore.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt53DInput.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt53DLogic.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt53DQuick.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt53DQuickRenderer.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt53DRenderer.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Bluetooth.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5CLucene.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Concurrent.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
     <None Include="..\InstallableDLLs\Qt5Core.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5DBus.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Declarative.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Designer.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5DesignerComponents.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\Qt5Gui.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Help.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Location.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Multimedia.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5MultimediaQuick_p.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5MultimediaWidgets.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Network.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Nfc.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\Qt5OpenGL.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Positioning.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\Qt5PrintSupport.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Qml.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Quick.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickParticles.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickTest.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5QuickWidgets.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Script.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5ScriptTools.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Sensors.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5SerialPort.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Sql.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\Qt5Svg.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Test.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebChannel.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebEngine.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebEngineCore.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebEngineWidgets.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebKit.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebKitWidgets.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebSockets.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WebView.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\Qt5Widgets.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5WinExtras.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5Xml.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\Qt5XmlPatterns.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\qwt.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="AWLQtDemo.ico">
       <DeploymentContent>true</DeploymentContent>
@@ -548,12 +396,6 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Maximize.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Phantom-Black-logo.bmp">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Phantom-logo.bmp">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="plugin1.bin" />
@@ -909,6 +751,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="InstallableDLLs\CopyDLLDependencies.BAT" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Phantom-Black-logo.png">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </Image>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
