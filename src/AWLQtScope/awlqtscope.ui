@@ -496,6 +496,9 @@ font-size: 9px;
 font-size: 9px;
 }</string>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
    </widget>
    <widget class="AWLScopePlot" name="channel4PlotFrame">
     <property name="geometry">
@@ -2142,11 +2145,13 @@ color: #FF00FF;
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>AWLScopePlot</class>
    <extends>QwtPlot</extends>
    <header>awlscopeplot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

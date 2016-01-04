@@ -342,6 +342,9 @@
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>AWLQtDemo.Content_Files</td><td>{618F93A4-C0C0-4F38-974F-CADE213DEE66}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.content_files</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>AWLQtDemo.Primary_Output</td><td>{3E42059C-41E9-4C92-8A0D-2ABDEE55B327}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT</td><td>{C9B08C6D-4CBE-44CF-950F-94C91A1050BF}</td><td>PLATFORMS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{F6605B90-1F13-4053-99AF-580A9EAB0BA6}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>qwindows.dll</td><td>{8773DBDB-67DB-4ED9-AEE6-473BDE6FAE98}</td><td>PLATFORMS</td><td>2</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -1053,6 +1056,11 @@
 		<col key="yes" def="s72">Component_</col>
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Content_Files</td></row>
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Primary_Output</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>INSTALLDIR</td><td>qwindows.dll</td></row>
+		<row><td>PLATFORMS</td><td>ISX_DEFAULTCOMPONENT</td></row>
+		<row><td>PLATFORMS</td><td>qwindows.dll</td></row>
 	</table>
 
 	<table name="CustomAction">
@@ -1151,8 +1159,10 @@
 		<row><td>LocalAppDataFolder</td><td>TARGETDIR</td><td>.:LocalA~1|LocalAppData</td><td/><td>0</td><td/></row>
 		<row><td>MY_PRODUCT_NAME</td><td>PHANTOM_INTELLIGENCE</td><td>PHANTO~1|Phantom Intelligence Lidar Demo</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_1</td><td>TARGETDIR</td><td>NEW_FOLDER_1</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM_INTELLIGENCE</td><td>ProgramFilesFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
+		<row><td>PLATFORMS</td><td>INSTALLDIR</td><td>PLATFO~1|Platforms</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
 		<row><td>PrimaryVolumePath</td><td>TARGETDIR</td><td>.:Primar~1|PrimaryVolumePath</td><td/><td>0</td><td/></row>
 		<row><td>PrintHoodFolder</td><td>TARGETDIR</td><td>.:PRINTH~1|PrintHood</td><td/><td>0</td><td/></row>
@@ -1172,8 +1182,7 @@
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WindowsFolder</td><td>TARGETDIR</td><td>.:Windows</td><td/><td>0</td><td/></row>
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
-		<row><td>phanto_1_phantom_intelligence_inc.</td><td>ProgramMenuFolder</td><td>PHANTO~1|Phantom Intelligence Inc.</td><td/><td>1</td><td/></row>
-		<row><td>phanto_1_phantomlidardemosetup</td><td>phanto_1_phantom_intelligence_inc.</td><td>PHANTO~1|PhantomLidarDemoSetup</td><td/><td>1</td><td/></row>
+		<row><td>phanto_1_phantom_intelligence_inc.</td><td>ProgramMenuFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>1</td><td/></row>
 	</table>
 
 	<table name="DrLocator">
@@ -1867,6 +1876,9 @@
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>AWLQtDemo.Content_Files</td></row>
 		<row><td>AlwaysInstall</td><td>AWLQtDemo.Primary_Output</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>qwindows.dll</td></row>
 	</table>
 
 	<table name="File">
@@ -1883,6 +1895,7 @@
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
 		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
+		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td>0</td><td>1</td><td>C:\Qt\5.5\msvc2013\plugins\platforms\qwindows.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2026,6 +2039,9 @@
 		<col def="S0">Miscellaneous</col>
 		<row><td>AWLQtDemo.Content_Files</td><td/><td/><td>_7633623A_7B97_42BE_852E_723762E3A0BA_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>AWLQtDemo.Primary_Output</td><td/><td/><td>_7C3E389E_2425_4CCB_9BC5_0284BBA3A098_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_B40D58BA_AB05_408C_8E78_C83F5AD1DF9A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_A1AF27C7_FEC5_45EA_AF09_B6E57D541B9A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>qwindows.dll</td><td/><td/><td>_DE5FF879_EF73_4B3B_A5C8_C0D5563CFD8E_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2620,9 +2636,10 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence Inc.</td><td>0</td><td/><td>1982038880</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>413430159</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
+		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40CLIENT</td><td>1033</td><td>Microsoft .NET Framework 4.0 Client Package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>413428877</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40FULL</td><td>1033</td><td>Microsoft .NET Framework 4.0 Full package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>1445162673</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION45FULL</td><td>1033</td><td>Microsoft .NET Framework 4.5 Full package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>1445160625</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
@@ -3434,7 +3451,7 @@
 		<row><td>IDS_PROGMSG_XML_UPDATE_FILE</td><td>1033</td><td>Updating XML file %s...</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS_SETUPEXE_EXPIRE_MSG</td><td>1033</td><td>This setup works until %s. The setup will now exit.</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS_SETUPEXE_LAUNCH_COND_E</td><td>1033</td><td>This setup was built with an evaluation version of InstallShield and can only be launched from setup.exe.</td><td>0</td><td/><td>1445185105</td></row>
-		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1982030752</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Phantom Intelligence LiDAR Demo</td><td>0</td><td/><td>413419534</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO</td><td>1033</td><td>From the list of servers below, select the database server you would like to target.</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_DB</td><td>1033</td><td>From the list of catalog names below, select the database catalog you would like to target.</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_TEMPLATE</td><td>1033</td><td>[IS_SQLBROWSE_INTRO]</td><td>0</td><td/><td>1445185105</td></row>
@@ -3724,11 +3741,13 @@
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>1445187153</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligenceInc..com</td><td>0</td><td/><td>1982038880</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence Inc.</td><td>0</td><td/><td>1982038880</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>1982038880</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>413401647</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>413430159</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>413401647</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1982032800</td></row>
-		<row><td>ID_STRING6</td><td>1033</td><td>Phantom Intelligence liDAR</td><td>0</td><td/><td>1982031136</td></row>
+		<row><td>ID_STRING6</td><td>1033</td><td>Phantom Intelligence LiDAR</td><td>0</td><td/><td>413432653</td></row>
+		<row><td>ID_STRING7</td><td>1033</td><td>Phantom Intelligence LiDAR Demo</td><td>0</td><td/><td>413415855</td></row>
+		<row><td>ID_STRING8</td><td>1033</td><td>Phantom Intelligence LiDAR Demo</td><td>0</td><td/><td>413461135</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>1445185105</td></row>
 	</table>
 
@@ -3844,6 +3863,12 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AWLQtDemo\AWLQtDemo.ico</td><td>0</td></row>
+		<row><td>_6021360938D849E89182533F83447FA6.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_87684514FAAF4EC38E286FF679490B3F.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_8FCE1B0B99254162A1E01E0B4898AB12.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_A28D2B62F7154BF5A20B7F3A8639CBFF.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_AC07776BA365419E9D22128879F3BB28.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_DC211E1A7F5042428957A559BE6F13B0.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 	</table>
 
 	<table name="IniFile">
@@ -3976,7 +4001,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{E3C6A8F5-0244-4B65-A213-4AFF4F9122DE}</td></row>
 		<row><td>ISUSSignature</td><td>{6C8A8729-1CA7-4303-B96D-879FBA99B81E}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewSystemSearch,viewRelease,viewProject,viewUpgradePaths,viewUpdateService,viewAppFiles,viewObjects,viewCustomActions,viewFileExtensions,viewISToday,viewLearnMore,viewUI</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewSystemSearch,viewRelease,viewProject,viewUpgradePaths,viewUpdateService,viewAppFiles,viewObjects,viewCustomActions,viewFileExtensions,viewISToday,viewLearnMore,viewUI,viewShortcuts,viewRegistry,viewIniFiles</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4354,8 +4379,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]AWLQtDemo.Primary Output</td><td/></row>
 		<row><td>ProductCode</td><td>{86009853-CFB8-4C70-8107-80C48FA22E72}</td><td/></row>
-		<row><td>ProductName</td><td>PhantomLidarDemoSetup</td><td/></row>
-		<row><td>ProductVersion</td><td>1.00.0000</td><td/></row>
+		<row><td>ProductName</td><td>Phantom Intelligence LiDAR Demo</td><td/></row>
+		<row><td>ProductVersion</td><td>1.1.0000</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4433,7 +4458,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="i2">InstallMode</col>
 		<row><td>FileKey1</td><td>AWLQtDemo.Primary_Output</td><td/><td>phanto_1_phantom_intelligence_inc.</td><td>2</td></row>
 		<row><td>FileKey2</td><td>AWLQtDemo.Primary_Output</td><td/><td>phanto_1_phantomlidardemosetup</td><td>2</td></row>
-		<row><td>_Built</td><td>AWLQtDemo.Primary_Output</td><td/><td>phanto_1_phantomlidardemosetup</td><td>2</td></row>
+		<row><td>_Built11</td><td>AWLQtDemo.Primary_Output</td><td/><td>phanto_1_phantom_intelligence_inc.</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4519,8 +4544,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>_Built</td><td>phanto_1_phantomlidardemosetup</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built11</td><td>phanto_1_phantom_intelligence_inc.</td><td>##ID_STRING8##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">
