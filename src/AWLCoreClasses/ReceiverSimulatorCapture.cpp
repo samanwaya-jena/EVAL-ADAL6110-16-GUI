@@ -74,10 +74,10 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 10.0;
-			track->intensity = 7500;
+			track->intensity = 75.00;
 			track->channels = 0X09;
 
-			track->velocity = 3.0;
+			track->velocity = 30.0;
 			track->acceleration = 0;
 			track->threatLevel = Detection::eThreatLow;
 			track->part1Entered = true;
@@ -95,7 +95,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 25.0;
-			track->intensity= 2200;
+			track->intensity= 22.00;
 			track->channels = 0X09;
 
 			track->velocity = 3;
@@ -115,7 +115,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 40;
-			track->intensity= 2200;
+			track->intensity= 33.00;
 			track->channels = 0X09;
 
 			track->velocity = 3;
@@ -134,8 +134,8 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 55;
-			track->intensity= 2200;
+			track->distance = 155;
+			track->intensity= 22.00;
 			track->channels = 0X09;
 
 			track->velocity = 3;

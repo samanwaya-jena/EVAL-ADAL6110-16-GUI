@@ -9,7 +9,7 @@
     <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>false</displayScopeWindow>
-    <displayCameraWindow>false</displayCameraWindow>
+    <displayCameraWindow>true</displayCameraWindow>
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
