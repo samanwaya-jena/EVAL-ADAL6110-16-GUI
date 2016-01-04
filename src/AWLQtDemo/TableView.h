@@ -40,8 +40,8 @@ public:
 		eRealTimeDetectionIDColumn = 2,
 		eRealTimeTrackColumn = 3,
 		eRealTimeDistanceColumn = 4,
-		eRealTimeIntensityColumn = 5,
-		eRealTimeVelocityColumn = 6,
+		eRealTimeVelocityColumn = 5, 
+		eRealTimeIntensityColumn = 6,
 		eRealTimeCollisionLevelColumn = 7
 	};
 

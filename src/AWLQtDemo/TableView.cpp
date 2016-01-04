@@ -165,20 +165,20 @@ void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
 typedef struct 
 {
 		TableView::RealTimeColumn columnID;
-		int columnWidth;
+		QString  columnFormat;
 		int alignment;
 }
 TableColumSettings;
 
 TableColumSettings columnSettings[] = {
-	{TableView::eRealTimeReceiverIDColumn,		40, Qt::AlignHCenter},
-	{TableView::eRealTimeChannelIDColumn,		40, Qt::AlignHCenter},
-	{TableView::eRealTimeDetectionIDColumn,		40, Qt::AlignHCenter},
-	{TableView::eRealTimeTrackColumn,			60, Qt::AlignHCenter},
-	{TableView::eRealTimeDistanceColumn,		65, Qt::AlignRight},
-	{TableView::eRealTimeIntensityColumn,		85, Qt::AlignRight},
-	{TableView::eRealTimeVelocityColumn,		65, Qt::AlignRight},
-	{TableView::eRealTimeCollisionLevelColumn,	50, Qt::AlignRight}
+	{TableView::eRealTimeReceiverIDColumn,		"0", Qt::AlignHCenter},
+	{TableView::eRealTimeChannelIDColumn,		"00", Qt::AlignHCenter},
+	{TableView::eRealTimeDetectionIDColumn,		"0", Qt::AlignHCenter},
+	{TableView::eRealTimeTrackColumn,			"00000", Qt::AlignHCenter},
+	{TableView::eRealTimeDistanceColumn,		"000.0", Qt::AlignRight},
+	{ TableView::eRealTimeVelocityColumn,		"000.0", Qt::AlignRight }, 
+	{ TableView::eRealTimeIntensityColumn,		"00.0", Qt::AlignRight },
+	{TableView::eRealTimeCollisionLevelColumn,	"-00.00", Qt::AlignRight}
 };
 
 QSize TableView::sizeHint() const 
@@ -187,7 +187,7 @@ QSize TableView::sizeHint() const
 }
 
 const int scrollBarWidth = 30;
-
+const int headerSpacing = 6;
 QSize TableView::minimumSizeHint() const 
 
 {
@@ -237,15 +237,25 @@ QSize TableView::unconstrainedTableSize() const
 		rowCount += globalSettings->receiverSettings[receiverID].channelsConfig.size()*displayedDetectionsPerChannel;
 	} // for receiverID
 	tableHeight = rowCount * (tableWidget->rowHeight(1));
-	tableHeight += tableWidget->horizontalHeader()->height() + 4;
+	tableHeight += tableWidget->horizontalHeader()->height() + 10;
 	
 	
 	// Calculate width
 	int tableWidth =0;
 	for (int column = 0; column < tableWidget->columnCount(); column++)
 	{
+#if 0
 		tableWidth += columnSettings[column].columnWidth;
+#else
+		QTableWidgetItem * headerItem = tableWidget->horizontalHeaderItem(column);
+		QFontMetrics fm(headerItem->font());
+		int headerTextWidth = fm.width(headerItem->text());
+		int dataTextWidth = fm.width(columnSettings[column].columnFormat);
+		int headerWidth = max(headerTextWidth, dataTextWidth) + headerSpacing;
+		tableWidth += headerWidth;
+#endif
 	}
+
 	tableWidth += scrollBarWidth;
 	tableWidth += tableWidget->frameWidth() * 2;
 
@@ -265,19 +275,9 @@ void TableView::PrepareTableViews()
 
 	receiverFirstRow.clear();
 
-
-	// Adjust column width
-	int columnQty =  tableWidget->columnCount();
-	int tableWidth = 0;
-	for (int column = 0; column < columnQty; column++) 
-	{
-		tableWidget->setColumnWidth(column, columnSettings[column].columnWidth);
-		tableWidth += columnSettings[column].columnWidth;
-	}
-
 	// Adjust the velocity title to display units
 	bool bDisplayVelocityKmh = (globalSettings->velocityUnits == eVelocityUnitsKMH);
-	if (bDisplayVelocityKmh) 
+	if (bDisplayVelocityKmh)
 	{
 		tableWidget->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("km/h");
 	}
@@ -286,6 +286,25 @@ void TableView::PrepareTableViews()
 		tableWidget->horizontalHeaderItem(eRealTimeVelocityColumn)->setText("m/s");
 	}
 
+	// Adjust column width to the header text
+	int columnQty =  tableWidget->columnCount();
+	int tableWidth = 0;
+	for (int column = 0; column < columnQty; column++) 
+	{
+#if 0
+		tableWidget->setColumnWidth(column, columnSettings[column].columnWidth);
+		tableWidth += columnSettings[column].columnWidth;
+#else
+		QTableWidgetItem * headerItem = tableWidget->horizontalHeaderItem(column);
+		QFontMetrics fm(headerItem->font());
+		int headerTextWidth = fm.width(headerItem->text());
+		int dataTextWidth = fm.width(columnSettings[column].columnFormat);
+		int headerWidth = max(headerTextWidth, dataTextWidth) + headerSpacing;
+
+		tableWidget->setColumnWidth(column, headerWidth);
+		tableWidth += headerWidth;
+#endif
+	}
 
 	// Create the table widgets that will hold the data.  If required, add additional rows.
 	int row = 0;
@@ -444,7 +463,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 
 		if (!isNAN(intensity))
 		{
-			intensityStr.sprintf("%.0f", intensity * 100);
+			intensityStr.sprintf("%.1f", intensity);
 		}
 		else 
 		{
