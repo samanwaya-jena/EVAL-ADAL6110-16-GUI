@@ -202,6 +202,9 @@ const float gridOffset = 1.0;  // Grid spacing in Cartesian Display
 const int paletteWidth = 50;
 
 float logoAspectRatio = 1.0;
+const int logoLeftMargin = 55; // Do not place logo to muh to the left of the screen
+const int logoRightMargin = 10; // Do not place logo to muh to the left of the screen
+const int logoTopMargin = 10; // Do not place logo to muh to the left of the screen
 
 double zeroY = 0.0;
 double zeroX = 0.0;
@@ -636,7 +639,7 @@ void FOV_2DScan::calculateResize()
 	int labelHeight = labelWidth / logoAspectRatio;
 
 	logoLabel->resize(labelWidth, labelHeight);
-	logoLabel->move(55, height() - labelHeight);
+	logoLabel->move(logoLeftMargin, height() - labelHeight);
 }
 
 void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
@@ -763,11 +766,20 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 	painter.setPen(lanePen);
 	int laneWidthScreen = (int) (laneWidth * Ratio); // Car width in displayUnits. 
 
-//	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), 0);
-//	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), 0);
+	//Right line drawn first
+	int labelHeight = logoLabel->height();
+	int labelWidth = logoLabel->width();
+	int laneX = centerX + (laneWidthScreen / 2);
+	int laneYBottom = height();
+	int laneYTop = zeroY - (config.longRangeDistance*Ratio);
 
-	painter.drawLine(centerX - (laneWidthScreen/2), height()*Ratio, centerX - (laneWidthScreen/2), zeroY-(config.longRangeDistance*Ratio));
-	painter.drawLine(centerX + (laneWidthScreen/2), height()*Ratio, centerX + (laneWidthScreen/2), zeroY-(config.longRangeDistance*Ratio));
+	painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
+
+	//Make sure left lane marking does not overwrite logoLabel
+	laneX = centerX - (laneWidthScreen / 2);
+	if (laneX < (labelWidth+logoLeftMargin+logoRightMargin)) laneYBottom -= labelHeight+logoTopMargin;
+
+	painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
 	
     if (ShowPalette)
         drawPalette(&painter); 
