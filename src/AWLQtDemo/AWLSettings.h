@@ -24,6 +24,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include "CoordinateSystem.h"
+#include "DetectionStruct.h"
 
 #define VelocityToKmH(velocity) (velocity * 3.6)
 
@@ -108,6 +109,7 @@ public:
 
 	static void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
 	static void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
+	static void GetAlertConditions(boost::property_tree::ptree &alertNode, AlertCondition &alert);
 
 	static void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
 	static void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);
@@ -183,10 +185,6 @@ public:
 	int scopeTimerInterval;
 
 	// Dynamic testing
-	float threatLevelCriticalThreshold;
-	float threatLevelWarnThreshold;
-	float threatLevelLowThreshold;
-
 	float brakingDeceleration;
 	float travelSpeed;
 

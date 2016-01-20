@@ -107,9 +107,6 @@ bool AWLSettings::ReadSettings()
 	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile");
 	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile");
 
-	threatLevelCriticalThreshold = propTree.get<float>("config.dynamicTesting.threatLevelCriticalThreshold");
-	threatLevelWarnThreshold = propTree.get<float>("config.dynamicTesting.threatLevelWarnThreshold");
-	threatLevelLowThreshold = propTree.get<float>("config.dynamicTesting.threatLevelLowThreshold");
 	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 

@@ -65,10 +65,7 @@ bool ReceiverPostProcessor::CompleteTrackInfo(SensorFrame::Ptr currentFrame)
 			// Will need adjustement later
 			track->decelerationToStop = -	CalculateAccelerationToStop(track->distance, track->velocity, 0);
 
-			if (track->decelerationToStop > settings->threatLevelCriticalThreshold)  track->threatLevel = Detection::eThreatCritical;
-			else if (track->decelerationToStop > settings->threatLevelWarnThreshold) track->threatLevel = Detection::eThreatWarn;
-			else if (track->decelerationToStop > settings->threatLevelLowThreshold)  track->threatLevel = Detection::eThreatLow;
-			else track->threatLevel = Detection::eThreatNone;
+			track->threatLevel = AlertCondition::FindTrackThreat(currentFrame->GetReceiverID(), track);
 		}  // if (track...
 		else 
 		{
@@ -95,7 +92,8 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 	// In channel order, recreate individual detections from the tracks.
 	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++) 
 	{
-		uint8_t channelMask = 0x01 << channelIndex;
+		ChannelMask channelMask;
+		channelMask.byteData = 0x01 << channelIndex;
 
 		int detectionIndex = 0;
 
@@ -118,7 +116,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 				int trackChannel = (channelIndex%receiverSettings.channelsPerLine) + (lineOffset * receiverSettings.channelsPerLine);
 #endif
 
-			if ( track->IsComplete() && (track->channels & channelMask) &&
+			if ( track->IsComplete() && (track->channels.byteData & channelMask.byteData) &&
 				(trackDistance >= receiverSettings.displayedRangeMin) && 
 				(trackDistance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
  			{
@@ -151,7 +149,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
 				detection->relativeToWorldSpherical = detection->relativeToWorldCart;
 			}  // if (track...
-			else if (!track->IsComplete() || (track->channels == 0))
+			else if (!track->IsComplete() || (track->channels.byteData == 0))
 			{
 				bAllTracksComplete = false;
 			}
@@ -164,7 +162,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 }
 
 
-bool ReceiverPostProcessor::GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, uint32_t inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer)
+bool ReceiverPostProcessor::GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, FrameID inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer)
 {
 
 	SensorFrame::Ptr currentFrame = SensorFrame::Ptr(new SensorFrame(receiver->receiverID, inFrameID, receiver->receiverChannelQty));

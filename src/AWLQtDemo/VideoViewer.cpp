@@ -500,24 +500,24 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &co
 	}
 
 	int channelID = detection->channelID;
-	Detection::ThreatLevel threatLevel = detection->threatLevel;
+	AlertCondition::ThreatLevel threatLevel = detection->threatLevel;
 
 	switch (threatLevel) 
 	{
-	case Detection::eThreatNone: 
+	case AlertCondition::eThreatNone:
 		{
 			colorEnhance = rgbEnhanceBlue;  // Blue
 			iThickness = 5;
 		}
 		break;
-	case Detection::eThreatLow:
+	case AlertCondition::eThreatLow:
 		{
 			colorEnhance = rgbEnhanceGreen; // Green
 			iThickness = 5;
 		}
 		break;
 
-	case Detection::eThreatWarn:
+	case AlertCondition::eThreatWarn:
 		{
 			colorEnhance = rgbEnhanceYellow; // Yellow
 			iThickness = 15;
@@ -525,7 +525,7 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &co
 		}
 		break;
 
-	case Detection::eThreatCritical:
+	case AlertCondition::eThreatCritical:
 		{
 			colorEnhance = rgbEnhanceRed;  // Red
 			iThickness = 15;

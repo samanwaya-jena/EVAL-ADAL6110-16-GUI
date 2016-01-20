@@ -531,14 +531,6 @@
 
 
   <dynamicTesting>
-    <!--	Deceleration thresholds for various threat levels, 
-	     using the maximum deceleration level threat calculation 
-	     algorithm
-	     In m/s2 -->
-    <threatLevelCriticalThreshold>4.0</threatLevelCriticalThreshold>
-    <threatLevelWarnThreshold>3.0</threatLevelWarnThreshold>
-    <threatLevelLowThreshold>1.0</threatLevelLowThreshold>
-
     <!-- Max deceleration of the vehicle with full brakes on
 	     Kusano-Gaeble
 	     (http://www.sbes.vt.edu/gabler/publications/Kusano-Gabler-SAE-TTC_EDRs-2011-01-0576.pdf)
@@ -551,7 +543,71 @@
 	     CAN measurements.
 	     In the meantime, we have a variable for that
 	     Specify in m/s, use <NN>km/h(60.0 * 1000)/(60*60) -->
-    <travelSpeed>16.66</travelSpeed>
+     <travelSpeed>16.66</travelSpeed>
+    <alertQty> 7 </alertQty>
+    <alert0>
+      <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+      <alertReceiver>0</alertReceiver>
+      <alertChannels> 127 </alertChannels>
+      <alertMin> 1.0</alertMin>  <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>3.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>1</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert0>
+
+    <alert1>
+      <alertType>decelerationToStop</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+      <alertReceiver>0</alertReceiver>
+      <alertChannels> 127 </alertChannels>
+      <alertMin> 3.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>4.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>2</alertLevel><!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert1>
+
+    <alert2>
+      <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+      <alertReceiver>0</alertReceiver>
+      <alertChannels> 127 </alertChannels>
+      <alertMin>4.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax></alertMax>    <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert2>
+    
+     <alert3>
+      <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+       <alertReceiver>0</alertReceiver>
+       <alertChannels> 1 </alertChannels>
+      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert3>
+
+     <alert4>
+      <alertType>distanceOutside</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+       <alertReceiver>0</alertReceiver>
+       <alertChannels> 2 </alertChannels>
+      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert4>
+
+    <alert5>
+      <alertType>distanceOutside</alertType>
+      <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+      <alertReceiver>0</alertReceiver>
+      <alertChannels> 4 </alertChannels>
+      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert5>
+
+    <alert6>
+      <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
+      <alertReceiver>0</alertReceiver>
+      <alertChannels> 8 </alertChannels>
+      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
+      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
+    </alert6>
   </dynamicTesting>
 
 

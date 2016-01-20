@@ -61,6 +61,8 @@ ReceiverSimulatorCapture::~ReceiverSimulatorCapture()
 }
 
 int threadCount = 0;
+static float trackDistance = 0.0;
+
 void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 {
@@ -73,13 +75,15 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 10.0;
+			trackDistance += 0.0001;
+			if (trackDistance > 30.0) trackDistance = 0.0;
+			track->distance = trackDistance;
 			track->intensity = 75.00;
-			track->channels = 0X09;
+			track->channels.byteData = 0X09;
 
 			track->velocity = 30.0;
 			track->acceleration = 0;
-			track->threatLevel = Detection::eThreatLow;
+			track->threatLevel = AlertCondition::eThreatLow;
 			track->part1Entered = true;
 			track->part2Entered = true;
 			track->part3Entered = true;
@@ -96,11 +100,11 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 25.0;
 			track->intensity= 22.00;
-			track->channels = 0X09;
+			track->channels.byteData = 0X09;
 
 			track->velocity = 3;
 			track->acceleration = 0;
-			track->threatLevel = Detection::eThreatLow;
+			track->threatLevel = AlertCondition::eThreatLow;
 			track->part1Entered = true;
 			track->part2Entered = true;
 			track->part3Entered = true;
@@ -116,11 +120,11 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 40;
 			track->intensity= 33.00;
-			track->channels = 0X09;
+			track->channels.byteData = 0X09;
 
 			track->velocity = 3;
 			track->acceleration = 0;
-			track->threatLevel = Detection::eThreatLow;
+			track->threatLevel = AlertCondition::eThreatLow;
 			track->part1Entered = true;
 			track->part2Entered = true;
 			track->part3Entered = true;
@@ -136,11 +140,11 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 155;
 			track->intensity= 22.00;
-			track->channels = 0X09;
+			track->channels.byteData = 0X09;
 
 			track->velocity = 3;
 			track->acceleration = 0;
-			track->threatLevel = Detection::eThreatLow;
+			track->threatLevel = AlertCondition::eThreatLow;
 			track->part1Entered = true;
 			track->part2Entered = true;
 			track->part3Entered = true;

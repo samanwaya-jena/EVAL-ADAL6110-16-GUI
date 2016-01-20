@@ -79,7 +79,7 @@ private:
 						   int detectionID, 
 						   TrackID trackID = 0, 
 						   float distance = NAN, 
-						   Detection::ThreatLevel level = Detection::eThreatNone, 
+						   AlertCondition::ThreatLevel level = AlertCondition::eThreatNone, 
 						   float intensity = NAN,
 						   float velocity = NAN,
 						   float acceleration = NAN, 

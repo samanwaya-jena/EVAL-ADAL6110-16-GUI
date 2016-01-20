@@ -391,7 +391,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable, const Dete
 
 void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int receiverID, int channelID, int detectionID, TrackID trackID, 
 								float distance, 
-								Detection::ThreatLevel threatLevel, 
+								AlertCondition::ThreatLevel threatLevel,
 								float intensity,
 								float velocity,
 								float acceleration, 
@@ -482,26 +482,26 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 
 		switch(threatLevel)
 		{
-		case Detection::eThreatNone:
+		case AlertCondition::eThreatNone:
 			{
 				threatBackgroundColor = Qt::blue;
 			}
 			break;
 
-		case Detection::eThreatLow:
+		case AlertCondition::eThreatLow:
 			{
 				threatBackgroundColor = Qt::green;
 			}
 			break;
 
-		case Detection::eThreatWarn:
+		case AlertCondition::eThreatWarn:
 			{
 				threatBackgroundColor = Qt::yellow;
 				threatTextColor = Qt::black;
 			}
 			break;
 
-		case Detection::eThreatCritical:
+		case AlertCondition::eThreatCritical:
 			{
 				threatBackgroundColor = Qt::red;
 			}

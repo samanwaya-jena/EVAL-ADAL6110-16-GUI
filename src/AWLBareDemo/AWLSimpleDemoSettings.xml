@@ -417,14 +417,6 @@
 
 
   <dynamicTesting>
-    <!--	Deceleration thresholds for various threat levels, 
-	     using the maximum deceleration level threat calculation 
-	     algorithm
-	     In m/s2 -->
-    <threatLevelCriticalThreshold>4.0</threatLevelCriticalThreshold>
-    <threatLevelWarnThreshold>3.0</threatLevelWarnThreshold>
-    <threatLevelLowThreshold>1.0</threatLevelLowThreshold>
-
     <!-- Max deceleration of the vehicle with full brakes on
 	     Kusano-Gaeble
 	     (http://www.sbes.vt.edu/gabler/publications/Kusano-Gabler-SAE-TTC_EDRs-2011-01-0576.pdf)

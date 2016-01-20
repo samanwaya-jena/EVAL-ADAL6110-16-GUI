@@ -921,7 +921,7 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 
 		// Use the frame snapped by the main display timer as the current frame
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
-		uint32_t lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
+		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
 		if (receiver->HasNews(subscriberID))
 		{
 			bNew = true;	

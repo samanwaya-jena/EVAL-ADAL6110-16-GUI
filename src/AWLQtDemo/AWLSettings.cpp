@@ -16,6 +16,7 @@
 */
 
 #include "AWLSettings.h"
+#include "DetectionStruct.h"
 
 #include <string>
 
@@ -178,13 +179,25 @@ bool AWLSettings::ReadSettings()
 	bDisplayScopeDistance = propTree.get<bool>("config.scope.displayScopeDistance");
 	bDisplayScopeVelocity = propTree.get<bool>("config.scope.displayScopeVelocity");
 
-	threatLevelCriticalThreshold = propTree.get<float>("config.dynamicTesting.threatLevelCriticalThreshold");
-	threatLevelWarnThreshold = propTree.get<float>("config.dynamicTesting.threatLevelWarnThreshold");
-	threatLevelLowThreshold = propTree.get<float>("config.dynamicTesting.threatLevelLowThreshold");
 	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 
 	bDisplayVideoCrosshair = propTree.get<bool>("config.video.displayCrosshair");
+
+	// Alert conditions
+	int alertConditionQty = propTree.get<int>("config.dynamicTesting.alertQty");
+	for (int alertConditionIndex = 0; alertConditionIndex < alertConditionQty; alertConditionIndex++)
+	{
+		char alertKeyString[32];
+		sprintf(alertKeyString, "config.dynamicTesting.alert%d", alertConditionIndex);
+		std::string alertKey = alertKeyString;
+
+		boost::property_tree::ptree &alertNode = propTree.get_child(alertKey);
+		AlertCondition::Ptr newAlert = AlertCondition::Ptr(new AlertCondition());
+		GetAlertConditions(alertNode, *newAlert);
+		AlertCondition::Store(newAlert);
+	}
+
 
 	return(true);
 }
@@ -296,6 +309,45 @@ void AWLSettings::GetColor(boost::property_tree::ptree &colorNode, uint8_t &red,
 	blue = colorNode.get<uint8_t>("blue");
 }
 
+void AWLSettings::GetAlertConditions(boost::property_tree::ptree &alertNode, AlertCondition &alert)
+
+{
+	std::string sAlertType = alertNode.get<std::string>("alertType");
+	if (sAlertType.compare("distanceWithin") == 0)
+	{
+		alert.alertType = AlertCondition::eAlertDistanceWithin;
+	}
+	else  if (sAlertType.compare("distanceOutside") == 0)
+	{
+		alert.alertType = AlertCondition::eAlertDistanceOutside;
+	}
+	else  if (sAlertType.compare("speed") == 0)
+	{
+		alert.alertType = AlertCondition::eAlertSpeed;
+	}
+	else  if (sAlertType.compare("acceleration") == 0)
+	{
+		alert.alertType = AlertCondition::eAlertAcceleration;
+	}
+	else  if (sAlertType.compare("decelerationToStop") == 0)
+	{
+		alert.alertType = AlertCondition::eAlertDecelerationToStop;
+	}
+	else  if (sAlertType.compare("TTC") == 0)
+	{
+		alert.alertType = AlertCondition::eAlertTTC;
+	}
+	else
+	{
+		alert.alertType = AlertCondition::eAlertInvalid;
+	}
+
+	alert.receiverID = alertNode.get<int>("alertReceiver", 0);
+	alert.channelMask.byteData = alertNode.get<uint8_t>("alertChannels", 127);
+	alert.minRange = alertNode.get<float>("alertMin", -std::numeric_limits<float>::max());
+	alert.maxRange = alertNode.get<float>("alertMax", std::numeric_limits<float>::max());
+	alert.threatLevel = (AlertCondition::ThreatLevel) alertNode.get<int>("alertLevel", AlertCondition::eThreatNone);
+}
 
 void AWLSettings::PutPosition(boost::property_tree::ptree &node, float forward, float left, float up)
 {

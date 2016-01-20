@@ -46,7 +46,7 @@ public:
 	// Detections from tracks where distance is oustide the range are not kept. 
 	// Return true if all tracks have been intepreted correctly.
 	// Return false if we have found incomplete tracks or invalid channel info.
-	bool GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, uint32_t inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer);
+	bool GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, FrameID inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer);
 
 protected:
 		// Complete the track info that was not processed by the AWL Module.

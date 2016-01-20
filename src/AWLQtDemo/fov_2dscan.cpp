@@ -856,7 +856,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 	float intensityMax = 0;
 	int channelForIntensityMax = 0;
 	float distanceForIntensityMax = 0.0;
-	Detection::ThreatLevel threatLevelMax = Detection::eThreatNone;
+	AlertCondition::ThreatLevel threatLevelMax = AlertCondition::eThreatNone;
 
 	QPolygon poly;
 
@@ -1307,7 +1307,7 @@ void FOV_2DScan::getColorFromVelocity(float velocity, QColor &backColor, Qt::Bru
 	}
 }
 
-void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intensity, Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
 	ClassificationType classificationType = classifyFromIntensity(channel, distance, intensity);
 
@@ -1325,21 +1325,21 @@ void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intens
 	}
 }
 
-void FOV_2DScan::getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+void FOV_2DScan::getColorFromThreatLevel(AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
 #if 0
 	switch (threatLevel) 
 	{
-	case Detection::eThreatNone:
+	case AlertCondition::eThreatNone:
 		backColor = Qt::darkBlue;
 		break;
-	case Detection::eThreatLow:
+	case AlertCondition::eThreatLow:
 		backColor = Qt::green;
 		break;
-	case Detection::eThreatWarn:
+	case AlertCondition::eThreatWarn:
 		backColor = Qt::yellow;
 		break;
-	case Detection::eThreatCritical:
+	case AlertCondition::eThreatCritical:
 		backColor = Qt::red;
 		break;
 	default:
@@ -1349,16 +1349,16 @@ void FOV_2DScan::getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QCo
 #else
 	switch (threatLevel) 
 	{
-	case Detection::eThreatNone:
+	case AlertCondition::eThreatNone:
 		backColor = QColor(160, 160, 255, 255);
 		break;
-	case Detection::eThreatLow:
+	case AlertCondition::eThreatLow:
 		backColor = Qt::green;
 		break;
-	case Detection::eThreatWarn:
+	case AlertCondition::eThreatWarn:
 		backColor = Qt::yellow;
 		break;
-	case Detection::eThreatCritical:
+	case AlertCondition::eThreatCritical:
 		backColor = Qt::red;
 		break;
 	default:
@@ -1466,7 +1466,7 @@ void FOV_2DScan::drawPalette(QPainter* p)
 	else // Intensity or Channel color Codes
 	{
 		// Draw palette as alert level
-		Detection::ThreatLevel maxThreatLevel = getMaxThreat();
+		AlertCondition::ThreatLevel maxThreatLevel = getMaxThreat();
 		QColor backColor;
 		Qt::BrushStyle backPattern;
 		QColor lineColor;
@@ -1581,9 +1581,9 @@ void FOV_2DScan::mergeDetection()
 
 }
 
-Detection::ThreatLevel FOV_2DScan::getMaxThreat()
+AlertCondition::ThreatLevel FOV_2DScan::getMaxThreat()
 {
-	Detection::ThreatLevel maxThreatLevel = Detection::eThreatNone;
+	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
 
 	// Draw the individual detections
 	BOOST_FOREACH(const Detection::Ptr &detection, copyData)

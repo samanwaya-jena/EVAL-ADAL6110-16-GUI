@@ -42,27 +42,6 @@ const int maxReceiverFrames = 100;
 namespace awl
 {
 
-/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
-  *        and communications
-  * \author Jean-Yves Deschênes
-  */
-
-typedef union 
-{
-	uint8_t byteData;
-	struct  {
-		bool channel0	: 1;
-		bool channel1	: 1;
-		bool channel2	: 1;
-		bool channel3	: 1;
-		bool channel4	: 1;
-		bool channel5	: 1;
-		bool channel6	: 1;
-		bool unused		: 1;
-	} bitFieldData;
-
-} ChannelMask;
-
  /** \brief MessageMask struct describes receiver message groups that can be toggled on/off 
   *        for customized operations or to preserve bandwidth  
   *        and communications
@@ -436,7 +415,7 @@ public:
 	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
-	bool ReceiverCapture::CopyReceiverFrame(uint32_t inFrameID, SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID);
+	bool ReceiverCapture::CopyReceiverFrame(FrameID inFrameID, SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID);
 
 	/** \brief copy the raw detection data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
@@ -444,7 +423,7 @@ public:
 	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
-	virtual bool CopyReceiverRawDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
+	virtual bool CopyReceiverRawDetections(FrameID inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
 
 	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
@@ -460,7 +439,7 @@ public:
 	    \remark Note that the frameID corresponds to the "incomplete" frame currently being assembled.
 		        For the last complete frame, useGetLastFrameID();
      */
-	virtual uint32_t GetFrameID() { return(frameID); };
+	virtual FrameID GetFrameID() { return(frameID); };
 
 	/** \brief Return the  frame identification number for the frame located at inFrameIndex 
       * \param[in] inFrameIndex index of the requiested frame
@@ -468,12 +447,12 @@ public:
 	    \remark Note that the frameID corresponds to the "incomplete" frame currently being assembled.
 		        For the last complete frame, useGetLastFrameID();
      */
-	virtual uint32_t GetFrameID(int inFrameIndex);
+	virtual FrameID GetFrameID(int inFrameIndex);
 
 	/** \brief Return theframe identification number of the last complete frame assembled 
      * \return Last complete frame identification number.
 	    */
-	virtual uint32_t GetLastFrameID() {return(acquisitionSequence->GetLastFrameID());};
+	virtual FrameID GetLastFrameID() {return(acquisitionSequence->GetLastFrameID());};
 
 	/** \brief Return the time elapsed, in milliseconds, since the start of thread.
 	    \return time in milliseconds since tthe start of thread.

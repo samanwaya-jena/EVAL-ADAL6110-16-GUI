@@ -166,7 +166,7 @@ int ReceiverCapture::GetFrameQty()
 }
 
 
-bool ReceiverCapture::CopyReceiverFrame(uint32_t inFrameID,  SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID)
+bool ReceiverCapture::CopyReceiverFrame(FrameID inFrameID,  SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID)
 {
 	if (!LockNews(inSubscriberID)) return(false);
 
@@ -181,7 +181,7 @@ bool ReceiverCapture::CopyReceiverFrame(uint32_t inFrameID,  SensorFrame::Ptr &o
 	return(bFound);
 }
 
-bool ReceiverCapture::CopyReceiverRawDetections(uint32_t inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
+bool ReceiverCapture::CopyReceiverRawDetections(FrameID inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID)
 {
 	if (!LockNews(inSubscriberID)) return(false);
 
@@ -210,10 +210,10 @@ bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publishe
 	return(true);
 }
 
-uint32_t ReceiverCapture::GetFrameID(int  inFrameIndex)
+FrameID ReceiverCapture::GetFrameID(int  inFrameIndex)
 {
 	boost::mutex::scoped_lock updateLock(GetMutex());
-	uint32_t frameID;
+	FrameID frameID;
 
 	if (inFrameIndex > acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
 	else 
@@ -346,7 +346,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 		LogDistances(logFile, currentFrame);
 	}
 
-	uint32_t completedFrameID = currentFrame->GetFrameID();
+	FrameID completedFrameID = currentFrame->GetFrameID();
 	bool bFrameToBePublished = false;
 	if (!bFrameInvalidated)
 	{
@@ -364,7 +364,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 	}
 	
 	// Create a new current frame.
-	uint32_t frameID = acquisitionSequence->AllocateFrameID();
+	FrameID frameID = acquisitionSequence->AllocateFrameID();
 	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, frameID, receiverChannelQty));
 	bFrameInvalidated = false;
 
@@ -478,13 +478,13 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 				track->decelerationToStop,
 				track->probability,
 				track->threatLevel,
-				(track->channels & 0x01)? 0 : 0, 
-				(track->channels & 0x02)? 1 : 0, 
-				(track->channels & 0x04)? 2 : 0, 
-				(track->channels & 0x08)? 3 : 0, 
-				(track->channels & 0x10)? 4 : 0, 
-				(track->channels & 0x20)? 5 : 0, 
-				(track->channels & 0x40)? 6 : 0);
+				(track->channels.bitFieldData.channel0)? 0 : 0, 
+				(track->channels.bitFieldData.channel1) ? 1 : 0,
+				(track->channels.bitFieldData.channel2) ? 2 : 0,
+				(track->channels.bitFieldData.channel3) ? 3 : 0,
+				(track->channels.bitFieldData.channel4) ? 4 : 0,
+				(track->channels.bitFieldData.channel5) ? 5 : 0,
+				(track->channels.bitFieldData.channel6) ? 6 : 0);
 
 		}  // if (track...
 

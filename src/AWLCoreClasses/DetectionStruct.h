@@ -33,12 +33,104 @@ namespace awl
 #define isNAN(val) (val == NAN)
 
 typedef uint16_t TrackID;
+typedef uint32_t FrameID;
 
+class AlertCondition;
+class Detection;
+class Track;
 class SensorFrame;
 class ChannelFrame;
-class Detection;
+
+/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
+*        and communications
+* \author Jean-Yves Deschênes
+*/
+
+typedef union
+{
+	uint8_t byteData;
+	struct  {
+		bool channel0 : 1;
+		bool channel1 : 1;
+		bool channel2 : 1;
+		bool channel3 : 1;
+		bool channel4 : 1;
+		bool channel5 : 1;
+		bool channel6 : 1;
+		bool unused : 1;
+	} bitFieldData;
+
+} ChannelMask;
 
 
+/** \brief The Alert class defines alert conditions.
+*/
+
+class AlertCondition {
+public: 
+	typedef boost::shared_ptr<AlertCondition> Ptr;
+	typedef boost::shared_ptr<AlertCondition> ConstPtr;
+	typedef boost::container::vector<AlertCondition::Ptr> Vector;
+
+	typedef enum ThreatLevel {
+		eThreatNone = 0,  // No threat level assigned
+		eThreatLow = 1,   // target detected, threat level low
+		eThreatWarn = 2,  // Target may have collision course, but not acertained yet
+		eThreatCritical = 3 // target is within collision range
+	}
+	ThreatLevel;
+
+	typedef enum AlertType {
+		eAlertInvalid = 0,
+		eAlertDistanceWithin = 1, // Alert based on distance  within range specified
+		eAlertDistanceOutside = 2, // Alert based on distance  outside range specified
+		eAlertSpeed = 3, // Alert based on speed range;
+		eAlertAcceleration = 4,    // Alert based on accel range;
+		eAlertDecelerationToStop = 5, // Alert based on deceleration to stop
+		eAlertTTC = 6		// Alert based on time to collision;
+	}
+	AlertType;
+
+public:
+	AlertCondition() {};
+	AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, ChannelMask inChannelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel = eThreatNone);
+	AlertCondition(AlertCondition &sourceCondition);
+
+	static AlertCondition::ThreatLevel FindDetectionThreat(boost::shared_ptr<Detection> detection);
+	static AlertCondition::ThreatLevel FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track);
+
+	int	GetReceiverID() { return(receiverID); }
+	ChannelMask	GetChannelMask() { return(channelMask); }
+	float GetMinRange() { return (minRange); }
+	float GetMaxRange() { return (maxRange); }
+	float GetThreatLevel (){ return(threatLevel); }
+
+	static void Store(AlertCondition::Ptr storedCondition) { globalAlertsVector.push_back(storedCondition); }
+
+	AlertCondition::Vector GetAlertConditions() { return (globalAlertsVector); }
+public:
+
+	/** \brief Type of condition for the alert */
+	AlertType alertType;
+
+	/** \brief sensor ID of the sensor where detection origins from */
+	int	  receiverID;
+
+	/** \brief channelMask of the channels where detection origins from */
+	ChannelMask	  channelMask;
+
+	/** \brief minimum range for triggerting of the alert. Nature depends on AlertType */
+	float	  minRange;
+
+	/** \brief maximum range for triggerting of the alert. Nature depends on AlertType */
+	float	  maxRange;
+
+	ThreatLevel threatLevel;
+
+
+protected:
+	static AlertCondition::Vector globalAlertsVector;
+};
 
 /** \brief The Detection class corresponds to a single detectio returned by the receiver.
            It holds the distance for the detection, its intensity, threat level
@@ -46,25 +138,18 @@ class Detection;
 
 class Detection 
 {
+	friend class AlertCondition;
 
 public:
 	typedef boost::shared_ptr<Detection> Ptr;
     typedef boost::shared_ptr<Detection> ConstPtr;
 	typedef boost::container::vector<Detection::Ptr> Vector;
 
-	typedef enum ThreatLevel {
-		eThreatNone = 0,  // No threat level assigned
-		eThreatLow = 1,   // target detected, threat level low
-		eThreatWarn = 2,  // Target may have collision course, but not acertained yet
-		eThreatCritical = 3, // target is within collision range
-	}
-	ThreatLevel;
-
 public:
 	Detection();
 	Detection(int inReceiverID, int inChannelID, int inDetectionID);
 	Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
-	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel = eThreatNone);
+	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, AlertCondition::ThreatLevel inThreatLevel = AlertCondition::eThreatNone);
 	
 	int	GetReceiverID() {return(receiverID);}	
 	int	GetDetectionID() {return(detectionID);}
@@ -124,7 +209,7 @@ public:
 	SphericalCoord	   relativeToWorldSpherical;
 
 	/** \brief Threat level associated to detection */
-	ThreatLevel	threatLevel;
+	AlertCondition::ThreatLevel	threatLevel;
 };
 
 
@@ -178,10 +263,10 @@ public:
 	float firstTimeStamp;
 
 	/** \brief Threat level associated to detection */
-	Detection::ThreatLevel	threatLevel;
+	AlertCondition::ThreatLevel	threatLevel;
 
 	/** \brief Channels in which detections were made for the track **/
-	uint8_t channels;
+	ChannelMask channels;
 
 	// A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed.
 
@@ -203,11 +288,11 @@ public:
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
 	typedef std::queue<SensorFrame::Ptr> Queue;
 public:
-	SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty);
+	SensorFrame(int inReceiverID, FrameID inFrameID, int inChannelQty);
 	virtual ~SensorFrame() {};
 
 	int GetReceiverID() { return(receiverID);}
-	uint32_t	GetFrameID() {return(frameID);}
+	FrameID	GetFrameID() {return(frameID);}
 
 
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
@@ -215,7 +300,7 @@ public:
 
 public:
 	int receiverID;
-	uint32_t frameID;
+	FrameID frameID;
 	int channelQty;
 
 	Detection::Vector rawDetections;		// Raw detections as acquired from device
@@ -246,14 +331,14 @@ public:
 	
 	/** \brief Get the frameID of the last complete frame
 	*/
-	uint32_t	GetLastFrameID();
+	FrameID	GetLastFrameID();
 
-	uint32_t AllocateFrameID();
+	FrameID AllocateFrameID();
 
 	bool FindTrack(SensorFrame::Ptr currentFrame,TrackID trackID, Track::Ptr &outTrack);
 	Track::Ptr MakeUniqueTrack(SensorFrame::Ptr currentFrame,TrackID trackID);
 
-	bool FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame);
+	bool FindSensorFrame(FrameID frameID, SensorFrame::Ptr &outSensorFrame);
 
 public: 
 	// Queue of the stored sensor frames.
@@ -262,7 +347,7 @@ public:
 	SensorFrame::Queue sensorFrames;
 	
 	// Frame ID counter.  Each SensorFrame within an acquisition sequence has a unique frame ID.
-	uint32_t frameID;
+	FrameID frameID;
 };
 
 

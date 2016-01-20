@@ -407,7 +407,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	track->firstTimeStamp = currentFrame->timeStamp;
 	track->timeStamp = currentFrame->timeStamp;
 
-	track->channels = *(uint8_t *) &inMsg.data[2];
+	track->channels.byteData = *(uint8_t *) &inMsg.data[2];
 	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
 	track->probability = *(uint8_t *) &inMsg.data[5];
 	track->timeToCollision = (*(uint8_t *) &inMsg.data[6]) / 1000.0;  // Convert from ms to seconds.  Currently empty

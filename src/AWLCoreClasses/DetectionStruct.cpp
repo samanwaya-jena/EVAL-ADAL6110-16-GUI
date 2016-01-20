@@ -28,6 +28,8 @@ using namespace std;
 using namespace awl;
 
 
+AlertCondition::Vector AlertCondition::globalAlertsVector;
+
 
 AcquisitionSequence::AcquisitionSequence():
 frameID(1)
@@ -35,13 +37,13 @@ frameID(1)
 {
 }
 
-uint32_t AcquisitionSequence::AllocateFrameID()
+FrameID AcquisitionSequence::AllocateFrameID()
 
 {
 	return(frameID++);
 }
 
-uint32_t	AcquisitionSequence::GetLastFrameID()
+FrameID	AcquisitionSequence::GetLastFrameID()
 
 {
 	if (sensorFrames.size() <= 0) return(0);
@@ -84,7 +86,7 @@ Track::Ptr AcquisitionSequence::MakeUniqueTrack(SensorFrame::Ptr currentFrame, T
 	return(track);
 }
 
-bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &outSensorFrame)
+bool AcquisitionSequence::FindSensorFrame(FrameID frameID, SensorFrame::Ptr &outSensorFrame)
 {
 	for (int i = 0; i < sensorFrames.size(); i++) 
 	{
@@ -100,7 +102,7 @@ bool AcquisitionSequence::FindSensorFrame(uint32_t frameID, SensorFrame::Ptr &ou
 }
 
 
-SensorFrame::SensorFrame(int inReceiverID, uint32_t inFrameID, int inChannelQty) :
+SensorFrame::SensorFrame(int inReceiverID, FrameID inFrameID, int inChannelQty) :
 receiverID(inReceiverID),
 frameID(inFrameID),
 channelQty(inChannelQty),
@@ -192,7 +194,7 @@ relativeToWorldSpherical()
 }
 
 Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
-		float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, ThreatLevel inThreatLevel):
+		float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, AlertCondition::ThreatLevel inThreatLevel):
 receiverID(inReceiverID),
 channelID(inChannelID),
 detectionID(inDetectionID),
@@ -227,14 +229,158 @@ decelerationToStop(NAN),
 timeStamp(0.0f),
 firstTimeStamp(0.0),
 trackID(inTrackID),
-threatLevel(Detection::eThreatNone),
+threatLevel(AlertCondition::eThreatNone),
 part1Entered(false),
 part2Entered(false),
 part3Entered(false),
 part4Entered(false)
 
 {
-	channels = 0;
+	channels.byteData = 0;
 }
 
- 
+
+AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, ChannelMask inChannelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel):
+alertType(inAlertType),
+receiverID(inReceiverID),
+channelMask(inChannelMask),
+minRange(inMinRange),
+maxRange(inMaxRange),
+threatLevel(inThreatLevel)
+{
+}
+
+AlertCondition::AlertCondition(AlertCondition &sourceCondition)
+{
+	*this = sourceCondition;
+}
+
+AlertCondition::ThreatLevel AlertCondition::FindDetectionThreat(boost::shared_ptr<Detection> detection)
+{
+	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
+	
+	AlertCondition::Vector::iterator  alertIterator = globalAlertsVector.begin();
+	while (alertIterator != globalAlertsVector.end())
+	{
+		AlertCondition::Ptr alert = *alertIterator;
+		ChannelMask channelMask;
+		channelMask.byteData = 0x01 << detection->channelID;
+
+		if (alert->receiverID == detection->receiverID && (alert->channelMask.byteData & channelMask.byteData))
+		{
+			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
+			switch (alert->alertType) {
+			case eAlertDistanceWithin:
+				if (detection->relativeToSensorSpherical.rho >= alert->minRange && detection->relativeToSensorSpherical.rho <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+			case eAlertDistanceOutside:
+				if (!(detection->relativeToSensorSpherical.rho >= alert->minRange && detection->relativeToSensorSpherical.rho <= alert->maxRange))
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+			case eAlertSpeed:
+				if (detection->velocity >= alert->minRange && detection->velocity <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertAcceleration:
+				if (detection->acceleration >= alert->minRange && detection->acceleration<= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertDecelerationToStop:
+				if (detection->decelerationToStop >= alert->minRange && detection->decelerationToStop <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertTTC:
+				if (detection->timeToCollision >= alert->minRange && detection->timeToCollision <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			default:
+				break;
+			}
+
+			if (currentThreatLevel > maxThreatLevel) maxThreatLevel = currentThreatLevel;
+		}
+
+		alertIterator++;
+	}
+
+	return(maxThreatLevel);
+
+}
+
+AlertCondition::ThreatLevel AlertCondition::FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track)
+{
+	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
+
+	AlertCondition::Vector::iterator  alertIterator = globalAlertsVector.begin();
+	while (alertIterator != globalAlertsVector.end())
+	{
+		AlertCondition::Ptr alert = *alertIterator;
+		if (alert->receiverID == inReceiverID && (alert->channelMask.byteData & track->channels.byteData))
+		{
+			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
+			switch (alert->alertType) {
+			case eAlertDistanceWithin:
+				if (track->distance >= alert->minRange && track->distance <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertDistanceOutside:
+				if (!(track->distance >= alert->minRange && track->distance <= alert->maxRange))
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertSpeed:
+				if (track->velocity >= alert->minRange && track->velocity <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertAcceleration:
+				if (track->acceleration >= alert->minRange && track->acceleration <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			case eAlertTTC:
+				if (track->timeToCollision >= alert->minRange && track->timeToCollision <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
+			default:
+				break;
+			}
+
+			if (currentThreatLevel > maxThreatLevel) maxThreatLevel = currentThreatLevel;
+		}
+
+		alertIterator++;
+	}
+
+	return(maxThreatLevel);
+
+}

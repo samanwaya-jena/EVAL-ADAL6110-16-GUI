@@ -104,10 +104,6 @@ public:
 	ReceiverSettingsVector receiverSettings;
 
 	// Dynamic testing
-	float threatLevelCriticalThreshold;
-	float threatLevelWarnThreshold;
-	float threatLevelLowThreshold;
-
 	float brakingDeceleration;
 	float travelSpeed;
 

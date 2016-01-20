@@ -192,12 +192,12 @@ private:
     void drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor, bool drawTarget = true, bool drawLegend = true);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
-	Detection::ThreatLevel getMaxThreat();
+	AlertCondition::ThreatLevel getMaxThreat();
 	bool isInRange(const Detection::Ptr &detection1, const Detection::Ptr &detection2 );
     void getColorFromDistance(float distance, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromVelocity(float velocity, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
-	void getColorFromIntensity(int channel, float distance, float intensity, Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
-	void getColorFromThreatLevel(Detection::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromIntensity(int channel, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromThreatLevel(AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromChannel(int receiverID, int channelID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 
     void drawPalette(QPainter* p);
