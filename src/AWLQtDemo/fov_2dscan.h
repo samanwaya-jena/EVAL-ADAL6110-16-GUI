@@ -81,7 +81,8 @@ public:
 		eColorCodeDistance= 0, // ColorCode distances
 		eColorCodeVelocity = 1,  // Color code speeds
 		eColorCodeIntensity = 2,  // Color codes intensity/detection type
-		eColorCodeChannel = 3 // Color codes from Channel/layer
+		eColorCodeChannel = 3, // Color codes from Channel/layer
+		eColorCodeAlert = 4
 	} DisplayColorCode;
 
 	typedef enum DisplayDistanceMode
@@ -175,6 +176,7 @@ private:
 	QAction* colorCodeVelocityAction;
 	QAction* colorCodeIntensityAction;
 	QAction* colorCodeChannelAction;
+	QAction* colorCodeAlertAction;
 
 	QActionGroup* groupDisplayDistanceMode;
 	QAction* displayDistanceModeShowAction;

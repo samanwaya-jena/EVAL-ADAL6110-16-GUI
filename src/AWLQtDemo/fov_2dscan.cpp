@@ -366,6 +366,7 @@ void FOV_2DScan::createAction()
 	colorCodeVelocityAction = new QAction("Velocity", this);
 	colorCodeIntensityAction = new QAction("Intensity/Threat", this);
 	colorCodeChannelAction = new QAction("Channel color", this);
+	colorCodeAlertAction = new QAction("Threat Level", this);
 	
 	colorCodeDistanceAction->setCheckable(true);
 	colorCodeDistanceAction->setActionGroup(groupColorCode);
@@ -379,6 +380,9 @@ void FOV_2DScan::createAction()
 	colorCodeChannelAction->setCheckable(true);
 	colorCodeChannelAction->setActionGroup(groupColorCode);
 
+	colorCodeAlertAction->setCheckable(true);
+	colorCodeAlertAction->setActionGroup(groupColorCode);
+
 	if (colorCode == eColorCodeDistance)
 	{
 		colorCodeDistanceAction->setChecked(true);
@@ -391,10 +395,19 @@ void FOV_2DScan::createAction()
 	{
 		colorCodeIntensityAction->setChecked(true);
 	}
-	else 
+	else if (colorCode == eColorCodeChannel)
 	{
 		colorCodeChannelAction->setChecked(true);
 	}
+	else if (colorCode == eColorCodeAlert)
+	{
+		colorCodeAlertAction->setChecked(true);
+	}
+	else
+	{
+		colorCodeChannelAction->setChecked(true);
+	}
+
 
 	connect(groupColorCode, SIGNAL(triggered(QAction*)), this, SLOT(slotColorCodeAction()));
 
@@ -515,10 +528,19 @@ void FOV_2DScan::slotColorCodeAction()
 	{
 		colorCode = eColorCodeIntensity;
 	}
-	else 
+	else if (colorCodeChannelAction->isChecked())
 	{
 		colorCode = eColorCodeChannel;
 	}
+	else if (colorCodeAlertAction->isChecked())
+	{
+		colorCode = eColorCodeAlert;
+	}
+	else
+	{
+		colorCode = eColorCodeChannel;
+	}
+
 }
 
 void FOV_2DScan::slotDisplayDistanceModeAction()
@@ -929,8 +951,13 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 		getColorFromDistance(distanceDisplayed, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeIntensity)
 		getColorFromIntensity(channelForIntensityMax, distanceForIntensityMax, intensityMax, threatLevelMax, backColor, backPattern, lineColor, textColor);
-	else //if (colorCode == eColorCodeChannel)
+	else if (colorCode == eColorCodeChannel)
 		getColorFromChannel(-1, -1, backColor, backPattern, lineColor, textColor);
+	else if (colorCode == eColorCodeAlert)
+		getColorFromThreatLevel(threatLevelMax, backColor, backPattern, lineColor, textColor);
+	else
+		getColorFromChannel(-1, -1, backColor, backPattern, lineColor, textColor);
+
 
 	p->setBrush(QBrush(backColor, backPattern));
 	p->setPen(lineColor);
@@ -1040,7 +1067,11 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 		getColorFromDistance(distanceToDisplay, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeIntensity)
 		getColorFromIntensity(detection->channelID, detection->distance, detection->intensity, detection->threatLevel, backColor, backPattern, lineColor, textColor);
-	else // if (colorCode == eColorCodeChannel)
+	else if (colorCode == eColorCodeChannel)
+		getColorFromChannel(detection->receiverID, detection->channelID, backColor, backPattern, lineColor, textColor);
+	else if (colorCode == eColorCodeAlert)
+		getColorFromThreatLevel(detection->threatLevel, backColor, backPattern, lineColor, textColor);
+	else
 		getColorFromChannel(detection->receiverID, detection->channelID, backColor, backPattern, lineColor, textColor);
 
 	p->setBrush(QBrush(backColor, backPattern));
@@ -1662,6 +1693,7 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 	menuColorCode->addAction(colorCodeVelocityAction);
 	menuColorCode->addAction(colorCodeIntensityAction);
 	menuColorCode->addAction(colorCodeChannelAction);
+	menuColorCode->addAction(colorCodeAlertAction);
 
 	mainMenu.exec(globalPos);
 }

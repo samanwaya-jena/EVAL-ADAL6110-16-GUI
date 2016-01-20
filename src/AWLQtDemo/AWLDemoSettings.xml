@@ -49,7 +49,7 @@
 		       Receiver is used in the configuration.
 		       This can influence comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KvaserLeaf</receiverType>
+      <receiverType>KVaserLeaf</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -483,11 +483,11 @@
     <!-- colorCode
 	     0: Colors indicate distances
 	     1: Colors indicate speed 
-       2: Colors indicate obstacle type
+       2: Colors indicate obstacle type according to classifier
        3: Colors correspond to channel "color"
-     -->
-    <colorCode>3</colorCode>
-
+       4: Colors indicate Threat Level-->
+    <colorCode>4</colorCode>
+   
     <!-- displayDistances
 	     0: Hide all distances
 	     1: Show all distances 
@@ -544,7 +544,7 @@
 	     In the meantime, we have a variable for that
 	     Specify in m/s, use <NN>km/h(60.0 * 1000)/(60*60) -->
      <travelSpeed>16.66</travelSpeed>
-    <alertQty> 7 </alertQty>
+    <alertQty> 3 </alertQty>
     <alert0>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
@@ -572,25 +572,25 @@
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert2>
     
-     <alert3>
+     <alert3Ignored>
       <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
        <alertReceiver>0</alertReceiver>
        <alertChannels> 1 </alertChannels>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert3>
+    </alert3Ignored>
 
-     <alert4>
+     <alert4Ignored>
       <alertType>distanceOutside</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
        <alertReceiver>0</alertReceiver>
        <alertChannels> 2 </alertChannels>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert4>
+    </alert4Ignored>
 
-    <alert5>
+    <alert5Ignored>
       <alertType>distanceOutside</alertType>
       <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
@@ -598,16 +598,16 @@
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert5>
+    </alert5Ignored>
 
-    <alert6>
+    <alert6Ignored>
       <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
       <alertChannels> 8 </alertChannels>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert6>
+    </alert6Ignored>
   </dynamicTesting>
 
 

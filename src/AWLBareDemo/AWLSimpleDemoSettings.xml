@@ -389,8 +389,11 @@
 
     <!-- colorCode
 	     0: Colors indicate distances
-	     1: Colors indicate speed -->
-    <colorCode>1</colorCode>
+	     1: Colors indicate speed 
+       2: Colors Indicate Intesity classifier
+       3: Colors indicate channel
+       4: Colors indicate Threat Level-->
+    <colorCode>4</colorCode>
 
     <!-- mergeAcceptance
        distance before we merge targets
