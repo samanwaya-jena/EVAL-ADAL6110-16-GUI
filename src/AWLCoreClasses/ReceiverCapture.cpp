@@ -39,6 +39,7 @@ const int ReceiverCapture::maximumSensorFrames(100);
 const std::string sDefaultReceiverType = "Generic";
 const int defaultFrameRate(50);
 const uint8_t defaultChannelMaskValue = 127;
+const float defaultSignalToNoiseFloor = -10.0;
 
 
 ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, 
@@ -92,6 +93,9 @@ targetHintAngle(0.0)
 
 {
 	// Read the configuration from the configuration file
+
+	receiverStatus.signalToNoiseFloor = defaultSignalToNoiseFloor;
+
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
 
@@ -156,6 +160,8 @@ void ReceiverCapture::InitStatus()
 	receiverStatus.adcRegisterValueRead = 0;
 	receiverStatus.gpioRegisterAddressRead = 0;
 	receiverStatus.gpioRegisterValueRead = 0;
+
+	receiverStatus.signalToNoiseFloor = defaultSignalToNoiseFloor;
 }
 
 

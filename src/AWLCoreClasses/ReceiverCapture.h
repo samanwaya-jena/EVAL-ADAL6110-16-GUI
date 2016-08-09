@@ -202,6 +202,7 @@ public:
 
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
+	float    signalToNoiseFloor;
 	
 	ChannelMask	channelMask;
 	MessageMask	messageMask;

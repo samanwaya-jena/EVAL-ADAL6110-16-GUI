@@ -78,7 +78,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			trackDistance += 0.0001;
 			if (trackDistance > 30.0) trackDistance = 0.0;
 			track->distance = trackDistance;
-			track->intensity = 75.00;
+			track->intensity = -3.00;
 			track->channels.byteData = 0X09;
 
 			track->velocity = 30.0;
@@ -99,7 +99,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->firstTimeStamp = currentFrame->timeStamp;
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 25.0;
-			track->intensity= 22.00;
+			track->intensity= -0.1;
 			track->channels.byteData = 0X09;
 
 			track->velocity = 3;
@@ -119,7 +119,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 40;
-			track->intensity= 33.00;
+			track->intensity= 1.00;
 			track->channels.byteData = 0X09;
 
 			track->velocity = 3;
@@ -164,6 +164,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 bool ReceiverSimulatorCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
 		ReceiverCapture::ReadConfigFromPropTree(propTree);
+		receiverStatus.signalToNoiseFloor = 18.0;
 		return(true);
 }
 

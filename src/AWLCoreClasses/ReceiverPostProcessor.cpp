@@ -178,17 +178,18 @@ bool ReceiverPostProcessor::GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr 
 	if (!CompleteTrackInfo(currentFrame))
 	{
 		DebugFilePrintf("Incomplete frame in UpdateTrackInfo- %lu", inFrameID);
-		return(false);
 	}
 
 	// Build distances from the tracks that were accumulated during the frame
 	if (!BuildEnhancedDetectionsFromTracks(currentFrame, detectionBuffer))
 	{
 		DebugFilePrintf("Incomplete frame- %lu", inFrameID);
-		return(false);
 	}
 
-	return(true);
+	if (detectionBuffer.size() <= 0) 
+		return(false);
+	else 
+		return(true);
 }
 
 

@@ -463,6 +463,12 @@ void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
 
 	track->part3Entered = true;
 
+	// Track is invalidated if intensity is invalid
+	if (track->intensity < receiverStatus.signalToNoiseFloor)
+	{
+		track->part3Entered = false;
+	}
+
 	rawLock.unlock();
 
 	// Debug and Log messages
@@ -1307,6 +1313,14 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		parameter->pendingUpdates = 1;
+
+
+		// Hack:  Update the SNR Cutoff in status when trying to set in algo parameters. 
+		if (!parameter->sDescription.compare("SNR Cutoff (dB)"))
+		{
+			receiverStatus.signalToNoiseFloor = parameter->floatValue;
+		}
+
 	}
 
  	return(bMessageOk);
@@ -1666,6 +1680,12 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 						parameter.paramType = eAlgoParamFloat;
 						parameter.intValue = 0;
 						parameter.floatValue = parameterNode.get<float>("default");
+					}
+
+					// Hack: SNR in status is updated on read
+					if (!parameter.sDescription.compare("SNR Cutoff (dB)"))
+					{
+						receiverStatus.signalToNoiseFloor = parameter.floatValue;
 					}
 
 					parameter.pendingUpdates = 0;
