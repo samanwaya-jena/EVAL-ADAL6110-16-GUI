@@ -470,9 +470,9 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 			intensityStr.sprintf("");
 		}
 
-		if (!isNAN(decelerationToStop))
+		if (!isNAN(probability))
 		{
-			threatStr.sprintf("%.1f", decelerationToStop);
+			threatStr.sprintf("%.1f", probability);
 		}
 		else
 		{
