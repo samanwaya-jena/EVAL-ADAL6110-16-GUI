@@ -29,6 +29,7 @@
 
    <video>
     <displayCrosshair>false</displayCrosshair>
+     <displayTime>true</displayTime>
   </video>
   
   <receivers>

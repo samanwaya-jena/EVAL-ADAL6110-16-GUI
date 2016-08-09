@@ -37,7 +37,8 @@ AWLSettings::AWLSettings():
 sFileName(sDefaultSettingsFileName),
 sLogoFileName(""),
 sIconFileName(""),
-bDisplayVideoCrosshair(false)
+bDisplayVideoCrosshair(false),
+bDisplayVideoTime(false)
 
 {
 }
@@ -183,6 +184,7 @@ bool AWLSettings::ReadSettings()
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
 
 	bDisplayVideoCrosshair = propTree.get<bool>("config.video.displayCrosshair");
+	bDisplayVideoTime = propTree.get<bool>("config.video.displayTime");
 
 	// Alert conditions
 	int alertConditionQty = propTree.get<int>("config.dynamicTesting.alertQty");

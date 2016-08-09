@@ -26,8 +26,8 @@
 
 using namespace std;
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
+#include "include/opencv2/core/core_c.h"
+#include "include/opencv2/core/core.hpp"
 
 #include "VideoCapture.h"
 #include "DetectionStruct.h"
@@ -143,6 +143,7 @@ protected:
 
 	void DrawHorizontalTicks(QImage &sourceFrame, QPainter& painter, float tickAngle, float tickLength, int thickness);
 	void DrawVerticalTicks(QImage &sourceFrame,  QPainter& painter, float tickAngle, float tickLength, int thickness);
+	void DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, int penWidth, int textSize, QString &text, int flags = Qt::AlignLeft | Qt::AlignVCenter);
 
 protected:
 	/** \brief Copy of the captured image. */
@@ -173,11 +174,15 @@ protected:
    /** displayCrosshair, as initially spaecified in configuration file */
    bool bDisplayCrosshair;
 
+   /** displayTime, as initially spaecified in configuration file */
+   bool bDisplayTime;
+
 private:
 	void createAction();
 
 	QActionGroup* groupVideoOptions;
 	QAction* crosshairOptionAction;
+	QAction *timeOptionAction;
 }; // VideoViewer
 
 } // namespace awl

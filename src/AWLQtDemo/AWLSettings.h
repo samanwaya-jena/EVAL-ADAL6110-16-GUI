@@ -180,6 +180,7 @@ public:
 
 	// Video display options
 	bool bDisplayVideoCrosshair;
+	bool bDisplayVideoTime;
 
 	// Scope
 	int scopeTimerInterval;

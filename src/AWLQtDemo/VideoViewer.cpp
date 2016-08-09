@@ -36,6 +36,10 @@
 #include <boost/foreach.hpp>
 #endif
 
+#ifndef Q_MOC_RUN
+#include <boost/date_time/posix_time/posix_time.hpp>
+#endif
+
 using namespace std;
 using namespace awl;
 
@@ -59,6 +63,8 @@ const QColor rgbEnhanceBlue(0, 0, 255, 128);
 const QColor rgbEnhanceGreen(0, 255, 0, 128);
 const QColor rgbEnhanceYellow(128 ,128, 0, 128);
 const QColor rgbEnhanceRed(255, 0, 0, 128);
+const QColor rgbOpaqueGreen(0, 255, 0, 255);
+const QColor rgbOpaqueBlack(0, 0, 0, 255);
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget):
 QFrame(parentWidget),
@@ -69,11 +75,11 @@ displayScaleFactor(1.0)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	bDisplayCrosshair = globalSettings->bDisplayVideoCrosshair;
+	bDisplayTime = globalSettings->bDisplayVideoTime;
 
 	qtCameraFrame = QImage(videoCapture->calibration.frameWidthInPixels, videoCapture->calibration.frameHeightInPixels, QImage::Format_RGB888);
 	QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	setSizePolicy(sizePolicy); 
-	
 
 	SetVideoCapture(videoCapture);
 	startTime = boost::posix_time::microsec_clock::local_time();
@@ -107,6 +113,12 @@ void VideoViewer::createAction()
     crosshairOptionAction->setShortcutContext(Qt::ApplicationShortcut);
 	addAction(crosshairOptionAction);
 
+	timeOptionAction = new QAction("Display Time", this);
+	timeOptionAction->setCheckable(true);
+	timeOptionAction->setShortcut(QKeySequence(tr("Alt+T")));
+	timeOptionAction->setShortcutContext(Qt::ApplicationShortcut);
+	addAction(timeOptionAction);
+
 	crosshairOptionAction->setActionGroup(groupVideoOptions);
 
 	if (bDisplayCrosshair)
@@ -117,6 +129,17 @@ void VideoViewer::createAction()
 	{
 		crosshairOptionAction->setChecked(false);
 	}
+
+	if (bDisplayTime)
+	{
+		timeOptionAction->setChecked(true);
+	}
+	else
+	{
+		timeOptionAction->setChecked(false);
+	}
+
+	timeOptionAction->setActionGroup(groupVideoOptions);
 
 	connect(groupVideoOptions, SIGNAL(triggered(QAction*)), this, SLOT(slotVideoOptionsChangedAction()));
 }
@@ -132,6 +155,7 @@ void VideoViewer::ShowContextMenu(const QPoint& pos) // this is a slot
 	QMenu mainMenu;
 	QMenu* menuVideoOptions = mainMenu.addMenu("VideoOptions");
  	menuVideoOptions->addAction(crosshairOptionAction);
+	menuVideoOptions->addAction(timeOptionAction);
  
 	mainMenu.exec(globalPos);
 }
@@ -147,6 +171,15 @@ void VideoViewer::slotVideoOptionsChangedAction()
 	else
 	{
 		bDisplayCrosshair = false;
+	}
+
+	if (timeOptionAction->isChecked())
+	{
+		bDisplayTime = true;
+	}
+	else
+	{
+		bDisplayTime = false;
 	}
 }
 
@@ -195,6 +228,16 @@ void VideoViewer::slotImageChanged()
 			DisplayCrossHairs(qtCameraFrame, painter);
 		}
 
+		if (bDisplayTime) 
+		{
+			boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
+			QString timeStr(boost::posix_time::to_simple_string(myTime).c_str());
+
+			QRect textRect(0, 0, videoCapture->calibration.frameWidthInPixels - 1, videoCapture->calibration.frameHeightInPixels - 1);
+			DrawVideoText(qtCameraFrame, painter, textRect, 1, 12, timeStr, Qt::AlignRight | Qt::AlignBottom);
+
+		}
+
 		repaint();
 	}
 }
@@ -229,6 +272,7 @@ void VideoViewer::paintEvent(QPaintEvent* /*event*/)
     QPainter painter(this);
 	int newWidth = width();
 	int newHeight = height();
+
     painter.drawImage(QPoint(0,0), qtEnhancedFrame.scaled(size(), Qt::KeepAspectRatio));
     painter.end();
 }
@@ -398,6 +442,8 @@ void VideoViewer::DisplayCrossHairs(QImage &sourceFrame, QPainter &painter)
 		}
 
 		DrawHorizontalTicks(sourceFrame, painter, tickIndex * tickIncrement, tickLength, 1 + floor(tickWidth * displayScaleFactor));
+
+		CvPoint textPoint(0 /* videoCapture->calibration.frameWidthInPixels - 1*/, videoCapture->calibration.frameHeightInPixels - 1);
 	}
 
 
@@ -601,7 +647,7 @@ void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, cons
 	QBrush frontBrush(colorEnhance);
 	painter.setBrush(Qt::NoBrush);
 
-	pen.setColor(penWidth);
+	pen.setWidth(penWidth);
 	pen.setBrush(QBrush(colorEnhance));
 	pen.setCapStyle(Qt::FlatCap);
 	painter.setPen(pen);
@@ -609,4 +655,42 @@ void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, cons
 	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
 }
 
+#if 1
+void VideoViewer::DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, int penWidth, int textSize, QString &text, int flags)
+
+{
+	QColor colorEnhance = rgbOpaqueGreen;
+	QColor colorBackground = rgbOpaqueBlack;
+	
+	QBrush foregroundBrush(colorEnhance); 
+	QPen foregroundPen(colorEnhance);
+
+	QBrush backgroundBrush(colorBackground);
+	QPen backgroundPen(backgroundBrush, 10);
+
+	painter.setBrush(Qt::NoBrush);
+
+
+	QFont font("Arial", 18);
+	font.setBold(false);
+	painter.setFont(font);
+//	painter.setRenderHint(QPainter::Antialiasing, false);
+
+	QRect backRect = textRect;
+
+	painter.setPen(backgroundPen);
+	backRect.translate(-2, -2);
+	painter.drawText(backRect, flags, text);
+	backRect.translate(0, +4);
+	painter.drawText(backRect, flags, text);
+	backRect.translate(+4, 0);
+	painter.drawText(backRect, flags, text);
+	backRect.translate(0, -4);
+	painter.drawText(backRect, flags, text);
+
+	painter.setPen(foregroundPen);
+	painter.drawText(textRect, flags, text);
+
+}
+#endif
 
