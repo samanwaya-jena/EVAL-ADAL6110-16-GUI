@@ -54,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/modules/videostab/include;$(OPENCV_DIR)/modules/stitching/include;$(OPENCV_DIR)/modules/contrib/include;$(OPENCV_DIR)/modules/legacy/include;$(OPENCV_DIR)/modules/calib3d/include;$(OPENCV_DIR)/modules/features2d/include;$(OPENCV_DIR)/modules/nonfree/include;$(OPENCV_DIR)/modules/photo/include;$(OPENCV_DIR)/modules/objdetect/include;$(OPENCV_DIR)/modules/video/include;$(OPENCV_DIR)/modules/ml/include;$(OPENCV_DIR)/modules/highgui/include;$(OPENCV_DIR)/modules/imgproc/include;$(OPENCV_DIR)/modules/flann/include;$(OPENCV_DIR)/modules/core/include;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)/src;C:\XIMEA\API;..\AWLCoreClasses;$(ProgramFiles)\Kvaser\Canlib\INC</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/include/opencv2/videostab;$(OPENCV_DIR)/include/opencv2/stitching;$(OPENCV_DIR)/include/opencv2/calib3d;$(OPENCV_DIR)/include/opencv2/features2d;$(OPENCV_DIR)/include/opencv2/photo;$(OPENCV_DIR)/include/opencv2/objdetect;$(OPENCV_DIR)/include/opencv2/video;$(OPENCV_DIR)/include/opencv2/ml;$(OPENCV_DIR)/include/opencv2/highgui;$(OPENCV_DIR)/include/opencv2/imgproc;$(OPENCV_DIR)/include/opencv2/flann;$(OPENCV_DIR)/include/opencv2/core;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)/src;$(XIMEA_DIR)\API;..\AWLCoreClasses;$(ProgramFiles)\Kvaser\Canlib\INC</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -63,9 +63,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)/x86/vc12/lib;$(BOOST_DIR)/Stage/lib;c:/EasySync;$(QWTDir)\build-qwt-Desktop_Qt_5_5_1_MSVC2013_32bit-Debug\lib;c:\ximea\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\lib32-msvc-12.0;c:\EasySync;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwtd.lib;m3api.lib;canlib32.lib;opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwtd.lib;m3api.lib;canlib32.lib;opencv_world310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
@@ -73,7 +73,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/modules/videostab/include;$(OPENCV_DIR)/modules/stitching/include;$(OPENCV_DIR)/modules/contrib/include;$(OPENCV_DIR)/modules/legacy/include;$(OPENCV_DIR)/modules/calib3d/include;$(OPENCV_DIR)/modules/features2d/include;$(OPENCV_DIR)/modules/nonfree/include;$(OPENCV_DIR)/modules/photo/include;$(OPENCV_DIR)/modules/objdetect/include;$(OPENCV_DIR)/modules/video/include;$(OPENCV_DIR)/modules/ml/include;$(OPENCV_DIR)/modules/highgui/include;$(OPENCV_DIR)/modules/imgproc/include;$(OPENCV_DIR)/modules/flann/include;$(OPENCV_DIR)/modules/core/include;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)/src;C:\XIMEA\API;..\AWLCoreClasses;$(ProgramFiles)\Kvaser\Canlib\INC</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/include/opencv2/videostab;$(OPENCV_DIR)/include/opencv2/stitching;$(OPENCV_DIR)/include/opencv2/calib3d;$(OPENCV_DIR)/include/opencv2/features2d;$(OPENCV_DIR)/include/opencv2/photo;$(OPENCV_DIR)/include/opencv2/objdetect;$(OPENCV_DIR)/include/opencv2/video;$(OPENCV_DIR)/include/opencv2/ml;$(OPENCV_DIR)/include/opencv2/highgui;$(OPENCV_DIR)/include/opencv2/imgproc;$(OPENCV_DIR)/include/opencv2/flann;$(OPENCV_DIR)/include/opencv2/core;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)/src;$(XIMEA_DIR)\API;..\AWLCoreClasses;$(ProgramFiles)\Kvaser\Canlib\INC</AdditionalIncludeDirectories>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -87,9 +87,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)/x86/vc12/lib;$(BOOST_DIR)/Stage/lib;c:/EasySync;$(QWTDir)\build-qwt-Desktop_Qt_5_5_1_MSVC2013_32bit-Release\lib;$(ProgramFiles)\Kvaser\Canlib\lib\MS;c:\ximea\API\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\release;$(BOOST_DIR)\lib32-msvc-12.0;c:\EasySync;$(QWTDir)\lib;$(ProgramFiles)\Kvaser\Canlib\lib\MS;$(XIMEA_DIR)\API\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwt.lib;m3api.lib;canlib32.lib;opencv_world300.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwt.lib;m3api.lib;canlib32.lib;opencv_world310.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <EntryPointSymbol>
@@ -352,14 +352,16 @@
     <None Include="..\InstallableDLLs\canlib32.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\InstallableDLLs\CopyDLLDependencies.BAT" />
     <None Include="..\InstallableDLLs\m3api.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\InstallableDLLs\opencv_world300.dll">
+    <None Include="..\InstallableDLLs\opencv_world310.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="..\InstallableDLLs\platforms\qwindows.dll" />
-    <None Include="..\InstallableDLLs\platforms\qwindowsd.dll" />
+    <None Include="..\InstallableDLLs\platforms\qwindows.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\InstallableDLLs\Qt5Core.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -379,6 +381,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\qwt.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\InstallableDLLs\xiapi32.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="AWLQtDemo.ico">

@@ -24,10 +24,10 @@
 #include <boost/property_tree/ptree.hpp>
 using namespace std;
 
-#include "opencv2/core/core_c.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/highgui/highgui.hpp"
+#include "include/opencv2/core/core_c.h"
+#include "include/opencv2/core/core.hpp"
+#include "include/opencv2/highgui/highgui_c.h"
+#include "include/opencv2/highgui/highgui.hpp"
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"

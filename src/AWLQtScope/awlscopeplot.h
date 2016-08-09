@@ -22,6 +22,12 @@
 
 #include "ReceiverCapture.h"
 
+#if 1 // Patch for QWT 6.1
+#ifndef QT_STATIC_CONST
+#define QT_STATIC_CONST static const
+#endif
+#endif
+
 #include "curvedata.h"
 #include <qwt_plot.h>
 #include <qwt_interval.h>

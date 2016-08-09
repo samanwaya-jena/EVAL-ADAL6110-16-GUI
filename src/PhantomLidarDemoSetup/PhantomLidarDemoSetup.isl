@@ -344,7 +344,7 @@
 		<row><td>AWLQtDemo.Primary_Output</td><td>{3E42059C-41E9-4C92-8A0D-2ABDEE55B327}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{C9B08C6D-4CBE-44CF-950F-94C91A1050BF}</td><td>PLATFORMS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{F6605B90-1F13-4053-99AF-580A9EAB0BA6}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>qwindows.dll</td><td>{8773DBDB-67DB-4ED9-AEE6-473BDE6FAE98}</td><td>PLATFORMS</td><td>2</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>qwindows.dll</td><td>{4064B559-D1E1-4838-8FC9-3715F5D0F512}</td><td>PLATFORMS</td><td>2</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -1895,7 +1895,7 @@
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
 		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
-		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td>0</td><td>1</td><td>C:\Qt\5.5\msvc2013\plugins\platforms\qwindows.dll</td><td>1</td><td/></row>
+		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\InstallableDLLs\platforms\qwindows.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2041,7 +2041,7 @@
 		<row><td>AWLQtDemo.Primary_Output</td><td/><td/><td>_7C3E389E_2425_4CCB_9BC5_0284BBA3A098_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_B40D58BA_AB05_408C_8E78_C83F5AD1DF9A_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_A1AF27C7_FEC5_45EA_AF09_B6E57D541B9A_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>qwindows.dll</td><td/><td/><td>_DE5FF879_EF73_4B3B_A5C8_C0D5563CFD8E_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>qwindows.dll</td><td/><td/><td>_11152F14_A57E_4071_B28A_56E2086E7A27_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2636,7 +2636,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>413430159</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1008997389</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40CLIENT</td><td>1033</td><td>Microsoft .NET Framework 4.0 Client Package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>413428877</td></row>
@@ -3741,9 +3741,9 @@
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>1445187153</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>413401647</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>413430159</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>413401647</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>1008997389</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1008997389</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>1008997389</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1982032800</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td>Phantom Intelligence LiDAR</td><td>0</td><td/><td>413432653</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>Phantom Intelligence LiDAR Demo</td><td>0</td><td/><td>413415855</td></row>
@@ -3863,12 +3863,22 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AWLQtDemo\AWLQtDemo.ico</td><td>0</td></row>
+		<row><td>_06FA550E2E174299AE6699F2221B56D6.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_37198B5EF630482DB081B83CD0A85813.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_58CE0466F51543489A9256C5D0F042FB.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_6021360938D849E89182533F83447FA6.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_6A9D9B7965A84AA5A26B3202D28D43C7.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_6BADC345BDA542199A4C93A457660CF7.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_78D67E51807849BA9F3BF493EC55C5A5.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_87684514FAAF4EC38E286FF679490B3F.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_8FCE1B0B99254162A1E01E0B4898AB12.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_93C9CC76F4E149AB923146D3C871A891.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_9BB71E82361646498637FF18A794B9A7.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_A28D2B62F7154BF5A20B7F3A8639CBFF.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_AC07776BA365419E9D22128879F3BB28.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_B0AFC0DB3A4D45DF9FC365B9BE884CAB.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_DC211E1A7F5042428957A559BE6F13B0.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_F1D96A0945E545829B6473ECADF50593.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 	</table>
 
 	<table name="IniFile">

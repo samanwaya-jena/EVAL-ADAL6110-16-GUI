@@ -23,6 +23,11 @@
 #include "ReceiverCapture.h"
 #include "ReceiverPostProcessor.h"
 
+#if 1 // Patch for QWT 6.1
+#ifndef QT_STATIC_CONST
+#define QT_STATIC_CONST static const
+#endif
+#endif
 
 #include <QtWidgets/QWidget>
 #include <qwt_plot_curve.h>
