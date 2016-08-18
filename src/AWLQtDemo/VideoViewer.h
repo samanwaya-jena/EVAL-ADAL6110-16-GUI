@@ -143,8 +143,7 @@ protected:
 
 	void DrawHorizontalTicks(QImage &sourceFrame, QPainter& painter, float tickAngle, float tickLength, int thickness);
 	void DrawVerticalTicks(QImage &sourceFrame,  QPainter& painter, float tickAngle, float tickLength, int thickness);
-	void DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, int penWidth, int textSize, QString &text, int flags = Qt::AlignLeft | Qt::AlignVCenter);
-
+	void DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, const QString &text);
 protected:
 	/** \brief Copy of the captured image. */
     QImage qtCameraFrame;

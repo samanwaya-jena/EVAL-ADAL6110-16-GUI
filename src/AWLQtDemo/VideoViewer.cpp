@@ -64,7 +64,7 @@ const QColor rgbEnhanceGreen(0, 255, 0, 128);
 const QColor rgbEnhanceYellow(128 ,128, 0, 128);
 const QColor rgbEnhanceRed(255, 0, 0, 128);
 const QColor rgbOpaqueGreen(0, 255, 0, 255);
-const QColor rgbOpaqueBlack(0, 0, 0, 255);
+const QColor rgbEnhanceBlack(0, 0, 0, 128);
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget):
 QFrame(parentWidget),
@@ -234,7 +234,7 @@ void VideoViewer::slotImageChanged()
 			QString timeStr(boost::posix_time::to_simple_string(myTime).c_str());
 
 			QRect textRect(0, 0, videoCapture->calibration.frameWidthInPixels - 1, videoCapture->calibration.frameHeightInPixels - 1);
-			DrawVideoText(qtCameraFrame, painter, textRect, 1, 12, timeStr, Qt::AlignRight | Qt::AlignBottom);
+			DrawVideoText(qtCameraFrame, painter, textRect, timeStr);
 
 		}
 
@@ -655,42 +655,39 @@ void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, cons
 	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
 }
 
-#if 1
-void VideoViewer::DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, int penWidth, int textSize, QString &text, int flags)
+void VideoViewer::DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, const QString &text)
 
 {
-	QColor colorEnhance = rgbOpaqueGreen;
-	QColor colorBackground = rgbOpaqueBlack;
-	
-	QBrush foregroundBrush(colorEnhance); 
-	QPen foregroundPen(colorEnhance);
-
-	QBrush backgroundBrush(colorBackground);
-	QPen backgroundPen(backgroundBrush, 10);
-
-	painter.setBrush(Qt::NoBrush);
-
-
 	QFont font("Arial", 18);
 	font.setBold(false);
 	painter.setFont(font);
-//	painter.setRenderHint(QPainter::Antialiasing, false);
+	QFontMetrics fm(font);
+	int pixelsWide = fm.width(text);
+	pixelsWide -= (pixelsWide % 30);
+	pixelsWide += 30;
 
-	QRect backRect = textRect;
-
+	// Draw black bnorder in the background
+	QPainterPath backgroundPath;
+	QColor colorBackground = rgbEnhanceBlack;
+	QBrush backgroundBrush(colorBackground);
+	QPen backgroundPen(backgroundBrush, 10);
+	backgroundPen.setWidth(8);
 	painter.setPen(backgroundPen);
-	backRect.translate(-2, -2);
-	painter.drawText(backRect, flags, text);
-	backRect.translate(0, +4);
-	painter.drawText(backRect, flags, text);
-	backRect.translate(+4, 0);
-	painter.drawText(backRect, flags, text);
-	backRect.translate(0, -4);
-	painter.drawText(backRect, flags, text);
+	backgroundPath.addText(textRect.right() - pixelsWide -8, textRect.bottom() - 4, font, text); //Adjust the position
+
+	painter.drawPath(backgroundPath);
+
+	// Draw white text over the border
+
+	QColor colorForeground = Qt::white;
+	QBrush foregroundBrush(colorForeground);
+	QPen foregroundPen(colorForeground);
+	foregroundPen.setWidth(1);
 
 	painter.setPen(foregroundPen);
-	painter.drawText(textRect, flags, text);
 
+	painter.fillPath(backgroundPath, foregroundBrush);
 }
-#endif
+
+
 
