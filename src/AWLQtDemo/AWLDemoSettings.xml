@@ -50,7 +50,7 @@
 		       Receiver is used in the configuration.
 		       This can influence comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KvaserLeaf</receiverType>
+      <receiverType>EasySyncCAN</receiverType>
       
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -262,7 +262,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1100</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
