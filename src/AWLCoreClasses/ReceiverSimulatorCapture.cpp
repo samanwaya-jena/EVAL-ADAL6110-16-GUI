@@ -79,7 +79,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			if (trackDistance > 30.0) trackDistance = 0.0;
 			track->distance = trackDistance;
 			track->intensity = -3.00;
-			track->channels.byteData = 0X09;
+			track->channels.byteData = 0X7F;
 
 			track->velocity = 30.0;
 			track->acceleration = 0;
@@ -100,7 +100,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 25.0;
 			track->intensity= -0.1;
-			track->channels.byteData = 0X09;
+			track->channels.byteData = 0X7F;
 
 			track->velocity = 3;
 			track->acceleration = 0;
@@ -120,7 +120,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 40;
 			track->intensity= 1.00;
-			track->channels.byteData = 0X09;
+			track->channels.byteData = 0X7F;
 
 			track->velocity = 3;
 			track->acceleration = 0;
@@ -140,7 +140,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->timeStamp = currentFrame->timeStamp;
 			track->distance = 155;
 			track->intensity= 22.00;
-			track->channels.byteData = 0X09;
+			track->channels.byteData = 0X7F;
 
 			track->velocity = 3;
 			track->acceleration = 0;
