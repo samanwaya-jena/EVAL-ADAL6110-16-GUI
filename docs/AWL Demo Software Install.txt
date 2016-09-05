@@ -1,7 +1,8 @@
-AWL Demo Software [DEMO Mode] – Install instructions
+AWL Demo Software – Install instructions
 This package will install the AWL Demo Software on your computer.
-By default, the software will be installed to C:\Aerostar\Aerostar AWLQtDemo.
+By default, the software will be installed to "C:\Program Files\Phantom Intelligence\Phantom Intelligence Lidar Demo".
+It is recommended that you changfe the install path to "C:\Phantom Intelligence\Phantom Intelligence Lidar Demo".
+
 To proceed with the install: 
-- UNZIP the file to a local directory.
-- Execute SETUP.EXE.
+- Execute Phantom Intelligence Lidar Demo.EXE.
 
