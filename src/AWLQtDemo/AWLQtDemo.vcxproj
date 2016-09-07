@@ -63,9 +63,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\lib32-msvc-12.0;c:\EasySync;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\lib32-msvc-12.0;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwtd.lib;m3api.lib;canlib32.lib;opencv_world310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;qwtd.lib;m3api.lib;canlib32.lib;opencv_world310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
@@ -87,9 +87,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\release;$(BOOST_DIR)\lib32-msvc-12.0;c:\EasySync;$(QWTDir)\lib;$(ProgramFiles)\Kvaser\Canlib\lib\MS;$(XIMEA_DIR)\API\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\release;$(BOOST_DIR)\lib32-msvc-12.0;$(QWTDir)\lib;$(ProgramFiles)\Kvaser\Canlib\lib\MS;$(XIMEA_DIR)\API\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;USBCanPlusDllF.LIB;qwt.lib;m3api.lib;canlib32.lib;opencv_world310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;qwt.lib;m3api.lib;canlib32.lib;opencv_world310.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <EntryPointSymbol>

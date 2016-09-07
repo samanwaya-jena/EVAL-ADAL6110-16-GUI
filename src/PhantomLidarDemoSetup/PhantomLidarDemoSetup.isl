@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <?xml-stylesheet type="text/xsl" href="is.xsl" ?>
 <!DOCTYPE msi [
    <!ELEMENT msi   (summary,table*)>
@@ -1895,7 +1895,7 @@
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
 		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
-		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\InstallableDLLs\platforms\qwindows.dll</td><td>1</td><td/></row>
+		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;VSSolutionFolder&gt;\InstallableDLLs\platforms\qwindows.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
