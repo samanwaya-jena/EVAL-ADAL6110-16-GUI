@@ -658,6 +658,10 @@ public:
 	*/
 	std::string sReceiverType;
 
+	/** \brief String indentifying the receiver parameter set (dependent ont firmware version).
+	*/
+	std::string sReceiverRegisterSet;
+
 	/** \brief Number of receiver channels on the sensor
       */
 	int receiverChannelQty;

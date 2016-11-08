@@ -38,8 +38,9 @@
       <!-- The receiverType determines which version of the 
 		       Receiver is used in the configuration.
 		       This can influence comm port communicationsValid
-		       values currently possible are "EasySyncCAN" -->
-      <receiverType>EasySyncCAN2</receiverType>
+		       values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
+      <receiverType>EasySyncCAN</receiverType>
+      <receiverRegisterSet>registerDescription_RevC</receiverRegisterSet>
 
       <commPort>COM28</commPort>
       <frameRate>50</frameRate>

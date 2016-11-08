@@ -1572,9 +1572,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 	parametersAlgos.algorithms.clear();
 
 	// Read all FPGA Registers default descriptions
-	char registerDescKeyString[255];
-	sprintf(registerDescKeyString, "config.registerDescription_RevC");
-	std::string registerDescKey = registerDescKeyString;
+	std::string registerDescKey = "config." + sReceiverRegisterSet;
 
 	// The register configuration section may be absent from the configuration.
 	// This is considered a normal situation.

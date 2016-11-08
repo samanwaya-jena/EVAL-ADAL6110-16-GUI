@@ -37,6 +37,7 @@ const int ReceiverCapture::maximumSensorFrames(100);
 // Sensor transitions going from left to right...
 
 const std::string sDefaultReceiverType = "Generic";
+const std::string sDefaultReceiverRegisterSet = "registerDescription_RevC";
 const int defaultFrameRate(50);
 const uint8_t defaultChannelMaskValue = 127;
 const float defaultSignalToNoiseFloor = -10.0;
@@ -59,6 +60,7 @@ registersADC(inRegistersADC),
 registersGPIO(inRegistersGPIO),
 parametersAlgos(inParametersAlgos),
 sReceiverType(sDefaultReceiverType),
+sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 targetHintDistance(0.0),
 targetHintAngle(0.0)
 
@@ -87,6 +89,7 @@ acquisitionSequence(new AcquisitionSequence()),
 frameID(0),
 bFrameInvalidated(false),
 sReceiverType(sDefaultReceiverType),
+sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 targetHintDistance(0.0),
 targetHintAngle(0.0)
 
@@ -534,6 +537,7 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
 		sReceiverType = receiverNode.get<std::string>("receiverType");
+		sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
 		measurementOffset = receiverNode.get<float>("rangeOffset");
 		receiverChannelQty = receiverNode.get<int>("channelQty");
 		receiverStatus.frameRate =  receiverNode.get<uint8_t>("frameRate");	// Default frame rate is 100Hz

@@ -72,6 +72,8 @@ bool AWLSettings::ReadSettings()
 
 		ReceiverSettings *receiverPtr = &receiverSettings[receiverIndex];
 		receiverPtr->sReceiverType = receiverNode.get<std::string>("receiverType");
+		receiverPtr->sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
+
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");

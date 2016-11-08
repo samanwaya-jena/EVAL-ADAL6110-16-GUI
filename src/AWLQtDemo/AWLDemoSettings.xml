@@ -52,6 +52,8 @@
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
       <receiverType>EasySyncCAN</receiverType>
       
+      <receiverRegisterSet>registerDescription_RevC</receiverRegisterSet>
+      
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
 
@@ -1128,6 +1130,62 @@
         <!-- Algo04 is RMSConv -->
         <algoID>4</algoID>
         <algoName>RMSConv</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Mean width</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>SourceWidth</description>
+          <type>int</type>
+          <default>7</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>Derivate width</description>
+          <type>int</type>
+          <default>5</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>18.0</default>
+        </parameter>
+
+      </algo>
+    
+        <algo>
+        <!-- Algo 05 -->
+        <!-- Algo05 is Algo 5-->
+        <algoID>5</algoID>
+        <algoName>Algo5</algoName>
 
         <parameter>
           <index>0</index>

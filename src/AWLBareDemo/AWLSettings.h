@@ -55,7 +55,7 @@ namespace awl
 
 	// Receiver
 	std::string sReceiverType;
-
+	std::string sReceiverRegisterSet;
 	float displayedRangeMin;
 	float displayedRangeMax;
 

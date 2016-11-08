@@ -78,6 +78,7 @@ bool AWLSettings::ReadSettings()
 
 		ReceiverSettings *receiverPtr = &receiverSettings[receiverIndex];
 		receiverPtr->sReceiverType = receiverNode.get<std::string>("receiverType");
+		receiverPtr->sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
@@ -226,6 +227,8 @@ bool AWLSettings::StoreReceiverCalibration()
 			ReceiverSettings receiver;
 
 			receiverNode.put<std::string>("receiverType", receiver.sReceiverType);
+			receiverNode.put<std::string>("receiverRegisterSet", receiver.sReceiverRegisterSet);
+
 			receiverNode.put<uint8_t>("channelMask", receiver.receiverChannelMask);
 			receiverNode.put<uint8_t>("frameRate", receiver.receiverFrameRate);
 
