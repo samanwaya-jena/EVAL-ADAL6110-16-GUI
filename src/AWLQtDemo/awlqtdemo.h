@@ -90,12 +90,7 @@ private slots:
 	void on_registerGPIOSetPushButton_clicked();
 	void on_registerGPIOGetPushButton_clicked();
 
-	void on_algo1RadioButton_setChecked(bool bChecked);
-	void on_algo2RadioButton_setChecked(bool bChecked);
-	void on_algo3RadioButton_setChecked(bool bChecked);
-	void on_algo4RadioButton_setChecked(bool bChecked);
-	void on_algo5RadioButton_setChecked(bool bChecked);
-
+	void on_algoSelectComboBox_indexChanged(int newIndex);
 
 	void on_algoParametersSetPushButton_clicked();
 	void on_algoParametersGetPushButton_clicked();

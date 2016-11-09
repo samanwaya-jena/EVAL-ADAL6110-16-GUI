@@ -244,66 +244,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Initial Update the various status indicators on the display
 	DisplayReceiverStatus();
 
-	// Check Default algorithm box. 
 
-	switch (receiverCaptures[0]->parametersAlgos.defaultAlgo)
+	// Fill in the algo select combo box
+	ui.algoSelectComboBox->clear();
+	int algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size();
+	for (int i = 1; i < algoQty; i++)
 	{
-	case 1: 
-		{
-		ui.algo1RadioButton->setChecked(true);
-		}
-		break;
-
-	case 2: 
-		{
-		ui.algo2RadioButton->setChecked(true);
-		}
-		break;
-
-	case 3: 
-		{
-		ui.algo3RadioButton->setChecked(true);
-		}
-		break;
-
-	case 4: 
-		{
-		ui.algo4RadioButton->setChecked(true);
-		}
-		break;
-
-	case 5:
-	{
-		ui.algo5RadioButton->setChecked(true);
-	}
-	break;
-
-	default: 
-		{
-		ui.algo2RadioButton->setChecked(true);
-		}
-		break;
-
+		QString algoLabel = QString(receiverCaptures[0]->parametersAlgos.algorithms[i].sAlgoName.c_str());
+		ui.algoSelectComboBox->addItem(algoLabel, QVariant(receiverCaptures[0]->parametersAlgos.algorithms[i].algoID));
 	}
 
-	// Visibility of the algorithm check boxes depends on the number of algorithms in the receiver
-	QRadioButton * algoButtons[5] = {
-		ui.algo1RadioButton,
-		ui.algo2RadioButton,
-		ui.algo3RadioButton,
-		ui.algo4RadioButton,
-		ui.algo5RadioButton,
-	};
+	ui.algoSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersAlgos.defaultAlgo - 1);
 
-	// AlgoQty is size of algorithms -1, sing Algorithms[0] is Global Parameters.
-	int algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size()-1;
-	for (int i = 0; i < 5; i++)
-	{
-		if (i < algoQty) 
-			algoButtons[i]->setVisible(true);
-		else
-			algoButtons[i]->setVisible(false);
-	}
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -1125,65 +1077,18 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 }
 
 
-void AWLQtDemo::on_algo1RadioButton_setChecked(bool bChecked)
+void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
+
 {
-	if (!bChecked) return;
+	if (newIndex < 0) return;
 
 	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
-		receiverCaptures[receiverID]->SetAlgorithm(1);
+		receiverCaptures[receiverID]->SetAlgorithm(ui.algoSelectComboBox->itemData(newIndex).value<int>());
 	}
 	PrepareParametersView();
-}
 
-void AWLQtDemo::on_algo2RadioButton_setChecked(bool bChecked)
-{
-	if (!bChecked) return;
-
-	int receiverCount = receiverCaptures.size();
-	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
-	{
-		receiverCaptures[receiverID]->SetAlgorithm(2);
-	}
-	PrepareParametersView();
-}
-
-void AWLQtDemo::on_algo3RadioButton_setChecked(bool bChecked)
-{
-	if (!bChecked) return;
-
-	int receiverCount = receiverCaptures.size();
-	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
-	{
-		receiverCaptures[receiverID]->SetAlgorithm(3);
-	}
-	PrepareParametersView();
-}
-
-
-void AWLQtDemo::on_algo4RadioButton_setChecked(bool bChecked)
-{
-	if (!bChecked) return;
-
-	int receiverCount = receiverCaptures.size();
-	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
-	{
-		receiverCaptures[receiverID]->SetAlgorithm(4);
-	}
-	PrepareParametersView();
-}
-
-void AWLQtDemo::on_algo5RadioButton_setChecked(bool bChecked)
-{
-	if (!bChecked) return;
-
-	int receiverCount = receiverCaptures.size();
-	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
-	{
-		receiverCaptures[receiverID]->SetAlgorithm(5);
-	}
-	PrepareParametersView();
 }
 
 void AWLQtDemo::PrepareParametersView()

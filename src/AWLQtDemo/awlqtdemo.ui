@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1020</width>
-    <height>295</height>
+    <height>294</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1155,7 +1155,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>0</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -4723,78 +4723,23 @@ background-color: #202020;
              <x>20</x>
              <y>20</y>
              <width>121</width>
-             <height>121</height>
+             <height>61</height>
             </rect>
            </property>
            <property name="title">
             <string>Detection Algorithm</string>
            </property>
-           <widget class="QRadioButton" name="algo1RadioButton">
+           <widget class="QComboBox" name="algoSelectComboBox">
             <property name="geometry">
              <rect>
               <x>10</x>
               <y>20</y>
-              <width>70</width>
-              <height>17</height>
+              <width>101</width>
+              <height>22</height>
              </rect>
             </property>
-            <property name="text">
-             <string>Threshold</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="algo2RadioButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>40</y>
-              <width>70</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Double W</string>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="algo3RadioButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>60</y>
-              <width>70</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Double D</string>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="algo4RadioButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>80</y>
-              <width>70</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Algo 4</string>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="algo5RadioButton">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>100</y>
-              <width>70</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Algo 5</string>
+            <property name="currentText">
+             <string/>
             </property>
            </widget>
           </widget>
@@ -5323,9 +5268,6 @@ color: rgb(255,255,255);</string>
   <tabstop>registerGPIOListWidget</tabstop>
   <tabstop>registerGPIOGetPushButton</tabstop>
   <tabstop>registerGPIOSetPushButton</tabstop>
-  <tabstop>algo1RadioButton</tabstop>
-  <tabstop>algo2RadioButton</tabstop>
-  <tabstop>algo3RadioButton</tabstop>
   <tabstop>parametersTable</tabstop>
   <tabstop>algoParametersSetPushButton</tabstop>
   <tabstop>algoParametersGetPushButton</tabstop>
@@ -5626,54 +5568,6 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>algo1RadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algo1RadioButton_setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>124</x>
-     <y>111</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>117</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>algo2RadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algo2RadioButton_setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>111</x>
-     <y>131</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>152</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>algo3RadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algo3RadioButton_setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>131</x>
-     <y>151</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>201</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>globalParametersSetPushButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5834,22 +5728,6 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>algo4RadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algo4RadioButton_setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>107</x>
-     <y>171</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>120</x>
-     <y>275</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>sensorCalibStoreButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5861,23 +5739,23 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>502</x>
-     <y>286</y>
+     <y>281</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>algo5RadioButton</sender>
-   <signal>toggled(bool)</signal>
+   <sender>algoSelectComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algo5RadioButton_setChecked(bool)</slot>
+   <slot>on_algoSelectComboBox_indexChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>184</y>
+     <x>152</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
-     <x>79</x>
-     <y>286</y>
+     <x>305</x>
+     <y>281</y>
     </hint>
    </hints>
   </connection>
@@ -5929,5 +5807,6 @@ color: rgb(255,255,255);</string>
   <slot>on_videoCrosshairCheckBox_setChecked(bool)</slot>
   <slot>on_receiverCalibStorePushButton_clicked()</slot>
   <slot>on_algo5RadioButton_setChecked(bool)</slot>
+  <slot>on_algoSelectComboBox_indexChanged(int)</slot>
  </slots>
 </ui>
