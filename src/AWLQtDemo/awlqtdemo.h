@@ -94,6 +94,7 @@ private slots:
 	void on_algo2RadioButton_setChecked(bool bChecked);
 	void on_algo3RadioButton_setChecked(bool bChecked);
 	void on_algo4RadioButton_setChecked(bool bChecked);
+	void on_algo5RadioButton_setChecked(bool bChecked);
 
 
 	void on_algoParametersSetPushButton_clicked();

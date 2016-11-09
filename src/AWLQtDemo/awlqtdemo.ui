@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1020</width>
-    <height>562</height>
+    <height>295</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1155,7 +1155,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -4723,7 +4723,7 @@ background-color: #202020;
              <x>20</x>
              <y>20</y>
              <width>121</width>
-             <height>111</height>
+             <height>121</height>
             </rect>
            </property>
            <property name="title">
@@ -4781,7 +4781,20 @@ background-color: #202020;
              </rect>
             </property>
             <property name="text">
-             <string>RMS Conv</string>
+             <string>Algo 4</string>
+            </property>
+           </widget>
+           <widget class="QRadioButton" name="algo5RadioButton">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>100</y>
+              <width>70</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Algo 5</string>
             </property>
            </widget>
           </widget>
@@ -5331,8 +5344,8 @@ color: rgb(255,255,255);</string>
    <slot>on_sensorHeightSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>146</y>
+     <x>193</x>
+     <y>116</y>
     </hint>
     <hint type="destinationlabel">
      <x>193</x>
@@ -5347,8 +5360,8 @@ color: rgb(255,255,255);</string>
    <slot>on_sensorDepthSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>338</x>
-     <y>145</y>
+     <x>350</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>327</x>
@@ -5363,8 +5376,8 @@ color: rgb(255,255,255);</string>
    <slot>on_measurementOffsetSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>276</y>
+     <x>182</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>297</x>
@@ -5380,7 +5393,7 @@ color: rgb(255,255,255);</string>
    <hints>
     <hint type="sourcelabel">
      <x>896</x>
-     <y>277</y>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>890</x>
@@ -5395,8 +5408,8 @@ color: rgb(255,255,255);</string>
    <slot>on_recordPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>294</y>
+     <x>113</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
@@ -5411,8 +5424,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>150</x>
-     <y>206</y>
+     <x>162</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
      <x>127</x>
@@ -5427,8 +5440,8 @@ color: rgb(255,255,255);</string>
    <slot>on_playbackPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>195</x>
-     <y>294</y>
+     <x>206</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
@@ -5443,8 +5456,8 @@ color: rgb(255,255,255);</string>
    <slot>on_stopPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>339</x>
-     <y>294</y>
+     <x>351</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
@@ -5459,8 +5472,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibratePushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>712</x>
-     <y>281</y>
+     <x>724</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>690</x>
@@ -5475,8 +5488,8 @@ color: rgb(255,255,255);</string>
    <slot>onRegisterFPGASetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>195</y>
+     <x>131</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
@@ -5491,8 +5504,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerFPGAGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
-     <y>217</y>
+     <x>304</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
      <x>72</x>
@@ -5507,8 +5520,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerADCSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>585</x>
-     <y>217</y>
+     <x>596</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -5523,8 +5536,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerADCGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>730</x>
-     <y>196</y>
+     <x>742</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
      <x>538</x>
@@ -5539,8 +5552,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax2Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>442</x>
-     <y>236</y>
+     <x>454</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>415</x>
@@ -5555,8 +5568,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerGPIOSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>255</y>
+     <x>130</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -5571,8 +5584,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerGPIOGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>243</x>
-     <y>277</y>
+     <x>255</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -5588,7 +5601,7 @@ color: rgb(255,255,255);</string>
    <hints>
     <hint type="sourcelabel">
      <x>486</x>
-     <y>277</y>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
@@ -5603,8 +5616,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algoParametersSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>322</x>
-     <y>255</y>
+     <x>326</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>325</x>
@@ -5619,8 +5632,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algo1RadioButton_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>141</y>
+     <x>124</x>
+     <y>111</y>
     </hint>
     <hint type="destinationlabel">
      <x>117</x>
@@ -5635,8 +5648,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algo2RadioButton_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>161</y>
+     <x>111</x>
+     <y>131</y>
     </hint>
     <hint type="destinationlabel">
      <x>152</x>
@@ -5651,8 +5664,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algo3RadioButton_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>127</x>
-     <y>181</y>
+     <x>131</x>
+     <y>151</y>
     </hint>
     <hint type="destinationlabel">
      <x>201</x>
@@ -5668,7 +5681,7 @@ color: rgb(255,255,255);</string>
    <hints>
     <hint type="sourcelabel">
      <x>736</x>
-     <y>260</y>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>840</x>
@@ -5683,8 +5696,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax4Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>331</x>
-     <y>206</y>
+     <x>343</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
      <x>340</x>
@@ -5699,8 +5712,8 @@ color: rgb(255,255,255);</string>
    <slot>on_targetHintDistanceSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>943</x>
-     <y>109</y>
+     <x>955</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>927</x>
@@ -5715,8 +5728,8 @@ color: rgb(255,255,255);</string>
    <slot>on_targetHintAngleSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>958</x>
-     <y>139</y>
+     <x>970</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>943</x>
@@ -5731,8 +5744,8 @@ color: rgb(255,255,255);</string>
    <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>880</x>
-     <y>181</y>
+     <x>892</x>
+     <y>151</y>
     </hint>
     <hint type="destinationlabel">
      <x>867</x>
@@ -5747,8 +5760,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax5Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>414</x>
-     <y>206</y>
+     <x>426</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
      <x>460</x>
@@ -5763,8 +5776,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax6Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>473</x>
-     <y>185</y>
+     <x>485</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
      <x>599</x>
@@ -5779,8 +5792,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax0Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>284</x>
-     <y>236</y>
+     <x>296</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -5795,8 +5808,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax1Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>367</x>
-     <y>236</y>
+     <x>379</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>481</x>
@@ -5811,8 +5824,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMax3Spin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>519</x>
-     <y>236</y>
+     <x>531</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>520</x>
@@ -5827,8 +5840,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algo4RadioButton_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>95</x>
-     <y>201</y>
+     <x>107</x>
+     <y>171</y>
     </hint>
     <hint type="destinationlabel">
      <x>120</x>
@@ -5843,12 +5856,28 @@ color: rgb(255,255,255);</string>
    <slot>on_receiverCalibStorePushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>499</x>
-     <y>281</y>
+     <x>511</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>502</x>
-     <y>360</y>
+     <y>286</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>algo5RadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_algo5RadioButton_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>78</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>79</x>
+     <y>286</y>
     </hint>
    </hints>
   </connection>
@@ -5899,5 +5928,6 @@ color: rgb(255,255,255);</string>
   <slot>on_algo4RadioButton_setChecked(bool)</slot>
   <slot>on_videoCrosshairCheckBox_setChecked(bool)</slot>
   <slot>on_receiverCalibStorePushButton_clicked()</slot>
+  <slot>on_algo5RadioButton_setChecked(bool)</slot>
  </slots>
 </ui>

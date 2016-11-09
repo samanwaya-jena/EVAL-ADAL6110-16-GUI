@@ -244,6 +244,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Initial Update the various status indicators on the display
 	DisplayReceiverStatus();
 
+	// Check Default algorithm box. 
+
 	switch (receiverCaptures[0]->parametersAlgos.defaultAlgo)
 	{
 	case 1: 
@@ -270,12 +272,37 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		}
 		break;
 
+	case 5:
+	{
+		ui.algo5RadioButton->setChecked(true);
+	}
+	break;
+
 	default: 
 		{
 		ui.algo2RadioButton->setChecked(true);
 		}
 		break;
 
+	}
+
+	// Visibility of the algorithm check boxes depends on the number of algorithms in the receiver
+	QRadioButton * algoButtons[5] = {
+		ui.algo1RadioButton,
+		ui.algo2RadioButton,
+		ui.algo3RadioButton,
+		ui.algo4RadioButton,
+		ui.algo5RadioButton,
+	};
+
+	// AlgoQty is size of algorithms -1, sing Algorithms[0] is Global Parameters.
+	int algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size()-1;
+	for (int i = 0; i < 5; i++)
+	{
+		if (i < algoQty) 
+			algoButtons[i]->setVisible(true);
+		else
+			algoButtons[i]->setVisible(false);
 	}
 
 	// Calibration 
@@ -1143,6 +1170,18 @@ void AWLQtDemo::on_algo4RadioButton_setChecked(bool bChecked)
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		receiverCaptures[receiverID]->SetAlgorithm(4);
+	}
+	PrepareParametersView();
+}
+
+void AWLQtDemo::on_algo5RadioButton_setChecked(bool bChecked)
+{
+	if (!bChecked) return;
+
+	int receiverCount = receiverCaptures.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		receiverCaptures[receiverID]->SetAlgorithm(5);
 	}
 	PrepareParametersView();
 }
