@@ -1,4 +1,47 @@
 <RCC>
-    <qresource prefix="AWLQtDemo">
-    </qresource>
+  <qresource prefix="AWLQtDemo"/>
+  <qresource prefix="Widgets">
+    <file>Images/Widgets/checkbox_checked.png</file>
+    <file>Images/Widgets/checkbox_checked_hover.png</file>
+    <file>Images/Widgets/checkbox_checked_pressed.png</file>
+    <file>Images/Widgets/checkbox_unchecked.png</file>
+    <file>Images/Widgets/checkbox_unchecked_hover.png</file>
+    <file>Images/Widgets/checkbox_unchecked_pressed.png</file>
+    <file>Images/Widgets/down_arrow.png</file>
+    <file>Images/Widgets/down_arrow_disabled.png</file>
+    <file>Images/Widgets/frame.png</file>
+    <file>Images/Widgets/pagefold.png</file>
+    <file>Images/Widgets/pushbutton.png</file>
+    <file>Images/Widgets/pushbutton_hover.png</file>
+    <file>Images/Widgets/radiobutton_checked.png</file>
+    <file>Images/Widgets/radiobutton_checked_hover.png</file>
+    <file>Images/Widgets/pushbutton_pressed.png</file>
+    <file>Images/Widgets/radiobutton_checked_pressed.png</file>
+    <file>Images/Widgets/radiobutton_unchecked.png</file>
+    <file>Images/Widgets/radiobutton_unchecked_hover.png</file>
+    <file>Images/Widgets/radiobutton_unchecked_pressed.png</file>
+    <file>Images/Widgets/sizegrip.png</file>
+    <file>Images/Widgets/spindown.png</file>
+    <file>Images/Widgets/spindown_hover.png</file>
+    <file>Images/Widgets/spindown_off.png</file>
+    <file>Images/Widgets/spindown_pressed.png</file>
+    <file>Images/Widgets/spinup.png</file>
+    <file>Images/Widgets/spinup_hover.png</file>
+    <file>Images/Widgets/spinup_off.png</file>
+    <file>Images/Widgets/spinup_pressed.png</file>
+    <file>Images/Widgets/up_arrow.png</file>
+    <file>Images/Widgets/up_arrow_disabled.png</file>
+  </qresource>
+  <qresource prefix="Logos">
+    <file>Images/Logos/AWLQtDemo.ico</file>
+    <file>Images/Logos/Phantom-Black-logo.png</file>
+  </qresource>
+  <qresource prefix="ButtonBitmaps">
+    <file>Images/ButtonBitmaps/Camera.png</file>
+    <file>Images/ButtonBitmaps/Grid.png</file>
+    <file>Images/ButtonBitmaps/Maximize.png</file>
+    <file>Images/ButtonBitmaps/Quit.png</file>
+    <file>Images/ButtonBitmaps/Scan.png</file>
+    <file>Images/ButtonBitmaps/Settings.png</file>
+  </qresource>
 </RCC>

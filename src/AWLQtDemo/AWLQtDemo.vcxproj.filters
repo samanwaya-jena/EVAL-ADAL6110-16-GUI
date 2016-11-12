@@ -45,6 +45,15 @@
     <Filter Include="Installable Files\Installable Plugins">
       <UniqueIdentifier>{7fc9c3c1-d6ce-4b0f-98c4-2562e15940fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Logos">
+      <UniqueIdentifier>{43c47574-4918-496f-a60f-0ff0b4abd1f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\ButtonBitmaps">
+      <UniqueIdentifier>{818b6950-4cf4-4e1b-aae0-020b26f5e68a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Widgets">
+      <UniqueIdentifier>{f7c26c6f-2a93-498b-98b3-efa13efea3ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -308,32 +317,11 @@
     <None Include="InstallableDLLs\CopyDLLDependencies.BAT">
       <Filter>HelperTools</Filter>
     </None>
-    <None Include="AWLQtDemo.ico">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="plugin1.bin" />
     <None Include="AWLDemoSettings.xml">
       <Filter>Installable Files</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Camera.png">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="Grid.png">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="Maximize.png">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="Quit.png">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="Scan.png">
-      <Filter>Installable Files</Filter>
-    </None>
-    <None Include="Settings.png">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="..\..\..\..\..\Links\Downloads.lnk">
       <Filter>HelperTools</Filter>
     </None>
@@ -378,8 +366,119 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Phantom-Black-logo.png">
-      <Filter>Installable Files</Filter>
+    <Image Include="Images\Widgets\checkbox_checked.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\checkbox_checked_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\checkbox_checked_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\checkbox_unchecked.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\checkbox_unchecked_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\checkbox_unchecked_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\down_arrow.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\down_arrow_disabled.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\frame.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\pagefold.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\pushbutton.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\pushbutton_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\pushbutton_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\radiobutton_checked.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\radiobutton_checked_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\radiobutton_checked_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\radiobutton_unchecked.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\radiobutton_unchecked_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\radiobutton_unchecked_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\sizegrip.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spindown.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spindown_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spindown_off.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spindown_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spinup.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spinup_hover.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spinup_off.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\spinup_pressed.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\up_arrow.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\up_arrow_disabled.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Logos\AWLQtDemo.ico">
+      <Filter>Resource Files\Logos</Filter>
+    </Image>
+    <Image Include="Images\Logos\Phantom-Black-logo.png">
+      <Filter>Resource Files\Logos</Filter>
+    </Image>
+    <Image Include="Images\ButtonBitmaps\Camera.png">
+      <Filter>Resource Files\ButtonBitmaps</Filter>
+    </Image>
+    <Image Include="Images\ButtonBitmaps\Grid.png">
+      <Filter>Resource Files\ButtonBitmaps</Filter>
+    </Image>
+    <Image Include="Images\ButtonBitmaps\Maximize.png">
+      <Filter>Resource Files\ButtonBitmaps</Filter>
+    </Image>
+    <Image Include="Images\ButtonBitmaps\Quit.png">
+      <Filter>Resource Files\ButtonBitmaps</Filter>
+    </Image>
+    <Image Include="Images\ButtonBitmaps\Scan.png">
+      <Filter>Resource Files\ButtonBitmaps</Filter>
+    </Image>
+    <Image Include="Images\ButtonBitmaps\Settings.png">
+      <Filter>Resource Files\ButtonBitmaps</Filter>
     </Image>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <?xml-stylesheet type="text/xsl" href="is.xsl" ?>
 <!DOCTYPE msi [
    <!ELEMENT msi   (summary,table*)>
@@ -3862,7 +3862,7 @@
 		<col def="V0">Data</col>
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
-		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AWLQtDemo\AWLQtDemo.ico</td><td>0</td></row>
+		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AWLQtDemo\Images\Logos\AWLQtDemo.ico</td><td>0</td></row>
 		<row><td>_06FA550E2E174299AE6699F2221B56D6.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_37198B5EF630482DB081B83CD0A85813.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_58CE0466F51543489A9256C5D0F042FB.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>

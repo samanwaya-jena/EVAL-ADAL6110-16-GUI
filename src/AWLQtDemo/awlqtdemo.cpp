@@ -391,22 +391,22 @@ void AWLQtDemo::SetupToolBar()
 
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
-	action2DButton = new QAction(QIcon("scan.png"), "2D View", 0);
+	action2DButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Scan.png"), "2D View", 0);
 	action2DButton->setCheckable(true);
 	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
 	ui.mainToolBar->addAction(action2DButton);
 
-	actionTableButton = new QAction(QIcon("Grid.png"), "Table View", 0);
+	actionTableButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Grid.png"), "Table View", 0);
 	actionTableButton->setCheckable(true);
 	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
 	ui.mainToolBar->addAction(actionTableButton);
 
-	actionCameraButton = new QAction(QIcon("Camera.png"), "Camera View", 0);
+	actionCameraButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Camera.png"), "Camera View", 0);
 	actionCameraButton->setCheckable(true);
 	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
 	ui.mainToolBar->addAction(actionCameraButton);
 
-	actionSettingsButton = new QAction(QIcon("settings.png"), "Settings", 0);
+	actionSettingsButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Settings.png"), "Settings", 0);
 	actionSettingsButton->setCheckable(true);
 	actionSettingsButton->setChecked(globalSettings->bDisplaySettingsWindow);
 	ui.mainToolBar->addAction(actionSettingsButton);
@@ -416,12 +416,12 @@ void AWLQtDemo::SetupToolBar()
 	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui.mainToolBar->addWidget(spacerRightAligned);
 
-	actionResizeButton = new QAction(QIcon("Maximize.png"), "Quit Application", 0);
+	actionResizeButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Maximize.png"), "Quit Application", 0);
 	actionResizeButton->setCheckable(true);
 	actionResizeButton->setChecked(globalSettings->sDisplayShowSize == std::string("FullScreen"));
 	ui.mainToolBar->addAction(actionResizeButton);
 
-	actionQuitButton = new QAction(QIcon("Quit.png"), "Quit Application", 0);
+	actionQuitButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Quit.png"), "Quit Application", 0);
 	ui.mainToolBar->addAction(actionQuitButton);
 
 	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));

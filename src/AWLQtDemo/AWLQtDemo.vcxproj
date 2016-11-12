@@ -386,23 +386,11 @@
     <None Include="..\InstallableDLLs\xiapi32.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="AWLQtDemo.ico">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="AWLDemoSettings.xml">
       <DeploymentContent>true</DeploymentContent>
       <SubType>Designer</SubType>
     </None>
-    <None Include="Camera.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Grid.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Maximize.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="plugin1.bin" />
     <CustomBuild Include="TableView.ui">
       <FileType>Document</FileType>
@@ -415,15 +403,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
-    <None Include="Quit.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scan.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Settings.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="InstallableDLLs\D3DCompiler_43.dll">
@@ -758,9 +737,44 @@
     <None Include="InstallableDLLs\CopyDLLDependencies.BAT" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Phantom-Black-logo.png">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
-    </Image>
+    <Image Include="Images\ButtonBitmaps\Camera.png" />
+    <Image Include="Images\ButtonBitmaps\Grid.png" />
+    <Image Include="Images\ButtonBitmaps\Maximize.png" />
+    <Image Include="Images\ButtonBitmaps\Quit.png" />
+    <Image Include="Images\ButtonBitmaps\Scan.png" />
+    <Image Include="Images\ButtonBitmaps\Settings.png" />
+    <Image Include="Images\Logos\AWLQtDemo.ico" />
+    <Image Include="Images\Logos\Phantom-Black-logo.png" />
+    <Image Include="Images\Widgets\checkbox_checked.png" />
+    <Image Include="Images\Widgets\checkbox_checked_hover.png" />
+    <Image Include="Images\Widgets\checkbox_checked_pressed.png" />
+    <Image Include="Images\Widgets\checkbox_unchecked.png" />
+    <Image Include="Images\Widgets\checkbox_unchecked_hover.png" />
+    <Image Include="Images\Widgets\checkbox_unchecked_pressed.png" />
+    <Image Include="Images\Widgets\down_arrow.png" />
+    <Image Include="Images\Widgets\down_arrow_disabled.png" />
+    <Image Include="Images\Widgets\frame.png" />
+    <Image Include="Images\Widgets\pagefold.png" />
+    <Image Include="Images\Widgets\pushbutton.png" />
+    <Image Include="Images\Widgets\pushbutton_hover.png" />
+    <Image Include="Images\Widgets\pushbutton_pressed.png" />
+    <Image Include="Images\Widgets\radiobutton_checked.png" />
+    <Image Include="Images\Widgets\radiobutton_checked_hover.png" />
+    <Image Include="Images\Widgets\radiobutton_checked_pressed.png" />
+    <Image Include="Images\Widgets\radiobutton_unchecked.png" />
+    <Image Include="Images\Widgets\radiobutton_unchecked_hover.png" />
+    <Image Include="Images\Widgets\radiobutton_unchecked_pressed.png" />
+    <Image Include="Images\Widgets\sizegrip.png" />
+    <Image Include="Images\Widgets\spindown.png" />
+    <Image Include="Images\Widgets\spindown_hover.png" />
+    <Image Include="Images\Widgets\spindown_off.png" />
+    <Image Include="Images\Widgets\spindown_pressed.png" />
+    <Image Include="Images\Widgets\spinup.png" />
+    <Image Include="Images\Widgets\spinup_hover.png" />
+    <Image Include="Images\Widgets\spinup_off.png" />
+    <Image Include="Images\Widgets\spinup_pressed.png" />
+    <Image Include="Images\Widgets\up_arrow.png" />
+    <Image Include="Images\Widgets\up_arrow_disabled.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
