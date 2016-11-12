@@ -752,6 +752,7 @@
     <Image Include="Images\Widgets\checkbox_unchecked_hover.png" />
     <Image Include="Images\Widgets\checkbox_unchecked_pressed.png" />
     <Image Include="Images\Widgets\down_arrow.png" />
+    <Image Include="Images\Widgets\down_arrow_dark.png" />
     <Image Include="Images\Widgets\down_arrow_disabled.png" />
     <Image Include="Images\Widgets\frame.png" />
     <Image Include="Images\Widgets\pagefold.png" />
@@ -774,6 +775,7 @@
     <Image Include="Images\Widgets\spinup_off.png" />
     <Image Include="Images\Widgets\spinup_pressed.png" />
     <Image Include="Images\Widgets\up_arrow.png" />
+    <Image Include="Images\Widgets\up_arrow_dark.png" />
     <Image Include="Images\Widgets\up_arrow_disabled.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

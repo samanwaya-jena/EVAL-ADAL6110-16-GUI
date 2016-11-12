@@ -480,5 +480,11 @@
     <Image Include="Images\ButtonBitmaps\Settings.png">
       <Filter>Resource Files\ButtonBitmaps</Filter>
     </Image>
+    <Image Include="Images\Widgets\up_arrow_dark.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
+    <Image Include="Images\Widgets\down_arrow_dark.png">
+      <Filter>Resource Files\Widgets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

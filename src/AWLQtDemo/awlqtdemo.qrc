@@ -1,21 +1,22 @@
 <RCC>
   <qresource prefix="AWLQtDemo"/>
   <qresource prefix="Widgets">
+    <file>Images/Widgets/down_arrow.png</file>
     <file>Images/Widgets/checkbox_checked.png</file>
     <file>Images/Widgets/checkbox_checked_hover.png</file>
     <file>Images/Widgets/checkbox_checked_pressed.png</file>
     <file>Images/Widgets/checkbox_unchecked.png</file>
     <file>Images/Widgets/checkbox_unchecked_hover.png</file>
     <file>Images/Widgets/checkbox_unchecked_pressed.png</file>
-    <file>Images/Widgets/down_arrow.png</file>
+    <file>Images/Widgets/down_arrow_dark.png</file>
     <file>Images/Widgets/down_arrow_disabled.png</file>
     <file>Images/Widgets/frame.png</file>
     <file>Images/Widgets/pagefold.png</file>
     <file>Images/Widgets/pushbutton.png</file>
     <file>Images/Widgets/pushbutton_hover.png</file>
+    <file>Images/Widgets/pushbutton_pressed.png</file>
     <file>Images/Widgets/radiobutton_checked.png</file>
     <file>Images/Widgets/radiobutton_checked_hover.png</file>
-    <file>Images/Widgets/pushbutton_pressed.png</file>
     <file>Images/Widgets/radiobutton_checked_pressed.png</file>
     <file>Images/Widgets/radiobutton_unchecked.png</file>
     <file>Images/Widgets/radiobutton_unchecked_hover.png</file>
@@ -30,6 +31,7 @@
     <file>Images/Widgets/spinup_off.png</file>
     <file>Images/Widgets/spinup_pressed.png</file>
     <file>Images/Widgets/up_arrow.png</file>
+    <file>Images/Widgets/up_arrow_dark.png</file>
     <file>Images/Widgets/up_arrow_disabled.png</file>
   </qresource>
   <qresource prefix="Logos">
