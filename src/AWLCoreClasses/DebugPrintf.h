@@ -121,6 +121,13 @@ bool OpenLogFile(ofstream &logFile, const char *fileName, bool bAppend = false);
   */
 
 bool CloseLogFile(ofstream &logFile);
+
+/** \brief Changes the default path for the log and debug files.
+* \param[in] new path.
+* \note By default the log and debug files are set to the application directory.
+*/
+
+bool SetLogAndDebugFilePath(const char *newFilePath);
 } // namespace AWL          
 
 #endif

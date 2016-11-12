@@ -37,6 +37,8 @@
 #include <QTime>
 #include <QMessageBox>
 #include <QListWidget>
+#include <QStandardPaths>
+#include <QDir>
 
 #include <string>
 
@@ -59,6 +61,20 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 {
 	ui.setupUi(this);
 
+	// Set-up the debug and log file paths
+
+	// First, ask Qt for the recommmended directory
+	QString sDebugAndLogPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+	//  if the directory does not exist, make it.
+	QDir debugAndLogDir(sDebugAndLogPath);
+	if (!debugAndLogDir.exists()) {
+		debugAndLogDir.mkpath(".");
+	}
+
+	// Append the last "/", which Qt does not do.
+	sDebugAndLogPath += "/";
+	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString().c_str());
+
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::InitSettings();
 	globalSettings->ReadSettings();
@@ -68,6 +84,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		QIcon icon(globalSettings->sIconFileName.c_str());
 		QApplication::setWindowIcon(icon);
+		QApplication::
 		setWindowIcon(icon);
 	}
 

@@ -20,6 +20,7 @@
 #include <string>
 #include <stdarg.h>
 
+
 #ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
@@ -33,10 +34,14 @@ using namespace awl;
 namespace awl
 {
 
+// Default debug file name
 const char *sDebugFileName = "debug.dbg";
 
-// Field separator used in debug files.
+// Path for the debug and log files.  
+// Per default is empty string, which amounts to writing to the application directory
+std::string sFilePath("");
 
+// Field separator used in debug files.
 const char cFieldSeparator = ';'; 
 
 #ifdef _DEBUG
@@ -44,6 +49,8 @@ const bool bIsInDebug = true;
 #else
 const bool bIsInDebug = false;
 #endif
+
+bool CreateDebugAndLogFileDirectory(const char *sFilePath);
 
 void DebugFilePrintf(const char *format, ...)
 {
@@ -114,13 +121,15 @@ bool OpenDebugFile(ofstream &debugFile, const char *fileName, bool bAppend)
 			CloseDebugFile(debugFile);
 		}
 
+		std::string sFileName = sFilePath + fileName;
+
 		if (bAppend) 
 		{
-			debugFile.open(fileName, ofstream::out | ofstream::app);
+			debugFile.open(sFileName, ofstream::out | ofstream::app);
 		}
 		else 
 		{
-			debugFile.open(fileName);
+			debugFile.open(sFileName);
 		}
 
 		if ( debugFile.fail() ) 
@@ -156,13 +165,15 @@ bool OpenLogFile(ofstream &logFile, const char *fileName, bool bAppend)
 			CloseLogFile(logFile);
 		}
 
+		std::string sFileName = sFilePath + fileName;
+
 		if (bAppend) 
 		{
-			logFile.open(fileName, ofstream::out | ofstream::app);
+			logFile.open(sFileName, ofstream::out | ofstream::app);
 		}
 		else 
 		{
-			logFile.open(fileName);
+			logFile.open(sFileName);
 		}
 
 		if ( logFile.fail() ) 
@@ -213,6 +224,12 @@ void LogFilePrintf(ofstream &logFile, const char *format, ...)
 
 		logFile << timeStr;
 	}
+}
+
+bool SetLogAndDebugFilePath(const char *newFilePath)
+{
+	sFilePath = newFilePath;
+	return(true);
 }
 
 }  // namespace awl
