@@ -56,6 +56,9 @@ using namespace awl;
 
 TransformationNode::Ptr myBaseNode;
 
+const QString actionResizeMaximizeString("Maximize");
+const QString actionResizeRestoreDownString("Restore down");
+
 AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	: QMainWindow()
 {
@@ -457,7 +460,9 @@ void AWLQtDemo::SetupToolBar()
 	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui.mainToolBar->addWidget(spacerRightAligned);
 
-	actionResizeButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Maximize.png"), "Maximize/ Minimize", 0);
+	actionResizeMaximizeIcon = new QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Maximize.png");
+	actionResizeRestoreDownIcon = new QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/RestoreDown.png");
+	actionResizeButton = new QAction(*actionResizeRestoreDownIcon, actionResizeRestoreDownString, 0);
 	actionResizeButton->setCheckable(true);
 	actionResizeButton->setChecked(globalSettings->sDisplayShowSize == std::string("FullScreen"));
 	ui.mainToolBar->addAction(actionResizeButton);
@@ -1676,11 +1681,15 @@ void AWLQtDemo::on_resizeActionToggled()
 	{
 	
 		showFullScreen();
+		actionResizeButton->setIcon(*actionResizeRestoreDownIcon);
+		actionResizeButton->setToolTip(actionResizeRestoreDownString);
 		actionResizeButton->setChecked(true);
 	}
 	else 
 	{
 		showMaximized();
+		actionResizeButton->setIcon(*actionResizeMaximizeIcon);
+		actionResizeButton->setToolTip(actionResizeMaximizeString);
 		actionResizeButton->setChecked(false);
 	}
 }

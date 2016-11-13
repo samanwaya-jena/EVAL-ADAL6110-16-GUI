@@ -19,6 +19,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QTimer>
 #include <QLabel>
+#include <QIcon>
 #ifndef Q_MOC_RUN
 #include <boost/container/vector.hpp>
 #endif
@@ -163,6 +164,8 @@ private:
 	QAction *actionCameraButton;
 	QAction *actionResizeButton;
 	QAction *actionQuitButton;
+	QIcon *actionResizeMaximizeIcon;
+	QIcon *actionResizeRestoreDownIcon;
 
 	ReceiverCapture::List receiverCaptures;
 	VideoCapture::List videoCaptures;
