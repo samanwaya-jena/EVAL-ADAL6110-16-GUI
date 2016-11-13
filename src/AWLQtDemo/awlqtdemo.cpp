@@ -61,13 +61,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 {
 	ui.setupUi(this);
 
+	// Set the basic paths
+	QCoreApplication::setOrganizationName("Phantom Intelligence");
+	QCoreApplication::setApplicationName("Phantom Intelligence Lidar Demo");
+	
 	// Set-up the debug and log file paths
 
 	// First, ask Qt for the recommmended directory
 	QString sDebugAndLogPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 	//  if the directory does not exist, make it.
 	QDir debugAndLogDir(sDebugAndLogPath);
-	if (!debugAndLogDir.exists()) {
+	if (!debugAndLogDir.exists()) 
+	{
 		debugAndLogDir.mkpath(".");
 	}
 
@@ -75,8 +80,27 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	sDebugAndLogPath += "/";
 	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString().c_str());
 
+
 	// Read the settigs from the configuration file
-	AWLSettings *globalSettings = AWLSettings::InitSettings();
+	//
+	// First, ask Qt for the recommmended directory
+	QString sSettingsPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+	//  if the directory does not exist, use the current directory.
+	QDir settingsDir(sSettingsPath);
+	if (settingsDir.exists()) 
+	{
+		// Append the last "/", which Qt does not do.
+		sSettingsPath += "/";
+	}
+	else
+	{
+		// Directory does not exist.  Use current directory.
+		sSettingsPath.clear();
+	}
+
+
+
+	AWLSettings *globalSettings = AWLSettings::InitSettings(sSettingsPath.toStdString());
 	globalSettings->ReadSettings();
 
 	// Change the window icon if there is an override in the INI file
@@ -433,7 +457,7 @@ void AWLQtDemo::SetupToolBar()
 	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui.mainToolBar->addWidget(spacerRightAligned);
 
-	actionResizeButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Maximize.png"), "Quit Application", 0);
+	actionResizeButton = new QAction(QIcon(":/ButtonBitmaps/Images/ButtonBitmaps/Maximize.png"), "Maximize/ Minimize", 0);
 	actionResizeButton->setCheckable(true);
 	actionResizeButton->setChecked(globalSettings->sDisplayShowSize == std::string("FullScreen"));
 	ui.mainToolBar->addAction(actionResizeButton);

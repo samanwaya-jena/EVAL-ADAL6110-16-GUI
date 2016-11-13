@@ -30,11 +30,10 @@ using namespace std;
 const std::string sDefaultSettingsFileName("AWLDemoSettings.xml");
 
 
-
 AWLSettings *AWLSettings::globalSettings=NULL;
 
-AWLSettings::AWLSettings():
-sFileName(sDefaultSettingsFileName),
+AWLSettings::AWLSettings(const std::string sSettingsPath) :
+sFileName(sSettingsPath + sDefaultSettingsFileName),
 sLogoFileName(""),
 sIconFileName(""),
 bDisplayVideoCrosshair(false),
@@ -43,9 +42,9 @@ bDisplayVideoTime(false)
 {
 }
 
-AWLSettings * AWLSettings::InitSettings()
+AWLSettings * AWLSettings::InitSettings(const std::string sSettingsPath)
 {
-	globalSettings = new AWLSettings();
+	globalSettings = new AWLSettings(sSettingsPath);
 	return(globalSettings);
 }
 

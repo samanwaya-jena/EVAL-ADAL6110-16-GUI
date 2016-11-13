@@ -344,6 +344,10 @@
 		<row><td>AWLQtDemo.Primary_Output</td><td>{3E42059C-41E9-4C92-8A0D-2ABDEE55B327}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{C9B08C6D-4CBE-44CF-950F-94C91A1050BF}</td><td>PLATFORMS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{F6605B90-1F13-4053-99AF-580A9EAB0BA6}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{16DA04AB-932E-4F5C-B0DC-1A1E72CA1A51}</td><td>LocalAppDataFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{1E4BE838-A7BD-4BA7-A5E0-55C3B9CD11B9}</td><td>PHANTOM_INTELLIGENCE1</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{11556798-45F5-41A3-B259-08EAF801B132}</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{A3EADC98-7060-472E-9FFA-366766013E34}</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>qwindows.dll</td><td>{4064B559-D1E1-4838-8FC9-3715F5D0F512}</td><td>PLATFORMS</td><td>2</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
@@ -1058,7 +1062,15 @@
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Primary_Output</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT4</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>INSTALLDIR</td><td>qwindows.dll</td></row>
+		<row><td>LocalAppDataFolder</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>PHANTOM_INTELLIGENCE1</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>ISX_DEFAULTCOMPONENT4</td></row>
+		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>PLATFORMS</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>PLATFORMS</td><td>qwindows.dll</td></row>
 	</table>
@@ -1160,8 +1172,11 @@
 		<row><td>MY_PRODUCT_NAME</td><td>PHANTOM_INTELLIGENCE</td><td>PHANTO~1|Phantom Intelligence Lidar Demo</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_1</td><td>TARGETDIR</td><td>NEW_FOLDER_1</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_11</td><td>TARGETDIR</td><td>NEW_FOLDER_11</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM_INTELLIGENCE</td><td>ProgramFilesFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
+		<row><td>PHANTOM_INTELLIGENCE1</td><td>LocalAppDataFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
+		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>PHANTOM_INTELLIGENCE1</td><td>PHANTO~1|Phantom Intelligence Lidar Demo</td><td/><td>0</td><td/></row>
 		<row><td>PLATFORMS</td><td>INSTALLDIR</td><td>PLATFO~1|Platforms</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
 		<row><td>PrimaryVolumePath</td><td>TARGETDIR</td><td>.:Primar~1|PrimaryVolumePath</td><td/><td>0</td><td/></row>
@@ -1878,6 +1893,10 @@
 		<row><td>AlwaysInstall</td><td>AWLQtDemo.Primary_Output</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>AlwaysInstall</td><td>qwindows.dll</td></row>
 	</table>
 
@@ -1893,6 +1912,7 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
+		<row><td>awldemosettings.xml2</td><td>ISX_DEFAULTCOMPONENT5</td><td>AWLDEM~1.XML|AWLDemoSettings.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\AWLQtDemo\AWLDemoSettings.xml</td><td>1</td><td/></row>
 		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
 		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
 		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;VSSolutionFolder&gt;\InstallableDLLs\platforms\qwindows.dll</td><td>1</td><td/></row>
@@ -2041,6 +2061,10 @@
 		<row><td>AWLQtDemo.Primary_Output</td><td/><td/><td>_7C3E389E_2425_4CCB_9BC5_0284BBA3A098_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_B40D58BA_AB05_408C_8E78_C83F5AD1DF9A_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_A1AF27C7_FEC5_45EA_AF09_B6E57D541B9A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_089CF326_5658_400B_899F_2C860D2CB728_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_0BABE13E_BDA6_4F12_91C5_4698CC6D2F81_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_6FC8516D_468B_4D88_8BBB_BC62180D8031_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_6E5153BD_60D8_498C_8E0C_C05EC0DBA96F_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>qwindows.dll</td><td/><td/><td>_11152F14_A57E_4071_B28A_56E2086E7A27_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
@@ -2636,7 +2660,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1705289964</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1705288533</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40CLIENT</td><td>1033</td><td>Microsoft .NET Framework 4.0 Client Package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>413428877</td></row>
@@ -3741,9 +3765,9 @@
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>1445187153</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>1705289964</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1705289964</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>1705289964</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>1705288533</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1705288533</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>1705288533</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1982032800</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td>Phantom Intelligence LiDAR</td><td>0</td><td/><td>413432653</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>Phantom Intelligence LiDAR Demo</td><td>0</td><td/><td>413415855</td></row>
@@ -3864,11 +3888,16 @@
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AWLQtDemo\Images\Logos\AWLQtDemo.ico</td><td>0</td></row>
 		<row><td>_06FA550E2E174299AE6699F2221B56D6.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_0C6D23BB0E1D4E979E8D15FC79207901.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_1CED2C540504478AB0CFEF0162F0859F.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_37198B5EF630482DB081B83CD0A85813.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_5334CB20F66B4782B6272BB7443E8624.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Debug\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_58CE0466F51543489A9256C5D0F042FB.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_6021360938D849E89182533F83447FA6.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_62AC7D12144F451B9C19565AAD84B8C6.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_6A9D9B7965A84AA5A26B3202D28D43C7.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_6BADC345BDA542199A4C93A457660CF7.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_76BE4676A0F543E396999688B0781939.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_78D67E51807849BA9F3BF493EC55C5A5.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_87684514FAAF4EC38E286FF679490B3F.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_8FCE1B0B99254162A1E01E0B4898AB12.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
@@ -3877,7 +3906,12 @@
 		<row><td>_A28D2B62F7154BF5A20B7F3A8639CBFF.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_AC07776BA365419E9D22128879F3BB28.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_B0AFC0DB3A4D45DF9FC365B9BE884CAB.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_B8EC275C72F9465396B65A119DD1E55E.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_BCC08169023740BF9B3F8AA2B7FA584D.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_C20C28C33F7B44E6840AA41D03B98107.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Debug\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_C786EE3F46254A179CF956DF24772CD8.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_DC211E1A7F5042428957A559BE6F13B0.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_E0D417C7511F40909302C982A72E7539.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_F1D96A0945E545829B6473ECADF50593.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 	</table>
 
@@ -4011,7 +4045,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{E3C6A8F5-0244-4B65-A213-4AFF4F9122DE}</td></row>
 		<row><td>ISUSSignature</td><td>{6C8A8729-1CA7-4303-B96D-879FBA99B81E}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewSystemSearch,viewRelease,viewProject,viewUpgradePaths,viewUpdateService,viewAppFiles,viewObjects,viewCustomActions,viewFileExtensions,viewISToday,viewLearnMore,viewUI,viewShortcuts,viewRegistry,viewIniFiles,viewEnvironmentVariables,viewVRoots</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewSystemSearch,viewRelease,viewProject,viewUpgradePaths,viewUpdateService,viewAppFiles,viewObjects,viewCustomActions,viewFileExtensions,viewISToday,viewLearnMore,viewUI,viewShortcuts,viewRegistry,viewIniFiles,viewEnvironmentVariables,viewVRoots,viewTextMessages</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4390,7 +4424,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]AWLQtDemo.Primary Output</td><td/></row>
 		<row><td>ProductCode</td><td>{86009853-CFB8-4C70-8107-80C48FA22E72}</td><td/></row>
 		<row><td>ProductName</td><td>Phantom Intelligence LiDAR Demo</td><td/></row>
-		<row><td>ProductVersion</td><td>1.1.0000</td><td/></row>
+		<row><td>ProductVersion</td><td>1.2.0000</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
