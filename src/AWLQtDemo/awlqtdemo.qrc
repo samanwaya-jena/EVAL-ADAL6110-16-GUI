@@ -40,8 +40,8 @@
   </qresource>
   <qresource prefix="ButtonBitmaps">
     <file>Images/ButtonBitmaps/Camera.png</file>
-    <file>Images/ButtonBitmaps/RestoreDown.png</file>
     <file>Images/ButtonBitmaps/Grid.png</file>
+    <file>Images/ButtonBitmaps/RestoreDown.png</file>
     <file>Images/ButtonBitmaps/Maximize.png</file>
     <file>Images/ButtonBitmaps/Quit.png</file>
     <file>Images/ButtonBitmaps/Scan.png</file>
