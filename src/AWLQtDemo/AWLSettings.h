@@ -93,11 +93,11 @@ typedef struct CameraSettings
 class AWLSettings
 {
 public:
-	static AWLSettings *InitSettings(const std::string sSettingsPath = std::string(""));
+	static AWLSettings *InitSettings(const std::string sSettingsFileName = std::string(""));
 	static AWLSettings *GetGlobalSettings();
 
 	// Constructor
-	AWLSettings(const std::string sSettingsPath);
+	AWLSettings(const std::string sSettingsFileName = std::string(""));
 	bool ReadSettings();
 	boost::property_tree::ptree &GetPropTree() {return (propTree);};
 

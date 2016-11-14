@@ -32,19 +32,24 @@ const std::string sDefaultSettingsFileName("AWLDemoSettings.xml");
 
 AWLSettings *AWLSettings::globalSettings=NULL;
 
-AWLSettings::AWLSettings(const std::string sSettingsPath) :
-sFileName(sSettingsPath + sDefaultSettingsFileName),
+AWLSettings::AWLSettings(const std::string sSettingsFileName) :
+sFileName(sSettingsFileName),
 sLogoFileName(""),
 sIconFileName(""),
 bDisplayVideoCrosshair(false),
 bDisplayVideoTime(false)
 
 {
+	if (sFileName.empty())
+	{
+		sFileName.assign(sDefaultSettingsFileName);
+
+	}
 }
 
-AWLSettings * AWLSettings::InitSettings(const std::string sSettingsPath)
+AWLSettings * AWLSettings::InitSettings(const std::string sSettingsFileName)
 {
-	globalSettings = new AWLSettings(sSettingsPath);
+	globalSettings = new AWLSettings(sSettingsFileName);
 	return(globalSettings);
 }
 

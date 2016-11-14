@@ -86,24 +86,25 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Read the settigs from the configuration file
 	//
-	// First, ask Qt for the recommmended directory
+	// First, ask Qt for the existence of the file
 	QString sSettingsPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-	//  if the directory does not exist, use the current directory.
-	QDir settingsDir(sSettingsPath);
-	if (settingsDir.exists()) 
+	//  if the file does not exist, use the current directory.
+	QFile settingsFile(sSettingsPath + "/" + QString("AWLDemoSettings.xml"));
+	if (!settingsFile.exists())
 	{
-		// Append the last "/", which Qt does not do.
-		sSettingsPath += "/";
+		settingsFile.setFileName(QString("AWLDemoSettings.xml"));
+
+		// If no file found, exit gracefully
+		if (!settingsFile.exists())
+		{
+			QMessageBox msgBox(this);
+			msgBox.setText("Cannot find configuration file AWLDemoSettings.xml");
+			msgBox.exec();
+			exit(0);
+		}
 	}
-	else
-	{
-		// Directory does not exist.  Use current directory.
-		sSettingsPath.clear();
-	}
 
-
-
-	AWLSettings *globalSettings = AWLSettings::InitSettings(sSettingsPath.toStdString());
+	AWLSettings *globalSettings = AWLSettings::InitSettings(settingsFile.fileName().toStdString());
 	globalSettings->ReadSettings();
 
 	// Change the window icon if there is an override in the INI file
@@ -111,8 +112,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		QIcon icon(globalSettings->sIconFileName.c_str());
 		QApplication::setWindowIcon(icon);
-		QApplication::
-		setWindowIcon(icon);
 	}
 
 	// Build a reference coodinate system from the settings
