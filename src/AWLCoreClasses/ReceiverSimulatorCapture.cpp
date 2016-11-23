@@ -70,7 +70,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	{
 		// Simulate some tracks for debug purposes
 		double elapsed = GetElapsed();
-
+#if 0
 			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, 1);
 
 			track->firstTimeStamp = currentFrame->timeStamp;
@@ -153,7 +153,36 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 			track->probability = 99;
 			track->timeStamp = elapsed;
 			track->firstTimeStamp = elapsed;
+#else
+		trackDistance += 0.0001;
+		if (trackDistance > 10.0) trackDistance = 0.0;
 
+		for (int channel = 0; channel < 7; channel++)
+		{
+			for (int detection = 0; detection < 8; detection++)
+			{
+				Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 7) + detection);
+				track->firstTimeStamp = currentFrame->timeStamp;
+
+				track->timeStamp = currentFrame->timeStamp;
+				track->distance = (channel * 7) + detection + trackDistance;
+				track->intensity = 1.00;
+				track->channels.byteData = 0X7F;
+
+				track->velocity = 3;
+				track->acceleration = 0;
+				track->threatLevel = AlertCondition::eThreatLow;
+				track->part1Entered = true;
+				track->part2Entered = true;
+				track->part3Entered = true;
+				track->part4Entered = true;
+
+				track->probability = 99;
+				track->timeStamp = elapsed;
+				track->firstTimeStamp = elapsed;
+			}
+		}
+#endif
 		threadCount = ++ threadCount % 7;
 		ProcessCompletedFrame();
 	} // if  (!WasStoppped)
