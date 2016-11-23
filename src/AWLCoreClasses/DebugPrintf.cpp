@@ -50,6 +50,8 @@ const bool bIsInDebug = true;
 const bool bIsInDebug = false;
 #endif
 
+const int maxStrLen = 1024;
+
 bool CreateDebugAndLogFileDirectory(const char *sFilePath);
 
 void DebugFilePrintf(const char *format, ...)
@@ -65,7 +67,7 @@ void DebugFilePrintf(const char *format, ...)
 
 
 		// Format the string and output
-		char str[255];
+		char str[maxStrLen];
 
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 
@@ -92,7 +94,7 @@ void DebugFilePrintf(ofstream &debugFile, const char *format, ...)
 	if (AWLSettings::GetGlobalSettings()->bWriteDebugFile) 
 	{
 		if (!debugFile.is_open()) return;
-		char str[255];
+		char str[maxStrLen];
 
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 
@@ -109,6 +111,7 @@ void DebugFilePrintf(ofstream &debugFile, const char *format, ...)
 		timeStr += "\n";
 
 		debugFile << timeStr;
+		debugFile.flush();
 	}
 }
 
@@ -206,7 +209,7 @@ void LogFilePrintf(ofstream &logFile, const char *format, ...)
 	if (AWLSettings::GetGlobalSettings()->bWriteLogFile)
 	{
 		if (!logFile.is_open()) return;
-		char str[255];
+		char str[maxStrLen];
 
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 

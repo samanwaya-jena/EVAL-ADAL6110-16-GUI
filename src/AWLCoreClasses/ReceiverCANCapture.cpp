@@ -219,7 +219,7 @@ void ReceiverCANCapture::ParseSensorStatus(AWLCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	rawLock.unlock();
 
-	DebugFilePrintf(debugFile, "Msg %d - Val %u %d %u %u %u %u", inMsg.id, 
+	DebugFilePrintf(debugFile, "Msg %lu - Val %u %d %u %u %u %u", inMsg.id, 
 			iTemperature, uiVoltage, 
 			receiverStatus.frameRate, 
 			receiverStatus.hardwareError.byteData,
@@ -248,7 +248,7 @@ void ReceiverCANCapture::ParseSensorBoot(AWLCANMessage &inMsg)
 
 	rawLock.unlock();
 
-	DebugFilePrintf(debugFile, "Msg %d - Val %u %u %u %u", inMsg.id, 
+	DebugFilePrintf(debugFile, "Msg %lu - Val %u %u %u %u", inMsg.id, 
 			receiverStatus.version.major,
 			receiverStatus.version.minor,
 			receiverStatus.bootChecksumError.byteData,
@@ -339,7 +339,7 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 	}
 
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
+	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
 }
 
 
@@ -390,7 +390,7 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	detection->velocity = 0;
 	rawLock.unlock();
 
-	DebugFilePrintf(debugFile, "Msg %d - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
+	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
 }
 
 
@@ -416,7 +416,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 	rawLock.unlock();
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %d %x %d %d", inMsg.id, track->trackID, track->channels, track->probability, track->timeToCollision);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %f %f", inMsg.id, track->trackID, track->channels, track->probability, track->timeToCollision);
 }
 
 
@@ -437,13 +437,12 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 
 	int16_t acceleration = (*(int16_t *) &inMsg.data[6]);
 	track->acceleration = acceleration / 100.0; // Convert the velocity from cm/s to m/s
-
 	track->part2Entered = true;
 
 	rawLock.unlock();
 
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %f %f %f %f", inMsg.id, track->trackID, track->distance, track->velocity, track->acceleration);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %f %f %f", (unsigned long)inMsg.id, (unsigned int) track->trackID, (float) track->distance, (float) track->velocity, (float)track->acceleration);
 }
 
 
@@ -472,7 +471,7 @@ void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
 	rawLock.unlock();
 
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %u %u %u", inMsg.id, track->trackID, intensity, height, width);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %u %u %u", inMsg.id, track->trackID, intensity, height, width);
 }
 
 void ReceiverCANCapture::ParseObstacleAngularPosition(AWLCANMessage &inMsg)
@@ -494,7 +493,7 @@ void ReceiverCANCapture::ParseObstacleAngularPosition(AWLCANMessage &inMsg)
 	rawLock.unlock();
 
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %d - Track %u Val %u %u %u", inMsg.id, track->trackID, startAngle, endAngle, angularVelocity);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %u %u %u", inMsg.id, track->trackID, startAngle, endAngle, angularVelocity);
 }
 
 
