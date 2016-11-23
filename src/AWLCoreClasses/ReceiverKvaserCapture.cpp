@@ -147,7 +147,6 @@ bool  ReceiverKvaserCapture::OpenCANPort()
 		return(false);
     }
  
-
 	bFrameInvalidated = false;
 	return(true);
 }
@@ -216,6 +215,7 @@ typedef struct  {
     uint8_t       data[8]; // Databytes 0..7
 } KvaserCanMessage;
 
+#if 0
 void ReceiverKvaserCapture::DoOneThreadIteration()
 
 {
@@ -261,30 +261,28 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 					}
 				}
 			}
-#if 0
-			// canRead returned an error.  
-			// This means we have an error on the port.
-			// Try to repoen the port
-			else 
-			{
-				DebugFilePrintf(debugFile,  "Error on canRead.  Resetting CAN Port"); 
-				if (OpenCANPort())
-				{
-					WriteCurrentDateTime();
-					ReceiverCapture::SetMessageFilters();
-				}
-			}
-#else
 			// canRead returned an error.  
 			// This means we have an error on the port.
 			// Let the port reconnect after time-out naturally
 			else 
 			{
 				DebugFilePrintf(debugFile,  "Error on canRead.  Resetting CAN Port"); 
+#if 0  // JYD 2016-11-20: Don't close.  Leave open (it might resync by itself)  
 				CloseCANPort();
 				reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
-			}
+#else
+				if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
+				{
+					DebugFilePrintf(debugFile, "Reconnecting CAN Port");
+					if (OpenCANPort())
+					{
+						WriteCurrentDateTime();
+						ReceiverCapture::SetMessageFilters();
+					}
+				}
+
 #endif
+			}
 		} // if (kvaserHandle > 0)
 		else //(KVaserHandle <= 0)
 		{
@@ -302,7 +300,73 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 
 	} // if  (!WasStoppped)
 }
+#else
+void ReceiverKvaserCapture::DoOneThreadIteration()
 
+{
+	canStatus status = canOK;
+
+	if (!WasStopped())
+	{
+		// If time out to reconnect, do it
+
+		if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
+		{
+			DebugFilePrintf(debugFile, "Reconnecting CAN Port");
+			if (OpenCANPort())
+			{
+				WriteCurrentDateTime();
+				ReceiverCapture::SetMessageFilters();
+			}
+		}
+
+		// Try to read the port.
+		AWLCANMessage msg;
+		KvaserCanMessage inMessage;
+		if (kvaserHandle >= 0)
+		{
+
+			status = canRead(kvaserHandle, &inMessage.id, inMessage.data, &inMessage.len, &inMessage.canFlags, &inMessage.timestamp);
+			if (status != canOK && status != canERR_NOMSG)
+			{
+				CheckStatus("canRead", status);
+			}
+
+			if (status == canOK)
+			{
+				reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+
+				msg.id = (unsigned long)inMessage.id;
+				msg.timestamp = (unsigned long)inMessage.timestamp;
+				msg.len = (int)inMessage.len;
+				for (int i = 0; i < 8; i++)
+				{
+					msg.data[i] = inMessage.data[i];
+				}
+
+				ParseMessage(msg);
+			}
+			// Could not read because no message.  This is normal. Time out after a certain delay and try to reopen.
+			else if (status == canERR_NOMSG)
+			{
+			}
+			// canRead returned an error.  
+			// This means we have an error on the port.
+			// Let the port reconnect after time-out naturally
+			else
+			{
+				DebugFilePrintf(debugFile, "Error on canRead.   Waiting for reset of  CAN Port");
+			}
+		} // if (kvaserHandle > 0)
+		else //(KVaserHandle <= 0)
+		{
+			// Port is not opened.  Try to repoen after a certain delay.
+			DebugFilePrintf(debugFile, "Can not opened.  Waiting for reset of  CAN Port");
+		}
+
+	} // if  (!WasStoppped)
+}
+#endif
 bool ReceiverKvaserCapture::WriteMessage(const AWLCANMessage &inMsg)
 {
 	std::string outResponse;
