@@ -29,6 +29,8 @@ using namespace std;
 #define ALGO_QTY 4
 #define GLOBAL_PARAMETERS_INDEX 0
 
+//#define FORCE_FRAME_RESYNC_PATCH 1
+
 namespace awl
 {
 
@@ -90,7 +92,7 @@ public:
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
 		*                          Will automatically be added to any range received.
-		* \param[in] inRegistersFPGA default description of the FPGA registers
+		* \param[in] inRegistersFPGA default de .cription of the FPGA registers
 		* \param[in] inRegistersADC default description of the ADC registers
 		* \param[in] inRegistersGPIO default description of the GPIO registers
         * \param[in] inParametersAlgos default description if the algorithm parameters
@@ -369,7 +371,14 @@ protected:
 		* \remarks  The error flag is set in the receiverStatus.
      */	
 	void ParseParameterError(AWLCANMessage &inMsg);
-
+#ifdef FORCE_FRAME_RESYNC_PATCH
+	/** \brief Check for potential end of frame, even in absence of the End of Frame message (Message 9)
+	* \param[in] inMsg   CAN message contents
+	* \remarks  This is a "patch" intended to correct a known bug in AWL, where CAN frames may "overwrite" each other, 
+	* \         causing the end of frame message not to be received.
+	*/
+	void ForceFrameResync(AWLCANMessage &inMsg);
+#endif //FORCE_FRAME_RESYNC_PATCH
 
 	void ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg);
 	void ParseParameterAlgoParameterResponse(AWLCANMessage &inMsg);
@@ -474,6 +483,12 @@ protected:
 		  *
 		 */
 		eReceiverCANRate canRate;
+
+#ifdef FORCE_FRAME_RESYNC_PATCH
+		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/
+		awl::ChannelMask lastChannelMask;
+#endif //FORCE_FRAME_RESYNC_PATCH
+
 };
 
 } // namespace AWL

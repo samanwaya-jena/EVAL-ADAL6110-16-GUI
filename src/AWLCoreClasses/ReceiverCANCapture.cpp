@@ -125,7 +125,6 @@ void  ReceiverCANCapture::Stop()
 void ReceiverCANCapture::DoThreadLoop()
 
 {
-
 	while (!WasStopped())
     {
 		DoOneThreadIteration();
@@ -137,6 +136,10 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 
 {
 	unsigned long msgID = inMsg.id;
+#ifdef FORCE_FRAME_RESYNC_PATCH
+	ForceFrameResync(inMsg);
+#endif //FORCE_FRAME_RESYNC_PATCH
+
 
 	if (msgID == 1) 
 	{
@@ -1697,3 +1700,35 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 	return(true);
 }
 
+
+#ifdef FORCE_FRAME_RESYNC_PATCH
+// Big bad patch
+
+
+void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
+
+{
+	// This is a "patch" intended to correct a known bug in AWL, where CAN frames may "overwrite" each other,
+	// causing the end of frame message not to be received.
+	// Happens when a large number of detections are made on multiple channels.
+	// The way we detect end of frame is if "channel number" from message 10 decreases, then we have skipped end of frame.
+
+		unsigned long msgID = inMsg.id;
+
+		if (msgID == 10)
+		{
+			awl::ChannelMask newChannelMask;
+			newChannelMask.byteData = *(uint8_t *)&inMsg.data[2]; 
+			if (newChannelMask.byteData < lastChannelMask.byteData)
+			{
+			}
+
+			lastChannelMask = newChannelMask;
+		}
+		if (msgID == 9)
+		{
+			lastChannelMask.byteData = 0;
+		}
+}
+
+#endif // FORCE_FRAME_RESYNC_PATCH

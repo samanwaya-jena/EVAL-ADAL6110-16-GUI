@@ -46,8 +46,8 @@
 using namespace std;
 using namespace awl;
 
-const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh rate is 100Hz, this should not exceed 10ms
-const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
+const int receiveTimeOutInMillisec = 4000;  // Default is 1000. As AWL refresh rate is 100Hz, this should not exceed 10ms
+const int reopenPortDelayMillisec = 4000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
 ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int inKvaserChannel, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
@@ -91,7 +91,7 @@ bool  ReceiverKvaserCapture::OpenCANPort()
 	// What do we do if the port is already opened?
 	CloseCANPort();
 
-	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
 
 
 	// Initialize the KVaser CAN Library.  This can be called multiple times.
@@ -107,7 +107,7 @@ bool  ReceiverKvaserCapture::OpenCANPort()
     if (status  < 0) 
 	{
         CheckStatus("canOpenChannel", (canStatus)kvaserHandle);
-		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
 		return(false);
 	}
 
@@ -118,7 +118,7 @@ bool  ReceiverKvaserCapture::OpenCANPort()
     if (kvaserHandle < 0) 
 	{
         CheckStatus("canOpenChannel", (canStatus)kvaserHandle);
-		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
 		return(false);
 	}
 
@@ -132,7 +132,7 @@ bool  ReceiverKvaserCapture::OpenCANPort()
     if (status < 0) 
 	{
        CheckStatus("canSetBusParam", status);
-       reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+       reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
 	   return(false);
     }
 
@@ -143,10 +143,13 @@ bool  ReceiverKvaserCapture::OpenCANPort()
     if (status < 0) 
 	{
        CheckStatus("canBusOn", status);
-		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
 		return(false);
     }
- 
+
+	// The port is open. reconnectTime is reset, since all opening operations since beginning of this function may have taken
+	// lots of time.
+	reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(receiveTimeOutInMillisec);
 	bFrameInvalidated = false;
 	return(true);
 }
@@ -186,7 +189,7 @@ bool  ReceiverKvaserCapture::CloseCANPort()
 	canUnloadLibrary();
 
 
-	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
     closeCANReentryCount--;
 	return(true);
 }
@@ -236,7 +239,7 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 
 			if (status == canOK)
 			{
-				reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+				reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(receiveTimeOutInMillisec);
 
 				msg.id = (unsigned long) inMessage.id;
 				msg.timestamp = (unsigned long) inMessage.timestamp;
@@ -269,7 +272,7 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 				DebugFilePrintf(debugFile,  "Error on canRead.  Resetting CAN Port"); 
 #if 0  // JYD 2016-11-20: Don't close.  Leave open (it might resync by itself)  
 				CloseCANPort();
-				reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+				reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelayMillisec);
 #else
 				if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
 				{
@@ -334,7 +337,7 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 
 			if (status == canOK)
 			{
-				reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+				reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(receiveTimeOutInMillisec);
 
 				msg.id = (unsigned long)inMessage.id;
 				msg.timestamp = (unsigned long)inMessage.timestamp;
