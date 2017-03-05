@@ -91,6 +91,11 @@ cameraID(inCameraID)
 
 	ReadConfigFromPropTree(propTree);
 
+	// Create the current frame blank
+	currentFrame.create(calibration.frameHeightInPixels, calibration.frameWidthInPixels, CV_8UC3);
+	currentFrame.setTo(cv::Scalar(0, 0, 0));
+
+
 #if 0
 	ListCameras();
 #endif
@@ -140,7 +145,7 @@ void VideoCapture::DoThreadLoop()
 		//		threadLock.unlock();
 
 		// Messages must be at leat 1ms apart.
-		boost::this_thread::sleep(boost::posix_time::milliseconds(2));	
+		boost::this_thread::sleep(boost::posix_time::milliseconds(3));	
 	}
 
   	boost::mutex::scoped_lock threadLock(GetMutex());
@@ -160,6 +165,8 @@ void VideoCapture::DoThreadIteration()
 	if (!cam.isOpened() && boost::posix_time::microsec_clock::local_time() > reconnectTime)
 	{
 		OpenCamera();
+		reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
+		return;
 	}
 
 	// Acquire from camera source or AVI
@@ -208,9 +215,10 @@ void VideoCapture::DoThreadIteration()
 	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
 	} // if( cam.isOpened() )
 	else  
-	{ 
-		    // No cam opened.  Show blank image
-			boost::mutex::scoped_lock currentLock(GetMutex());
+	{
+		// No cam opened.  Show blank image
+		
+		boost::mutex::scoped_lock currentLock(GetMutex());
 
 			if (currentFrame.empty()) 
 			{
@@ -222,7 +230,6 @@ void VideoCapture::DoThreadIteration()
 			currentLock.unlock();
 			PutNews();
 	}
-
 }
 
 void VideoCapture::ListCameras()

@@ -145,6 +145,9 @@ protected:
 	void DrawVerticalTicks(QImage &sourceFrame,  QPainter& painter, float tickAngle, float tickLength, int thickness);
 	void DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, const QString &text);
 protected:
+	/** \brief Copy of the last Camera image in OpenCV */
+	cv::Mat lastValidFrame;
+
 	/** \brief Copy of the captured image. */
     QImage qtCameraFrame;
 

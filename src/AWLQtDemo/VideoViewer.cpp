@@ -77,6 +77,9 @@ displayScaleFactor(1.0)
 	bDisplayCrosshair = globalSettings->bDisplayVideoCrosshair;
 	bDisplayTime = globalSettings->bDisplayVideoTime;
 
+	lastValidFrame.create(videoCapture->calibration.frameWidthInPixels, videoCapture->calibration.frameHeightInPixels, CV_8UC3);
+	lastValidFrame.setTo(cv::Scalar(0, 0, 0));
+
 	qtCameraFrame = QImage(videoCapture->calibration.frameWidthInPixels, videoCapture->calibration.frameHeightInPixels, QImage::Format_RGB888);
 	QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	setSizePolicy(sizePolicy); 
@@ -185,61 +188,64 @@ void VideoViewer::slotVideoOptionsChangedAction()
 
 void VideoViewer::slotImageChanged()
 
-
 {
 	// Update the video frame
-	if (videoCapture != NULL && videoCapture->HasNews(currentVideoSubscriberID)) 
+	cv::Mat tmpFrame;
+
+	if (videoCapture != NULL && videoCapture->HasNews(currentVideoSubscriberID))
 	{
 
 		VideoCapture::FramePtr cameraFrame(new (cv::Mat));
-		cv::Mat tmpFrame;
 
 		// Copy the contents of the cv::Mat
 		videoCapture->CopyCurrentFrame(cameraFrame, currentVideoSubscriberID);
-
 		// Convert the image to the RGB888 format
 		int frameType = cameraFrame->type();
-        switch (frameType) {
-        case CV_8UC1:
-            cvtColor(*cameraFrame, tmpFrame, CV_GRAY2RGB);
-            break;
-        case CV_8UC3:
-            cvtColor(*cameraFrame, tmpFrame, CV_BGR2RGB);
-            break;
+		switch (frameType) {
+		case CV_8UC1:
+			cvtColor(*cameraFrame, tmpFrame, CV_GRAY2RGB);
+			break;
+		case CV_8UC3:
+			cvtColor(*cameraFrame, tmpFrame, CV_BGR2RGB);
+			break;
 		default:
 			cvtColor(*cameraFrame, tmpFrame, CV_BGR2RGB);
 			break;
 
-        }
-
-        // QImage needs the data to be stored continuously in memory
-        assert(tmpFrame.isContinuous());
-
-        // Assign OpenCV's image buffer to the QImage. Note that the bytesPerLine parameter
-        // (http://qt-project.org/doc/qt-4.8/qimage.html#QImage-6) is 3*width because each pixel
-        // has three bytes.
-        qtCameraFrame = QImage(tmpFrame.data, tmpFrame.cols, tmpFrame.rows, tmpFrame.cols*3, QImage::Format_RGB888);
-		qtEnhancedFrame = qtCameraFrame;
-
-		QPainter painter(&qtEnhancedFrame);
-		DisplayReceiverValues(qtCameraFrame, painter, detectionData);
-		if (bDisplayCrosshair)
-		{
-			DisplayCrossHairs(qtCameraFrame, painter);
 		}
-
-		if (bDisplayTime) 
-		{
-			boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
-			QString timeStr(boost::posix_time::to_simple_string(myTime).c_str());
-
-			QRect textRect(0, 0, videoCapture->calibration.frameWidthInPixels - 1, videoCapture->calibration.frameHeightInPixels - 1);
-			DrawVideoText(qtCameraFrame, painter, textRect, timeStr);
-
-		}
-
-		repaint();
+		lastValidFrame = tmpFrame.clone();
 	}
+	else 
+	{
+		tmpFrame = lastValidFrame.clone();
+	}
+
+	// QImage needs the data to be stored continuously in memory
+	assert(tmpFrame.isContinuous());
+
+	// Assign OpenCV's image buffer to the QImage. Note that the bytesPerLine parameter
+	// (http://qt-project.org/doc/qt-4.8/qimage.html#QImage-6) is 3*width because each pixel
+	// has three bytes.
+	qtCameraFrame = QImage(tmpFrame.data, tmpFrame.cols, tmpFrame.rows, tmpFrame.cols * 3, QImage::Format_RGB888);
+	qtEnhancedFrame = qtCameraFrame;
+
+	QPainter painter(&qtEnhancedFrame);
+	DisplayReceiverValues(qtCameraFrame, painter, detectionData);
+	if (bDisplayCrosshair)
+	{
+		DisplayCrossHairs(qtCameraFrame, painter);
+	}
+
+	if (bDisplayTime)
+	{
+		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
+		QString timeStr(boost::posix_time::to_simple_string(myTime).c_str());
+
+		QRect textRect(0, 0, tmpFrame.cols - 1, tmpFrame.rows - 1);
+		DrawVideoText(qtCameraFrame, painter, textRect, timeStr);
+	}
+
+	repaint();
 }
 
 QSize VideoViewer::sizeHint() const 
