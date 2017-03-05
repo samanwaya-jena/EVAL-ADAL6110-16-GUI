@@ -1721,6 +1721,7 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 			newChannelMask.byteData = *(uint8_t *)&inMsg.data[2]; 
 			if (newChannelMask.byteData < lastChannelMask.byteData)
 			{
+				ProcessCompletedFrame();
 			}
 
 			lastChannelMask = newChannelMask;
