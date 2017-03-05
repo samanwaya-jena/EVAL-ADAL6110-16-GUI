@@ -953,7 +953,7 @@ QCheckBox::indicator:checked:pressed {
 /* Customize spin boxes. */
 
 QSpinBox { 
-    padding-right: 15px;
+    padding-right: 5px;
 }
 
 QSpinBox::up-button {
@@ -996,7 +996,7 @@ QSpinBox::down-button:pressed {
 /* Customize double spin boxes. */
 
 QAbstractSpinBox { 
-    padding-right: 15px;
+    padding-right: 5px;
 
 }
 
@@ -4193,7 +4193,7 @@ background-color: #202020;
            <rect>
             <x>20</x>
             <y>10</y>
-            <width>521</width>
+            <width>541</width>
             <height>211</height>
            </rect>
           </property>
@@ -4246,7 +4246,7 @@ background-color: #202020;
             <rect>
              <x>160</x>
              <y>30</y>
-             <width>341</width>
+             <width>361</width>
              <height>131</height>
             </rect>
            </property>
@@ -4399,9 +4399,9 @@ color: rgb(255,255,255);</string>
          <widget class="QGroupBox" name="globalParametersGroupBox">
           <property name="geometry">
            <rect>
-            <x>560</x>
+            <x>580</x>
             <y>10</y>
-            <width>381</width>
+            <width>401</width>
             <height>211</height>
            </rect>
           </property>
@@ -4428,7 +4428,7 @@ color: rgb(255,255,255);</string>
             <rect>
              <x>20</x>
              <y>30</y>
-             <width>341</width>
+             <width>361</width>
              <height>131</height>
             </rect>
            </property>
