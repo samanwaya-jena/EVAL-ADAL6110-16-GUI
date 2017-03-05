@@ -364,6 +364,13 @@ AlertCondition::ThreatLevel AlertCondition::FindTrackThreat(int inReceiverID, bo
 				}
 				break;
 
+			case eAlertDecelerationToStop:
+				if (track->decelerationToStop >= alert->minRange && track->decelerationToStop <= alert->maxRange)
+				{
+					currentThreatLevel = alert->threatLevel;
+				}
+				break;
+
 			case eAlertTTC:
 				if (track->timeToCollision >= alert->minRange && track->timeToCollision <= alert->maxRange)
 				{

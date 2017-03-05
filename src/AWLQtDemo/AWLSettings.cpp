@@ -352,7 +352,7 @@ void AWLSettings::GetAlertConditions(boost::property_tree::ptree &alertNode, Ale
 	}
 
 	alert.receiverID = alertNode.get<int>("alertReceiver", 0);
-	alert.channelMask.byteData = alertNode.get<uint8_t>("alertChannels", 127);
+	alert.channelMask.byteData = alertNode.get<uint8_t>("alertChannels", 255);
 	alert.minRange = alertNode.get<float>("alertMin", -std::numeric_limits<float>::max());
 	alert.maxRange = alertNode.get<float>("alertMax", std::numeric_limits<float>::max());
 	alert.threatLevel = (AlertCondition::ThreatLevel) alertNode.get<int>("alertLevel", AlertCondition::eThreatNone);

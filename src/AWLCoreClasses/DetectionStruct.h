@@ -57,7 +57,7 @@ typedef union
 		bool channel4 : 1;
 		bool channel5 : 1;
 		bool channel6 : 1;
-		bool unused : 1;
+		bool channel7 : 1;
 	} bitFieldData;
 
 } ChannelMask;

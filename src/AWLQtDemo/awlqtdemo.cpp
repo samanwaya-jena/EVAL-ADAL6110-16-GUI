@@ -62,6 +62,8 @@ const QString actionResizeRestoreDownString("Restore down");
 AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	: QMainWindow()
 {
+	QMessageBox msgBox(this);
+
 	ui.setupUi(this);
 
 	// Set the basic paths
@@ -81,6 +83,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Append the last "/", which Qt does not do.
 	sDebugAndLogPath += "/";
+#if 1
+	sDebugAndLogPath = QString("");
+#endif
 	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString().c_str());
 
 
@@ -88,8 +93,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	//
 	// First, ask Qt for the existence of the file
 	QString sSettingsPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+	sSettingsPath += "/";
+#if 1
+	sSettingsPath = QString("");
+#endif
 	//  if the file does not exist, use the current directory.
-	QFile settingsFile(sSettingsPath + "/" + QString("AWLDemoSettings.xml"));
+	QFile settingsFile(QString("AWLDemoSettings.xml"));
+
 	if (!settingsFile.exists())
 	{
 		settingsFile.setFileName(QString("AWLDemoSettings.xml"));
@@ -97,7 +107,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		// If no file found, exit gracefully
 		if (!settingsFile.exists())
 		{
-			QMessageBox msgBox(this);
 			msgBox.setText("Cannot find configuration file AWLDemoSettings.xml");
 			msgBox.exec();
 			exit(0);
@@ -564,7 +573,7 @@ void AWLQtDemo::on_recordPushButton_clicked()
 	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
 	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
 	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.unused = 0;
+	channelMask.bitFieldData.channel7 = 1;
 
 	if (receiverCaptures[0]) 
 	{
@@ -591,7 +600,7 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
 	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
 	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.unused = 0;
+	channelMask.bitFieldData.channel7= 1;
 	
 	if (receiverCaptures[0]) 
 	{
@@ -806,7 +815,7 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 	channelMask.bitFieldData.channel4 = ui.calibrationChannel5CheckBox->isChecked();
 	channelMask.bitFieldData.channel5 = ui.calibrationChannel6CheckBox->isChecked();
 	channelMask.bitFieldData.channel6 = ui.calibrationChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.unused = 0;
+	channelMask.bitFieldData.channel7 = 1;
 
 	if (receiverCaptures[0]) 
 	{
