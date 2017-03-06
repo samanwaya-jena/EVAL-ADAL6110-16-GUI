@@ -70,90 +70,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	{
 		// Simulate some tracks for debug purposes
 		double elapsed = GetElapsed();
-#if 0
-			Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, 1);
 
-			track->firstTimeStamp = currentFrame->timeStamp;
-			track->timeStamp = currentFrame->timeStamp;
-			trackDistance += 0.0001;
-			if (trackDistance > 30.0) trackDistance = 0.0;
-			track->distance = trackDistance;
-			track->intensity = -3.00;
-			track->channels.byteData = 0X7F;
-
-			track->velocity = 30.0;
-			track->acceleration = 0;
-			track->threatLevel = AlertCondition::eThreatLow;
-			track->part1Entered = true;
-			track->part2Entered = true;
-			track->part3Entered = true;
-			track->part4Entered = true;
-
-			track->probability = 99;
-			track->timeStamp = elapsed;
-			track->firstTimeStamp = elapsed;
-
-
-			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 2);
-
-			track->firstTimeStamp = currentFrame->timeStamp;
-			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 25.0;
-			track->intensity= -0.1;
-			track->channels.byteData = 0X7F;
-
-			track->velocity = 3;
-			track->acceleration = 0;
-			track->threatLevel = AlertCondition::eThreatLow;
-			track->part1Entered = true;
-			track->part2Entered = true;
-			track->part3Entered = true;
-			track->part4Entered = true;
-
-			track->probability = 99;
-			track->timeStamp = elapsed;
-			track->firstTimeStamp = elapsed;
-
-			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 3);
-			track->firstTimeStamp = currentFrame->timeStamp;
-
-			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 40;
-			track->intensity= 1.00;
-			track->channels.byteData = 0X7F;
-
-			track->velocity = 3;
-			track->acceleration = 0;
-			track->threatLevel = AlertCondition::eThreatLow;
-			track->part1Entered = true;
-			track->part2Entered = true;
-			track->part3Entered = true;
-			track->part4Entered = true;
-
-			track->probability = 99;
-			track->timeStamp = elapsed;
-			track->firstTimeStamp = elapsed;
-
-			track = acquisitionSequence->MakeUniqueTrack(currentFrame, 4);
-
-			track->firstTimeStamp = currentFrame->timeStamp;
-			track->timeStamp = currentFrame->timeStamp;
-			track->distance = 155;
-			track->intensity= 22.00;
-			track->channels.byteData = 0X7F;
-
-			track->velocity = 3;
-			track->acceleration = 0;
-			track->threatLevel = AlertCondition::eThreatLow;
-			track->part1Entered = true;
-			track->part2Entered = true;
-			track->part3Entered = true;
-			track->part4Entered = true;
-
-			track->probability = 99;
-			track->timeStamp = elapsed;
-			track->firstTimeStamp = elapsed;
-#else
 		trackDistance += 0.0001;
 		if (trackDistance > 10.0) trackDistance = 0.0;
 
@@ -165,7 +82,9 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 				track->firstTimeStamp = currentFrame->timeStamp;
 
 				track->timeStamp = currentFrame->timeStamp;
-				track->distance = (channel * 7) + detection + trackDistance;
+//				track->distance = (channel * 7) + (detection*2) + trackDistance;
+				track->distance = (detection * 2) + trackDistance;
+				track->distance += (channel / 8) * 401;  // Line wraparound at 400 meters
 				track->intensity = 1.00;
 				track->channels.byteData = 0XFF;
 
@@ -182,7 +101,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 				track->firstTimeStamp = elapsed;
 			}
 		}
-#endif
+
 		threadCount = ++ threadCount % 7;
 		ProcessCompletedFrame();
 	} // if  (!WasStoppped)

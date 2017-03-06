@@ -115,6 +115,8 @@ public:
 	static void GetAlertConditions(boost::property_tree::ptree &alertNode, AlertCondition &alert);
 
 	static void GetChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr);
+	static void GetChannelGeometryArray(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr);
+
 
 	static void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
 	static void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);

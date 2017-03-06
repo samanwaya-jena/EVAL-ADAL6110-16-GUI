@@ -343,7 +343,15 @@ void AWLSettings::GetAlertConditions(boost::property_tree::ptree &alertNode, Ale
 void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr)
 {
 	// All channel info for the receiver
-	int channelQty = channelGeometryNode.get<int>("channelQty");
+	int channelQty = channelGeometryNode.get<int>("channelQty",-1);
+	
+	// if no "channelPerChannel" description, try array Description.
+	if (channelQty == -1)
+	{
+		GetChannelGeometryArray(channelGeometryNode, receiverPtr);
+		return;
+	}
+
 	receiverPtr->channelsConfig.resize(channelQty);
 
 	// Range Wraparound trick
@@ -361,7 +369,6 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometr
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
 		channelConfigPtr->channelIndex = channelIndex;
 		Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		float roll;
 		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
 
 		GetColor(channelNode.get_child("displayColor"),
@@ -369,6 +376,70 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometr
 	} // for (int channelIndex = 0;
 
 }
+
+void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr)
+
+{
+	float columnsFloat;
+	float rowsFloat;
+	int columns;
+	int rows;
+	float fovX;
+	float fovY;
+	float spacingX;
+	float spacingY;
+	float offsetX;
+	float offsetY;
+
+	float maxRange;
+	uint8_t displayColorRed;
+	uint8_t displayColorGreen;
+	uint8_t displayColorBlue;
+
+
+	// Range Wraparound trick
+	receiverPtr->lineWrapAround = channelGeometryNode.get<float>("lineWrapAround", 32767.0);
+	receiverPtr->channelsPerLine = channelGeometryNode.get<int>("channelsPerLine", 1);
+
+	Get2DPoint(channelGeometryNode.get_child("arraySize"), columnsFloat, rowsFloat);
+	columns = columnsFloat;
+	rows = rowsFloat;
+
+	Get2DPoint(channelGeometryNode.get_child("arrayFOV"), fovX, fovY);
+	Get2DPoint(channelGeometryNode.get_child("pixelSpacing"), spacingX, spacingY);
+	Get2DPoint(channelGeometryNode.get_child("arrayOffset"), offsetX, offsetY);
+
+	maxRange = channelGeometryNode.get<float>("maxRange");
+
+	GetColor(channelGeometryNode.get_child("displayColor"), displayColorRed, displayColorGreen, displayColorBlue);
+
+	float pixelWidth = (fovX - ((columns - 1)*spacingX)) / columns;
+	float pixelHeight = (fovY - ((rows - 1)*spacingY)) / rows;
+
+	int channelQty = columns * rows;
+	receiverPtr->channelsConfig.resize(channelQty);
+
+
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	{
+		int column = channelIndex % columns;
+		int row = channelIndex / columns;
+		std::string sColorKey = std::string("displayColorLine") + std::to_string(row);
+		GetColor(channelGeometryNode.get_child(sColorKey), displayColorRed, displayColorGreen, displayColorBlue);
+
+		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
+		channelConfigPtr->channelIndex = channelIndex;
+
+		channelConfigPtr->fovWidth = pixelWidth;
+		channelConfigPtr->fovHeight = pixelHeight;
+
+		channelConfigPtr->maxRange = maxRange;
+		channelConfigPtr->displayColorRed = displayColorRed;
+		channelConfigPtr->displayColorGreen = displayColorGreen;
+		channelConfigPtr->displayColorBlue = displayColorBlue;
+	} // for (int channelIndex = ;
+}
+
 void AWLSettings::PutPosition(boost::property_tree::ptree &node, float forward, float left, float up)
 {
 	node.put<float>("forward", forward);

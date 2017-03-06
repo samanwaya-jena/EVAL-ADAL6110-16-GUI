@@ -582,8 +582,19 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 		return (false);
 	}
 
-	receiverChannelQty = geometryNodePtr->get<int>("channelQty");
+	receiverChannelQty = geometryNodePtr->get<int>("channelQty", -1);
+	if (receiverChannelQty == -1)
+	{
+		float columns(0);
+		float rows(0);
+		columns = geometryNodePtr->get<int>("arraySize.x", -1);
+		rows = geometryNodePtr->get<int>("arraySize.y", -1);
+		receiverChannelQty = ((int)columns) * ((int)rows);
+	}
+
 ///	BOOST_FOREACH(ptree::value_type &registersFPGANode, configurationNodePtr->get_child("registersFPGA"))
+
+	return(true);
 }
 
 bool ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree &propTree)

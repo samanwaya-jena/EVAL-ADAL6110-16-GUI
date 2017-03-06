@@ -189,17 +189,63 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 
 		// Loop for each individual channel
 		boost::property_tree::ptree &channelGeometryPropNode = propTree.get_child(std::string("config.")+sChannelGeometryKey);
-		int channelQty = channelGeometryPropNode.get<int>("channelQty");
-		for (int channelID = 0; channelID < channelQty; channelID++)
+		int channelQty = channelGeometryPropNode.get<int>("channelQty", -1);
+		if (channelQty != -1)
 		{
-			char channelKeyString[32];
-			sprintf(channelKeyString, "channel%d", channelID);
-			std::string channelKey = channelKeyString;
-			boost::property_tree::ptree &channelPropNode = channelGeometryPropNode.get_child(channelKey);
+			for (int channelID = 0; channelID < channelQty; channelID++)
+			{
+				char channelKeyString[32];
+				sprintf(channelKeyString, "channel%d", channelID);
+				std::string channelKey = channelKeyString;
+				boost::property_tree::ptree &channelPropNode = channelGeometryPropNode.get_child(channelKey);
 
-			// Make the transformation node and add it to the tree
-			TransformationNode::Ptr channelGeometryNode = GetGeometryFromChannelPropertyNode(channelPropNode);
-			receiverGeometryNode->AddChild(channelGeometryNode);
+				// Make the transformation node and add it to the tree
+				TransformationNode::Ptr channelGeometryNode = GetGeometryFromChannelPropertyNode(channelPropNode);
+				receiverGeometryNode->AddChild(channelGeometryNode);
+			}
+		}
+		else
+		{
+			float columnsFloat(0.0);
+			float rowsFloat(0.0);
+			int columns(0);
+			int rows(0);
+			float fovX(0);
+			float fovY(0);
+			float spacingX(0.0);
+			float spacingY(0.0);
+			float offsetX(0.0);
+			float offsetY(0.0);
+
+			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("arraySize"), columnsFloat, rowsFloat);
+			columns = columnsFloat;
+			rows = rowsFloat;
+			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("arrayFOV"), fovX, fovY);
+			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("pixelSpacing"), spacingX, spacingY);
+			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("arrayOffset"), offsetX, offsetY);
+
+			float pixelWidth = (fovX - ((columns - 1)*spacingX)) / columns;
+			float pixelHeight = (fovY - ((rows - 1)*spacingY)) / rows;
+
+			int channelQty = columns * rows;
+			for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+			{
+				int column = channelIndex % columns;
+				int row = channelIndex / columns;
+
+				float pixelYaw = DEG2RAD(offsetX + ((fovX / 2) - (pixelWidth / 2)) - (column * (pixelWidth + spacingX)));
+				float pixelPitch = DEG2RAD(offsetY + ((fovY / 2) - (pixelHeight / 2)) - (row * (pixelHeight + spacingY)));
+				float pixelRoll = 0.0;
+
+				Orientation orientation(pixelRoll, pixelPitch, pixelYaw);
+
+				// Simplification: We assume all channel sensors are at position 0.0
+				CartesianCoord position(0, 0, 0);
+
+				// Make the transformation node
+				TransformationNode::Ptr channelGeometryNode = TransformationNode::Ptr(new TransformationNode(position, orientation));
+				receiverGeometryNode->AddChild(channelGeometryNode);
+			} // for (int channelIndex = ;
 		}
 	}
 

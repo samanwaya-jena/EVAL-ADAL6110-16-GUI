@@ -58,7 +58,7 @@
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
-		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16" (case sensistive!) -->
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
       <receiverChannelGeometry>GeometryAWL7</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
@@ -1821,319 +1821,49 @@
         </displayColor>
       </channel6>
   </GeometryAWL7>
-  
-  <GeometryAWL16>
+
+  <GeometryAWL16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
-      <lineWrapAround>2000.0</lineWrapAround>
-      <channelsPerLine>8</channelsPerLine>
+    <lineWrapAround>400.0</lineWrapAround>
+    <channelsPerLine>8</channelsPerLine>
 
+    <arraySize>
+      <x>8</x>
+      <y>2</y>
+    </arraySize>
+    <arrayFOV>
+      <x>15</x>
+      <y>5.3</y>
+    </arrayFOV>
+    <pixelSpacing>
+      <x>0.25</x>
+      <y>1.9</y>
+    </pixelSpacing>
+    <arrayOffset>
+      <x>0.0</x>
+      <y>0.0</y>
+    </arrayOffset>
 
-      <channelQty>8</channelQty>
-      <channel0>
-        <!--channel 0: Bottom left -->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>6.5625</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel0>
+    <maxRange>30.0</maxRange>
+    <displayColor>
+      <red>255</red>
+      <green>128</green>
+      <blue>128</blue>
+    </displayColor>
 
-      <channel1>
-        <!--channel 1 -->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>4.6875</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel1>
+    <displayColorLine0>
+      <red>192</red>
+      <green>192</green>
+      <blue>192</blue>
+    </displayColorLine0>
 
-      <channel2>
-        <!--channel 2-->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>2.8125</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel2>
+    <displayColorLine1>
+      <red>255</red>
+      <green>0</green>
+      <blue>0</blue>
+    </displayColorLine1>
 
-      <channel3>
-        <!--channel 3-->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>0.9375</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel3>
-
-      <channel4>
-        <!--channel 4-->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-0.9375</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel4>
-
-      <channel5>
-        <!--channel 5-->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-2.8125</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel5>
-
-      <channel6>
-        <!--channel 6-->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-4.6875</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel6>
-
-      <channel7>
-        <!--channel 7: Bottom right-->
-        <fov>
-          <x>1.625</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>0.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-6.5625</yaw>
-        </orientation>
-        <maxRange>16.0</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel7>
-
-      <channel8>
-        <!--channel 8: Top left -->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>15.575</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel8>
-
-      <channel9>
-        <!--channel 9 -->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>11.125</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-           <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-       </displayColor>
-      </channel9>
-
-      <channel10>
-        <!--channel 10-->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>6.675</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel10>
-
-      <channel11>
-        <!--channel 11-->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>2.225</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-           <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel11>
-
-      <channel12>
-        <!--channel 12-->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-2.225</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel12>
-
-      <channel13>
-        <!--channel 13-->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-6.675</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel13>
-
-      <channel14>
-        <!--channel 14-->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-11.125</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel14>
-
-      <channel15>
-        <!--channel 15: top right-->
-        <fov>
-          <x>4.3</x>
-          <y>1.7</y>
-        </fov>
-        <orientation>
-          <pitch>4.85</pitch>
-          <roll>0.0</roll>
-          <yaw>-15.575</yaw>
-        </orientation>
-        <maxRange>15.0</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel15>
-  </GeometryAWL16>
-
+  </GeometryAWL16Array>
 </config>
