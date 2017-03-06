@@ -157,7 +157,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		trackDistance += 0.0001;
 		if (trackDistance > 10.0) trackDistance = 0.0;
 
-		for (int channel = 0; channel < 7; channel++)
+		for (int channel = 0; channel < this->GetChannelQty(); channel++)
 		{
 			for (int detection = 0; detection < 8; detection++)
 			{
@@ -167,7 +167,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 				track->timeStamp = currentFrame->timeStamp;
 				track->distance = (channel * 7) + detection + trackDistance;
 				track->intensity = 1.00;
-				track->channels.byteData = 0X7F;
+				track->channels.byteData = 0XFF;
 
 				track->velocity = 3;
 				track->acceleration = 0;

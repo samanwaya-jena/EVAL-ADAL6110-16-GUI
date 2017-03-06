@@ -62,6 +62,7 @@ namespace awl
 	// Receiver
 	std::string sReceiverType;
 	std::string sReceiverRegisterSet;
+	std::string sReceiverChannelGeometry;
 
 
 	float displayedRangeMin;
@@ -113,12 +114,15 @@ public:
 	static void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
 	static void GetAlertConditions(boost::property_tree::ptree &alertNode, AlertCondition &alert);
 
+	static void GetChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr);
+
 	static void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
 	static void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);
 	static void Put2DPoint(boost::property_tree::ptree &node, float x, float y);
 	static void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
 	static void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue);
 
+	static void PutChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr);
 	/** \brief Stores the current receiver calibration settings
 		* \return true if storage processe dwithout error. False in case of a storage error.
       */

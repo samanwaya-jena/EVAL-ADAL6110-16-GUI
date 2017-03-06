@@ -64,7 +64,7 @@ bool AWLSettings::ReadSettings()
 	receiverSettings.resize(receiverQty);
 	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
-		char receiverKeyString[32];
+		char receiverKeyString[128];
 		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverIndex);
 		std::string receiverKey = receiverKeyString;
 
@@ -73,34 +73,16 @@ bool AWLSettings::ReadSettings()
 		ReceiverSettings *receiverPtr = &receiverSettings[receiverIndex];
 		receiverPtr->sReceiverType = receiverNode.get<std::string>("receiverType");
 		receiverPtr->sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
+		receiverPtr->sReceiverChannelGeometry = receiverNode.get<std::string>("receiverChannelGeometry");
 
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
-		receiverPtr->lineWrapAround = receiverNode.get<float>("lineWrapAround", 32767.0);
-		receiverPtr->channelsPerLine = receiverNode.get<int>("channelsPerLine", 1);
 
-
-
-		// All channel info for the receiver
-		int channelQty = receiverNode.get<int>("channelQty");
-		receiverPtr->channelsConfig.resize(channelQty);
-
-		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
-		{
-			char channelKeyString[32];
-			sprintf(channelKeyString, "channel%d", channelIndex);
-			std::string channelKey = channelKeyString;
-
-			boost::property_tree::ptree &channelNode = receiverNode.get_child(channelKey);
-
-			ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
-			channelConfigPtr->channelIndex = channelIndex;
-			Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-			float roll;
-			channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
-		} // for (int channelIndex = 0;
-
+		// Get the Channel configuration Node
+		std::string channelGeometryKey = "config." + receiverPtr->sReceiverChannelGeometry;
+		boost::property_tree::ptree &channelGeometryNode = propTree.get_child(channelGeometryKey);
+		GetChannelGeometry(channelGeometryNode, receiverPtr);
 	} // for (int receiverIndex = 0; 
 
 
@@ -173,6 +155,32 @@ void AWLSettings::GetColor(boost::property_tree::ptree &colorNode, uint8_t &red,
 	blue = colorNode.get<uint8_t>("blue");
 }
 
+void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr)
+{
+	// All channel info for the receiver
+	int channelQty = channelGeometryNode.get<int>("channelQty");
+	receiverPtr->channelsConfig.resize(channelQty);
+
+	// Range Wraparound trick
+	receiverPtr->lineWrapAround = channelGeometryNode.get<float>("lineWrapAround", 32767.0);
+	receiverPtr->channelsPerLine = channelGeometryNode.get<int>("channelsPerLine", 1);
+
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	{
+		char channelKeyString[32];
+		sprintf(channelKeyString, "channel%d", channelIndex);
+		std::string channelKey = channelKeyString;
+
+		boost::property_tree::ptree &channelNode = channelGeometryNode.get_child(channelKey);
+
+		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
+		channelConfigPtr->channelIndex = channelIndex;
+		Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
+		float roll;
+		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
+	} // for (int channelIndex = 0;
+
+}
 
 void AWLSettings::PutPosition(boost::property_tree::ptree &node, float forward, float left, float up)
 {
@@ -196,17 +204,43 @@ void AWLSettings::Put2DPoint(boost::property_tree::ptree &node, float x, float y
 
 void AWLSettings::PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll)
 {
-	boost::property_tree::ptree &positionNode = geometryNode.get_child("position");
-	boost::property_tree::ptree &orientationNode = geometryNode.get_child("orientation");
+	boost::property_tree::ptree &positionNode = geometryNode.put_child("position");
+	boost::property_tree::ptree &orientationNode = geometryNode.put_child("orientation");
 	PutPosition(positionNode, forward, left, up);
 	PutOrientation(orientationNode, pitch, yaw, roll);
 }
 
 void AWLSettings::PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue)
 {
-	colorNode.get<uint8_t>("red");
-	colorNode.get<uint8_t>("green");
-	colorNode.get<uint8_t>("blue");
+	colorNode.put<uint8_t>("red", red);
+	colorNode.put<uint8_t>("green", green);
+	colorNode.put<uint8_t>("blue", blue);
 }
 
+void AWLSettings::PutChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr)
+{
+	int channelQty = receiverPtr->channelsConfig.size();
+	// All channel info for the receiver
+	channelGeometryNode.put<int>("channelQty", channelQty);
+
+	// Range Wraparound trick
+	channelGeometryNode.get<float>("lineWrapAround", receiverPtr->lineWrapAround);
+	channelGeometryNode.get<int>("channelsPerLine", receiverPtr->channelsPerLine);
+
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	{
+		char channelKeyString[32];
+		sprintf(channelKeyString, "channel%d", channelIndex);
+		std::string channelKey = channelKeyString;
+
+		boost::property_tree::ptree &channelNode = channelGeometryNode.put_child(channelKey);
+
+		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
+		channelConfigPtr->channelIndex = channelIndex;
+		Put2DPoint(channelNode.put_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
+		float roll;
+		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
+	} // for (int channelIndex = 0;
+
+}
 

@@ -185,14 +185,17 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 		firstNode->AddChild(receiverGeometryNode);
 		receivers.push_back(receiverGeometryNode);
 
+		string sChannelGeometryKey = receiverPropNode.get<std::string>("receiverChannelGeometry");
+
 		// Loop for each individual channel
-		int channelQty = receiverPropNode.get<int>("channelQty");
+		boost::property_tree::ptree &channelGeometryPropNode = propTree.get_child(std::string("config.")+sChannelGeometryKey);
+		int channelQty = channelGeometryPropNode.get<int>("channelQty");
 		for (int channelID = 0; channelID < channelQty; channelID++)
 		{
 			char channelKeyString[32];
 			sprintf(channelKeyString, "channel%d", channelID);
 			std::string channelKey = channelKeyString;
-			boost::property_tree::ptree &channelPropNode = receiverPropNode.get_child(channelKey);
+			boost::property_tree::ptree &channelPropNode = channelGeometryPropNode.get_child(channelKey);
 
 			// Make the transformation node and add it to the tree
 			TransformationNode::Ptr channelGeometryNode = GetGeometryFromChannelPropertyNode(channelPropNode);

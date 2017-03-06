@@ -662,6 +662,10 @@ public:
 	*/
 	std::string sReceiverRegisterSet;
 
+	/** \brief String indentifying the receiver optical Configuration.
+	*/
+	std::string sReceiverChannelGeometry;
+
 	/** \brief Number of receiver channels on the sensor
       */
 	int receiverChannelQty;
@@ -795,6 +799,14 @@ protected:
 	  * \throws  Throws boost error on read of the property keys.
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
+
+	/** \brief Reads the optical Geometry proerties from the configuration file
+	* \param[in] propTree the boost propertyTree created from reading the configuration file.
+	* \returns Returns true otherwise.
+	* \throws  Throws boost error on read of the Geometry property keys.
+	*/
+	virtual bool ReadGeometryFromPropTree(boost::property_tree::ptree &propTree);
+
 
 	/** \brief Reads the description of registers (FPGA, ADC and GPIO) and controllable algorithm parameters 
 	  *        from the configuration file.

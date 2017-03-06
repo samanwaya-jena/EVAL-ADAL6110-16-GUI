@@ -38,6 +38,7 @@ const int ReceiverCapture::maximumSensorFrames(100);
 
 const std::string sDefaultReceiverType = "Generic";
 const std::string sDefaultReceiverRegisterSet = "registerDescription_RevC";
+const std::string sDefaultReceiverChannelGeometry = "GeometryAWL7";
 const int defaultFrameRate(50);
 const uint8_t defaultChannelMaskValue = 127;
 const float defaultSignalToNoiseFloor = -10.0;
@@ -61,6 +62,7 @@ registersGPIO(inRegistersGPIO),
 parametersAlgos(inParametersAlgos),
 sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
+sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
 targetHintAngle(0.0)
 
@@ -90,6 +92,7 @@ frameID(0),
 bFrameInvalidated(false),
 sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
+sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
 targetHintAngle(0.0)
 
@@ -100,6 +103,7 @@ targetHintAngle(0.0)
 	receiverStatus.signalToNoiseFloor = defaultSignalToNoiseFloor;
 
 	ReadConfigFromPropTree(propTree);
+	ReadGeometryFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
 
 	// Initialize default status values
@@ -538,8 +542,9 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 
 		sReceiverType = receiverNode.get<std::string>("receiverType");
 		sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
+		sReceiverChannelGeometry = receiverNode.get<std::string>("receiverChannelGeometry");
 		measurementOffset = receiverNode.get<float>("rangeOffset");
-		receiverChannelQty = receiverNode.get<int>("channelQty");
+
 		receiverStatus.frameRate =  receiverNode.get<uint8_t>("frameRate");	// Default frame rate is 100Hz
 
 		receiverStatus.channelMask.byteData = receiverNode.get<uint8_t>("channelMask");
@@ -553,6 +558,32 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 
 		return(true);
 
+}
+
+bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &propTree)
+{
+	using boost::property_tree::ptree;
+
+	// Read the geometry
+	std::string geometryDescKey = "config." + sReceiverChannelGeometry;
+
+	// The geometry configuration section may be absent from the configuration.
+	// This is considered a normal situation.
+	boost::property_tree::ptree *geometryNodePtr = NULL;
+
+	try
+	{
+		// The register configuration section may be absent from the configuration.
+		// This is considered a normal situation.
+		geometryNodePtr = &propTree.get_child(geometryDescKey);
+	}
+	catch (boost::exception &e)
+	{
+		return (false);
+	}
+
+	receiverChannelQty = geometryNodePtr->get<int>("channelQty");
+///	BOOST_FOREACH(ptree::value_type &registersFPGANode, configurationNodePtr->get_child("registersFPGA"))
 }
 
 bool ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree &propTree)
