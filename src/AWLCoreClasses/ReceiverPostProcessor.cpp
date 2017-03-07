@@ -93,9 +93,9 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++) 
 	{
 		ChannelMask channelMask;
-		channelMask.byteData = 0x01 << channelIndex;
+		channelMask.byteData = 0x01 << (channelIndex%8);
 
-		int detectionIndex = 0;
+		int detectionIndex= 0;
 
 		// Re-Create detections from the coalesced tracks
 		int trackQty = currentFrame->tracks.size();
@@ -114,6 +114,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 				
 				float trackDistance = track->distance - (lineOffset * receiverSettings.lineWrapAround);
 				int trackChannel = (channelIndex%receiverSettings.channelsPerLine) + (lineOffset * receiverSettings.channelsPerLine);
+				detectionIndex = detectionIndex % 8;
 #endif
 
 			if ( track->IsComplete() && (track->channels.byteData & channelMask.byteData) &&

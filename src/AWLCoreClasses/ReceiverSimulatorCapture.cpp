@@ -78,7 +78,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		{
 			for (int detection = 0; detection < 8; detection++)
 			{
-				Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 7) + detection);
+				Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 8) + detection);
 				track->firstTimeStamp = currentFrame->timeStamp;
 
 				track->timeStamp = currentFrame->timeStamp;
@@ -86,7 +86,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 				track->distance = (detection * 2) + trackDistance;
 				track->distance += (channel / 8) * 401;  // Line wraparound at 400 meters
 				track->intensity = 1.00;
-				track->channels.byteData = 0XFF;
+				track->channels.byteData = 0x01 << (channel % 8);
 
 				track->velocity = 3;
 				track->acceleration = 0;

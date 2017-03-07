@@ -1250,40 +1250,62 @@ void AWLQtDemo::UpdateParametersView()
 		QTableWidgetItem *confirmItem = ui.parametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
-		if (originalCheckState == Qt::PartiallyChecked)
+		// Going from partially checked to another value means we got an update
+		// Update the value text.
+		switch (algoParameters[row].pendingUpdates) {
+		case updateStatusPendingVisual:
 		{
-			// Going from partially checked to another value means we got an update
-			// Update the value text.
-			if (!algoParameters[row].pendingUpdates) 
-			{
-				// Update was received.  CheckState falls back to default.
+			// Update was received.  CheckState falls back to default.
 
-				checkItem->setCheckState(Qt::Unchecked);
-				ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
-				// Get the confirm value and format.
-				QString sValueConfirm;
-				if (algoParameters[row].paramType == eAlgoParamInt)
-				{
-					sValueConfirm.sprintf("%d", algoParameters[row].intValue); 
-				}
-				else
-				{
-				sValueConfirm.sprintf("%f", algoParameters[row].floatValue); 
-				}
-				confirmItem->setText(sValueConfirm);
-				ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
-			}
-		}
-		else 
-		{
-			if (algoParameters[row].pendingUpdates) 
+			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
+			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			// Get the confirm value and format.
+			QString sValueConfirm;
+			if (algoParameters[row].paramType == eAlgoParamInt)
 			{
-				checkItem->setCheckState(Qt::PartiallyChecked);
-				ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+				sValueConfirm.sprintf("%d", algoParameters[row].intValue);
 			}
+			else
+			{
+				sValueConfirm.sprintf("%f", algoParameters[row].floatValue);
+			}
+			confirmItem->setText(sValueConfirm);
+			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			algoParameters[row].pendingUpdates = updateStatusUpToDate;
+			break;
+
 		}
-	}
+		case updateStatusPendingUpdate:
+		{
+			// Update was received.  CheckState falls back to default.
+
+			if (originalCheckState != Qt::PartiallyChecked) checkItem->setCheckState(Qt::PartiallyChecked);
+			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			// Get the confirm value and format.
+			QString sValueConfirm;
+			if (algoParameters[row].paramType == eAlgoParamInt)
+			{
+				sValueConfirm.sprintf("%d", algoParameters[row].intValue);
+			}
+			else
+			{
+				sValueConfirm.sprintf("%f", algoParameters[row].floatValue);
+			}
+			confirmItem->setText(sValueConfirm);
+			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			break;
+		}
+
+		default:
+		{
+			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
+			//			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			break;
+		}
+		}// end case
+	} // for (int row
 }
+
 void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 {
 	int currentAlgo = 0;
@@ -1469,46 +1491,68 @@ void AWLQtDemo::UpdateGlobalParametersView()
 
 	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
 	int rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++) 
+	for (int row = 0; row < rowCount; row++)
 	{
+
 		// Column 0 is "Select" row:  Editable checkbox.
-		QTableWidgetItem *checkItem =ui.globalParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *checkItem = ui.globalParametersTable->item(row, eParameterCheckColumn);
 		QTableWidgetItem *confirmItem = ui.globalParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
-		if (originalCheckState == Qt::PartiallyChecked)
+		// Going from partially checked to another value means we got an update
+		// Update the value text.
+		switch (algoParameters[row].pendingUpdates) {
+		case updateStatusPendingVisual:
 		{
-			// Going from partially checked to another value means we got an update
-			// Update the value text.
-			if (!algoParameters[row].pendingUpdates) 
-			{
-				// Update was received.  CheckState falls back to default.
+			// Update was received.  CheckState falls back to default.
 
-				checkItem->setCheckState(Qt::Unchecked);
-				ui.globalParametersTable->setItem(row, eParameterCheckColumn, checkItem);
-				// Get the confirm value and format.
-				QString sValueConfirm;
-				if (algoParameters[row].paramType == eAlgoParamInt)
-				{
-					sValueConfirm.sprintf("%d", algoParameters[row].intValue); 
-				}
-				else
-				{
-				sValueConfirm.sprintf("%f", algoParameters[row].floatValue); 
-				}
-				confirmItem->setText(sValueConfirm);
-				ui.globalParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
-			}
-		}
-		else 
-		{
-			if (algoParameters[row].pendingUpdates) 
+			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
+			ui.globalParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			// Get the confirm value and format.
+			QString sValueConfirm;
+			if (algoParameters[row].paramType == eAlgoParamInt)
 			{
-				checkItem->setCheckState(Qt::PartiallyChecked);
-				ui.globalParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+				sValueConfirm.sprintf("%d", algoParameters[row].intValue);
 			}
+			else
+			{
+				sValueConfirm.sprintf("%f", algoParameters[row].floatValue);
+			}
+			confirmItem->setText(sValueConfirm);
+			ui.globalParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			algoParameters[row].pendingUpdates = updateStatusUpToDate;
+			break;
+
 		}
-	}
+		case updateStatusPendingUpdate:
+		{
+			// Update was received.  CheckState falls back to default.
+
+			if (originalCheckState != Qt::PartiallyChecked) checkItem->setCheckState(Qt::PartiallyChecked);
+			ui.globalParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			// Get the confirm value and format.
+			QString sValueConfirm;
+			if (algoParameters[row].paramType == eAlgoParamInt)
+			{
+				sValueConfirm.sprintf("%d", algoParameters[row].intValue);
+			}
+			else
+			{
+				sValueConfirm.sprintf("%f", algoParameters[row].floatValue);
+			}
+			confirmItem->setText(sValueConfirm);
+			ui.globalParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			break;
+		}
+
+		default:
+		{
+			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
+			//			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			break;
+		}
+		}// end case
+	} // for (int row
 }
 
 void AWLQtDemo::on_globalParametersSetPushButton_clicked()
@@ -1868,12 +1912,11 @@ void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
 		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
 		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}
 	
-
 		QListWidgetItem *listItem = new QListWidgetItem(sLabel,ui.registerGPIOListWidget);
         listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 		listItem->setCheckState(Qt::Unchecked);
@@ -1892,7 +1935,7 @@ void AWLQtDemo::UpdateGPIOList()
 		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
 		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates  == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}
@@ -1934,7 +1977,7 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
 		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}		
@@ -1962,7 +2005,7 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
 		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates)
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates = updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}		

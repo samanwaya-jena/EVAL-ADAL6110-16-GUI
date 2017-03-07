@@ -634,7 +634,7 @@ void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 	if (registerValue >= 1 && registerValue <= ALGO_QTY) 
 	{
 		receiverStatus.currentAlgo = registerValue;
-		receiverStatus.currentAlgoPendingUpdates--;
+		receiverStatus.currentAlgoPendingUpdates --;
 	}
 	else
 	{
@@ -658,7 +658,7 @@ void ReceiverCANCapture::ParseParameterAlgoParameterResponse(AWLCANMessage &inMs
 	{
 		parameter->floatValue = *(float *) &registerValue; 
 		parameter->intValue = *(int16_t *) &registerValue; 
-		parameter->pendingUpdates--;
+		parameter->pendingUpdates = updateStatusPendingVisual;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -680,10 +680,7 @@ void ReceiverCANCapture::ParseParameterFPGARegisterResponse(AWLCANMessage &inMsg
 	if (index >= 0)
 	{
 		registersFPGA[index].value = registerValue; 
-		if (registersFPGA[index].pendingUpdates > 0)
-		{
-			registersFPGA[index].pendingUpdates--;
-		}
+		registersFPGA[index].pendingUpdates = updateStatusPendingVisual;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -710,10 +707,7 @@ void ReceiverCANCapture::ParseParameterADCRegisterResponse(AWLCANMessage &inMsg)
 	if (index >= 0)
 	{
 		registersADC[index].value = registerValue; 
-		if (registersADC[index].pendingUpdates > 0)
-		{
-			registersADC[index].pendingUpdates--;
-		}
+		registersADC[index].pendingUpdates = updateStatusPendingVisual;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -743,7 +737,7 @@ void ReceiverCANCapture::ParseParameterGlobalParameterResponse(AWLCANMessage &in
 	{
 		parameter->floatValue = *(float *) &registerValue; 
 		parameter->intValue = *(int16_t *) &registerValue; 
-		parameter->pendingUpdates--;
+		parameter->pendingUpdates = updateStatusPendingVisual;
 	}
 
 	receiverStatus.bUpdated = true;
@@ -765,10 +759,7 @@ void ReceiverCANCapture::ParseParameterGPIORegisterResponse(AWLCANMessage &inMsg
 	if (index >= 0)
 	{
 		registersGPIO[index].value = registerValue; 
-		if (registersGPIO[index].pendingUpdates > 0)
-		{
-			registersGPIO[index].pendingUpdates--;
-		}
+		registersGPIO[index].pendingUpdates = updateStatusPendingVisual;
 	}
 
 
@@ -1229,7 +1220,7 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		registersFPGA[index].pendingUpdates = 1;
+		registersFPGA[index].pendingUpdates = updateStatusPendingUpdate;
 	}
 
     return(bMessageOk);
@@ -1257,7 +1248,7 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		registersADC[index].pendingUpdates = 1;
+		registersADC[index].pendingUpdates = updateStatusPendingUpdate;
 	}
 
 	return(bMessageOk);
@@ -1285,7 +1276,7 @@ bool ReceiverCANCapture::SetGPIORegister(uint16_t registerAddress, uint32_t regi
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		registersGPIO[index].pendingUpdates = 1;
+		registersGPIO[index].pendingUpdates = updateStatusPendingUpdate;
 	}
 
 
@@ -1314,7 +1305,7 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parameter->pendingUpdates = 1;
+		parameter->pendingUpdates = updateStatusPendingUpdate;
 
 
 		// Hack:  Update the SNR Cutoff in status when trying to set in algo parameters. 
@@ -1350,7 +1341,7 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parameter->pendingUpdates = 1;
+		parameter->pendingUpdates = updateStatusPendingUpdate;
 	}
 
  	return(bMessageOk);
@@ -1402,7 +1393,7 @@ bool ReceiverCANCapture::QueryAlgorithm()
 	// We should increment the pointer, but we just reset the 
 	// counter to 1.  This makes display more robust in case we 
 	// fall out of sync.
-	receiverStatus.currentAlgoPendingUpdates = 1;
+	receiverStatus.currentAlgoPendingUpdates = updateStatusPendingUpdate;
 
     return(bMessageOk);
 }
@@ -1430,7 +1421,7 @@ bool ReceiverCANCapture::QueryFPGARegister(uint16_t registerAddress)
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		registersFPGA[index].pendingUpdates = 1;
+		registersFPGA[index].pendingUpdates = updateStatusPendingUpdate;
 	}
 
 	return(bMessageOk);
@@ -1458,7 +1449,7 @@ bool ReceiverCANCapture::QueryADCRegister(uint16_t registerAddress)
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		registersADC[index].pendingUpdates = 1;
+		registersADC[index].pendingUpdates = updateStatusPendingUpdate;
 	}
 
 	return(bMessageOk);
@@ -1486,7 +1477,7 @@ bool ReceiverCANCapture::QueryGPIORegister(uint16_t registerAddress)
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		registersGPIO[index].pendingUpdates = 1;
+		registersGPIO[index].pendingUpdates = updateStatusPendingUpdate;
 	}
 
 	return(bMessageOk);
@@ -1514,7 +1505,7 @@ bool ReceiverCANCapture::QueryAlgoParameter(int algoID, uint16_t registerAddress
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parameter->pendingUpdates = 1;
+		parameter->pendingUpdates = updateStatusPendingUpdate;
 	}
 
 	return(bMessageOk);
@@ -1542,7 +1533,7 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 		// We should increment the pointer, but we just reset the 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
-		parameter->pendingUpdates = 1;
+		parameter->pendingUpdates = updateStatusPendingUpdate;
 	}
 
 	return(bMessageOk);
@@ -1601,7 +1592,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
             registerFPGA.address = registerNode.get<uint16_t>("address");
 		    registerFPGA.sDescription = registerNode.get<std::string>("description");
 			registerFPGA.value = 0L;
-			registerFPGA.pendingUpdates = 0;
+			registerFPGA.pendingUpdates = updateStatusUpToDate;
 
 			registersFPGA.push_back(registerFPGA);
         }
@@ -1621,7 +1612,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
             registerADC.address  = registerNode.get<uint16_t>("address");
 		    registerADC.sDescription = registerNode.get<std::string>("description");
 			registerADC.value = 0L;
-			registerADC.pendingUpdates = 0;
+			registerADC.pendingUpdates = updateStatusUpToDate;
 
 			registersADC.push_back(registerADC);
         }
@@ -1640,7 +1631,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
             registerGPIO.address  = gpioNode.get<uint16_t>("address");
 		    registerGPIO.sDescription = gpioNode.get<std::string>("description");
 			registerGPIO.value = 0L;
-			registerGPIO.pendingUpdates = 0;
+			registerGPIO.pendingUpdates = updateStatusUpToDate;
 
 			registersGPIO.push_back(registerGPIO);
         }
@@ -1688,7 +1679,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 						receiverStatus.signalToNoiseFloor = parameter.floatValue;
 					}
 
-					parameter.pendingUpdates = 0;
+					parameter.pendingUpdates = updateStatusUpToDate;
 					algoDescription.parameters.push_back(parameter);
 				} // if (parametersNode.first)
 			} // BOOST_FOREACH (parametersNode)

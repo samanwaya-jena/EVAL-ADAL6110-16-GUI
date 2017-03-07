@@ -209,6 +209,14 @@ public:
 }
 ReceiverStatus;
 
+typedef enum eUpdateStatus 
+{
+	updateStatusUpToDate = 0,
+	updateStatusPendingUpdate = 1,
+	updateStatusPendingVisual = 2
+}
+eUpdateStatus;
+
 /** \brief RegisterSetting is an internal representation of an AWL register for an internal device
 */
 
@@ -236,7 +244,7 @@ typedef struct RegisterSetting
 	/** \brief Count of the messages demanding a change in the value, that have not been acknowledged by the 
 	  *        AWL moldule. A non-zero count indicates that the value may not have been received and reflected in the module yet. 
 	*/
-	int pendingUpdates;
+	eUpdateStatus pendingUpdates;
 }
 RegisterSetting;
 
@@ -289,7 +297,7 @@ typedef struct AlgorithmParameter
 	/** \brief Count of the messages demanding a change in the value, that have not been acknowledged by the 
 	  *        AWL moldule. A non-zero count indicates that the value may not have been received and reflected in the module yet. 
 	*/
-	int pendingUpdates;
+	eUpdateStatus pendingUpdates;
 }
 AlgorithmParameter;
 
