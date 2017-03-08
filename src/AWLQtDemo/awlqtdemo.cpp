@@ -1948,6 +1948,9 @@ void AWLQtDemo::UpdateGPIOList()
 		{
 			listItem->setCheckState(Qt::Unchecked);
 		}
+
+		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingVisual)
+			receiverCaptures[0]->registersGPIO[i].pendingUpdates = updateStatusUpToDate;
 	}
 }
 
