@@ -48,6 +48,9 @@ public:
 	/** \brief ReceiverKvaserCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
+		* \param[in] inReceiverColumns number of columns in receiver array
+		* \param[in] inReceiverRows number of rows  in the receiver array
+		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
 		* \param[in] inKvaserChannel CAN Channel ID at the Kvaser level
 		* \param[in] inCANRate bit rate of the Receiver Unit (in kBPS).  See ReceiverCANCapture for allowable values (default should be 1MBps).
 		* \param[in] inFrameRate frameRate of the receiver
@@ -61,7 +64,8 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int inKvaserChannel, ReceiverCANCapture::eReceiverCANRate inCANRate, 
+	ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+		               const int inKvaserChannel, ReceiverCANCapture::eReceiverCANRate inCANRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 

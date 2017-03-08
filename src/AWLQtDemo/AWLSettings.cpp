@@ -354,10 +354,6 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometr
 
 	receiverPtr->channelsConfig.resize(channelQty);
 
-	// Range Wraparound trick
-	receiverPtr->lineWrapAround = channelGeometryNode.get<float>("lineWrapAround", 32767.0);
-	receiverPtr->channelsPerLine = channelGeometryNode.get<int>("channelsPerLine", 1);
-
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
 		char channelKeyString[32];
@@ -398,9 +394,6 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 
 
 	// Range Wraparound trick
-	receiverPtr->lineWrapAround = channelGeometryNode.get<float>("lineWrapAround", 32767.0);
-	receiverPtr->channelsPerLine = channelGeometryNode.get<int>("channelsPerLine", 1);
-
 	Get2DPoint(channelGeometryNode.get_child("arraySize"), columnsFloat, rowsFloat);
 	columns = columnsFloat;
 	rows = rowsFloat;
@@ -483,8 +476,6 @@ void AWLSettings::PutChannelGeometry(boost::property_tree::ptree &channelGeometr
 	channelGeometryNode.put<int>("channelQty", channelQty);
 
 	// Range Wraparound trick
-	channelGeometryNode.put<float>("lineWrapAround", receiverPtr->lineWrapAround);
-	channelGeometryNode.put<int>("channelsPerLine", receiverPtr->channelsPerLine);
 
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{

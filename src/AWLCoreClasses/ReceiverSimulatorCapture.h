@@ -51,7 +51,10 @@ public:
 	/** \brief ReceiverSimulatorCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
-	    * \param[in] inFrameRate frameRate of the receiver
+		* \param[in] inReceiverColumns number of columns in receiver array
+		* \param[in] inReceiverRows number of rows  in the receiver array
+		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
+		* \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
@@ -62,7 +65,7 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty,  
+	ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 

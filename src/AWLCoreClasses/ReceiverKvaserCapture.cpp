@@ -50,10 +50,12 @@ const int receiveTimeOutInMillisec = 4000;  // Default is 1000. As AWL refresh r
 const int reopenPortDelayMillisec = 4000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
-ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, const int inKvaserChannel, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
+ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+	                   const int inKvaserChannel, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCANCapture(receiverID, inReceiverChannelQty, inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround,
+				   inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
 canChannelID(inKvaserChannel),
 kvaserHandle(-1),
 closeCANReentryCount(0)

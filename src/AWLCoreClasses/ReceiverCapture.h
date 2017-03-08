@@ -372,7 +372,10 @@ public:
 	/** \brief ReceiverCapture constructor from user supplied values.
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
-	    * \param[in] inFrameRate frameRate of the receiver
+	    * \param[in] inReceiverColumns number of columns in receiver array
+		* \param[in] inReceiverRows number of rows  in the receiver array
+		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
+		* \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
@@ -383,7 +386,7 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverCapture(int receiverID, int inReceiverChannelQty, 
+	ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos);
@@ -677,6 +680,18 @@ public:
 	/** \brief Number of receiver channels on the sensor
       */
 	int receiverChannelQty;
+
+	/** \brief Number of rows in receiver array
+	*/
+	int receiverRowQty;
+
+	/** \brief Number of columns in receiver array
+	*/
+	int receiverColumnQty;
+
+	/** \brief line WrapAround is used as distance between rows in communications protocol
+	*/
+	float lineWrapAround;
 
 	/** \brief Current frame ID being built.
 	    \remark Note that the frameID corresponds to the "incomplete" frame currently being assembled.

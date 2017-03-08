@@ -41,10 +41,10 @@ const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::
 #define ConvertIntensityToSNR(v) (((v)/2.0) - 21.0)
 
 
-ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, eReceiverCANRate inCANRate,
-					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+					   eReceiverCANRate inCANRate, int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCapture(receiverID, inReceiverChannelQty, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
 canRate(inCANRate),
 closeCANReentryCount(0)
 

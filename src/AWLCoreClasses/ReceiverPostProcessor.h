@@ -59,7 +59,7 @@ protected:
 	// Detections from tracks where distance is oustide the range are not kept. 
 	// Return true if all tracks have been intepreted correctly.
 	// Return false if we have found incomplete tracks or invalid channel info.
-	bool BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr currentFrame, Detection::Vector &outDetections);
+	bool BuildEnhancedDetectionsFromTracks(ReceiverCapture::Ptr receiver, SensorFrame::Ptr currentFrame, Detection::Vector &outDetections);
 
 		/** \brief Predict the time to collision (distance = 0) between sensor and obstacle,  
 	  *        given current distance and speed, assuming constant deceleration.

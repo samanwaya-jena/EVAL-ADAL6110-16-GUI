@@ -80,7 +80,7 @@ bool ReceiverPostProcessor::CompleteTrackInfo(SensorFrame::Ptr currentFrame)
 } 
 
 
-bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr currentFrame, Detection::Vector &outDetections)
+bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::Ptr receiver, SensorFrame::Ptr currentFrame, Detection::Vector &outDetections)
 {
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	ReceiverSettings &receiverSettings = settings->receiverSettings[currentFrame->GetReceiverID()];
@@ -106,14 +106,14 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(SensorFrame::Ptr c
 			Track::Ptr track = *trackIterator;
 
 #if 1 // Process channel wraparound
-				int lineOffset = track->distance / receiverSettings.lineWrapAround;
-				if (lineOffset >=  currentFrame->channelQty/receiverSettings.channelsPerLine)
+				int lineIndex = track->distance / receiver->lineWrapAround;
+				if (lineIndex >= (receiver->receiverRowQty-1))
 				{
-					lineOffset = 0;
+					lineIndex = 0;
 				}
 				
-				float trackDistance = track->distance - (lineOffset * receiverSettings.lineWrapAround);
-				int trackChannel = (channelIndex%receiverSettings.channelsPerLine) + (lineOffset * receiverSettings.channelsPerLine);
+				float trackDistance = track->distance - (lineIndex * receiver->lineWrapAround);
+				int trackChannel = (channelIndex % receiver->receiverColumnQty) + (lineIndex * receiver->receiverColumnQty);
 				detectionIndex = detectionIndex % 8;
 #endif
 
@@ -182,7 +182,7 @@ bool ReceiverPostProcessor::GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr 
 	}
 
 	// Build distances from the tracks that were accumulated during the frame
-	if (!BuildEnhancedDetectionsFromTracks(currentFrame, detectionBuffer))
+	if (!BuildEnhancedDetectionsFromTracks(receiver, currentFrame, detectionBuffer))
 	{
 		DebugFilePrintf("Incomplete frame- %lu", inFrameID);
 	}

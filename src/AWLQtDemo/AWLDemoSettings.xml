@@ -49,7 +49,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KvaserLeaf</receiverType>
+      <receiverType>Simulator</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -59,7 +59,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryAWL7</receiverChannelGeometry>
+      <receiverChannelGeometry>GeometryAWL16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -132,7 +132,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -210,7 +210,7 @@
 
   		<!-- MS_LIFECAM_HD5000 @640x360 -->
 			<fov>
-			   <x>45.0</x>
+			   <x>54.0</x>
 			   <y>39.0</y>
 		  </fov>
      <radialCorrectionK1>0.0</radialCorrectionK1>
@@ -1679,6 +1679,7 @@
       </algo>
     </algos>
   </registerDescription_RevD>
+
   <GeometryAWL7>
        <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
@@ -1699,7 +1700,7 @@
           <roll>0.0</roll>
           <yaw>15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>25</maxRange>
         <displayColor>
           <red>192</red>
           <green>192</green>
@@ -1718,7 +1719,7 @@
           <roll>0.0</roll>
           <yaw>5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>25</maxRange>
          <displayColor>
            <red>192</red>
            <green>192</green>
@@ -1737,7 +1738,7 @@
           <roll>0.0</roll>
           <yaw>-5.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>25</maxRange>
         <displayColor>
           <red>192</red>
           <green>192</green>
@@ -1756,7 +1757,7 @@
           <roll>0.0</roll>
           <yaw>-15.0</yaw>
         </orientation>
-        <maxRange>15</maxRange>
+        <maxRange>25</maxRange>
         <displayColor>
           <red>192</red>
           <green>192</green>
@@ -1834,7 +1835,7 @@
       <y>2</y>
     </arraySize>
     <arrayFOV>
-      <x>15</x>
+      <x>19.29</x>
       <y>5.3</y>
     </arrayFOV>
     <pixelSpacing>
@@ -1846,7 +1847,8 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>30.0</maxRange>
+    <maxRange>25.0</maxRange>
+    
     <displayColor>
       <red>255</red>
       <green>128</green>

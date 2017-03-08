@@ -42,10 +42,12 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm ports 
 
 const long		    defaultSerialPortRate = 921600;  // Default PC Serial Port rate for EasySync CAN adapter.
 
-ReceiverEasySyncCapture::ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
+ReceiverEasySyncCapture::ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+	                   const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCANCapture(receiverID, inReceiverChannelQty, inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
+                   inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
 port(NULL),
 reader(NULL),
 io(),

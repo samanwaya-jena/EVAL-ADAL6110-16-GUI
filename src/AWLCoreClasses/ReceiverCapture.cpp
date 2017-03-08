@@ -44,13 +44,16 @@ const uint8_t defaultChannelMaskValue = 127;
 const float defaultSignalToNoiseFloor = -10.0;
 
 
-ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, 
+ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
 ThreadedWorker(),
 Publisher(),
 receiverID(receiverID),
 receiverChannelQty(inReceiverChannelQty),
+receiverColumnQty(inReceiverColumns),
+receiverRowQty(inReceiverRows), 
+lineWrapAround(inLineWrapAround),
 acquisitionSequence(new AcquisitionSequence()),
 frameID(0),
 currentFrame(new SensorFrame(receiverID, 0, inReceiverChannelQty)),
@@ -582,17 +585,20 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 		return (false);
 	}
 
+	// Geometry section is found.  Check if we have a channel based configuration or
+	// array based configuration;
+
 	receiverChannelQty = geometryNodePtr->get<int>("channelQty", -1);
+	receiverColumnQty = receiverChannelQty;
+	receiverRowQty = 1;
 	if (receiverChannelQty == -1)
 	{
 		float columns(0);
 		float rows(0);
-		columns = geometryNodePtr->get<int>("arraySize.x", -1);
-		rows = geometryNodePtr->get<int>("arraySize.y", -1);
-		receiverChannelQty = ((int)columns) * ((int)rows);
+		receiverColumnQty = geometryNodePtr->get<int>("arraySize.x", -1);
+		receiverRowQty = geometryNodePtr->get<int>("arraySize.y", -1);
+		receiverChannelQty = ((int)receiverColumnQty) * ((int)receiverRowQty);
 	}
-
-///	BOOST_FOREACH(ptree::value_type &registersFPGANode, configurationNodePtr->get_child("registersFPGA"))
 
 	return(true);
 }

@@ -53,6 +53,9 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] inReceiverChannelQty number of channels in the receiver
 		* \param[in] inSerialPort name of the serial port for the receiver
+		* \param[in] inReceiverColumns number of columns in receiver array
+		* \param[in] inReceiverRows number of rows  in the receiver array
+		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
 		* \param[in] inCANRate bit rate of the Receiver Unit (in kBPS).  See ReceiverCANCapture for allowable values (default should be 1MBps).
 	    * \param[in] inFrameRate frameRate of the receiver
 	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
@@ -65,7 +68,8 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
+	ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+		               const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
 
