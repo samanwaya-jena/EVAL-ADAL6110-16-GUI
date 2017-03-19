@@ -486,5 +486,11 @@
     <Image Include="Images\Widgets\down_arrow_dark.png">
       <Filter>Resource Files\Widgets</Filter>
     </Image>
+    <Image Include="Images\Logos\Sungwoo.ico">
+      <Filter>Resource Files\Logos</Filter>
+    </Image>
+    <Image Include="Images\Logos\SungwooLogoIconTransparent.png">
+      <Filter>Resource Files\Logos</Filter>
+    </Image>
   </ItemGroup>
 </Project>

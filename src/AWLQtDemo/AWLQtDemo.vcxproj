@@ -745,6 +745,8 @@
     <Image Include="Images\ButtonBitmaps\Settings.png" />
     <Image Include="Images\Logos\AWLQtDemo.ico" />
     <Image Include="Images\Logos\Phantom-Black-logo.png" />
+    <Image Include="Images\Logos\Sungwoo.ico" />
+    <Image Include="Images\Logos\SungwooLogoIconTransparent.png" />
     <Image Include="Images\Widgets\checkbox_checked.png" />
     <Image Include="Images\Widgets\checkbox_checked_hover.png" />
     <Image Include="Images\Widgets\checkbox_checked_pressed.png" />

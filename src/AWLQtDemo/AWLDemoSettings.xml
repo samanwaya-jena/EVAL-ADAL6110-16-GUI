@@ -17,10 +17,10 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Phantom-Black-logo.png</logoFileName>
+    <logoFileName>:/Logos/Images/Logos/SungwooLogoIconTransparent.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
-    <iconFileName>AWLQtDemo.ico</iconFileName>
+    <iconFileName>:/Logos/Images/Logos/SungwooLogoIconTransparent.png</iconFileName>
 
     <!-- displayShowSize:: Default display mode for the main window
          Possible values are:
