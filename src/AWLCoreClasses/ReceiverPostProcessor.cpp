@@ -20,6 +20,7 @@
 
 
 #include <boost/foreach.hpp>
+#include <boost/multi_array.hpp>
 
 #include "AWLSettings.h"
 #include "DetectionStruct.h"
@@ -89,13 +90,23 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 	// Make sure that we start from scratch. All output detectio vesctor is cleared.
 	outDetections.clear();
 
+	//std::array < std::array <int, receiver->receiverRowQty >, receiver->receiverColumnQty > detectionIndex;
+
+	boost::multi_array<int, 2> detectionIndex(boost::extents[receiver->receiverColumnQty][receiver->receiverRowQty]);
+	for (int columnIndex = 0; columnIndex < receiver->receiverColumnQty; columnIndex++)
+	{
+		for (int rowIndex = 0; rowIndex < receiver->receiverRowQty; rowIndex++)
+		{
+			detectionIndex[columnIndex][rowIndex] = 0;
+		}
+	}
+
 	// In channel order, recreate individual detections from the tracks.
-	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++) 
+	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++)
 	{
 		ChannelMask channelMask;
-		channelMask.byteData = 0x01 << (channelIndex%8);
+		channelMask.byteData = 0x01 << (channelIndex % 8);
 
-		int detectionIndex= 0;
 
 		// Re-Create detections from the coalesced tracks
 		int trackQty = currentFrame->tracks.size();
@@ -105,23 +116,27 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 		{
 			Track::Ptr track = *trackIterator;
 
+			int lineIndex = 0;
+			int columnIndex = 0;
+
 #if 1 // Process channel wraparound
-				int lineIndex = track->distance / receiver->lineWrapAround;
+				lineIndex = track->distance / receiver->lineWrapAround;
 				if (lineIndex >= (receiver->receiverRowQty-1))
 				{
 					lineIndex = 0;
 				}
+
+				columnIndex = channelIndex % receiver->receiverColumnQty;
 				
 				float trackDistance = track->distance - (lineIndex * receiver->lineWrapAround);
-				int trackChannel = (channelIndex % receiver->receiverColumnQty) + (lineIndex * receiver->receiverColumnQty);
-				detectionIndex = detectionIndex % 8;
+				int trackChannel = (lineIndex * receiver->receiverColumnQty) + columnIndex;
 #endif
 
 			if ( track->IsComplete() && (track->channels.byteData & channelMask.byteData) &&
 				(trackDistance >= receiverSettings.displayedRangeMin) && 
 				(trackDistance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
  			{
-				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, channelIndex, detectionIndex++));
+				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, trackChannel, detectionIndex[columnIndex][lineIndex]++));
 				outDetections.push_back(detection);
 
 				detection->channelID = trackChannel;
