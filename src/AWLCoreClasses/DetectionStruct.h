@@ -60,7 +60,7 @@ typedef union
 		bool channel7 : 1;
 	} bitFieldData;
 
-} ChannelMask;
+} ChannelMask, AlertChannelMask;
 
 
 /** \brief The Alert class defines alert conditions.
@@ -100,10 +100,10 @@ public:
 	static AlertCondition::ThreatLevel FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track);
 
 	int	GetReceiverID() { return(receiverID); }
-	ChannelMask	GetChannelMask() { return(channelMask); }
+	AlertChannelMask	GetChannelMask() { return(alertChannelMask); }
 	float GetMinRange() { return (minRange); }
 	float GetMaxRange() { return (maxRange); }
-	float GetThreatLevel (){ return(threatLevel); }
+	ThreatLevel GetThreatLevel (){ return(threatLevel); }
 
 	static void Store(AlertCondition::Ptr storedCondition) { globalAlertsVector.push_back(storedCondition); }
 
@@ -117,7 +117,7 @@ public:
 	int	  receiverID;
 
 	/** \brief channelMask of the channels where detection origins from */
-	ChannelMask	  channelMask;
+	AlertChannelMask	  alertChannelMask;
 
 	/** \brief minimum range for triggerting of the alert. Nature depends on AlertType */
 	float	  minRange;
@@ -266,7 +266,11 @@ public:
 	AlertCondition::ThreatLevel	threatLevel;
 
 	/** \brief Channels in which detections were made for the track **/
-	ChannelMask channels;
+	ChannelMask trackChannels;
+
+	/** \brief Main channel in which detections is made for the track **/
+	uint16_t trackMainChannel;
+
 
 	// A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed.
 

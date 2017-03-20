@@ -88,7 +88,7 @@ Track::Ptr AcquisitionSequence::MakeUniqueTrack(SensorFrame::Ptr currentFrame, T
 
 bool AcquisitionSequence::FindSensorFrame(FrameID frameID, SensorFrame::Ptr &outSensorFrame)
 {
-	for (int i = 0; i < sensorFrames.size(); i++) 
+	for (uint16_t i = 0; i < sensorFrames.size(); i++) 
 	{
 		SensorFrame::Ptr sensorFrame = sensorFrames._Get_container().at(i);
 		if (sensorFrame->GetFrameID() == frameID) 
@@ -236,14 +236,15 @@ part3Entered(false),
 part4Entered(false)
 
 {
-	channels.byteData = 0;
+	trackChannels.byteData = 0;
+	trackMainChannel = 0;
 }
 
 
-AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, ChannelMask inChannelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel):
+AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, AlertChannelMask inChannelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel):
 alertType(inAlertType),
 receiverID(inReceiverID),
-channelMask(inChannelMask),
+alertChannelMask(inChannelMask),
 minRange(inMinRange),
 maxRange(inMaxRange),
 threatLevel(inThreatLevel)
@@ -263,10 +264,10 @@ AlertCondition::ThreatLevel AlertCondition::FindDetectionThreat(boost::shared_pt
 	while (alertIterator != globalAlertsVector.end())
 	{
 		AlertCondition::Ptr alert = *alertIterator;
-		ChannelMask channelMask;
-		channelMask.byteData = 0x01 << detection->channelID;
+		AlertChannelMask theChannelMask;
+		theChannelMask.byteData = 0x01 << detection->channelID;
 
-		if (alert->receiverID == detection->receiverID && (alert->channelMask.byteData & channelMask.byteData))
+		if (alert->receiverID == detection->receiverID && (alert->alertChannelMask.byteData & theChannelMask.byteData))
 		{
 			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
 			switch (alert->alertType) {
@@ -329,10 +330,12 @@ AlertCondition::ThreatLevel AlertCondition::FindTrackThreat(int inReceiverID, bo
 	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
 
 	AlertCondition::Vector::iterator  alertIterator = globalAlertsVector.begin();
+	uint16_t trackMask = 1 << track->trackMainChannel;
+
 	while (alertIterator != globalAlertsVector.end())
 	{
 		AlertCondition::Ptr alert = *alertIterator;
-		if (alert->receiverID == inReceiverID && (alert->channelMask.byteData & track->channels.byteData))
+		if (alert->receiverID == inReceiverID && (alert->alertChannelMask.byteData & trackMask))
 		{
 			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
 			switch (alert->alertType) {

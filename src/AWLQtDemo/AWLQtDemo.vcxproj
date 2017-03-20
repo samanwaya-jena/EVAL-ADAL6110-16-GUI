@@ -389,6 +389,7 @@
     <None Include="AWLDemoSettings.xml">
       <DeploymentContent>false</DeploymentContent>
       <SubType>Designer</SubType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
     </None>
     <None Include="ClassDiagram1.cd" />
     <None Include="plugin1.bin" />

@@ -226,12 +226,12 @@ bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publishe
 	return(true);
 }
 
-FrameID ReceiverCapture::GetFrameID(int  inFrameIndex)
+FrameID ReceiverCapture::GetFrameID(uint16_t  inFrameIndex)
 {
 	boost::mutex::scoped_lock updateLock(GetMutex());
 	FrameID frameID;
 
-	if (inFrameIndex > acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
+	if (inFrameIndex > (int) acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
 	else 
 	{ 
 		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(inFrameIndex);
@@ -357,7 +357,8 @@ void ReceiverCapture::ProcessCompletedFrame()
 	if (receiverStatus.messageMask.bitFieldData.distance_1_4 ||
 	    receiverStatus.messageMask.bitFieldData.distance_5_8 || 
 		receiverStatus.messageMask.bitFieldData.intensity_1_4 ||
-		receiverStatus.messageMask.bitFieldData.intensity_5_8)
+		receiverStatus.messageMask.bitFieldData.intensity_5_8 ||
+		receiverStatus.messageMask.bitFieldData.distance_intensity)
 	{
 		LogDistances(logFile, currentFrame);
 	}
@@ -420,7 +421,7 @@ void ReceiverCapture::TimestampDetections(SensorFrame::Ptr sourceFrame)
 int ReceiverCapture::FindRegisterByAddress(const RegisterSet &inRegisterSet, uint16_t inAddress)
 
 {
-	for (int i = 0; i < inRegisterSet.size(); i++) 
+	for (uint16_t i = 0; i < inRegisterSet.size(); i++) 
 	{
 		if (inRegisterSet.at(i).address == inAddress)
 		{
@@ -434,7 +435,7 @@ int ReceiverCapture::FindRegisterByAddress(const RegisterSet &inRegisterSet, uin
 AlgorithmParameter * ReceiverCapture::FindAlgoParamByAddress(int inAlgoID, uint16_t inAddress)
 {
 
-	for (int i = 0; i < parametersAlgos.algorithms[inAlgoID].parameters.size(); i++) 	
+	for (uint16_t i = 0; i < parametersAlgos.algorithms[inAlgoID].parameters.size(); i++) 	
 	{
 		if ( parametersAlgos.algorithms[inAlgoID].parameters[i].address == inAddress)
 		{
@@ -482,7 +483,7 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 		if (track->IsComplete()) 
 		{
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;intensity,speed;acceleration;probability;timeToCollision);
-			LogFilePrintf(logFile, " ;Track;%d; ; ; ;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.1f;%.1f;%.3f;%.1f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;",
+			LogFilePrintf(logFile, " ;Track;%d; ; ; ;Expected;%.2f;%.1f;Val;%.2f;%.1f;%.1f;%.1f;%.3f;%.1f;%.0f;%d;%d;%d;%d;%d;%d;%d;%d;%d;",
 				track->trackID,
 				targetHintDistance,
 				targetHintAngle,
@@ -494,13 +495,14 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 				track->decelerationToStop,
 				track->probability,
 				track->threatLevel,
-				(track->channels.bitFieldData.channel0)? 0 : 0, 
-				(track->channels.bitFieldData.channel1) ? 1 : 0,
-				(track->channels.bitFieldData.channel2) ? 2 : 0,
-				(track->channels.bitFieldData.channel3) ? 3 : 0,
-				(track->channels.bitFieldData.channel4) ? 4 : 0,
-				(track->channels.bitFieldData.channel5) ? 5 : 0,
-				(track->channels.bitFieldData.channel6) ? 6 : 0);
+				track->trackMainChannel, 
+				(track->trackChannels.bitFieldData.channel0)? 0 : 0, 
+				(track->trackChannels.bitFieldData.channel1) ? 1 : 0,
+				(track->trackChannels.bitFieldData.channel2) ? 2 : 0,
+				(track->trackChannels.bitFieldData.channel3) ? 3 : 0,
+				(track->trackChannels.bitFieldData.channel4) ? 4 : 0,
+				(track->trackChannels.bitFieldData.channel5) ? 5 : 0,
+				(track->trackChannels.bitFieldData.channel6) ? 6 : 0);
 
 		}  // if (track...
 
@@ -558,6 +560,7 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 		if (receiverNode.get<bool>("msgEnableDistance_5_8")) receiverStatus.messageMask.bitFieldData.distance_5_8 = 1;
 		if (receiverNode.get<bool>("msgEnableIntensity_1_4")) receiverStatus.messageMask.bitFieldData.intensity_1_4 = 1;
 		if (receiverNode.get<bool>("msgEnableIntensity_5_8")) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
+		if (receiverNode.get<bool>("msgEnableDistanceIntensity")) receiverStatus.messageMask.bitFieldData.distance_intensity = 1;
 
 		return(true);
 

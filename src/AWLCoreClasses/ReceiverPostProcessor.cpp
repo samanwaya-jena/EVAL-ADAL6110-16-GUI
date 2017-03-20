@@ -132,7 +132,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 				int trackChannel = (lineIndex * receiver->receiverColumnQty) + columnIndex;
 #endif
 
-			if ( track->IsComplete() && (track->channels.byteData & channelMask.byteData) &&
+			if ( track->IsComplete() && /*(track->trackMainChannel == channelIndex) &&*/
 				(trackDistance >= receiverSettings.displayedRangeMin) && 
 				(trackDistance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
  			{
@@ -165,7 +165,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
 				detection->relativeToWorldSpherical = detection->relativeToWorldCart;
 			}  // if (track...
-			else if (!track->IsComplete() || (track->channels.byteData == 0))
+			else if (!track->IsComplete())
 			{
 				bAllTracksComplete = false;
 			}

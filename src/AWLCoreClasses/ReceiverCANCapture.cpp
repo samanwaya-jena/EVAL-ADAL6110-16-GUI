@@ -185,6 +185,10 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	{
 		ParseChannelIntensity(inMsg);
 	}
+	else if (msgID == 60)
+	{
+		ParseChannelDistanceAndIntensity(inMsg);
+	}
 	else if (msgID == 80) /* Command */
 	{
 		ParseControlMessage(inMsg);
@@ -345,7 +349,6 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
 }
 
-
 void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 
 {
@@ -364,8 +367,9 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	}
 
 	boost::mutex::scoped_lock rawLock(GetMutex());
-	float intensity = ((float) intensityPtr[0]) / maxIntensity;
-	int detectionIndex = 0+detectOffset;
+
+	float intensity = ((float)intensityPtr[0]) / maxIntensity; 
+	int detectionIndex = 0 + detectOffset;
 	Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
 	detection->intensity = ConvertIntensityToSNR(intensity);
 	detection->trackID = 0;
@@ -396,6 +400,45 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
 }
 
+void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
+
+{
+	int channel;
+	int block = 0;
+	int detectOffset = 0;
+	uint16_t *dataPtr = (uint16_t *)inMsg.data;
+
+	channel = dataPtr[0];
+
+	if (channel >= 0)
+	{
+		boost::mutex::scoped_lock rawLock(GetMutex());
+
+		float distance = (float)(dataPtr[1]);
+		distance /= 100;
+		distance += measurementOffset;
+
+		float intensity = ((float)dataPtr[2]) / maxIntensity;
+
+		int detectionIndex = (int)dataPtr[3];
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+
+		detection->distance = distance;
+		detection->intensity = ConvertIntensityToSNR(intensity);
+
+		detection->firstTimeStamp = currentFrame->timeStamp;
+		detection->timeStamp = currentFrame->timeStamp;
+
+		detection->trackID = 0;
+		detection->velocity = 0;
+
+
+		rawLock.unlock();
+	}
+
+	// Debug and Log messages
+	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d", inMsg.id, dataPtr[0], dataPtr[1], dataPtr[2]);
+}
 
 
 void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
@@ -410,7 +453,28 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	track->firstTimeStamp = currentFrame->timeStamp;
 	track->timeStamp = currentFrame->timeStamp;
 
-	track->channels.byteData = *(uint8_t *) &inMsg.data[2];
+	track->trackChannels.byteData = *(uint8_t *) &inMsg.data[2];
+	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
+
+	// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
+	// Other versions send trackMainChannel.
+	// Rebuild trackMainChannel from AWL 7 data.
+	if (track->trackChannels.byteData  && !track->trackMainChannel)
+	{
+		track->trackMainChannel = 0;
+		uint8_t channelMask = 0x01;
+		for (int channel = 0; channel < 8; channel++)
+		{
+			if (track->trackChannels.byteData & channelMask)
+			{
+				track->trackMainChannel = channel;
+				break;
+			}
+			channelMask <<= 1;
+		}
+	}
+
+	// Decode rest of message
 	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
 	track->probability = *(uint8_t *) &inMsg.data[5];
 	track->timeToCollision = (*(uint8_t *) &inMsg.data[6]) / 1000.0;  // Convert from ms to seconds.  Currently empty
@@ -419,7 +483,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 	rawLock.unlock();
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %f %f", inMsg.id, track->trackID, track->channels, track->probability, track->timeToCollision);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %d %f %f", inMsg.id, track->trackID, track->trackChannels, track->trackMainChannel, track->probability, track->timeToCollision);
 }
 
 
@@ -1710,6 +1774,18 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 		{
 			awl::ChannelMask newChannelMask;
 			newChannelMask.byteData = *(uint8_t *)&inMsg.data[2]; 
+			if (newChannelMask.byteData < lastChannelMask.byteData)
+			{
+				ProcessCompletedFrame();
+			}
+
+			lastChannelMask = newChannelMask;
+		}
+
+		if (msgID == 60)
+		{
+			awl::ChannelMask newChannelMask;
+			newChannelMask.byteData = 1 << (inMsg.data[0]%8);
 			if (newChannelMask.byteData < lastChannelMask.byteData)
 			{
 				ProcessCompletedFrame();

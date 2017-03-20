@@ -326,6 +326,12 @@ protected:
      */
 	void ParseChannelIntensity(AWLCANMessage &inMsg);
 
+	/** \brief Read the channel distance and intensity readings from CAN messages (60)
+	* \param[in] inMsg   CAN message contents
+	* \remarks This message is sent in place of independent distance and intensity messages on sensors made after AWL
+	*/
+	void ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg);
+
 	/** \brief Read the obstacle track description message (10). If required, creste the corresponding Track object
  	    * \param[in] inMsg   CAN message contents
      */

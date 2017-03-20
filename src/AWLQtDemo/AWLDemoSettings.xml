@@ -96,6 +96,7 @@
       <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
 
  
       <sensorGeometry>

@@ -52,14 +52,14 @@ typedef union
 {
 	uint8_t byteData;
 	struct  {
-		bool unused_0		: 1;
-		bool obstacle		: 1;
-		bool distance_1_4	: 1;
-		bool distance_5_8	: 1;
-		bool intensity_1_4	: 1;
-		bool intensity_5_8	: 1;
-		bool unused_6		: 1;
-		bool unused_7		: 1;
+		bool unused_0				: 1;
+		bool obstacle				: 1;
+		bool distance_1_4			: 1;
+		bool distance_5_8			: 1;
+		bool intensity_1_4			: 1;
+		bool intensity_5_8			: 1;
+		bool distance_intensity		: 1;
+		bool unused_7				: 1;
 	} bitFieldData;
 } MessageMask;
 
@@ -459,7 +459,7 @@ public:
 	    \remark Note that the frameID corresponds to the "incomplete" frame currently being assembled.
 		        For the last complete frame, useGetLastFrameID();
      */
-	virtual FrameID GetFrameID(int inFrameIndex);
+	virtual FrameID GetFrameID(uint16_t inFrameIndex);
 
 	/** \brief Return theframe identification number of the last complete frame assembled 
      * \return Last complete frame identification number.
