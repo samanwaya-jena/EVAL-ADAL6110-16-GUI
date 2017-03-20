@@ -172,7 +172,7 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometr
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
 		channelConfigPtr->channelIndex = channelIndex;
 		Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		float roll;
+
 		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
 	} // for (int channelIndex = 0;
 
@@ -200,8 +200,8 @@ void AWLSettings::Put2DPoint(boost::property_tree::ptree &node, float x, float y
 
 void AWLSettings::PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll)
 {
-	boost::property_tree::ptree &positionNode = geometryNode.put_child("position");
-	boost::property_tree::ptree &orientationNode = geometryNode.put_child("orientation");
+	boost::property_tree::ptree &positionNode = geometryNode.put_child("position", boost::property_tree::ptree(""));
+	boost::property_tree::ptree &orientationNode = geometryNode.put_child("orientation", boost::property_tree::ptree(""));
 	PutPosition(positionNode, forward, left, up);
 	PutOrientation(orientationNode, pitch, yaw, roll);
 }
@@ -219,20 +219,20 @@ void AWLSettings::PutChannelGeometry(boost::property_tree::ptree &channelGeometr
 	// All channel info for the receiver
 	channelGeometryNode.put<int>("channelQty", channelQty);
 
+	// Range Wraparound trick
+
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
 		char channelKeyString[32];
 		sprintf(channelKeyString, "channel%d", channelIndex);
 		std::string channelKey = channelKeyString;
 
-		boost::property_tree::ptree &channelNode = channelGeometryNode.put_child(channelKey);
+		boost::property_tree::ptree &channelNode = channelGeometryNode.put_child(channelKey, boost::property_tree::ptree(""));
 
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
 		channelConfigPtr->channelIndex = channelIndex;
-		Put2DPoint(channelNode.put_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		float roll;
+		Put2DPoint(channelNode.put_child("fov", boost::property_tree::ptree("")), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
+
 		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
 	} // for (int channelIndex = 0;
-
 }
-

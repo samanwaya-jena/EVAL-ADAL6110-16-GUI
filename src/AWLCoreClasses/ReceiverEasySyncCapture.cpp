@@ -174,7 +174,6 @@ void ReceiverEasySyncCapture::DoOneThreadIteration()
 	if (!WasStopped())
     {
 		AWLCANMessage msg;
-		float distance;
 
 		if (port && reader && port->is_open()) 
 		{
@@ -330,7 +329,7 @@ bool ReceiverEasySyncCapture::ParseLine(std::string inResponse, AWLCANMessage &o
 		return(bResult);
 	}
 
-	if (inResponse.length() < (6 + outMsg.len))
+	if (inResponse.length() < (uint16_t) (6 + outMsg.len))
 	{
 		InvalidateFrame();
 		return(bResult);
