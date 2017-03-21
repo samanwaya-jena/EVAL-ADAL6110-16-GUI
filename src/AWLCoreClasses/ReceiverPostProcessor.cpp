@@ -17,10 +17,10 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 
 #include <boost/foreach.hpp>
-#include <boost/multi_array.hpp>
 
 #include "AWLSettings.h"
 #include "DetectionStruct.h"
@@ -87,19 +87,10 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 	ReceiverSettings &receiverSettings = settings->receiverSettings[currentFrame->GetReceiverID()];
 	bool bAllTracksComplete = true;
 
-	// Make sure that we start from scratch. All output detectio vesctor is cleared.
+	// Make sure that we start from scratch. All output detection vector is cleared.
 	outDetections.clear();
+	std::vector<int> detectionIndex(currentFrame->channelQty);
 
-	//std::array < std::array <int, receiver->receiverRowQty >, receiver->receiverColumnQty > detectionIndex;
-
-	boost::multi_array<int, 2> detectionIndex(boost::extents[receiver->receiverColumnQty][receiver->receiverRowQty]);
-	for (int columnIndex = 0; columnIndex < receiver->receiverColumnQty; columnIndex++)
-	{
-		for (int rowIndex = 0; rowIndex < receiver->receiverRowQty; rowIndex++)
-		{
-			detectionIndex[columnIndex][rowIndex] = 0;
-		}
-	}
 
 	// In channel order, recreate individual detections from the tracks.
 	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++)
@@ -116,27 +107,34 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 		{
 			Track::Ptr track = *trackIterator;
 
-			int lineIndex = 0;
-			int columnIndex = 0;
 
-#if 1 // Process channel wraparound
+			int trackChannel = track->trackMainChannel;
+			float trackDistance = track->distance;
+
+#if 1 // Process channel wraparound if set
+			if (receiver->lineWrapAround > 0.0)
+			{
+				int lineIndex = 0;
+				int columnIndex = 0;
+
 				lineIndex = track->distance / receiver->lineWrapAround;
-				if (lineIndex >= (receiver->receiverRowQty-1))
+				if (lineIndex > (receiver->receiverRowQty - 1))
 				{
 					lineIndex = 0;
 				}
 
 				columnIndex = channelIndex % receiver->receiverColumnQty;
-				
-				float trackDistance = track->distance - (lineIndex * receiver->lineWrapAround);
-				int trackChannel = (lineIndex * receiver->receiverColumnQty) + columnIndex;
+
+				trackChannel = (lineIndex * receiver->receiverColumnQty) + columnIndex;
+				trackDistance = track->distance - (lineIndex * receiver->lineWrapAround);
+			}
 #endif
 
-			if ( track->IsComplete() && /*(track->trackMainChannel == channelIndex) &&*/
+			if ( track->IsComplete() && (trackChannel == channelIndex) &&
 				(trackDistance >= receiverSettings.displayedRangeMin) && 
 				(trackDistance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
  			{
-				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, trackChannel, detectionIndex[columnIndex][lineIndex]++));
+				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, trackChannel, detectionIndex[trackChannel]++));
 				outDetections.push_back(detection);
 
 				detection->channelID = trackChannel;

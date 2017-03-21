@@ -22,6 +22,7 @@
 #endif
 
 #include <fstream>
+#include <limits>
 
 
 #include "Publisher.h"
@@ -591,6 +592,7 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 	// Geometry section is found.  Check if we have a channel based configuration or
 	// array based configuration;
 
+	lineWrapAround = geometryNodePtr->get<float>("lineWrapAround", -1.0);
 	receiverChannelQty = geometryNodePtr->get<int>("channelQty", -1);
 	receiverColumnQty = receiverChannelQty;
 	receiverRowQty = 1;

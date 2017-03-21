@@ -79,28 +79,35 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		{
 			for (int detection = 0; detection < 8; detection++)
 			{
-				Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 8) + detection);
-				track->firstTimeStamp = currentFrame->timeStamp;
+				// Only display even on even lines and odd on odd lines
+				int lineIndex = (channel / this->receiverColumnQty);
+				int lineQty = (GetChannelQty() / this->receiverColumnQty);  
+				if (lineIndex == (channel%lineQty)) 
+				{
+					Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 8) + detection);
+					track->firstTimeStamp = currentFrame->timeStamp;
 
-				track->timeStamp = currentFrame->timeStamp;
-//				track->distance = (channel * 7) + (detection*2) + trackDistance;
-				track->distance = (detection * 2) + trackDistance;
-				track->distance += (channel / 8) * 401;  // Line wraparound at 400 meters
-				track->intensity = 1.00;
-				track->trackChannels.byteData = 0x01 << (channel % 8);
-				track->trackMainChannel = channel;
+					track->timeStamp = currentFrame->timeStamp;
+					track->distance = (detection * 2) + trackDistance;
+#if 0
+					track->distance += (channel / 8) * 401;  // Line wraparound at 400 meters
+#endif
+					track->intensity = 1.00;
+					track->trackChannels.byteData = 0x01 << (channel % 8);
+					track->trackMainChannel = channel;
 
-				track->velocity = 3;
-				track->acceleration = 0;
-				track->threatLevel = AlertCondition::eThreatLow;
-				track->part1Entered = true;
-				track->part2Entered = true;
-				track->part3Entered = true;
-				track->part4Entered = true;
+					track->velocity = 3;
+					track->acceleration = 0;
+					track->threatLevel = AlertCondition::eThreatLow;
+					track->part1Entered = true;
+					track->part2Entered = true;
+					track->part3Entered = true;
+					track->part4Entered = true;
 
-				track->probability = 99;
-				track->timeStamp = elapsed;
-				track->firstTimeStamp = elapsed;
+					track->probability = 99;
+					track->timeStamp = elapsed;
+					track->firstTimeStamp = elapsed;
+				}
 			}
 		}
 

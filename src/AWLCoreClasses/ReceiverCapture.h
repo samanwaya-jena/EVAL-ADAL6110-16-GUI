@@ -690,6 +690,7 @@ public:
 	int receiverColumnQty;
 
 	/** \brief line WrapAround is used as distance between rows in communications protocol
+	    \remark A negative value means that line wrap around is not used.
 	*/
 	float lineWrapAround;
 

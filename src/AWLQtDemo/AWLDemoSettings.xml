@@ -1685,7 +1685,7 @@
        <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
-      <lineWrapAround>2000.0</lineWrapAround>
+      <lineWrapAround>-1</lineWrapAround>
       <channelsPerLine>8</channelsPerLine>
 
 
@@ -1828,7 +1828,7 @@
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
-    <lineWrapAround>400.0</lineWrapAround>
+    <lineWrapAround>-1</lineWrapAround>
     <channelsPerLine>8</channelsPerLine>
 
     <arraySize>
