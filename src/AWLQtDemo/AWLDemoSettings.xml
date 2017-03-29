@@ -6,10 +6,10 @@
 	       screen are displayed. -->
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
-    <displayTableViewWindow>false</displayTableViewWindow>
+    <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>false</displayScopeWindow>
-    <displayCameraWindow>true</displayCameraWindow>
+    <displayCameraWindow>false</displayCameraWindow>
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
@@ -17,10 +17,10 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>:/Logos/Images/Logos/SungwooLogoIconTransparent.png</logoFileName>
+    <logoFileName>:/Logos/Images/Logos/Phantom-Black-logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
-    <iconFileName>:/Logos/Images/Logos/SungwooLogoIconTransparent.png</iconFileName>
+    <iconFileName>:/Logos/Images/Logos/AWLQtDemo.ico</iconFileName>
 
     <!-- displayShowSize:: Default display mode for the main window
          Possible values are:
@@ -34,7 +34,7 @@
   </layout>
 
   <debug>
-    <enableDebugFile>false</enableDebugFile>
+    <enableDebugFile>true</enableDebugFile>
     <enableLogFile>false</enableLogFile>
   </debug>
 
@@ -49,7 +49,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+      <receiverType>KvaserLeaf</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -86,7 +86,7 @@
 		       processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>255</channelMask>
-
+;
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -102,7 +102,7 @@
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0.0</forward>
+          <forward>0</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
@@ -115,7 +115,7 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMin>4.0</displayedRangeMin>
       <displayedRangeMax>45</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
 
@@ -300,7 +300,7 @@
 
   
   <displayTableView>
-    <displayedDetectionsPerChannelInTableView>4</displayedDetectionsPerChannelInTableView>
+    <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
   </displayTableView>
 
   <display2D>
@@ -1836,19 +1836,19 @@
       <y>2</y>
     </arraySize>
     <arrayFOV>
-      <x>19.29</x>
-      <y>5.3</y>
+      <x>7</x>
+      <y>3.9</y>
     </arrayFOV>
     <pixelSpacing>
-      <x>0.25</x>
-      <y>1.9</y>
+      <x>0.1</x>
+      <y>1.19</y>
     </pixelSpacing>
     <arrayOffset>
       <x>0.0</x>
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>25.0</maxRange>
+    <maxRange>50.0</maxRange>
     
     <displayColor>
       <red>255</red>

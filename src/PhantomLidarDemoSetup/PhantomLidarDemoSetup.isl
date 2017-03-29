@@ -1912,7 +1912,6 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>awldemosettings.xml2</td><td>ISX_DEFAULTCOMPONENT5</td><td>AWLDEM~1.XML|AWLDemoSettings.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\AWLQtDemo\AWLDemoSettings.xml</td><td>1</td><td/></row>
 		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
 		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
 		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;VSSolutionFolder&gt;\InstallableDLLs\platforms\qwindows.dll</td><td>1</td><td/></row>
@@ -3909,7 +3908,9 @@
 		<row><td>_B8EC275C72F9465396B65A119DD1E55E.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_BCC08169023740BF9B3F8AA2B7FA584D.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_C20C28C33F7B44E6840AA41D03B98107.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Debug\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_C5E0FB68B4454056B3A6D57D6FF0E921.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_C786EE3F46254A179CF956DF24772CD8.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_CA3CE2C7728A41B28E99005C7A45E0FE.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_DC211E1A7F5042428957A559BE6F13B0.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_E0D417C7511F40909302C982A72E7539.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_F1D96A0945E545829B6473ECADF50593.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
