@@ -69,12 +69,7 @@ private slots:
 	void on_sensorDepthSpin_editingFinished();
 	void on_calibrationRangeMinSpin_editingFinished();
 	void on_calibrationRangeMax0Spin_editingFinished();	
-	void on_calibrationRangeMax1Spin_editingFinished();
-	void on_calibrationRangeMax2Spin_editingFinished();
-	void on_calibrationRangeMax3Spin_editingFinished();
-	void on_calibrationRangeMax4Spin_editingFinished();
-	void on_calibrationRangeMax5Spin_editingFinished();
-	void on_calibrationRangeMax6Spin_editingFinished();
+
 	void on_measurementOffsetSpin_editingFinished();
 
 	void on_targetHintDistanceSpin_editingFinished();
@@ -141,6 +136,8 @@ protected:
 	// Return true if the data has changed since last request.
 	bool GetLatestDetections(Detection::Vector &detectionData);
 	void closeEvent(QCloseEvent * event);
+
+	void FillChannelSelectList();
 
 	void FillFPGAList(AWLSettings *settingsPtr);
 	void FillADCList(AWLSettings *settingsPtr);

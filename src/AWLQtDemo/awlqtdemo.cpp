@@ -198,12 +198,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
 	ui.sensorRangeMax0SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
-	ui.sensorRangeMax1SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[1].maxRange);
-	ui.sensorRangeMax2SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[2].maxRange);
-	ui.sensorRangeMax3SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[3].maxRange);
-	ui.sensorRangeMax4SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[4].maxRange);
-	ui.sensorRangeMax5SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[5].maxRange);
-	ui.sensorRangeMax6SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[6].maxRange);
+
+	FillChannelSelectList();
 
 	ui.targetHintDistanceSpinBox->setValue(receiverCaptures[0]->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
@@ -279,9 +275,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	m2DScan = new FOV_2DScan();
 	m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
    
-	mCfgSensor.spareDepth = -sensorPosition.position.forward;
-
-	m2DScan->slotConfigChanged(mCfgSensor);
+	m2DScan->slotConfigChanged();
 
 	// Initialize the table view
 	mTableView = new TableView();
@@ -642,7 +636,7 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 	// Process
 	if (m2DScan && !m2DScan->isHidden())
 	{
-		m2DScan->slotConfigChanged(mCfgSensor);
+		m2DScan->slotConfigChanged();
 	}
 
 	// Restore the wait cursor
@@ -706,7 +700,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	
 	if (m2DScan && !m2DScan->isHidden())
 	{
-		m2DScan->slotConfigChanged(mCfgSensor);
+		m2DScan->slotConfigChanged();
 	}
 
 	// Restore the wait cursor
@@ -716,57 +710,18 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 void AWLQtDemo::on_calibrationRangeMax0Spin_editingFinished()
 {
 	double range = ui.sensorRangeMax0SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[0].maxRange) < 0.001) return;
 
-	ChangeRangeMax(0, range);
-}
-
-void AWLQtDemo::on_calibrationRangeMax1Spin_editingFinished()
-{
-	double range = ui.sensorRangeMax1SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[1].maxRange) < 0.001) return;
-
-	ChangeRangeMax(1, range);
-}
-
-void AWLQtDemo::on_calibrationRangeMax2Spin_editingFinished()
-{
-	double range = ui.sensorRangeMax2SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[2].maxRange) < 0.001) return;
-
-	ChangeRangeMax(2, range);
-}
-
-void AWLQtDemo::on_calibrationRangeMax3Spin_editingFinished()
-{
-	double range = ui.sensorRangeMax3SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[3].maxRange) < 0.001) return;
-
-	ChangeRangeMax(3, range);
-}
-
-void AWLQtDemo::on_calibrationRangeMax4Spin_editingFinished()
-{
-	double range = ui.sensorRangeMax4SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[4].maxRange) < 0.001) return;
-
-	ChangeRangeMax(4, range);
-}
-
-void AWLQtDemo::on_calibrationRangeMax5Spin_editingFinished()
-{
-	double range = ui.sensorRangeMax5SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[5].maxRange) < 0.001) return;
-
-	ChangeRangeMax(5, range);
-}
-
-void AWLQtDemo::on_calibrationRangeMax6Spin_editingFinished()
-{
-	double range = ui.sensorRangeMax6SpinBox->value();
-	if (abs(range-AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig[6].maxRange) < 0.001) return;
-
-	ChangeRangeMax(6, range);
+	// Calculate the absolute max distance from the settings
+	int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
+	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	{
+		QListWidgetItem *listItem = ui.channelSelectListWidget->item(channelIndex);
+		Qt::CheckState checkState = listItem->checkState();
+		if (checkState == Qt::Checked)
+		{
+			ChangeRangeMax(channelIndex, range);
+		}
+	}
 }
 
 
@@ -1116,6 +1071,24 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		UpdateParametersView();
 		UpdateGlobalParametersView();
 }
+
+void AWLQtDemo::FillChannelSelectList()
+{
+	int channelQty = receiverCaptures[0]->GetChannelQty();
+	for (int channel = 0; channel < channelQty; channel++)
+	{
+		int row = channel / receiverCaptures[0]->receiverColumnQty;
+		int column= channel % receiverCaptures[0]->receiverColumnQty;
+
+		QString sLabel= QString("Row: %1 Col: %2").arg(QString::number(row), QString::number(column));
+	
+		QListWidgetItem *listItem = new QListWidgetItem(sLabel, ui.channelSelectListWidget);
+		listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+		listItem->setCheckState(Qt::Checked);
+		ui.channelSelectListWidget->addItem(listItem);
+	}
+}
+
 
 
 void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
@@ -1634,7 +1607,7 @@ void AWLQtDemo::on_view2DActionToggled()
 	if (action2DButton->isChecked())
 	{
 		m2DScan->show();
-		m2DScan->slotConfigChanged(mCfgSensor);  // Force redraw with the current video parameters
+		m2DScan->slotConfigChanged();  // Force redraw with the current video parameters
 		action2DButton->setChecked(true);
 	}
 	else 
