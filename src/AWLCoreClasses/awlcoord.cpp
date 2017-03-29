@@ -234,7 +234,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 				int row = channelIndex / columns;
 
 				float pixelYaw = DEG2RAD(offsetX + ((fovX / 2) - (pixelWidth / 2)) - (column * (pixelWidth + spacingX)));
-				float pixelPitch = DEG2RAD(offsetY + ((fovY / 2) - (pixelHeight / 2)) - (row * (pixelHeight + spacingY)));
+				float pixelPitch = DEG2RAD(offsetY - ((fovY / 2) - (pixelHeight / 2)) + (row * (pixelHeight + spacingY)));
 				float pixelRoll = 0.0;
 
 				Orientation orientation(pixelRoll, pixelPitch, pixelYaw);
