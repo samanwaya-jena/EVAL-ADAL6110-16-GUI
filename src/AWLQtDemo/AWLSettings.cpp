@@ -141,15 +141,6 @@ bool AWLSettings::ReadSettings()
 	carLength = propTree.get<float>("config.display2D.carLength");
 	carHeight = propTree.get<float>("config.display2D.carHeight");
 	laneWidth = propTree.get<float>("config.display2D.laneWidth");
-	shortRangeDistance = propTree.get<float>("config.display2D.shortRangeDistance");
-	shortRangeDistanceStartLimited = propTree.get<float>("config.display2D.shortRangeDistanceStartLimited");
-	shortRangeAngle = propTree.get<float>("config.display2D.shortRangeAngle");
-	shortRangeAngleStartLimited = propTree.get<float>("config.display2D.shortRangeAngleStartLimited");
-
-	longRangeDistance = propTree.get<float>("config.display2D.longRangeDistance");
-	longRangeDistanceStartLimited = propTree.get<float>("config.display2D.longRangeDistanceStartLimited");
-	longRangeAngle = propTree.get<float>("config.display2D.longRangeAngle");
-	longRangeAngleStartLimited = propTree.get<float>("config.display2D.longRangeAngleStartLimited");
 
 	showPalette = propTree.get<int>("config.display2D.showPalette");
 	mergeDisplayMode = propTree.get<int>("config.display2D.mergeDisplayMode");

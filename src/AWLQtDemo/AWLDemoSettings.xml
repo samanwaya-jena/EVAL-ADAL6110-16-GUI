@@ -34,7 +34,7 @@
   </layout>
 
   <debug>
-    <enableDebugFile>true</enableDebugFile>
+    <enableDebugFile>false</enableDebugFile>
     <enableLogFile>false</enableLogFile>
   </debug>
 
@@ -312,16 +312,6 @@
     <!-- LaneWidth in meters -->
     <laneWidth>3.7</laneWidth>
     <!--Lane width in meters -->
-
-    <shortRangeDistance>15.0</shortRangeDistance>
-    <shortRangeDistanceStartLimited>15.0</shortRangeDistanceStartLimited>
-    <shortRangeAngle>40.0</shortRangeAngle>
-    <shortRangeAngleStartLimited>20.0</shortRangeAngleStartLimited>
-
-    <longRangeDistance>15.0</longRangeDistance>
-    <longRangeDistanceStartLimited>20.0</longRangeDistanceStartLimited>
-    <longRangeAngle>13.0</longRangeAngle>
-    <longRangeAngleStartLimited>13.0</longRangeAngleStartLimited>
 
     <!-- velocity for colorCoding in m/s -->
     <maxVelocity>30.0</maxVelocity>

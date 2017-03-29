@@ -159,17 +159,7 @@ ClassificationType classifyFromIntensity(int channel, float distance, float inte
 #endif
 //----------------------End of Intensity Classifier
 
-#if 0
-const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
-const QColor rgbBackground(Qt::white);
-const QColor rgbRuler(128, 128, 128, 127); // Transparent gray
-const QColor rgbRulerLight(192, 192, 192, 127); // Transparent gray
-const QColor rgbRulerText(Qt::red);
-const QColor rgbBumper(63, 63, 63, 196); // Transparent gray
-const QColor rgbLaneMarkings(0, 0 , 0, 196);  // Black
-const int    fovTransparency= 64;  // Transparency level of the FOVs
-const int    lineTransparency = 128;
-#else
+
 const int transitionLightness= 65;  // Lightness at which we start to write in ligther shade
 
 const QColor rgbBackground(0, 0, 0, 255); // Black
@@ -188,7 +178,7 @@ const int    lineTransparency = 128;
 //const QColor rgbLaneMarkings(192, 192 , 255, 196);  // Light blue
 //const int    fovTransparency = 128;  // Transparency level of the FOVs
 //const int    lineTransparency = 64;
-#endif
+
 #define squareGrid 1
 
 // Tricky part of the code:
@@ -570,9 +560,45 @@ void FOV_2DScan::slotDisplayZoomModeAction()
 }
 
 
-void FOV_2DScan::slotConfigChanged(const ConfigSensor &inConfig)
+void FOV_2DScan::slotConfigChanged()
 {
     config = inConfig;
+
+	// Calculate the maximum displayed range and angular span
+
+	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
+	config.maxSensorsRange = 0.0;
+	config.maxAngularSpan = 0.0;
+	config.spareDepth = 0;
+
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	{
+		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+		config.maxSensorsRange = fmax(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
+
+		config.spareDepth = fmin (config.spareDepth, -receiverPosition.position.forward);
+		
+		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
+		for (int channelID = 0; channelID < channelQty; channelID++)
+		{
+			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+			ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
+			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, channelID);
+
+			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) +
+				RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
+			config.maxAngularSpan = fmax(config.maxAngularSpan, fabs(startAngle));
+			config.maxAngularSpan = fmax(config.maxAngularSpan, fabs(startAngle - channelConfig.fovWidth));
+		}
+	}
+
+	config.maxAngularSpan *= 2;
+	// Span is always a multiple of 10 degrees - just for display aethetics
+	config.maxAngularSpan = (1+ ((int)config.maxAngularSpan / 10)) * 10;
+
+
+
+
 	setMinimumSize(minimumSizeHint());
 	calculateResize();
 
@@ -588,10 +614,11 @@ QSize FOV_2DScan::minimumSizeHint() const
 
 { 
 	float maxHeight = 300;
-	double totalDistance = config.longRangeDistance+config.spareDepth;
+
+	double totalDistance = config.maxSensorsRange+config.spareDepth;
 	float hintRatio = (maxHeight-topInPixels) / totalDistance;
 
-	float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
+	float angleInRad = DEG2RAD((config.maxAngularSpan/2)+180);
 	float xWidth = abs((totalDistance*hintRatio)*sinf(angleInRad));
 
 	float maxWidth = (xWidth*2)+rightInPixels;
@@ -616,9 +643,9 @@ void FOV_2DScan::resizeEvent(QResizeEvent * theEvent)
 void FOV_2DScan::calculateResize()
 {
 
-	double totalDistance = config.longRangeDistance+config.spareDepth;
+	double totalDistance = config.maxSensorsRange+config.spareDepth;
 	if (displayZoomMode == eDisplayZoomMode360)
-		totalDistance = (config.longRangeDistance * 2) + carLength;
+		totalDistance = (config.maxSensorsRange * 2) + carLength;
 
 	float maxWidth = width() + 1;
 	float maxHeight = height();
@@ -627,7 +654,7 @@ void FOV_2DScan::calculateResize()
 	{
 		Ratio = (maxHeight-topInPixels) / totalDistance;
 
-		float angleInRad = DEG2RAD((config.shortRangeAngle/2)+180);
+		float angleInRad = DEG2RAD((config.maxAngularSpan/2)+180);
 		float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
 
 		maxWidth = (xWidth*2)+rightInPixels;
@@ -679,26 +706,26 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 		painter.setPen(QPen(rgbRuler));
 		float angleIncrement = 5.0;
 		float distanceIncrement = 1.0;
-		if (config.longRangeDistance >= 100.0) distanceIncrement = 10;
-		else if (config.longRangeDistance > 10.0) distanceIncrement = 5; 
+		if (config.maxSensorsRange >= 100.0) distanceIncrement = 10;
+		else if (config.maxSensorsRange > 10.0) distanceIncrement = 5; 
 		else distanceIncrement = 1.0;
 
-		for (float i = config.longRangeDistance; i > 0; i-=distanceIncrement)
+		for (float i = config.maxSensorsRange; i > 0; i-=distanceIncrement)
 		{
 			// All distances are relative to bumper  
-			drawArc(&painter, -config.shortRangeAngle/2, config.shortRangeAngle, i);
+			drawArc(&painter, -config.maxAngularSpan/2, config.maxAngularSpan, i);
 		}
 
 		painter.setPen(QPen(rgbRuler));
-		for (float i = config.shortRangeAngle; i >= 0; i-=angleIncrement)
+		for (float i = -config.maxAngularSpan / 2; i <= config.maxAngularSpan / 2; i += angleIncrement)
 		{
-			drawLine(&painter, i-(config.shortRangeAngle/2), 0, config.longRangeDistance);
+			drawLine(&painter, i, 0, config.maxSensorsRange);
 		}
 
 		// Draw the distance indicators 
-		for (float i = config.longRangeDistance; i > 0; i-=distanceIncrement)
+		for (float i = config.maxSensorsRange; i > 0; i-=distanceIncrement)
 		{
-			drawText(&painter, -(config.shortRangeAngle/2), i, QString::number(i)+"m", rgbRulerText, -20);
+			drawText(&painter, -(config.maxAngularSpan/2), i, QString::number(i)+"m", rgbRulerText, -20);
 		}
 
 		// Draw the angle indicators
@@ -709,7 +736,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 		// Grid Ruler
 
 		float gridWidth = (width() / Ratio) / 2;
-		float rangeWidth = config.longRangeDistance + (carWidth/2);  // Grid width is maximum of the range of sensor
+		float rangeWidth = config.maxSensorsRange + (carWidth/2);  // Grid width is maximum of the range of sensor
 		if (gridWidth > rangeWidth) gridWidth = rangeWidth;
 
 		gridWidth = (1+((int) (gridWidth / gridOffset))) * gridOffset;
@@ -720,19 +747,19 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 
 		
 		painter.setPen(QPen(rgbRulerLight));
-		for (float gridY = 0; gridY <= (config.longRangeDistance*Ratio); gridY += gridYSpacing)
+		for (float gridY = 0; gridY <= (config.maxSensorsRange*Ratio); gridY += gridYSpacing)
 		{ 
 			painter.drawLine(zeroX - gridWidth, zeroY - gridY,  zeroX + gridWidth, zeroY - gridY);
 		}
 
-		for (float gridY = - gridYSpacing; gridY >= -((config.longRangeDistance+ carLength)*Ratio); gridY -= gridYSpacing)
+		for (float gridY = - gridYSpacing; gridY >= -((config.maxSensorsRange+ carLength)*Ratio); gridY -= gridYSpacing)
 		{ 
 			painter.drawLine(zeroX - gridWidth, zeroY - gridY,  zeroX + gridWidth, zeroY - gridY);
 		}
 
 		for (float gridX = -(gridWidth); gridX <= (gridWidth); gridX += gridXSpacing)
 		{ 
-			painter.drawLine(zeroX + gridX, zeroY-(config.longRangeDistance*Ratio),  zeroX + gridX, zeroY+((config.longRangeDistance+ carLength)*Ratio));
+			painter.drawLine(zeroX + gridX, zeroY - (config.maxSensorsRange*Ratio), zeroX + gridX, zeroY + ((config.maxSensorsRange + carLength)*Ratio));
 		}
 	}
 
@@ -793,7 +820,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 	int labelWidth = logoLabel->width();
 	int laneX = centerX + (laneWidthScreen / 2);
 	int laneYBottom = height();
-	int laneYTop = zeroY - (config.longRangeDistance*Ratio);
+	int laneYTop = zeroY - (config.maxSensorsRange*Ratio);
 
 	painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
 
@@ -863,17 +890,17 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
 {
 	int index;
-	float sphericalDistanceMin = config.longRangeDistance;
+	float sphericalDistanceMin = config.maxSensorsRange;
 	float sphericalDistanceMax = 0;
 	float sphericalDistanceAverage = 0;
 
 	float velocityMin = 999;
 
-	float forwardMin = config.longRangeDistance;
-	float forwardMax = -config.longRangeDistance;
+	float forwardMin = config.maxSensorsRange;
+	float forwardMax = -config.maxSensorsRange;
 	float distanceForwardAverage = 0;
-	float leftMin = config.longRangeDistance;
-	float leftMax = -config.longRangeDistance;
+	float leftMin = config.maxSensorsRange;
+	float leftMax = -config.maxSensorsRange;
 
 	float intensityMax = 0;
 	int channelForIntensityMax = 0;
@@ -1015,15 +1042,15 @@ void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
 	p->setPen(QPen(rgbRulerText));
 
-	double pos = config.longRangeDistance;
+	double pos = config.maxSensorsRange;
 
-	drawArc(p, -config.shortRangeAngle/2, config.shortRangeAngle, pos + (5.0/Ratio));
-	for (int i = config.shortRangeAngle; i >= 0; i-=5)
+	drawArc(p, -config.maxAngularSpan/2, config.maxAngularSpan, pos + (5.0/Ratio));
+	for (int i = config.maxAngularSpan; i >= 0; i-=5)
 	{
-		drawLine(p, i-(config.shortRangeAngle/2), pos+(5.0/Ratio), (10.0/Ratio));
+		drawLine(p, i-(config.maxAngularSpan/2), pos+(5.0/Ratio), (10.0/Ratio));
 
 		// drawText removes the spareDepthAlready. 
-		drawText(p, i-(config.shortRangeAngle/2), config.longRangeDistance+(20.0/Ratio), QString::number((i-(config.shortRangeAngle/2)))+"°", rgbRulerText);
+		drawText(p, i - (config.maxAngularSpan / 2), config.maxSensorsRange + (20.0 / Ratio), QString::number((i - (config.maxAngularSpan / 2))) + "°", rgbRulerText);
 	}
 }
 
@@ -1273,18 +1300,18 @@ void FOV_2DScan::getColorFromDistance(float distance, QColor &backColor, Qt::Bru
 {
     QLinearGradient myGradient;
     QGradientStops myStopPoints;
-    QImage myImage(10, config.longRangeDistance+2, QImage::Format_RGB32);
+	QImage myImage(10, config.maxSensorsRange + 2, QImage::Format_RGB32);
 
     myStopPoints.append(QGradientStop(0.0,Qt::blue));
     myStopPoints.append(QGradientStop(0.33,Qt::green));
     myStopPoints.append(QGradientStop(0.66,Qt::yellow));
     myStopPoints.append(QGradientStop(1.0,Qt::red));
     myGradient.setStops(myStopPoints);
-    myGradient.setStart(0, config.longRangeDistance);
+	myGradient.setStart(0, config.maxSensorsRange);
 
     QPainter painter(&myImage);
     painter.setBrush(myGradient);
-    painter.drawRect(0, -2, 10, config.longRangeDistance+3 );
+	painter.drawRect(0, -2, 10, config.maxSensorsRange + 3);
     painter.end();
     backColor = QColor(myImage.pixel(QPoint(1, distance)));
 	backStyle = Qt::SolidPattern;
@@ -1464,7 +1491,7 @@ void FOV_2DScan::drawPalette(QPainter* p)
 
 		// Put a legend
 		p->setPen(Qt::white);
-		text = QString::number(config.longRangeDistance, 'f',  1)+ " m";
+		text = QString::number(config.maxSensorsRange, 'f', 1) + " m";
 		QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
  
 		p->drawText(QPoint(5, height()*0.1 + rect.height()), text);

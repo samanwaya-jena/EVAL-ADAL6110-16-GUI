@@ -33,17 +33,9 @@ namespace awl
 /** \brief Structure containing 2D View configuration. */
 typedef struct
 {
-    float shortRangeDistance;				// Max range for short range sensor (Including limited range)
-    float shortRangeDistanceStartLimited;	// Limited range for short range sensor
-    float shortRangeAngle;					// Max angle width for short range sensor (Including limited angle)
-    float shortRangeAngleStartLimited;		// Limited angle for short range sensor 
-
-    float longRangeDistance;				// Max range for long range sensor (Including limited range)
-    float longRangeDistanceStartLimited;	// Limited range for long range sensor
-    float longRangeAngle;					// Max angle width for long range sensor (Including limited angle)
-    float longRangeAngleStartLimited;		// Limited angle for long range sensor 
-
-    float spareDepth;				// Sensor distance from bumper 
+     float spareDepth;				// Sensor distance from bumper 
+	 float maxSensorsRange;		    // Max range of all sensors displayed
+	 float maxAngularSpan;			// Max angular span displayed for the sensor
 }ConfigSensor;
 
 
@@ -105,7 +97,7 @@ public:
 signals:
     void closed();
 public slots:
-    void slotConfigChanged(const ConfigSensor &inConfig);
+    void slotConfigChanged();
     void slotDetectionDataChanged(const Detection::Vector & data);
 	void ShowContextMenu(const QPoint& pos);
 	void slotPaletteAction();

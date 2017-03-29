@@ -127,7 +127,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings(globalSettings->GetPropTree());
 
-	// Adjust the default displayed ranges depending on the sensor capabilities
+	// Adjust the default displayed ranges depending on the sensors capabilities
 	AdjustDefaultDisplayedRanges();
 
 	// Create the receiver communication objects
@@ -253,25 +253,32 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.frameRateSpinBox->setValue(0);
 	}
 
+	// Fill in the algo select combo box
+	ui.algoSelectComboBox->clear();
+	int algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size();
+	for (int i = 1; i < algoQty; i++)
+	{
+		QString algoLabel = QString(receiverCaptures[0]->parametersAlgos.algorithms[i].sAlgoName.c_str());
+		ui.algoSelectComboBox->addItem(algoLabel, QVariant(receiverCaptures[0]->parametersAlgos.algorithms[i].algoID));
+	}
+
+	ui.algoSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersAlgos.defaultAlgo - 1);
+
+
+	// Calibration 
+	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
+
 
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
-	 scopeWindow = new AWLQtScope();
+	// Initialize the scope window
+	scopeWindow = new AWLQtScope();
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
 	m2DScan->setWindowTitle(this->windowTitle() + " 2D View");
-	mCfgSensor.shortRangeDistance = globalSettings->shortRangeDistance;
-    mCfgSensor.shortRangeDistanceStartLimited = globalSettings->shortRangeDistanceStartLimited;
-    mCfgSensor.shortRangeAngle = globalSettings->shortRangeAngle;
-    mCfgSensor.shortRangeAngleStartLimited = globalSettings->shortRangeAngleStartLimited;
-
-    mCfgSensor.longRangeDistance = globalSettings->longRangeDistance;
-    mCfgSensor.longRangeDistanceStartLimited = globalSettings->longRangeDistanceStartLimited;
-    mCfgSensor.longRangeAngle = globalSettings->longRangeAngle;
-    mCfgSensor.longRangeAngleStartLimited = globalSettings->longRangeAngleStartLimited;
-
+   
 	mCfgSensor.spareDepth = -sensorPosition.position.forward;
 
 	m2DScan->slotConfigChanged(mCfgSensor);
@@ -299,22 +306,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initial Update the various status indicators on the display
 	DisplayReceiverStatus();
-
-
-	// Fill in the algo select combo box
-	ui.algoSelectComboBox->clear();
-	int algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size();
-	for (int i = 1; i < algoQty; i++)
-	{
-		QString algoLabel = QString(receiverCaptures[0]->parametersAlgos.algorithms[i].sAlgoName.c_str());
-		ui.algoSelectComboBox->addItem(algoLabel, QVariant(receiverCaptures[0]->parametersAlgos.algorithms[i].algoID));
-	}
-
-	ui.algoSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersAlgos.defaultAlgo - 1);
-
-
-	// Calibration 
-	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
 
 	// Configure the Toolbar
 	SetupToolBar();
@@ -433,9 +424,6 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 
 		if (absoluteMaxRangeForReceiver > absoluteMaxRange) absoluteMaxRange = absoluteMaxRangeForReceiver; 
 	}
-
-	// And the default maximum displayed range for interfaces to the max range of all receivers 
-	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
 }
 
 
@@ -679,8 +667,7 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 	// Process
 	if (m2DScan && !m2DScan->isHidden())
 	{
-		mCfgSensor.spareDepth = -forward;
-		m2DScan->slotConfigChanged(mCfgSensor);
+		m2DScan->slotConfigChanged();
 	}
 
 	// Restore the wait cursor
@@ -714,15 +701,11 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	}
 
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRange;
-	AWLSettings::GetGlobalSettings()->longRangeDistance = absoluteMaxRange;
-
 
 	// Update user interface parts
 	
 	if (m2DScan && !m2DScan->isHidden())
 	{
-
-	    mCfgSensor.longRangeDistance = absoluteMaxRange;
 		m2DScan->slotConfigChanged(mCfgSensor);
 	}
 

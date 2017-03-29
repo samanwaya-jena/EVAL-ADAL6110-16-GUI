@@ -156,7 +156,6 @@ private:
 
 	FOV_2DScan* m2DScan;
 	TableView * mTableView;
-	ConfigSensor mCfgSensor;
 	AWLQtScope* scopeWindow;
 #if 0
 	QLabel	mLogoLabel;

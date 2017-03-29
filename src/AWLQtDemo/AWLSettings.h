@@ -162,16 +162,6 @@ public:
 
 	float laneWidth;
 
-	float shortRangeDistance;
-	float shortRangeDistanceStartLimited;
-	float shortRangeAngle;
-	float shortRangeAngleStartLimited;
-
-	float longRangeDistance;
-	float longRangeDistanceStartLimited;
-	float longRangeAngle;
-	float longRangeAngleStartLimited;
-
 	bool showPalette;
 	int mergeDisplayMode;
 	int measureMode;
