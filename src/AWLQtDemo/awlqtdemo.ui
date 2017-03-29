@@ -1622,7 +1622,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
            <widget class="QLabel" name="sensorDepthLabel">
             <property name="geometry">
              <rect>
-              <x>180</x>
+              <x>190</x>
               <y>20</y>
               <width>81</width>
               <height>20</height>
@@ -1739,7 +1739,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
            <widget class="QLabel" name="sensorRangeMaxLabel">
             <property name="geometry">
              <rect>
-              <x>180</x>
+              <x>190</x>
               <y>23</y>
               <width>61</width>
               <height>16</height>
@@ -1783,7 +1783,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
            <widget class="QDoubleSpinBox" name="sensorRangeMax0SpinBox">
             <property name="geometry">
              <rect>
-              <x>250</x>
+              <x>280</x>
               <y>20</y>
               <width>71</width>
               <height>22</height>
@@ -1815,9 +1815,9 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
           <widget class="QListWidget" name="channelSelectListWidget">
            <property name="geometry">
             <rect>
-             <x>360</x>
+             <x>390</x>
              <y>100</y>
-             <width>171</width>
+             <width>151</width>
              <height>91</height>
             </rect>
            </property>

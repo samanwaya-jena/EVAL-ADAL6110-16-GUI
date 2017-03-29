@@ -1074,13 +1074,16 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 
 void AWLQtDemo::FillChannelSelectList()
 {
+
+	ui.channelSelectListWidget->clear();
+
 	int channelQty = receiverCaptures[0]->GetChannelQty();
 	for (int channel = 0; channel < channelQty; channel++)
 	{
 		int row = channel / receiverCaptures[0]->receiverColumnQty;
 		int column= channel % receiverCaptures[0]->receiverColumnQty;
 
-		QString sLabel= QString("Row: %1 Col: %2").arg(QString::number(row), QString::number(column));
+		QString sLabel= QString("Row: %1 Col: %2").arg(row+1, 3).arg(column+1, 3);
 	
 		QListWidgetItem *listItem = new QListWidgetItem(sLabel, ui.channelSelectListWidget);
 		listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
