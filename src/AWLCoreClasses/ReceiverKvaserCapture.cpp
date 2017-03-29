@@ -293,7 +293,7 @@ bool ReceiverKvaserCapture::WriteMessage(const AWLCANMessage &inMsg)
 	
 	if (kvaserHandle < 0) return(false);
 
-    canStatus status = canWrite(kvaserHandle, inMsg.id, (void *) &inMsg.data, 8, 0);
+    canStatus status = canWriteWait(kvaserHandle, inMsg.id, (void *) &inMsg.data, 8, 0, 1000);
 	if (status < 0)  
 	{
 		CheckStatus("canWrite", status);

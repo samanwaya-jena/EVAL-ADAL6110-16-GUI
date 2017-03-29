@@ -75,7 +75,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		trackDistance += 0.0001;
 		if (trackDistance > 10.0) trackDistance = 0.0;
 
-		for (int channel = 0; channel < this->GetChannelQty(); channel++)
+		for (int channel = 0; channel < 8; channel++)
 		{
 			for (int detection = 0; detection < 8; detection++)
 			{
@@ -93,8 +93,11 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 					track->distance += (channel / 8) * 401;  // Line wraparound at 400 meters
 #endif
 					track->intensity = 1.00;
-					track->trackChannels.byteData = 0x01 << (channel % 8);
 					track->trackMainChannel = channel;
+					track->trackMainChannel += channelOffsetPatch;
+
+					track->trackChannels.byteData = 0x01 << (track->trackMainChannel % 8);
+					
 
 					track->velocity = 3;
 					track->acceleration = 0;

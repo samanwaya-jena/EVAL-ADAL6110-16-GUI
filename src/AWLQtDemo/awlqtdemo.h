@@ -111,6 +111,9 @@ private slots:
 	void on_viewTableViewClose();
 	void on_viewGraphClose();
 
+	void on_topRowToggled(bool bToggleState);
+	void on_bottomRowToggled(bool bToggleState);
+
 
 	void on_destroy();
 

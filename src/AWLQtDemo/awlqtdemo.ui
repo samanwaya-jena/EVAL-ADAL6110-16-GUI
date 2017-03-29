@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1020</width>
-    <height>306</height>
+    <height>305</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -2760,6 +2760,54 @@ background-color: #202020;
            </property>
           </widget>
          </widget>
+         <widget class="QGroupBox" name="lineDisplayGroupBox">
+          <property name="geometry">
+           <rect>
+            <x>820</x>
+            <y>130</y>
+            <width>161</width>
+            <height>80</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>RowVisibility</string>
+          </property>
+          <widget class="QRadioButton" name="topRowRadioButton">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>121</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>&amp;Top Row (Alt+T)</string>
+           </property>
+           <property name="shortcut">
+            <string>Alt+T</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QRadioButton" name="bottomRowRadioButton">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>50</y>
+             <width>121</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>&amp;Bottom Row (Alt-B)</string>
+           </property>
+           <property name="shortcut">
+            <string>Alt+B</string>
+           </property>
+          </widget>
+         </widget>
         </widget>
         <widget class="QWidget" name="controlTab">
          <attribute name="title">
@@ -4848,8 +4896,8 @@ color: rgb(255,255,255);</string>
    <slot>on_recordPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>264</y>
+     <x>125</x>
+     <y>258</y>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
@@ -4881,7 +4929,7 @@ color: rgb(255,255,255);</string>
    <hints>
     <hint type="sourcelabel">
      <x>206</x>
-     <y>264</y>
+     <y>258</y>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
@@ -4896,8 +4944,8 @@ color: rgb(255,255,255);</string>
    <slot>on_stopPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>351</x>
-     <y>264</y>
+     <x>356</x>
+     <y>258</y>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
@@ -4912,12 +4960,12 @@ color: rgb(255,255,255);</string>
    <slot>on_calibratePushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>724</x>
-     <y>251</y>
+     <x>736</x>
+     <y>244</y>
     </hint>
     <hint type="destinationlabel">
-     <x>690</x>
-     <y>275</y>
+     <x>687</x>
+     <y>272</y>
     </hint>
    </hints>
   </connection>
@@ -5108,8 +5156,8 @@ color: rgb(255,255,255);</string>
      <y>96</y>
     </hint>
     <hint type="destinationlabel">
-     <x>927</x>
-     <y>275</y>
+     <x>940</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -5124,8 +5172,8 @@ color: rgb(255,255,255);</string>
      <y>126</y>
     </hint>
     <hint type="destinationlabel">
-     <x>943</x>
-     <y>275</y>
+     <x>937</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -5140,8 +5188,8 @@ color: rgb(255,255,255);</string>
      <y>151</y>
     </hint>
     <hint type="destinationlabel">
-     <x>867</x>
-     <y>275</y>
+     <x>882</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -5232,8 +5280,8 @@ color: rgb(255,255,255);</string>
    <slot>on_receiverCalibStorePushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>511</x>
-     <y>251</y>
+     <x>523</x>
+     <y>244</y>
     </hint>
     <hint type="destinationlabel">
      <x>502</x>
@@ -5248,12 +5296,44 @@ color: rgb(255,255,255);</string>
    <slot>on_algoSelectComboBox_indexChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>152</x>
-     <y>217</y>
+     <x>162</x>
+     <y>116</y>
     </hint>
     <hint type="destinationlabel">
      <x>305</x>
      <y>281</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topRowRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_topRowToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>849</x>
+     <y>213</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>901</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bottomRowRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_bottomRowToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>848</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>845</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -5306,5 +5386,7 @@ color: rgb(255,255,255);</string>
   <slot>on_receiverCalibStorePushButton_clicked()</slot>
   <slot>on_algo5RadioButton_setChecked(bool)</slot>
   <slot>on_algoSelectComboBox_indexChanged(int)</slot>
+  <slot>on_topRowToggled(bool)</slot>
+  <slot>on_bottomRowToggled(bool)</slot>
  </slots>
 </ui>

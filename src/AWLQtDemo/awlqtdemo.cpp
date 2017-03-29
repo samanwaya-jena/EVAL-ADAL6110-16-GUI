@@ -185,6 +185,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	PrepareGlobalParametersView();
 
 	// Initialize the controls from the settings in INI file
+
+	ui.calibrationChannelMaskGroupBox->setVisible(false);
+	ui.channelMaskGroupBox->setVisible(false);
+
 	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
 	ui.sensorHeightSpinBox->setValue(sensorPosition.position.up);
 	ui.sensorDepthSpinBox->setValue(sensorPosition.position.forward);
@@ -2013,6 +2017,43 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 			sLabel += " -- UPDATING...";
 		}		
 		listItem->setText(sLabel);
+
+	}
+}
+
+
+void AWLQtDemo::on_topRowToggled(bool bToggleState)
+{
+	if (bToggleState)
+	{
+		// Send the command to the device
+		if (receiverCaptures[0])
+		{
+			// Note order of the commands is important, otherwise, AWL goes crazy.
+			receiverCaptures[0]->SetFPGARegister((uint16_t)56, (uint32_t)0x0000); //R14 - SR Channel Mask
+			receiverCaptures[0]->SetFPGARegister((uint16_t) 60, (uint32_t)0x00FF); //R15 - LR Channel Mask
+			receiverCaptures[0]->SetFPGARegister((uint16_t)36, (uint32_t)0x0432); //R9 - Pulse Width, Mode, LZ Enable
+			receiverCaptures[0]->channelOffsetPatch = 0;
+		}
+
+	}
+}
+
+void AWLQtDemo::on_bottomRowToggled(bool bToggleState)
+{
+	if (bToggleState)
+	{
+		// Send the command to the device
+		if (receiverCaptures[0])
+		{
+			// Note order of the commands is important, otherwise, AWL goes crazy.
+
+			receiverCaptures[0]->SetFPGARegister(60, (uint32_t)0x0000); //R15 - LR Channel Mask
+			receiverCaptures[0]->SetFPGARegister(56, 0x00FF); //R14 - SR Channel Mask
+			receiverCaptures[0]->SetFPGARegister(36, 0x0431); //R9 - Pulse Width, Mode, LZ Enable
+
+			receiverCaptures[0]->channelOffsetPatch = 8;
+		}
 
 	}
 }

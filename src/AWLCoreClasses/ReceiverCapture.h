@@ -749,6 +749,11 @@ public:
 	*/
 	float targetHintAngle;
 
+	/** \brief Channel offset used in temporary row patch.
+	*/
+	int channelOffsetPatch;
+
+
 // Protected methods
 protected:
 	/** \brief Return the lidar data rendering thread status

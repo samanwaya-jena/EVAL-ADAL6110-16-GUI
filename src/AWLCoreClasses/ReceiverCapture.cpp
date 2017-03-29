@@ -68,7 +68,8 @@ sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
-targetHintAngle(0.0)
+targetHintAngle(0.0),
+channelOffsetPatch(0)
 
 {
 	// Initialize default status values
@@ -98,7 +99,8 @@ sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
-targetHintAngle(0.0)
+targetHintAngle(0.0),
+channelOffsetPatch(0)
 
 
 {

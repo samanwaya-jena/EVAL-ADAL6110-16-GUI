@@ -267,7 +267,6 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 
 {
 	int channel;
-	int block = 0;
 	int detectOffset = 0;
 	uint16_t *distancePtr = (uint16_t *) inMsg.data;
 
@@ -275,13 +274,13 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 	{
 		channel = inMsg.id - 30;
 		detectOffset = 4;
-		block = 1;
 	}
 	else 
 	{
 		channel = inMsg.id - 20;
-		block = 0;
 	}
+
+	channel += channelOffsetPatch;
 
 	if (channel >= 0) 
 	{
@@ -366,36 +365,42 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 		channel = inMsg.id - 40;
 	}
 
-	boost::mutex::scoped_lock rawLock(GetMutex());
 
-	float intensity = ((float)intensityPtr[0]) / maxIntensity; 
-	int detectionIndex = 0 + detectOffset;
-	Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
-	detection->intensity = ConvertIntensityToSNR(intensity);
-	detection->trackID = 0;
-	detection->velocity = 0;
+	channel += channelOffsetPatch;
 
-	intensity = ((float) intensityPtr[1]) / maxIntensity;
-	detectionIndex = 1+detectOffset;
-	detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
-	detection->intensity = ConvertIntensityToSNR(intensity);
-	detection->trackID = 0;
-	detection->velocity = 0;
+	if (channel >= 0)
+	{
+		boost::mutex::scoped_lock rawLock(GetMutex());
 
-	intensity = ((float) intensityPtr[2]) / maxIntensity;
-	detectionIndex = 2+detectOffset;
-	detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
-	detection->intensity = ConvertIntensityToSNR(intensity);
-	detection->trackID = 0;
-	detection->velocity = 0;
+		float intensity = ((float)intensityPtr[0]) / maxIntensity;
+		int detectionIndex = 0 + detectOffset;
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection->intensity = ConvertIntensityToSNR(intensity);
+		detection->trackID = 0;
+		detection->velocity = 0;
 
-	intensity = ((float) intensityPtr[3]) / maxIntensity;
-	detectionIndex = 3+detectOffset;
-	detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
-	detection->intensity = ConvertIntensityToSNR(intensity);
-	detection->trackID = 0;
-	detection->velocity = 0;
-	rawLock.unlock();
+		intensity = ((float)intensityPtr[1]) / maxIntensity;
+		detectionIndex = 1 + detectOffset;
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection->intensity = ConvertIntensityToSNR(intensity);
+		detection->trackID = 0;
+		detection->velocity = 0;
+
+		intensity = ((float)intensityPtr[2]) / maxIntensity;
+		detectionIndex = 2 + detectOffset;
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection->intensity = ConvertIntensityToSNR(intensity);
+		detection->trackID = 0;
+		detection->velocity = 0;
+
+		intensity = ((float)intensityPtr[3]) / maxIntensity;
+		detectionIndex = 3 + detectOffset;
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection->intensity = ConvertIntensityToSNR(intensity);
+		detection->trackID = 0;
+		detection->velocity = 0;
+		rawLock.unlock();
+	}
 
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, intensityPtr[0], intensityPtr[1], intensityPtr[2], intensityPtr[3]);
 }
@@ -404,11 +409,10 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
 
 {
 	int channel;
-	int block = 0;
-	int detectOffset = 0;
 	uint16_t *dataPtr = (uint16_t *)inMsg.data;
 
 	channel = dataPtr[0];
+	channel += channelOffsetPatch;
 
 	if (channel >= 0)
 	{
@@ -473,6 +477,8 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 			channelMask <<= 1;
 		}
 	}
+
+	track->trackMainChannel += channelOffsetPatch;
 
 	// Decode rest of message
 	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
@@ -1248,8 +1254,6 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 	* (int16_t *) &message.data[2] = 0L; // Unused
 	* (int32_t *) &message.data[4] = algorithmID;
 
-	bool bMessageOk = WriteMessage(message);
-
 	// Signal that we are waiting for an update of the register settings.
 	
 	// We should increment the pointer, but we just reset the 
@@ -1257,6 +1261,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 	// fall out of sync.
 	receiverStatus.currentAlgo = algorithmID;
 	receiverStatus.currentAlgoPendingUpdates = 1;
+	bool bMessageOk = WriteMessage(message);
 
    return(bMessageOk);
 }
@@ -1274,10 +1279,11 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
-
-	bool bMessageOk = WriteMessage(message);
+		
 
 	// Signal that we are waiting for an update of thet register settings.
+	bool bMessageOk = false;
+
 	int index = FindRegisterByAddress(registersFPGA,registerAddress);
 	if (index >= 0)
 	{
@@ -1285,9 +1291,23 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		registersFPGA[index].pendingUpdates = updateStatusPendingUpdate;
+		bMessageOk = WriteMessage(message);
 	}
+	
 
-    return(bMessageOk);
+#if 0
+	// wait for the reception thread to receive the acknowledge;
+	awl::eUpdateStatus status = registersFPGA[index].pendingUpdates;
+	
+	while (status == updateStatusPendingUpdate)
+	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+		boost::mutex::scoped_lock rawLock(GetMutex());
+		status = registersFPGA[index].pendingUpdates;
+		rawLock.unlock();
+	}
+#endif
+	return(bMessageOk);
 }
 
 bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t registerValue)
@@ -1303,9 +1323,9 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
 
-	bool bMessageOk = WriteMessage(message);
-
 	// Signal that we are waiting for an update of thet register settings.
+	bool bMessageOk = false;
+
 	int index = FindRegisterByAddress(registersADC, registerAddress);
 	if (index >= 0)
 	{
@@ -1313,6 +1333,7 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		registersADC[index].pendingUpdates = updateStatusPendingUpdate;
+		bMessageOk = WriteMessage(message);
 	}
 
 	return(bMessageOk);
@@ -1331,9 +1352,9 @@ bool ReceiverCANCapture::SetGPIORegister(uint16_t registerAddress, uint32_t regi
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
 
-	bool bMessageOk = WriteMessage(message);
 
 	// Signal that we are waiting for an update of thet register settings.
+	bool bMessageOk = false;
 	int index = FindRegisterByAddress(registersGPIO, registerAddress);
 	if (index >= 0)
 	{
@@ -1341,8 +1362,8 @@ bool ReceiverCANCapture::SetGPIORegister(uint16_t registerAddress, uint32_t regi
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		registersGPIO[index].pendingUpdates = updateStatusPendingUpdate;
+		bMessageOk = WriteMessage(message);
 	}
-
 
 	return(bMessageOk);
 }
@@ -1360,9 +1381,8 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
 
-	bool bMessageOk = WriteMessage(message);
-
 	// Signal that we are waiting for an update of thet register settings.
+	bool bMessageOk = false;
 	AlgorithmParameter *parameter = FindAlgoParamByAddress(algoID, registerAddress);
 	if (parameter != NULL)
 	{
@@ -1370,6 +1390,7 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		parameter->pendingUpdates = updateStatusPendingUpdate;
+		bMessageOk = WriteMessage(message);
 
 
 		// Hack:  Update the SNR Cutoff in status when trying to set in algo parameters. 
@@ -1377,7 +1398,6 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		{
 			receiverStatus.signalToNoiseFloor = parameter->floatValue;
 		}
-
 	}
 
  	return(bMessageOk);
@@ -1396,9 +1416,9 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
 
-	bool bMessageOk = WriteMessage(message);
 
 	// Signal that we are waiting for an update of thet register settings.
+	bool bMessageOk = false;
 	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_INDEX, registerAddress);
 	if (parameter!= NULL)
 	{
@@ -1406,7 +1426,9 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		parameter->pendingUpdates = updateStatusPendingUpdate;
+		bMessageOk = WriteMessage(message);
 	}
+
 
  	return(bMessageOk);
 }
@@ -1793,6 +1815,7 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 			lastChannelMask = newChannelMask;
 		}
+
 		if (msgID == 9)
 		{
 			lastChannelMask.byteData = 0;
