@@ -501,7 +501,7 @@ void FOV_2DScan::slotMeasureModeAction()
 		measureMode = eMeasureCartesian;
 	}
 
-	slotConfigChanged(config);
+	slotConfigChanged();
 }
 
 void FOV_2DScan::slotColorCodeAction()
@@ -556,14 +556,12 @@ void FOV_2DScan::slotDisplayZoomModeAction()
 		 displayZoomMode = eDisplayZoomMode360;
 	}
 
-	slotConfigChanged(config);
+	slotConfigChanged();
 }
 
 
 void FOV_2DScan::slotConfigChanged()
 {
-    config = inConfig;
-
 	// Calculate the maximum displayed range and angular span
 
 	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
@@ -644,6 +642,7 @@ void FOV_2DScan::calculateResize()
 {
 
 	double totalDistance = config.maxSensorsRange+config.spareDepth;
+
 	if (displayZoomMode == eDisplayZoomMode360)
 		totalDistance = (config.maxSensorsRange * 2) + carLength;
 
@@ -666,22 +665,14 @@ void FOV_2DScan::calculateResize()
 
 	if (displayZoomMode == eDisplayZoomModeFront)
 	{
-#if 0
-		zeroY = height() - (config.spareDepth * Ratio);
-#else
 		zeroY = maxHeight - (config.spareDepth * Ratio);
-#endif
 		zeroX = width()/2;
 
 	}
 	else
 	{
-#if 0
-	zeroY = height() *0.5; // .1 x height offcenter to the bottom
-#else
-	zeroY = maxHeight * 0.5; // .1 x height offcenter to the bottom
-#endif
-	zeroX = width() / 2;
+		zeroY = maxHeight * 0.5; // .1 x height offcenter to the bottom
+		zeroX = width() / 2;
 	}
 
 	int labelWidth = width() * 0.3;
