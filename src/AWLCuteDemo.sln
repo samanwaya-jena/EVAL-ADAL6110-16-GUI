@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWLQtDemo", "AWLQtDemo\AWLQ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWLBareDemo", "AWLBareDemo\AWLBareDemo.vcxproj", "{2DAE03D8-DF77-483B-BD81-0CF8B8089C0F}"
 EndProject
-Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "PhantomLidarDemoSetup", "PhantomLidarDemoSetup\PhantomLidarDemoSetup.isproj", "{2F476D57-CD10-442F-B397-FE0E1B7BF386}"
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "AWLSetup", "PhantomLidarDemoSetup\AWLSetup.isproj", "{2F476D57-CD10-442F-B397-FE0E1B7BF386}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
