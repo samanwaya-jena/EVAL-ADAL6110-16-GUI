@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1020</width>
-    <height>305</height>
+    <height>358</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1773,6 +1773,9 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
             <property name="decimals">
              <number>1</number>
             </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
             <property name="maximum">
              <double>1000.000000000000000</double>
             </property>
@@ -1780,7 +1783,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
              <double>0.100000000000000</double>
             </property>
            </widget>
-           <widget class="QDoubleSpinBox" name="sensorRangeMax0SpinBox">
+           <widget class="QDoubleSpinBox" name="sensorRangeMaxSpinBox">
             <property name="geometry">
              <rect>
               <x>280</x>
@@ -4516,7 +4519,7 @@ color: rgb(255,255,255);</string>
   <tabstop>sensorHeightSpinBox</tabstop>
   <tabstop>sensorDepthSpinBox</tabstop>
   <tabstop>sensorRangeMinSpinBox</tabstop>
-  <tabstop>sensorRangeMax0SpinBox</tabstop>
+  <tabstop>sensorRangeMaxSpinBox</tabstop>
   <tabstop>measurementOffsetSpinBox</tabstop>
   <tabstop>calibrationFrameQtySpinBox</tabstop>
   <tabstop>calibrationBetaDoubleSpinBox</tabstop>
@@ -4615,7 +4618,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>193</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4631,7 +4634,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>327</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4647,7 +4650,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>297</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4663,7 +4666,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>890</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4679,13 +4682,13 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>sensorRangeMinSpinBox</sender>
-   <signal>editingFinished()</signal>
+   <signal>valueChanged(double)</signal>
    <receiver>AWLQtDemoClass</receiver>
    <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
    <hints>
@@ -4695,7 +4698,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>127</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4711,7 +4714,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4727,7 +4730,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4759,7 +4762,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4775,7 +4778,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>72</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4791,7 +4794,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4807,7 +4810,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>538</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4839,7 +4842,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4855,7 +4858,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4871,7 +4874,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>325</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4887,7 +4890,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>840</x>
-     <y>275</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4903,7 +4906,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
-     <y>295</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4919,7 +4922,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>937</x>
-     <y>295</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4935,23 +4938,23 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>882</x>
-     <y>295</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>sensorRangeMax0SpinBox</sender>
+   <sender>sensorRangeMaxSpinBox</sender>
    <signal>editingFinished()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_calibrationRangeMax0Spin_editingFinished()</slot>
+   <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>296</x>
-     <y>206</y>
+     <x>312</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
-     <x>298</x>
-     <y>275</y>
+     <x>374</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4967,7 +4970,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>305</x>
-     <y>281</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4983,7 +4986,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>901</x>
-     <y>295</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4999,7 +5002,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>845</x>
-     <y>295</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -5037,16 +5040,10 @@ color: rgb(255,255,255);</string>
   <slot>on_globalParametersSetPushButton_clicked()</slot>
   <slot>on_globalParametersGetPushButton_clicked()</slot>
   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
-  <slot>on_calibrationRangeMax0Spin_editingFinished()</slot>
+  <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
   <slot>on_targetHintDistanceSpin_editingFinished()</slot>
   <slot>on_targetHintAngleSpin_editingFinished()</slot>
   <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
-  <slot>on_calibrationRangeMax1Spin_editingFinished()</slot>
-  <slot>on_calibrationRangeMax2Spin_editingFinished()</slot>
-  <slot>on_calibrationRangeMax3Spin_editingFinished()</slot>
-  <slot>on_calibrationRangeMax4Spin_editingFinished()</slot>
-  <slot>on_calibrationRangeMax5Spin_editingFinished()</slot>
-  <slot>on_calibrationRangeMax6Spin_editingFinished()</slot>
   <slot>on_algo4RadioButton_setChecked(bool)</slot>
   <slot>on_videoCrosshairCheckBox_setChecked(bool)</slot>
   <slot>on_receiverCalibStorePushButton_clicked()</slot>

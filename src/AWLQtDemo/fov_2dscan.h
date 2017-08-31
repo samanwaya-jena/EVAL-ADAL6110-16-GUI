@@ -86,7 +86,8 @@ public:
 	typedef enum DisplayZoomMode
 	{
 		eDisplayZoomModeFront = 0, // Show only front of vehicle
-		eDisplayZoomMode360 = 1 // Show front and back: Objects can look smaller
+		eDisplayZoomMode360 = 1,  // Show front and back: Objects can look smaller
+		eDisplayZoomModeAuto = 2  // Scale automatically on displayedRangeMin
 	} DisplayZoomMode;
 
 
@@ -177,6 +178,7 @@ private:
 	QActionGroup* groupDisplayZoomMode;
 	QAction* displayZoomModeFrontAction;
 	QAction* displayZoomMode360Action;
+	QAction* displayZoomModeAutoAction;
 
 
 	void drawArc(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset = 0, float yOffset = 0);

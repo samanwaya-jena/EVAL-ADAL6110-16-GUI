@@ -68,7 +68,7 @@ private slots:
 	void on_sensorHeightSpin_editingFinished();
 	void on_sensorDepthSpin_editingFinished();
 	void on_calibrationRangeMinSpin_editingFinished();
-	void on_calibrationRangeMax0Spin_editingFinished();	
+	void on_calibrationRangeMaxSpin_editingFinished();	
 
 	void on_measurementOffsetSpin_editingFinished();
 

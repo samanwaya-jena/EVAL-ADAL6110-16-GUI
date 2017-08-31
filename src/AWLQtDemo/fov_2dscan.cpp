@@ -428,21 +428,30 @@ void FOV_2DScan::createAction()
 	groupDisplayZoomMode = new QActionGroup( this );
 	displayZoomModeFrontAction = new QAction("Front only", this);
 	displayZoomMode360Action = new QAction("Front and Rear", this);
-	
+	displayZoomModeAutoAction = new QAction("Maximum", this);
+
 	displayZoomModeFrontAction->setCheckable(true);
 	displayZoomModeFrontAction->setActionGroup(groupDisplayZoomMode);
 
 	displayZoomMode360Action->setCheckable(true);
 	displayZoomMode360Action->setActionGroup(groupDisplayZoomMode);
 
+	displayZoomModeAutoAction->setCheckable(true);
+	displayZoomModeAutoAction->setActionGroup(groupDisplayZoomMode);
+
 	if (displayZoomMode == eDisplayZoomModeFront)
 	{
 		displayZoomModeFrontAction->setChecked(true);
 	}
-	else
+	else if (displayZoomMode == eDisplayZoomMode360)
 	{
 		displayZoomMode360Action->setChecked(true);
 	}
+	else
+	{
+		displayZoomModeAutoAction->setChecked(true);
+	}
+
 
 	connect(groupDisplayZoomMode, SIGNAL(triggered(QAction*)), this, SLOT(slotDisplayZoomModeAction()));
 }
@@ -551,9 +560,13 @@ void FOV_2DScan::slotDisplayZoomModeAction()
 	{
 		 displayZoomMode = eDisplayZoomModeFront;
 	}
-	else
+	else if(displayZoomMode360Action->isChecked())
 	{
 		 displayZoomMode = eDisplayZoomMode360;
+	}
+	else 
+	{
+		displayZoomMode = eDisplayZoomModeAuto;
 	}
 
 	slotConfigChanged();
@@ -590,12 +603,12 @@ void FOV_2DScan::slotConfigChanged()
 		}
 	}
 
+	if (displayZoomMode == eDisplayZoomModeAuto)
+		config.spareDepth -= AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMin;
+
 	config.maxAngularSpan *= 2;
 	// Span is always a multiple of 10 degrees - just for display aethetics
 	config.maxAngularSpan = (1+ ((int)config.maxAngularSpan / 10)) * 10;
-
-
-
 
 	setMinimumSize(minimumSizeHint());
 	calculateResize();
@@ -641,6 +654,7 @@ void FOV_2DScan::resizeEvent(QResizeEvent * theEvent)
 void FOV_2DScan::calculateResize()
 {
 
+	// For default mode where we are eDisplayZommModeFront
 	double totalDistance = config.maxSensorsRange+config.spareDepth;
 
 	if (displayZoomMode == eDisplayZoomMode360)
@@ -663,11 +677,10 @@ void FOV_2DScan::calculateResize()
 		}
 	}
 
-	if (displayZoomMode == eDisplayZoomModeFront)
+	if (displayZoomMode == eDisplayZoomModeFront || displayZoomMode == eDisplayZoomModeAuto)
 	{
 		zeroY = maxHeight - (config.spareDepth * Ratio);
 		zeroX = width()/2;
-
 	}
 	else
 	{
@@ -1704,6 +1717,7 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 
 	menuZoomDisplayMode->addAction(displayZoomModeFrontAction);
 	menuZoomDisplayMode->addAction(displayZoomMode360Action);
+	menuZoomDisplayMode->addAction(displayZoomModeAutoAction);
 
 	mainMenu.addAction(showPaletteAction);
 

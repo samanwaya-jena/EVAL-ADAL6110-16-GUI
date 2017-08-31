@@ -197,7 +197,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.measurementOffsetSpinBox->setValue(measurementOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
-	ui.sensorRangeMax0SpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
+	ui.sensorRangeMaxSpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
 
 	FillChannelSelectList();
 
@@ -670,8 +670,27 @@ void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 
 void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 {
+
+	// Wait Cursor
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+
+	// Update the settings
 	double range = ui.sensorRangeMinSpinBox->value();
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMin = range;
+
+	// Calculate the absolute max distance from the settings
+	AdjustDefaultDisplayedRanges();
+
+	// Update user interface parts
+
+	if (m2DScan && !m2DScan->isHidden())
+	{
+		m2DScan->slotConfigChanged();
+	}
+
+	// Restore the wait cursor
+	setCursor(Qt::ArrowCursor);
 }
 
 void AWLQtDemo::ChangeRangeMax(int channelID, double range)
@@ -684,17 +703,9 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	// Update the settings
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	settings->receiverSettings[0].channelsConfig[channelID].maxRange = range;
-
+	
 	// Calculate the absolute max distance from the settings
-	int channelQty = settings->receiverSettings[0].channelsConfig.size();
-	long absoluteMaxRange = 0.0;
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
-	{
-		if (settings->receiverSettings[0].channelsConfig[channelIndex].maxRange > absoluteMaxRange)
-			absoluteMaxRange = settings->receiverSettings[0].channelsConfig[channelIndex].maxRange;
-	}
-
-	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRange;
+	AdjustDefaultDisplayedRanges();
 
 	// Update user interface parts
 	
@@ -707,9 +718,9 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	setCursor(Qt::ArrowCursor);
 }
 
-void AWLQtDemo::on_calibrationRangeMax0Spin_editingFinished()
+void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 {
-	double range = ui.sensorRangeMax0SpinBox->value();
+	double range = ui.sensorRangeMaxSpinBox->value();
 
 	// Calculate the absolute max distance from the settings
 	int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
