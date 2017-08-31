@@ -534,13 +534,13 @@ void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
 	track->intensity = ConvertIntensityToSNR(intensity);
 
 	track->part3Entered = true;
-
+#if 1
 	// Track is invalidated if intensity is invalid
 	if (track->intensity < receiverStatus.signalToNoiseFloor)
 	{
 		track->part3Entered = false;
 	}
-
+#endif
 	rawLock.unlock();
 
 	// Debug and Log messages

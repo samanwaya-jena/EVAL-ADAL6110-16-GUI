@@ -229,7 +229,7 @@ public:
 	int	GetTrackID() {return(trackID);}
 
 	// A track is built from 4 distinct CAN message sections.  Make sure all parts are entered before a track is completed.
-#if 0
+#if 1
 	bool IsComplete() { return (part1Entered && part2Entered && part3Entered && part4Entered); };
 #else
 	bool IsComplete() { return (part1Entered && part2Entered); };
