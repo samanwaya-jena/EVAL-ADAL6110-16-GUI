@@ -191,7 +191,6 @@ const int    lineTransparency = 128;
 const float gridOffset = 1.0;  // Grid spacing in Cartesian Display
 const int paletteWidth = 50;
 
-float logoAspectRatio = 1.0;
 const int logoLeftMargin = 55; // Do not place logo to muh to the left of the screen
 const int logoRightMargin = 10; // Do not place logo to muh to the left of the screen
 const int logoTopMargin = 10; // Do not place logo to muh to the left of the screen
@@ -230,36 +229,15 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
     rgbshortRangeLimited = qRgba(184,220,175,127);
     rgbshortRange = qRgba(54,166,38,127);
 
+	// Create a label to hold a logo
+
+	logoLabel = new QLabel(this);
+
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));
 
 	createAction();
-
-	// Create a label to hold a logo, only if there is one specified in INI file.
-
-	logoLabel = new QLabel(this);
-	QPixmap *myPix = NULL;
-	if (!globalSettings->sLogoFileName.empty()) 
-	{
-		myPix = new QPixmap(globalSettings->sLogoFileName.c_str());
-	}
-	
-	if (myPix && !myPix->isNull())
-	{
-		float pixWidth = myPix->width();
-		float pixHeight = myPix->height();
-		logoAspectRatio = pixWidth / pixHeight;
-		logoLabel->setPixmap(*myPix);
-	}
-	else
-	{
-		logoAspectRatio = 3.0/1.0;
-	}
-
-	if (myPix) delete myPix;
-
-	logoLabel->setScaledContents(true);
-
+	calculateResize();
 }
 
 void FOV_2DScan::createAction()
@@ -689,9 +667,22 @@ void FOV_2DScan::calculateResize()
 	}
 
 	int labelWidth = width() * 0.3;
-	int labelHeight = labelWidth / logoAspectRatio;
-
+	int labelHeight = labelWidth;
 	logoLabel->resize(labelWidth, labelHeight);
+
+	QPixmap *myPix = NULL;
+	if (!AWLSettings::GetGlobalSettings()->sLogoFileName.empty())
+	{
+		myPix = new QPixmap(AWLSettings::GetGlobalSettings()->sLogoFileName.c_str());
+	}
+
+	if (myPix && !myPix->isNull())
+	{
+
+		logoLabel->setPixmap((*myPix).scaled(labelWidth, labelHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	}
+
+
 	logoLabel->move(logoLeftMargin, height() - labelHeight);
 }
 

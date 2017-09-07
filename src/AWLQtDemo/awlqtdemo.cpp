@@ -489,33 +489,6 @@ void AWLQtDemo::SetupDisplayGrid()
 {
 
 	// Position the objects in the layout in order
-#if 0
-	// Read the settigs from the configuration file
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	// Create a label to hold a logo, only if there is one specified in INI file.
-
-	QLabel *mLogoLabel = new QLabel(this);
-	QPixmap *myPix = NULL;
-	if (!globalSettings->sLogoFileName.empty()) 
-	{
-		myPix = new QPixmap(globalSettings->sLogoFileName.c_str());
-	}
-	
-	float logoAspectRatio = 3.0/1.0;
-	if (myPix && !myPix->isNull())
-	{
-		float pixWidth = myPix->width();
-		float pixHeight = myPix->height();
-		float logoAspectRatio = pixWidth / pixHeight;
-		mLogoLabel->setPixmap(*myPix);
-	}
-
-	if (myPix) delete myPix;
-
-	mLogoLabel->setScaledContents(true);
-	ui.gridDisplayLayout->addWidget(mLogoLabel, 2, 0, 1, 1, Qt::AlignBottom | Qt::AlignLeft);
-
-#endif
 
 #if 0
 	ui.gridDisplayLayout->addWidget((m2DScan, 0, 0, 3, 3, Qt::AlignTop);
@@ -1640,6 +1613,8 @@ void AWLQtDemo::on_view2DActionToggled()
 		m2DScan->hide();
 		action2DButton->setChecked(false);
 	}
+
+	ui.gridDisplayLayout->update();
 }
 
 void AWLQtDemo::on_viewTableViewActionToggled()
@@ -1655,6 +1630,8 @@ void AWLQtDemo::on_viewTableViewActionToggled()
 		mTableView->hide();
 		actionTableButton->setChecked(false);
 	}
+
+	ui.gridDisplayLayout->update();
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()
@@ -1670,6 +1647,8 @@ void AWLQtDemo::on_viewSettingsActionToggled()
 		ui.interfaceTabs->hide();
 		actionSettingsButton->setChecked(false);
 	}
+
+	on_resizeActionToggled();
 }
 
 void AWLQtDemo::on_viewGraphActionToggled()
