@@ -60,7 +60,19 @@ const QString actionResizeMaximizeString("Maximize");
 const QString actionResizeRestoreDownString("Restore down");
 
 AWLQtDemo::AWLQtDemo(int argc, char *argv[])
-	: QMainWindow()
+	: QMainWindow(),
+	m2DScan(NULL),
+	mTableView(NULL),
+	scopeWindow(NULL),
+	myTimer(NULL),
+	actionSettingsButton(NULL),
+	action2DButton(NULL),
+	actionTableButton(NULL),
+	actionCameraButton(NULL),
+	actionResizeButton(NULL),
+	actionQuitButton(NULL),
+	actionResizeMaximizeIcon(NULL),
+	actionResizeRestoreDownIcon(NULL)
 {
 	QMessageBox msgBox(this);
 
@@ -683,7 +695,6 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	AdjustDefaultDisplayedRanges();
 
 	// Update user interface parts
-
 	if (m2DScan && !m2DScan->isHidden())
 	{
 		m2DScan->slotConfigChanged();
