@@ -172,7 +172,13 @@ void VideoCapture::DoThreadIteration()
 	// Acquire from camera source or AVI
 	if( cam.isOpened() )
 	{
-		if (!cam.read(bufferFrame)) 
+		// Set to all zeros.  This will be used to see if we have captured something, since normal openCV validations
+		// don't seem to work.
+		bufferFrame.setTo(0);
+
+		// cam.read returns true, even when camera is unplugged. But, in this last case, the bufferFrame is 
+		// all zeros so we need to test for both
+		if ((!cam.read(bufferFrame)) || (norm(bufferFrame)==0))
 		{
 			cam.release();
 			currentFrame.create(calibration.frameHeightInPixels, calibration.frameWidthInPixels, CV_8UC3);
