@@ -2544,54 +2544,6 @@ background-color: #202020;
            </property>
           </widget>
          </widget>
-         <widget class="QGroupBox" name="lineDisplayGroupBox">
-          <property name="geometry">
-           <rect>
-            <x>770</x>
-            <y>130</y>
-            <width>161</width>
-            <height>80</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>RowVisibility</string>
-          </property>
-          <widget class="QRadioButton" name="topRowRadioButton">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>30</y>
-             <width>121</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>&amp;Top Row (Alt+T)</string>
-           </property>
-           <property name="shortcut">
-            <string>Alt+T</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QRadioButton" name="bottomRowRadioButton">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>50</y>
-             <width>121</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>&amp;Bottom Row (Alt-B)</string>
-           </property>
-           <property name="shortcut">
-            <string>Alt+B</string>
-           </property>
-          </widget>
-         </widget>
         </widget>
         <widget class="QWidget" name="controlTab">
          <attribute name="title">
@@ -4967,38 +4919,6 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>305</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>topRowRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_topRowToggled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>849</x>
-     <y>213</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>901</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>bottomRowRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_bottomRowToggled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>848</x>
-     <y>233</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>845</x>
      <y>273</y>
     </hint>
    </hints>
