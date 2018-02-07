@@ -210,7 +210,7 @@ void ReceiverEasySyncCapture::DoOneThreadIteration()
 				if (OpenCANPort())
 				{
 					WriteCurrentDateTime();
-					ReceiverCapture::SetMessageFilters();
+					SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
 				}
 			}
 
@@ -224,7 +224,7 @@ void ReceiverEasySyncCapture::DoOneThreadIteration()
 				if (OpenCANPort())
 				{
 					WriteCurrentDateTime();
-					ReceiverCapture::SetMessageFilters();
+					SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
 				}
 			}
 

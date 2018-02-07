@@ -236,7 +236,7 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 			if (OpenCANPort())
 			{
 				WriteCurrentDateTime();
-				ReceiverCapture::SetMessageFilters();
+				SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
 			}
 		}
 

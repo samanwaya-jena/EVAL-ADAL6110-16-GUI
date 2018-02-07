@@ -68,8 +68,7 @@ sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
-targetHintAngle(0.0),
-channelOffsetPatch(0)
+targetHintAngle(0.0)
 
 {
 	// Initialize default status values
@@ -85,7 +84,7 @@ channelOffsetPatch(0)
 	receiverStatus.messageMask = inMessageMask;
 
 	// Reflect the settings in hardware
-	SetMessageFilters();
+	SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
 }
 
 ReceiverCapture::ReceiverCapture(int receiverID, boost::property_tree::ptree &propTree):
@@ -99,8 +98,7 @@ sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
-targetHintAngle(0.0),
-channelOffsetPatch(0)
+targetHintAngle(0.0)
 
 
 {
@@ -122,7 +120,7 @@ channelOffsetPatch(0)
 	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, 0, receiverChannelQty));
 
 	// Reflect the settings in hardware
-	SetMessageFilters();
+	SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
 }
 
 ReceiverCapture::~ReceiverCapture()
@@ -292,19 +290,11 @@ bool ReceiverCapture::StopRecord()
 }
 
 
-bool ReceiverCapture::SetMessageFilters()
-
-{
-
-	return(SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask));
-}
-
 bool ReceiverCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
 
 {
    return(true);
 }
-
 
 void ReceiverCapture::DoOneThreadIteration()
 

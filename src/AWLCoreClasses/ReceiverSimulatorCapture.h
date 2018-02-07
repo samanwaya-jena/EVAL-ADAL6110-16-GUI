@@ -143,7 +143,15 @@ public:
 		
 	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) {return(true);};
 
-	
+	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
+	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
+	* \param[in] channelMask mask for the analyzed channels.
+	* \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask);
+
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.

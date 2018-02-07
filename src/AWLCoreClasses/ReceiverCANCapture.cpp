@@ -48,7 +48,12 @@ ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverR
 canRate(inCANRate),
 closeCANReentryCount(0)
 
+
 {
+#ifdef FORCE_FRAME_RESYNC_PATCH
+	lastChannelMask.byteData = 0;
+	lastChannelID = 0;
+#endif
 	yearOffset = defaultYearOffset;
 	monthOffset = defaultMonthOffset;
 
@@ -63,6 +68,11 @@ ReceiverCapture(receiverID, propTree),
 closeCANReentryCount(0)
 
 {
+#ifdef FORCE_FRAME_RESYNC_PATCH
+	lastChannelMask.byteData = 0;
+	lastChannelID = 0;
+#endif
+
 	// Read the configuration from the configuration file
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
@@ -92,7 +102,7 @@ void  ReceiverCANCapture::Go()
 	if (OpenCANPort())
 	{
 		WriteCurrentDateTime();
-		ReceiverCapture::SetMessageFilters();
+		SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
 	}
 
 	mWorkerRunning = true;
@@ -131,7 +141,6 @@ void ReceiverCANCapture::DoThreadLoop()
 	} // while (!WasStoppped)
 }
 
-
 void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 
 {
@@ -151,7 +160,15 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	}
 	else if (msgID == 9)
 	{
+#ifdef FORCE_FRAME_RESYNC_PATCH
+		if (lastChannelID >=8) 
+		{
+			ProcessCompletedFrame();
+			lastChannelID = 0;
+		}
+#else
 		ProcessCompletedFrame();
+#endif
 	}
 	else if (msgID == 10) 
 	{
@@ -280,8 +297,6 @@ void ReceiverCANCapture::ParseChannelDistance(AWLCANMessage &inMsg)
 		channel = inMsg.id - 20;
 	}
 
-	channel += channelOffsetPatch;
-
 	if (channel >= 0) 
 	{
 		boost::mutex::scoped_lock rawLock(GetMutex());
@@ -366,8 +381,6 @@ void ReceiverCANCapture::ParseChannelIntensity(AWLCANMessage &inMsg)
 	}
 
 
-	channel += channelOffsetPatch;
-
 	if (channel >= 0)
 	{
 		boost::mutex::scoped_lock rawLock(GetMutex());
@@ -412,7 +425,6 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
 	uint16_t *dataPtr = (uint16_t *)inMsg.data;
 
 	channel = dataPtr[0];
-	channel += channelOffsetPatch;
 
 	if (channel >= 0)
 	{
@@ -444,6 +456,9 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d", inMsg.id, dataPtr[0], dataPtr[1], dataPtr[2]);
 }
 
+// Track reorder to compensate for a bug in firmware
+//int trackReorder[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 13, 15, 12, 14, 9, 10, 11, 8 };
+int trackReorder[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
@@ -458,8 +473,8 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	track->timeStamp = currentFrame->timeStamp;
 
 	track->trackChannels.byteData = *(uint8_t *) &inMsg.data[2];
-	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
-
+	track->trackMainChannel = trackReorder[*(uint16_t *)&inMsg.data[3]];
+#if 1
 	// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
 	// Other versions send trackMainChannel.
 	// Rebuild trackMainChannel from AWL 7 data.
@@ -477,9 +492,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 			channelMask <<= 1;
 		}
 	}
-
-	track->trackMainChannel += channelOffsetPatch;
-
+#endif
 	// Decode rest of message
 	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
 	track->probability = *(uint8_t *) &inMsg.data[5];
@@ -1396,7 +1409,7 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		// Hack:  Update the SNR Cutoff in status when trying to set in algo parameters. 
 		if (!parameter->sDescription.compare("SNR Cutoff (dB)"))
 		{
-			receiverStatus.signalToNoiseFloor = parameter->floatValue;
+			receiverStatus.signalToNoiseFloor = parameter->floatValue-4.0;
 		}
 	}
 
@@ -1447,7 +1460,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 	message.data[1] = channelMask.byteData; // Channel mask
 	message.data[2] = 0;  // Reserved
 	message.data[3] = frameRate; // New frame rate. oo= use actual.
-	message.data[4] = messageMask.byteData;
+	message.data[4] = messageMask.byteData; // Message mask
 	message.data[5] = 0;  // Reserved
 	message.data[6] = 0;  // Reserved
 	message.data[7] = 0;  // Reserved
@@ -1794,32 +1807,51 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 		if (msgID == 10)
 		{
+#if 0
 			awl::ChannelMask newChannelMask;
+
 			newChannelMask.byteData = *(uint8_t *)&inMsg.data[2]; 
+	
+			
 			if (newChannelMask.byteData < lastChannelMask.byteData)
 			{
 				ProcessCompletedFrame();
 			}
 
 			lastChannelMask = newChannelMask;
+#endif
+
+			uint16_t newChannelID = *(uint16_t *)&inMsg.data[3];
+
+			if (newChannelID < lastChannelID)
+			{
+				ProcessCompletedFrame();
+				lastChannelID = 0;
+			}
+
+			lastChannelID = newChannelID;
 		}
 
 		if (msgID == 60)
 		{
-			awl::ChannelMask newChannelMask;
-			newChannelMask.byteData = 1 << (inMsg.data[0]%8);
-			if (newChannelMask.byteData < lastChannelMask.byteData)
+			uint16_t newChannelID = *(uint16_t *)&inMsg.data[3];
+
+			if (newChannelID < lastChannelID)
 			{
 				ProcessCompletedFrame();
+				lastChannelID = 0;
 			}
 
-			lastChannelMask = newChannelMask;
+			lastChannelID = newChannelID;
 		}
-
+#if 1
 		if (msgID == 9)
 		{
+			ProcessCompletedFrame();
 			lastChannelMask.byteData = 0;
+			lastChannelID = 0;
 		}
+#endif
 }
 
 #endif // FORCE_FRAME_RESYNC_PATCH

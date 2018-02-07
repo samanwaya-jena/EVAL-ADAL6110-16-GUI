@@ -496,6 +496,7 @@ protected:
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/
 		awl::ChannelMask lastChannelMask;
+		uint16_t lastChannelID;
 #endif //FORCE_FRAME_RESYNC_PATCH
 
 };

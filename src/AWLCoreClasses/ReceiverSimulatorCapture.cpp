@@ -75,7 +75,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		trackDistance += 0.0001;
 		if (trackDistance > 10.0) trackDistance = 0.0;
 
-		for (int channel = 0; channel < 8; channel++)
+		for (int channel = 0; channel < 16; channel++)
 		{
 			for (int detection = 0; detection < 8; detection++)
 			{
@@ -94,7 +94,6 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 #endif
 					track->intensity = 1.00;
 					track->trackMainChannel = channel;
-					track->trackMainChannel += channelOffsetPatch;
 
 					track->trackChannels.byteData = 0x01 << (track->trackMainChannel % 8);
 					
@@ -119,6 +118,12 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	} // if  (!WasStoppped)
 }
 
+
+bool ReceiverSimulatorCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+
+{
+	return(true);
+}
 
 
 bool ReceiverSimulatorCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)

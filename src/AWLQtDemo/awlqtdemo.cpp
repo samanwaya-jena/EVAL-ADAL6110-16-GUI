@@ -275,7 +275,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
-
+		
 
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);

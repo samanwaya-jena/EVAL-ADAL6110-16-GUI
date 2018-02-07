@@ -594,13 +594,6 @@ public:
 		
 	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) = 0;
 
-	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect the current global setting.
-	* \return true if success.  false on error.
-	* \remarks uses settings variables to call  SetMessageFilters(frameRate, channelMask, messageMask)
-	*/
-		
-	virtual bool SetMessageFilters();
-
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
     * \param[in] channelMask mask for the analyzed channels.
@@ -608,7 +601,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask);
+	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask) = 0;
 
 
 	/** \  an asynchronous query command to get the current algorithm.
@@ -748,11 +741,6 @@ public:
 	/** \brief Reference angle used when logging data.
 	*/
 	float targetHintAngle;
-
-	/** \brief Channel offset used in temporary row patch.
-	*/
-	int channelOffsetPatch;
-
 
 // Protected methods
 protected:
