@@ -6,7 +6,7 @@
 	       screen are displayed. -->
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
-    <displayTableViewWindow>true</displayTableViewWindow>
+    <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>false</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
@@ -17,7 +17,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>:/Logos/Images/Logos/SungwooLogoIconTransparent.png</logoFileName>
+    <logoFileName>:/Logos/Images/Logos/Phantom-Black-logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>:/Logos/Images/Logos/AWLQtDemo.ico</iconFileName>
@@ -49,12 +49,12 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+      <receiverType>KvaserLeaf</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
-      <receiverRegisterSet>registerDescription_RevC</receiverRegisterSet>
+      <receiverRegisterSet>registerDescription_RevD</receiverRegisterSet>
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
@@ -80,7 +80,8 @@
            -->
       <canBitRate>1000</canBitRate>
 
-      <frameRate>30</frameRate>
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
 
       <!-- Channel mask: Controls which channels are
 		       processed at AWL Unit Level -->
@@ -115,12 +116,12 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>4.0</displayedRangeMin>
-      <displayedRangeMax>45</displayedRangeMax>
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>25</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
-
- 
     </receiver0>
+    
+
     </receivers>
 
   <cameras>
@@ -133,7 +134,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1100</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -209,13 +210,13 @@
       End Comment out unused cameras -->
 
 
-  		<!-- MS_LIFECAM_HD5000 @640x360 -->
-			<fov>
-			   <x>54.0</x>
-			   <y>39.0</y>
-		  </fov>
-     <radialCorrectionK1>0.0</radialCorrectionK1>
-     <radialCorrectionK2>0.0</radialCorrectionK2>
+      <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
+      <fov>
+        <x>45.0</x>
+        <y>34.0</y>
+      </fov>
+      <radialCorrectionK1>-.04</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
 
     <cameraWebcamSample>
@@ -405,14 +406,14 @@
 	     CAN measurements.
 	     In the meantime, we have a variable for that
 	     Specify in m/s, use <NN>km/h(60.0 * 1000)/(60*60) -->
-    <travelSpeed>16.66</travelSpeed>
+    <travelSpeed>33.32</travelSpeed>
     <alertQty> 3 </alertQty>
     <alert0>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
       <alertChannels> 127 </alertChannels>
       <alertMin> 1.0</alertMin>  <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>3.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
+      <alertMax>2.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>1</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert0>
 
@@ -420,8 +421,8 @@
       <alertType>decelerationToStop</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
       <alertChannels> 127 </alertChannels>
-      <alertMin> 3.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>4.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
+      <alertMin> 2.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMax>3.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>2</alertLevel><!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert1>
 
@@ -429,7 +430,7 @@
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
       <alertChannels> 127 </alertChannels>
-      <alertMin>4.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
+      <alertMin>3.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax></alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert2>
@@ -1345,7 +1346,7 @@
     </GPIOs>
 
     <algos>
-      <defaultAlgo>5</defaultAlgo>
+      <defaultAlgo>6</defaultAlgo>
       <algo>
         <!-- Algo 00 -->
         <!-- Algo00 is the Global parameters section -->
@@ -1669,6 +1670,62 @@
         </parameter>
 
       </algo>
+
+      <algo>
+        <!-- Algo 06 -->
+        <!-- Algo06 is Algo 4.5-->
+        <algoID>6</algoID>
+        <algoName>Algo4.5</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+        <address>1</address>
+        <description>Std. factor</description>
+        <type>float</type>
+        <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>SourceWidth</description>
+          <type>int</type>
+          <default>7</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Derivate width</description>
+          <type>int</type>
+          <default>5</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>16.0</default>
+        </parameter>
+
+      </algo>
     </algos>
   </registerDescription_RevD>
 
@@ -1827,19 +1884,19 @@
       <y>2</y>
     </arraySize>
     <arrayFOV>
-      <x>7</x>
-      <y>3.9</y>
+      <x>28</x>
+      <y>4.1</y>
     </arrayFOV>
     <pixelSpacing>
       <x>0.1</x>
-      <y>1.19</y>
+      <y>1.5</y>
     </pixelSpacing>
     <arrayOffset>
       <x>0.0</x>
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>50.0</maxRange>
+    <maxRange>25.0</maxRange>
     
     <displayColor>
       <red>255</red>

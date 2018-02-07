@@ -318,9 +318,6 @@
       <Filter>HelperTools</Filter>
     </None>
     <None Include="plugin1.bin" />
-    <None Include="AWLDemoSettings.xml">
-      <Filter>Installable Files</Filter>
-    </None>
     <None Include="ClassDiagram1.cd" />
     <None Include="..\..\..\..\..\Links\Downloads.lnk">
       <Filter>HelperTools</Filter>
@@ -363,6 +360,9 @@
     </None>
     <None Include="..\InstallableDLLs\xiapi32.dll">
       <Filter>Installable DLLs</Filter>
+    </None>
+    <None Include="AWLDemoSettings.xml">
+      <Filter>Installable Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
