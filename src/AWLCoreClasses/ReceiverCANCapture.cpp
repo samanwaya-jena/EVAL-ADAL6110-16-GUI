@@ -160,15 +160,7 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	}
 	else if (msgID == 9)
 	{
-#ifdef FORCE_FRAME_RESYNC_PATCH
-		if (lastChannelID >=8) 
-		{
-			ProcessCompletedFrame();
-			lastChannelID = 0;
-		}
-#else
 		ProcessCompletedFrame();
-#endif
 	}
 	else if (msgID == 10) 
 	{
@@ -456,10 +448,6 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d", inMsg.id, dataPtr[0], dataPtr[1], dataPtr[2]);
 }
 
-// Track reorder to compensate for a bug in firmware
-//int trackReorder[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 13, 15, 12, 14, 9, 10, 11, 8 };
-int trackReorder[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-
 void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 {
@@ -473,7 +461,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	track->timeStamp = currentFrame->timeStamp;
 
 	track->trackChannels.byteData = *(uint8_t *) &inMsg.data[2];
-	track->trackMainChannel = trackReorder[*(uint16_t *)&inMsg.data[3]];
+	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
 #if 1
 	// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
 	// Other versions send trackMainChannel. For AWL-7 track main channel is 0.
@@ -1794,36 +1782,43 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 
 
 #ifdef FORCE_FRAME_RESYNC_PATCH
-// Big bad patch
+// Big bad patch. AWL-7 does not receive all messages....
 
 
 void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 {
-	// This is a "patch" intended to correct a known bug in AWL, where CAN frames may "overwrite" each other,
+	// This is a "patch" intended to correct a known bug in AWL-7, where CAN frames may "overwrite" each other,
 	// causing the end of frame message not to be received.
 	// Happens when a large number of detections are made on multiple channels.
-	// The way we detect end of frame is if "channel number" from message 10 decreases, then we have skipped end of frame.
+	// The way we detect end of frame is if "channel number" from message 10 decreases (channels are out of order), 
+	// then we have skipped end of frame.
 
 		unsigned long msgID = inMsg.id;
 
 		if (msgID == 10)
 		{
-#if 0
-			awl::ChannelMask newChannelMask;
-
-			newChannelMask.byteData = *(uint8_t *)&inMsg.data[2]; 
-	
-			
-			if (newChannelMask.byteData < lastChannelMask.byteData)
-			{
-				ProcessCompletedFrame();
-			}
-
-			lastChannelMask = newChannelMask;
-#endif
-
+			uint8_t newChannelMask = *(uint8_t *)&inMsg.data[2];
 			uint16_t newChannelID = *(uint16_t *)&inMsg.data[3];
+#if 1
+			// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
+			// Other versions send trackMainChannel. For AWL-7 track main channel is 0.
+			// Rebuild trackMainChannel from AWL 7 data.
+			if (newChannelMask && !newChannelID)
+			{
+				newChannelID = 0;
+				uint8_t channelMask = 0x01;
+				for (int channel = 0; channel < 8; channel++)
+				{
+					if (newChannelMask & channelMask)
+					{
+						newChannelID = channel;
+						break;
+					}
+					channelMask <<= 1;
+				}
+			}
+#endif
 
 			if (newChannelID < lastChannelID)
 			{

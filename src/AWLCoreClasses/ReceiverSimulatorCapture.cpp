@@ -89,9 +89,6 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 
 					track->timeStamp = currentFrame->timeStamp;
 					track->distance = (detection * 2) + trackDistance;
-#if 0
-					track->distance += (channel / 8) * 401;  // Line wraparound at 400 meters
-#endif
 					track->intensity = 1.00;
 					track->trackMainChannel = channel;
 
