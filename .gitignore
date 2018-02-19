@@ -40,3 +40,5 @@ src/PhantomLidarDemoSetup/PhantomLidarDemoSetup/
 #ignore all application log files
 src/AWLQtDemo/*.dat
 
+src/PhantomLidarDemoSetup/AWLSetup/Express/DVD-5/LogFiles/error
+*.dbg
