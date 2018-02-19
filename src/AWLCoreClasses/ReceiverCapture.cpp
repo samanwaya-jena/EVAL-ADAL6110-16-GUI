@@ -432,14 +432,30 @@ int ReceiverCapture::FindRegisterByAddress(const RegisterSet &inRegisterSet, uin
 	return(-1);
 }
 
+AlgorithmDescription * ReceiverCapture::FindAlgoDescriptionByID(AlgorithmSet &inAlgoSet, int inAlgoID)
+{
+	for (uint16_t i = 0; i < inAlgoSet.algorithms.size(); i++)
+	{
+		if (inAlgoSet.algorithms.at(i).algoID == inAlgoID)
+		{
+			return(&inAlgoSet.algorithms[i]);
+		}
+	}
+
+	return(NULL);
+}
+
 AlgorithmParameter * ReceiverCapture::FindAlgoParamByAddress(int inAlgoID, uint16_t inAddress)
 {
 
-	for (uint16_t i = 0; i < parametersAlgos.algorithms[inAlgoID].parameters.size(); i++) 	
+	AlgorithmDescription *algoDescription = FindAlgoDescriptionByID(parametersAlgos, inAlgoID);
+	if (algoDescription == NULL) return NULL;
+
+	for (uint16_t i = 0; i < algoDescription->parameters.size(); i++) 	
 	{
-		if ( parametersAlgos.algorithms[inAlgoID].parameters[i].address == inAddress)
+		if (algoDescription->parameters[i].address == inAddress)
 		{
-			return(&parametersAlgos.algorithms[inAlgoID].parameters[i]);
+			return(&algoDescription->parameters[i]);
 		}
 	}
 
@@ -448,12 +464,14 @@ AlgorithmParameter * ReceiverCapture::FindAlgoParamByAddress(int inAlgoID, uint1
 
 AlgorithmParameter * ReceiverCapture::FindTrackerParamByAddress(int inTrackerID, uint16_t inAddress)
 {
+	AlgorithmDescription *algoDescription = FindAlgoDescriptionByID(parametersTrackers, inTrackerID);
+	if (algoDescription == NULL) return NULL;
 
-	for (uint16_t i = 0; i < parametersTrackers.algorithms[inTrackerID].parameters.size(); i++)
+	for (uint16_t i = 0; i < algoDescription->parameters.size(); i++)
 	{
-		if (parametersTrackers.algorithms[inTrackerID].parameters[i].address == inAddress)
+		if (algoDescription->parameters[i].address == inAddress)
 		{
-			return(&parametersTrackers.algorithms[inTrackerID].parameters[i]);
+			return(&algoDescription->parameters[i]);
 		}
 	}
 

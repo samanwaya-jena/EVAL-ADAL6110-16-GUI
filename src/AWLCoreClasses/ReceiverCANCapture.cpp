@@ -106,6 +106,9 @@ void  ReceiverCANCapture::Go()
 	{
 		WriteCurrentDateTime();
 		SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+		// Update all the info (eventually) from the status of the machine
+		QueryAlgorithm();
+		QueryTracker();
 	}
 
 	mWorkerRunning = true;
@@ -749,8 +752,12 @@ void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];  // Unused
 	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
 	
+	AlgorithmDescription *algoDescription = NULL;
+	algoDescription = FindAlgoDescriptionByID(parametersAlgos, registerValue);
+
 	// Check that the algorithm is valid (just in case communication goes crazy)
-	if (registerValue >= 1 && registerValue <= ALGO_QTY) 
+	// Algo canot be 0, because 0 is reserved for GLOBAL_ALGO_ID 
+	if (registerValue >= 1 && (algoDescription != NULL))  
 	{
 		receiverStatus.currentAlgo = registerValue;
 		receiverStatus.currentAlgoPendingUpdates --;
@@ -788,8 +795,12 @@ void ReceiverCANCapture::ParseParameterTrackerSelectResponse(AWLCANMessage &inMs
 	uint16_t registerAddress = *(uint16_t *)&inMsg.data[2];  // Unused
 	uint32_t registerValue = *(uint32_t *)&inMsg.data[4];
 
-	// Check that the algorithm is valid (just in case communication goes crazy)
-	if (registerValue >= 1 && registerValue <= ALGO_QTY)
+	AlgorithmDescription *trackerDescription = NULL;
+	trackerDescription = FindAlgoDescriptionByID(parametersTrackers, registerValue);
+
+	boost::mutex::scoped_lock rawLock(GetMutex());
+	// Check that the tracker is valid (just in case communication goes crazy)
+	if (trackerDescription != NULL)
 	{
 		receiverStatus.currentTracker = registerValue;
 		receiverStatus.currentTrackerPendingUpdates--;
@@ -798,6 +809,9 @@ void ReceiverCANCapture::ParseParameterTrackerSelectResponse(AWLCANMessage &inMs
 	{
 		DebugFilePrintf(debugFile, "Error: Tracker select invalid %lx", registerValue);
 	}
+
+	receiverStatus.bUpdated = true;
+	rawLock.unlock();
 }
 
 void ReceiverCANCapture::ParseParameterTrackerParameterResponse(AWLCANMessage &inMsg)
@@ -882,7 +896,7 @@ void ReceiverCANCapture::ParseParameterGlobalParameterResponse(AWLCANMessage &in
 	uint32_t parameterValue=  *(uint32_t *) &inMsg.data[4];
 	int globalAlgo = 0; // Just so we know....
 
-	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_INDEX, parameterAddress);
+	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_ID, parameterAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(GetMutex());
@@ -1519,7 +1533,7 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
 
 	// Signal that we are waiting for an update of thet register settings.
 	bool bMessageOk = false;
-	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_INDEX, registerAddress);
+	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_ID, registerAddress);
 	if (parameter!= NULL)
 	{
 		// We should increment the pointer, but we just reset the 
@@ -1582,7 +1596,6 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 	bool bMessageOk = WriteMessage(message);
 
 	// The message has no confirmation built in
-
    return(bMessageOk);
 }
 
@@ -1764,7 +1777,7 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 	bool bMessageOk = WriteMessage(message);
 
 	// Signal that we are waiting for an update of thet register settings.
-	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_INDEX, registerAddress);
+	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_ID, registerAddress);
 	if (parameter!= NULL)
 	{
 		// We should increment the pointer, but we just reset the 
@@ -1792,7 +1805,7 @@ bool ReceiverCANCapture::QueryTrackerParameter(int trackerID, uint16_t registerA
 	bool bMessageOk = WriteMessage(message);
 
 	// Signal that we are waiting for an update of thet register settings.
-	AlgorithmParameter *parameter = FindTrackerParamByAddress(trackerID, registerAddress);
+		AlgorithmParameter *parameter = FindTrackerParamByAddress(trackerID, registerAddress);
 	if (parameter != NULL)
 	{
 		// We should increment the pointer, but we just reset the 

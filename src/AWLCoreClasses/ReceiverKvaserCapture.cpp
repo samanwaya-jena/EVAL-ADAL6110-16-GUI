@@ -239,6 +239,8 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 			{
 				WriteCurrentDateTime();
 				SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+				QueryAlgorithm();
+				QueryTracker();
 			}
 		}
 

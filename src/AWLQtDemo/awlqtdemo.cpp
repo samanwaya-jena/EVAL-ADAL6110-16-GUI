@@ -267,10 +267,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	for (int i = 1; i < algoQty; i++)
 	{
 		QString algoLabel = QString(receiverCaptures[0]->parametersAlgos.algorithms[i].sAlgoName.c_str());
-		ui.algoSelectComboBox->addItem(algoLabel, QVariant(receiverCaptures[0]->parametersAlgos.algorithms[i].algoID));
+		uint16_t algoID = receiverCaptures[0]->parametersAlgos.algorithms[i].algoID;
+		ui.algoSelectComboBox->addItem(algoLabel, QVariant(algoID));
 	}
 
-	ui.algoSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersAlgos.defaultAlgo - 1);
+	int selectedAlgoID = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+	ui.algoSelectComboBox->setCurrentIndex(ui.algoSelectComboBox->findData(selectedAlgoID));
 
 	// Fill in the tracker select combo box
 	ui.trackerSelectComboBox->clear();
@@ -278,10 +280,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	for (int i = 0; i < trackerQty; i++)
 	{
 		QString trackerLabel = QString(receiverCaptures[0]->parametersTrackers.algorithms[i].sAlgoName.c_str());
-		ui.trackerSelectComboBox->addItem(trackerLabel, QVariant(receiverCaptures[0]->parametersTrackers.algorithms[i].algoID));
+		uint16_t trackerID = receiverCaptures[0]->parametersTrackers.algorithms[i].algoID;
+		ui.trackerSelectComboBox->addItem(trackerLabel, QVariant(trackerID));
 	}
 
-	ui.trackerSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersTrackers.defaultAlgo);
+	int selectedTrackerID = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+	ui.trackerSelectComboBox->setCurrentIndex(ui.trackerSelectComboBox->findData(selectedTrackerID));
+
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -302,18 +307,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Initialize the table view
 	mTableView = new TableView();
 	mTableView->setWindowTitle(this->windowTitle() + " Table View");
-
-	// Start the threads for background  receiver capture objects
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
-	{ 
-		receiverCaptures[receiverID]->Go();
-	}
-
-	// Start the threads for background video capture objects
-	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
-	{ 
-		videoCaptures[cameraID]->Go();
-	}
 
 	// Create a timer to keep the UI objects spinning
      myTimer = new QTimer(this);
@@ -412,6 +405,20 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		showNormal();
 	else
 		showNormal();
+
+#if 1
+	// Start the threads for background  receiver capture objects
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		receiverCaptures[receiverID]->Go();
+	}
+
+	// Start the threads for background video capture objects
+	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
+	{
+		videoCaptures[cameraID]->Go();
+	}
+#endif
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -1073,6 +1080,7 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 
 		UpdateAlgoParametersView();
 		UpdateGlobalParametersView();
+		UpdateTrackerParametersView();
 }
 
 void AWLQtDemo::FillChannelSelectList()
@@ -1105,7 +1113,8 @@ void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
 	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
-		receiverCaptures[receiverID]->SetAlgorithm(ui.algoSelectComboBox->itemData(newIndex).value<int>());
+		uint16_t algoID = ui.algoSelectComboBox->itemData(newIndex).value<int>();
+		receiverCaptures[receiverID]->SetAlgorithm(algoID);
 	}
 	PrepareAlgoParametersView();
 
@@ -1115,18 +1124,19 @@ void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
 void AWLQtDemo::PrepareAlgoParametersView()
 
 {
-	int currentAlgo = 0;
-	int currentTracker = 0;
+	int currentAlgoID = 0;
+	AlgorithmDescription *algoDescription = NULL;
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0])
 	{
-		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
-		}
+		currentAlgoID = receiverCaptures[0]->receiverStatus.currentAlgo;
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
+	}
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (algoDescription == NULL) return;
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
+
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1199,16 +1209,27 @@ void AWLQtDemo::PrepareAlgoParametersView()
 void AWLQtDemo::UpdateAlgoParametersView()
 
 {
-	int currentAlgo = 0;
-	if (receiverCaptures[0]) 
+	uint16_t comboAlgoID = ui.algoSelectComboBox->currentData().value<int>();
+
+	int currentAlgoID = 0;
+	AlgorithmDescription *algoDescription = NULL;
+
+	if (receiverCaptures[0])
 	{
-		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+		currentAlgoID = receiverCaptures[0]->receiverStatus.currentAlgo;
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
 	}
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+#if 1
+	if (comboAlgoID != currentAlgoID) {
+		ui.algoSelectComboBox->setCurrentIndex(ui.algoSelectComboBox->findData(currentAlgoID));
+		PrepareTrackerParametersView();
+	}
+#endif
+	if (algoDescription == NULL) return;
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
+	
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1276,16 +1297,18 @@ void AWLQtDemo::UpdateAlgoParametersView()
 
 void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 {
-	int currentAlgo = 0;
-	if (receiverCaptures[0]) 
+	int currentAlgoID = 0;
+	AlgorithmDescription *algoDescription = NULL;
+
+	if (receiverCaptures[0])
 	{
-		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+		currentAlgoID = receiverCaptures[0]->receiverStatus.currentAlgo;
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
 	}
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (algoDescription == NULL) return;
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1327,23 +1350,26 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
-			receiverCaptures[0]->SetAlgoParameter(currentAlgo, parameterAddress, parameterValue); 
+			receiverCaptures[0]->SetAlgoParameter(currentAlgoID, parameterAddress, parameterValue); 
 		} // if checked
 	} // for 
 }
 
 void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 {
-	int currentAlgo = 0;
-	if (receiverCaptures[0]) 
+	int currentAlgoID = 0;
+	AlgorithmDescription *algoDescription = NULL;
+
+	if (receiverCaptures[0])
 	{
-		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+		currentAlgoID = receiverCaptures[0]->receiverStatus.currentAlgo;
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
 	}
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (algoDescription == NULL) return;
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
+
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1366,7 +1392,7 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 			ui.algoParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = algoParameters[row].address;
-			receiverCaptures[0]->QueryAlgoParameter(currentAlgo,  parameterAddress); 
+			receiverCaptures[0]->QueryAlgoParameter(currentAlgoID,  parameterAddress); 
 		} // if checked
 	} // for 
 }
@@ -1376,11 +1402,17 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 void AWLQtDemo::PrepareGlobalParametersView()
 
 {
-	int currentAlgo = 0;
+	int currentAlgoID = 0; // Algo 0 is global parameters
+	AlgorithmDescription *algoDescription = NULL;
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (receiverCaptures[0])
+	{
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
+	}
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	if (algoDescription == NULL) return;
+
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	int rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1453,11 +1485,17 @@ void AWLQtDemo::PrepareGlobalParametersView()
 void AWLQtDemo::UpdateGlobalParametersView()
 
 {
-	int currentAlgo = 0;
+	int currentAlgoID = 0; // Algo 0 is global parameters
+	AlgorithmDescription *algoDescription = NULL;
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (receiverCaptures[0])
+	{
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
+	}
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	if (algoDescription == NULL) return;
+
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
@@ -1525,11 +1563,18 @@ void AWLQtDemo::UpdateGlobalParametersView()
 
 void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 {
-	int currentAlgo = 0;
+	int currentAlgoID = 0; // Algo 0 is global parameters
+	AlgorithmDescription *algoDescription = NULL;
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (receiverCaptures[0])
+	{
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
+	}
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	if (algoDescription == NULL) return;
+
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
+
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1578,11 +1623,18 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 
 void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 {
-	int currentAlgo = 0;
+	int currentAlgoID = 0; // Algo 0 is global parameters
+	AlgorithmDescription *algoDescription = NULL;
 
-	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
+	if (receiverCaptures[0])
+	{
+		algoDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersAlgos, currentAlgoID);
+	}
 
-	AlgorithmParameterVector algoParameters = receiverCaptures[0]->parametersAlgos.algorithms[currentAlgo].parameters;
+	if (algoDescription == NULL) return;
+
+	AlgorithmParameterVector algoParameters = algoDescription->parameters;
+
 	int rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
@@ -1618,7 +1670,8 @@ void AWLQtDemo::on_trackerSelectComboBox_indexChanged(int newIndex)
 	int receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
-		receiverCaptures[receiverID]->SetTracker(ui.trackerSelectComboBox->itemData(newIndex).value<int>());
+		uint16_t trackerID = ui.trackerSelectComboBox->itemData(newIndex).value<int>();
+		receiverCaptures[receiverID]->SetTracker(trackerID);
 	}
 	PrepareTrackerParametersView();
 
@@ -1627,17 +1680,18 @@ void AWLQtDemo::on_trackerSelectComboBox_indexChanged(int newIndex)
 void AWLQtDemo::PrepareTrackerParametersView()
 
 {
-	int currentTracker = 0;
+	int currentTrackerID = 0;
+	AlgorithmDescription *trackerDescription = NULL;
 
 	if (receiverCaptures[0])
 	{
-		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
-		if (currentTracker >= receiverCaptures[0]->parametersTrackers.algorithms.size()) currentTracker = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+		currentTrackerID = receiverCaptures[0]->receiverStatus.currentTracker;
+		trackerDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersTrackers, currentTrackerID);
 	}
 
-	if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size() - 1) return;
+	if (trackerDescription == NULL) return;
 
-	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 	int rowCount = trackerParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
@@ -1710,16 +1764,26 @@ void AWLQtDemo::PrepareTrackerParametersView()
 void AWLQtDemo::UpdateTrackerParametersView()
 
 {
-	int currentTracker = 0;
+	uint16_t comboTrackerID = ui.trackerSelectComboBox->currentData().value<int>();
+
+	int currentTrackerID = 0;
+	AlgorithmDescription *trackerDescription = NULL;
+
 	if (receiverCaptures[0])
 	{
-		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
-		if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size()) currentTracker = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+		currentTrackerID = receiverCaptures[0]->receiverStatus.currentTracker;
+		trackerDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersTrackers, currentTrackerID);
 	}
+#if 1
+	if (comboTrackerID != currentTrackerID) {
+		ui.trackerSelectComboBox->setCurrentIndex(ui.trackerSelectComboBox->findData(currentTrackerID));
+		PrepareTrackerParametersView();
+	}
+#endif
+	if (trackerDescription == NULL) return;
 
-	if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size()-1) return;
+	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
-	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
 	int rowCount = trackerParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
@@ -1787,16 +1851,19 @@ void AWLQtDemo::UpdateTrackerParametersView()
 
 void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 {
-	int currentTracker = 0;
+	int currentTrackerID = 0;
+	AlgorithmDescription *trackerDescription = NULL;
+
 	if (receiverCaptures[0])
 	{
-		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
-		if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size()-1) currentTracker = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+		currentTrackerID = receiverCaptures[0]->receiverStatus.currentTracker;
+		trackerDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersTrackers, currentTrackerID);
 	}
 
-	if (currentTracker >= receiverCaptures[0]->parametersTrackers.algorithms.size()) return;
+	if (trackerDescription == NULL) return;
 
-	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
+
 	int rowCount = trackerParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
@@ -1838,23 +1905,26 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 				parameterValue = *(uint32_t *)&floatValue;
 			}
 
-			receiverCaptures[0]->SetTrackerParameter(currentTracker, parameterAddress, parameterValue);
+			receiverCaptures[0]->SetTrackerParameter(currentTrackerID, parameterAddress, parameterValue);
 		} // if checked
 	} // for 
 }
 
 void AWLQtDemo::on_trackerParametersGetPushButton_clicked()
 {
-	int currentTracker = 0;
+	int currentTrackerID = 0;
+	AlgorithmDescription *trackerDescription = NULL;
+
 	if (receiverCaptures[0])
 	{
-		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
-		if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size() - 1) currentTracker = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+		currentTrackerID = receiverCaptures[0]->receiverStatus.currentTracker;
+		trackerDescription = receiverCaptures[0]->FindAlgoDescriptionByID(receiverCaptures[0]->parametersTrackers, currentTrackerID);
 	}
 
-	if (currentTracker >= receiverCaptures[0]->parametersTrackers.algorithms.size()) return;
+	if (trackerDescription == NULL) return;
 
-	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
+
 	int rowCount = trackerParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
@@ -1877,7 +1947,7 @@ void AWLQtDemo::on_trackerParametersGetPushButton_clicked()
 			ui.trackerParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = trackerParameters[row].address;
-			receiverCaptures[0]->QueryTrackerParameter(currentTracker, parameterAddress);
+			receiverCaptures[0]->QueryTrackerParameter(currentTrackerID, parameterAddress);
 		} // if checked
 	} // for 
 }

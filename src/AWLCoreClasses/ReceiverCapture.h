@@ -688,6 +688,16 @@ public:
 	*/
 	virtual bool QueryTrackerParameter(int trackerID, uint16_t registerAddress) = 0;
 
+	/** \brief Returns pointer to the Algorithm Description for the Algorithm parameter set that
+	has the  algoID
+	* \param[in] algorithmSet in which we want to find the specified algorith,
+	* \param[in] algoID an algorithm for which we want the parameter description.
+	* \return pointer to the found AlgorithmDescription in the algo Set. NULL if no algorithm matches that algoID.
+
+	*/
+	AlgorithmDescription * FindAlgoDescriptionByID(AlgorithmSet &inAlgoSet, int inAlgoID);
+
+
 	// public variables
 public:
 
@@ -762,7 +772,7 @@ public:
 	RegisterSet registersGPIO;
 	
 	/** \brief Algorithm parameters  description
-	 *  \remarks Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_INDEX) is global parameters.
+	 *  \remarks Algorithms index start at 1. Algorithm 0 (GLOBAL_PARAMETERS_ID) is global parameters.
 	 *  \remarks The Algorithm set should be initialized with a representation of the algorithms parameters of the receiver model used.
 	 *           Usually, these are extracted from a config file.  If the algorithm set is not initialized, some of the communication
 	 *           functions related to algorithm parameters will not transmit or interpret algo messages from the Receiver.
@@ -844,7 +854,6 @@ protected:
 
       */
 	int FindRegisterByAddress(const RegisterSet &inRegisterSet, uint16_t inAddress);
-
 
 	/** \brief Returns pointer to the Algorithm parameter for the parameter that
 	           has the address specified

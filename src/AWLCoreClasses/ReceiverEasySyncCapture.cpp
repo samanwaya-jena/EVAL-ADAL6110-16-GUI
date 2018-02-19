@@ -213,6 +213,9 @@ void ReceiverEasySyncCapture::DoOneThreadIteration()
 				{
 					WriteCurrentDateTime();
 					SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+					// Update all the info (eventually) from the status of the machine
+					QueryAlgorithm();
+					QueryTracker();
 				}
 			}
 
@@ -227,6 +230,8 @@ void ReceiverEasySyncCapture::DoOneThreadIteration()
 				{
 					WriteCurrentDateTime();
 					SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+					QueryAlgorithm();
+					QueryTracker();
 				}
 			}
 

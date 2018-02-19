@@ -26,8 +26,7 @@
 
 using namespace std;
 
-#define ALGO_QTY 4
-#define GLOBAL_PARAMETERS_INDEX 0
+#define GLOBAL_PARAMETERS_ID 0
 
 #define FORCE_FRAME_RESYNC_PATCH 1
 
