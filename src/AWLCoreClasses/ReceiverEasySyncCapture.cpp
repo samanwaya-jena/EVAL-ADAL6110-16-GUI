@@ -45,9 +45,11 @@ const long		    defaultSerialPortRate = 921600;  // Default PC Serial Port rate 
 ReceiverEasySyncCapture::ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 	                   const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers) :
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
-                   inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+                   inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
+				   inParametersAlgos, inParametersTrackers),
 port(NULL),
 reader(NULL),
 io(),

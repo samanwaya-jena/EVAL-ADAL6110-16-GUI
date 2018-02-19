@@ -91,6 +91,12 @@ private slots:
 	void on_algoParametersSetPushButton_clicked();
 	void on_algoParametersGetPushButton_clicked();
 
+	void on_trackerSelectComboBox_indexChanged(int newIndex);
+
+	void on_trackerParametersSetPushButton_clicked();
+	void on_trackerParametersGetPushButton_clicked();
+
+
 	void on_globalParametersSetPushButton_clicked();
 	void on_globalParametersGetPushButton_clicked();
 
@@ -120,8 +126,11 @@ protected:
 	// Adjust the default displayed ranges depending on the sensor capabilities
 	void AdjustDefaultDisplayedRanges();
 
-	void PrepareParametersView();
-	void UpdateParametersView();
+	void PrepareAlgoParametersView();
+	void UpdateAlgoParametersView();
+
+	void PrepareTrackerParametersView();
+	void UpdateTrackerParametersView();
 
 	void PrepareGlobalParametersView();
 	void UpdateGlobalParametersView();

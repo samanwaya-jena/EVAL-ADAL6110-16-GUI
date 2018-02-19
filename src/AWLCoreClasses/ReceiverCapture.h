@@ -202,6 +202,10 @@ public:
 
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
+
+	uint16_t currentTracker;
+	uint16_t currentTrackerPendingUpdates;
+
 	float    signalToNoiseFloor;
 	
 	ChannelMask	channelMask;
@@ -384,12 +388,14 @@ public:
 		* \param[in] inRegistersADC default description of the ADC registers
 		* \param[in] inRegistersGPIO default description of the GPIO registers
         * \param[in] inParametersAlgos default description if the algorithm parameters
-      */
+		* \param[in] inParametersTrackers default description of the Tracker parameters
+		*/
 
 	ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
-					   const AlgorithmSet &inParametersAlgos);
+					   const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers);
 
 	/** \brief ReceiverCapture constructor from a configuration file information.
  	    * \param[in] inReceiverID  unique receiverID
@@ -547,12 +553,19 @@ public:
 	virtual bool EndDistanceLog();
 
 
-	/** \brief Issues the command to set the current algorithm in the FPGA.
+	/** \brief Issues the command to set the current algorithm in the sensor.
 	  *\param[in] algorigthmID  ID of the selected algorithm.
 	* \return true if success.  false on error.
 	*/
 		
 	virtual bool SetAlgorithm(uint16_t algorithmID) = 0;
+
+	/** \brief Issues the command to set the current tracker in the sensor.
+	*\param[in] trackerID  ID of the selected tracker.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool SetTracker(uint16_t trackerID) = 0;
 
 	/** \brief Sets an internal FPGA register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -588,11 +601,21 @@ public:
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the parameter to change.
-	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
+	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
 		
 	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) = 0;
+
+
+	/** \brief Sets Tracker parameters to the value sent as argument.
+	*\param[in] tracker ID of the Tracker affected by the change.
+	*\param[in] registerAddress Adrress of the parameter to change.
+	*\param[in] registerValue Value to put into register .
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool SetTrackerParameter(int trackerID, uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -608,6 +631,11 @@ public:
 	* \return true if success.  false on error.
 	*/
 	virtual bool QueryAlgorithm() = 0;
+
+	/** \  an asynchronous query command to get the current tracker.
+	* \return true if success.  false on error.
+	*/
+	virtual bool QueryTracker() = 0;
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -650,6 +678,15 @@ public:
 	  *          placed in the algorithmParameters registerSet. 
 		*/
 	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) = 0;
+
+	/** \brief Send an asynchronous query command for a tracker parameter.
+	*\param[in] trackerID ID of the tracker algo for which we want to query.
+	*\param[in] registerAddress Adrress of the register to query.
+	* \return true if success.  false on error.
+	* \remarks On reception of the answer to query the register address and value will be
+	*          placed in the a trackerParameters registerSet.
+	*/
+	virtual bool QueryTrackerParameter(int trackerID, uint16_t registerAddress) = 0;
 
 	// public variables
 public:
@@ -733,6 +770,14 @@ public:
 	 */
 	AlgorithmSet parametersAlgos;
 
+	/** \brief Tracking parameters  description
+	*  \remarks Tracking parameters index start at 0. 
+	*  \remarks The Tracking set should be initialized with a representation of the tracking parameters of the receiver model used.
+	*           Usually, these are extracted from a config file.  If the tracking set is not initialized, some of the communication
+	*           functions related to tracking parameters will not transmit or interpret tracking messages from the Receiver.
+	*           However, they should not fail and can be called safely.
+	*/
+	AlgorithmSet parametersTrackers;
 
 	/** \brief Reference distance used when logging data.
 	*/
@@ -809,6 +854,15 @@ protected:
 
       */
 	AlgorithmParameter *FindAlgoParamByAddress(int inAlgoID, uint16_t inAddress);
+
+	/** \brief Returns pointer to the Tracker parameter for the parameter that
+	has the address specified
+	* \param[in] trackerID a tracker for which we want the parameter description.
+	* \param[in] inAddress the parameter address
+	* \return pointer to the found parameter in the list. NULL if no parameters match that address.
+
+	*/
+	AlgorithmParameter *FindTrackerParamByAddress(int inTrackerID, uint16_t inAddress);
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.

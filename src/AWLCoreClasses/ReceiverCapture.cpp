@@ -40,14 +40,15 @@ const int ReceiverCapture::maximumSensorFrames(100);
 const std::string sDefaultReceiverType = "Generic";
 const std::string sDefaultReceiverRegisterSet = "registerDescription_RevC";
 const std::string sDefaultReceiverChannelGeometry = "GeometryAWL7";
-const int defaultFrameRate(50);
 const uint8_t defaultChannelMaskValue = 127;
 const float defaultSignalToNoiseFloor = -10.0;
 
 
 ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
+					   const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers):
 ThreadedWorker(),
 Publisher(),
 receiverID(receiverID),
@@ -64,6 +65,7 @@ registersFPGA(inRegistersFPGA),
 registersADC(inRegistersADC),
 registersGPIO(inRegistersGPIO),
 parametersAlgos(inParametersAlgos),
+parametersTrackers(inParametersTrackers),
 sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
@@ -77,6 +79,10 @@ targetHintAngle(0.0)
 	receiverStatus.frameRate = inFrameRate;
 	receiverStatus.currentAlgo = 0;
 	receiverStatus.currentAlgoPendingUpdates = 0;
+
+	receiverStatus.currentTracker = 0;
+	receiverStatus.currentTrackerPendingUpdates = 0;
+
 
 	// Update settings from application
 	receiverStatus.frameRate = inFrameRate;
@@ -115,6 +121,7 @@ targetHintAngle(0.0)
 
 	// make sure that the communication is reset.
 	receiverStatus.currentAlgoPendingUpdates = 0;
+	receiverStatus.currentTrackerPendingUpdates = 0;
 
 	// Create a temporary SensorFrame object for storage of the current data
 	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, 0, receiverChannelQty));
@@ -433,6 +440,20 @@ AlgorithmParameter * ReceiverCapture::FindAlgoParamByAddress(int inAlgoID, uint1
 		if ( parametersAlgos.algorithms[inAlgoID].parameters[i].address == inAddress)
 		{
 			return(&parametersAlgos.algorithms[inAlgoID].parameters[i]);
+		}
+	}
+
+	return(NULL);
+}
+
+AlgorithmParameter * ReceiverCapture::FindTrackerParamByAddress(int inTrackerID, uint16_t inAddress)
+{
+
+	for (uint16_t i = 0; i < parametersTrackers.algorithms[inTrackerID].parameters.size(); i++)
+	{
+		if (parametersTrackers.algorithms[inTrackerID].parameters[i].address == inAddress)
+		{
+			return(&parametersTrackers.algorithms[inTrackerID].parameters[i]);
 		}
 	}
 

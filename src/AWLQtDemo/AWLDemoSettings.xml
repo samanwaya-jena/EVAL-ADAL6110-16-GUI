@@ -1384,30 +1384,6 @@
           <type>int</type>
           <default>3</default>
         </parameter>
-
-        <parameter>
-          <index>257</index>
-          <address>257</address>
-          <description>Track filter Alpha</description>
-          <type>float</type>
-          <default>0.2</default>
-        </parameter>
-
-        <parameter>
-          <index>258</index>
-          <address>258</address>
-          <description>Track filter Beta</description>
-          <type>float</type>
-          <default>0.015</default>
-        </parameter>
-
-        <parameter>
-          <index>289</index>
-          <address>289</address>
-          <description>Track max speed</description>
-          <type>float</type>
-          <default>30.0</default>
-        </parameter>
       </algo>
 
       <algo>
@@ -1435,8 +1411,8 @@
           <index>0</index>
           <address>0</address>
           <description>Offset</description>
-          <type>int</type>
-          <default>0</default>
+          <type>float</type>
+          <default>0.0</default>
         </parameter>
 
         <parameter>
@@ -1444,7 +1420,7 @@
           <address>1</address>
           <description>Starting threshold</description>
           <type>float</type>
-          <default>0.15</default>
+          <default>0.35</default>
         </parameter>
 
         <parameter>
@@ -1452,39 +1428,31 @@
           <address>2</address>
           <description>First damping</description>
           <type>float</type>
-          <default>0.15</default>
+          <default>1.3</default>
         </parameter>
 
         <parameter>
           <index>3</index>
           <address>3</address>
           <description>Numwidth</description>
-          <type>int</type>
-          <default>2</default>
+          <type>float</type>
+          <default>2.0</default>
         </parameter>
 
         <parameter>
           <index>4</index>
           <address>4</address>
           <description>Intensity filter</description>
-          <type>int</type>
-          <default>0</default>
+          <type>float</type>
+          <default>8.00</default>
         </parameter>
 
         <parameter>
           <index>5</index>
           <address>5</address>
           <description>Second width</description>
-          <type>int</type>
-          <default>6</default>
-        </parameter>
-
-        <parameter>
-          <index>6</index>
-          <address>6</address>
-          <description>First index</description>
-          <type>int</type>
-          <default>0</default>
+          <type>float</type>
+          <default>8.0</default>
         </parameter>
 
         <parameter>
@@ -1492,7 +1460,7 @@
           <address>7</address>
           <description>SNR Cutoff (dB)</description>
           <type>float</type>
-          <default>18.0</default>
+          <default>16.0</default>
         </parameter>
       </algo>
 
@@ -1606,6 +1574,14 @@
         </parameter>
 
         <parameter>
+          <index>6</index>
+          <address>6</address>
+          <description>Process</description>
+          <type>float</type>
+          <default>1.0</default>
+        </parameter>
+
+        <parameter>
           <index>7</index>
           <address>7</address>
           <description>SNR Cutoff (dB)</description>
@@ -1687,10 +1663,10 @@
 
         <parameter>
           <index>1</index>
-        <address>1</address>
-        <description>Std. factor</description>
-        <type>float</type>
-        <default>0</default>
+          <address>1</address>
+          <description>Std. factor</description>
+          <type>float</type>
+          <default>0</default>
         </parameter>
 
         <parameter>
@@ -1727,6 +1703,79 @@
 
       </algo>
     </algos>
+
+    <trackers>
+      <defaultTracker>1</defaultTracker>
+      <tracker>
+        <!-- Tracker 0 is A/B tracker -->
+        <trackerID>0</trackerID>
+        <trackerName>ABFilter</trackerName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Alpha Pos</description>
+          <type>float</type>
+          <default>0.15</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Beta Pos</description>
+          <type>float</type>
+          <default>0.015</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>AlphaSpeed</description>
+          <type>float</type>
+          <default>0.6</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>BetaSpeed</description>
+          <type>float</type>
+          <default>0.5</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Persistance</description>
+          <type>float</type>
+          <default>3.0</default>
+        </parameter>
+      </tracker>
+
+      <tracker>
+        <!-- Tracker 1 is LR tracker -->
+        <trackerID>1</trackerID>
+        <trackerName>LRFilter</trackerName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>SNR to Pair</description>
+          <type>float</type>
+          <default>20.0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>SNR to Track</description>
+          <type>float</type>
+          <default>25.0</default>
+        </parameter>
+        
+      </tracker>
+    </trackers>
+    
   </registerDescription_RevD>
 
   <GeometryAWL7>

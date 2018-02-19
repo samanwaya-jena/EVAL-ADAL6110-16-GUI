@@ -43,8 +43,11 @@ const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 					   eReceiverCANRate inCANRate, int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
+					   const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers):
+ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, 
+                inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers),
 canRate(inCANRate),
 closeCANReentryCount(0)
 
@@ -572,6 +575,37 @@ void ReceiverCANCapture::ParseObstacleAngularPosition(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %u %u %u", inMsg.id, track->trackID, startAngle, endAngle, angularVelocity);
 }
 
+/*
+00: Command (0xC0 = SET_PARAMETER)
+0xC1 = QUERY_PARAMETER)
+0xC2 = RESPONSE_PARAMETER)
+01: Type (0x01 = ALGO_SELECTED
+0x02 = ALGO_PARAMETER
+0x03 = AWL_REGISTER
+0x04 = BIAS
+0x05 = ADC_REGISTER
+0x06 = PRESET
+0x07 = GLOBAL_PARAMETER
+0x08 = GPIO_CONTROL
+0x11 = TRACKER_SELECTED
+0x12 = TRACKER_PARAMETER
+0x20 = DATE_TIME
+0xD0 = RECORD_FILENAME (zero-terminated)
+0xD1 = PLAYBACK_FILENAME (zero-terminated)
+02-03: Address (U16_LE)
+04-07: Value (x32_LE or U8S)
+
+for DATE:
+04-05: YEAR (U16_LE)
+06: MONTH
+07: DAY-OF-MONTH
+
+for TIME:
+04: HOURS
+05: MINUTES
+06: SECONDS
+07: 0x00
+*/
 
 void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
 {
@@ -638,6 +672,12 @@ void ReceiverCANCapture::ParseParameterResponse(AWLCANMessage &inMsg)
 	case 0x08:
 		ParseParameterGPIORegisterResponse(inMsg);
 		break;
+	case 0x11:
+		ParseParameterTrackerSelectResponse(inMsg);
+		break;
+	case 0x12:
+		ParseParameterTrackerParameterResponse(inMsg);
+		break;	
 	case 0x20:
 		ParseParameterDateTimeResponse(inMsg);
 		break;
@@ -682,6 +722,12 @@ void ReceiverCANCapture::ParseParameterError(AWLCANMessage &inMsg)
 	case 0x08:
 		ParseParameterGPIORegisterError(inMsg);
 		break;
+	case 0x11:
+		ParseParameterTrackerSelectError(inMsg);
+		break;
+	case 0x12:
+		ParseParameterTrackerParameterError(inMsg);
+		break;
 	case 0x20:
 		ParseParameterDateTimeError(inMsg);
 		break;
@@ -717,20 +763,57 @@ void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterAlgoParameterResponse(AWLCANMessage &inMsg)
 {
-	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
-	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
+	uint16_t parameterAddress = *(uint16_t *) &inMsg.data[2];
+	uint32_t parameterValue=  *(uint32_t *) &inMsg.data[4];
 
-	AlgorithmParameter *parameter = FindAlgoParamByAddress(receiverStatus.currentAlgo, registerAddress);
+	AlgorithmParameter *parameter = FindAlgoParamByAddress(receiverStatus.currentAlgo, parameterAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(GetMutex());
-	receiverStatus.fpgaRegisterAddressRead = registerAddress;
-	receiverStatus.fpgaRegisterValueRead = registerValue;
 
 	if (parameter != NULL)
 	{
-		parameter->floatValue = *(float *) &registerValue; 
-		parameter->intValue = *(int16_t *) &registerValue; 
+		parameter->floatValue = *(float *) &parameterValue; 
+		parameter->intValue = *(int16_t *) &parameterValue; 
+		parameter->pendingUpdates = updateStatusPendingVisual;
+	}
+
+	receiverStatus.bUpdated = true;
+	rawLock.unlock();
+}
+
+void ReceiverCANCapture::ParseParameterTrackerSelectResponse(AWLCANMessage &inMsg)
+{
+
+	uint16_t registerAddress = *(uint16_t *)&inMsg.data[2];  // Unused
+	uint32_t registerValue = *(uint32_t *)&inMsg.data[4];
+
+	// Check that the algorithm is valid (just in case communication goes crazy)
+	if (registerValue >= 1 && registerValue <= ALGO_QTY)
+	{
+		receiverStatus.currentTracker = registerValue;
+		receiverStatus.currentTrackerPendingUpdates--;
+	}
+	else
+	{
+		DebugFilePrintf(debugFile, "Error: Tracker select invalid %lx", registerValue);
+	}
+}
+
+void ReceiverCANCapture::ParseParameterTrackerParameterResponse(AWLCANMessage &inMsg)
+{
+	uint16_t parameterAddress = *(uint16_t *)&inMsg.data[2];
+	uint32_t parameterValue = *(uint32_t *)&inMsg.data[4];
+
+	AlgorithmParameter *parameter = FindTrackerParamByAddress(receiverStatus.currentTracker, parameterAddress);
+
+	// Everything went well when we changed or queried the register. Note the new value.
+	boost::mutex::scoped_lock rawLock(GetMutex());
+
+	if (parameter != NULL)
+	{
+		parameter->floatValue = *(float *)&parameterValue;
+		parameter->intValue = *(int16_t *)&parameterValue;
 		parameter->pendingUpdates = updateStatusPendingVisual;
 	}
 
@@ -795,21 +878,19 @@ void ReceiverCANCapture::ParseParameterPresetResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterGlobalParameterResponse(AWLCANMessage &inMsg)
 {
-	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
-	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
+	uint16_t parameterAddress = *(uint16_t *) &inMsg.data[2];
+	uint32_t parameterValue=  *(uint32_t *) &inMsg.data[4];
 	int globalAlgo = 0; // Just so we know....
 
-	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_INDEX, registerAddress);
+	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_INDEX, parameterAddress);
 
 	// Everything went well when we changed or queried the register. Note the new value.
 	boost::mutex::scoped_lock rawLock(GetMutex());
-	receiverStatus.fpgaRegisterAddressRead = registerAddress;
-	receiverStatus.fpgaRegisterValueRead = registerValue;
 
 	if (parameter!= NULL)
 	{
-		parameter->floatValue = *(float *) &registerValue; 
-		parameter->intValue = *(int16_t *) &registerValue; 
+		parameter->floatValue = *(float *) &parameterValue; 
+		parameter->intValue = *(int16_t *) &parameterValue; 
 		parameter->pendingUpdates = updateStatusPendingVisual;
 	}
 
@@ -871,6 +952,25 @@ void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 }
 
 void ReceiverCANCapture::ParseParameterAlgoParameterError(AWLCANMessage &inMsg)
+{
+	boost::mutex::scoped_lock rawLock(GetMutex());
+	receiverStatus.bUpdated = true;
+	receiverStatus.lastCommandError = inMsg.data[1];
+	rawLock.unlock();
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
+}
+
+void ReceiverCANCapture::ParseParameterTrackerSelectError(AWLCANMessage &inMsg)
+{
+	// Everything went well when we changed or queried the register. Note the new value.
+	boost::mutex::scoped_lock rawLock(GetMutex());
+	receiverStatus.bUpdated = true;
+	receiverStatus.lastCommandError = inMsg.data[1];
+	rawLock.unlock();
+	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
+}
+
+void ReceiverCANCapture::ParseParameterTrackerParameterError(AWLCANMessage &inMsg)
 {
 	boost::mutex::scoped_lock rawLock(GetMutex());
 	receiverStatus.bUpdated = true;
@@ -960,35 +1060,6 @@ void ReceiverCANCapture::ParseParameterPlaybackError(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
 
-/*
-	00: Command (0xC0 = SET_PARAMETER)
-             0xC1 = QUERY_PARAMETER)
-             0xC2 = RESPONSE_PARAMETER)
-01: Type (0x01 = ALGO_SELECTED
-          0x02 = ALGO_PARAMETER
-          0x03 = AWL_REGISTER
-          0x04 = BIAS
-          0x05 = ADC_REGISTER
-          0x06 = PRESET
-		  0x07 = GLOBAL_PARAMETER (Histogram)
-		  0x08 = GPIO_CONTROL
-          0x20 = DATE_TIME
-          0xD0 = RECORD_FILENAME (zero-terminated)
-          0xD1 = PLAYBACK_FILENAME (zero-terminated)
-02-03: Address (U16_LE)
-04-07: Value (x32_LE or U8S)
-
-for DATE:
-04-05: YEAR (U16_LE)
-06: MONTH
-07: DAY-OF-MONTH
-
-for TIME:
-04: HOURS
-05: MINUTES
-06: SECONDS
-07: 0x00
-*/
 
 bool ReceiverCANCapture::WriteCurrentDateTime()
 {
@@ -1269,6 +1340,32 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
    return(bMessageOk);
 }
 
+bool ReceiverCANCapture::SetTracker(uint16_t trackerID)
+{
+
+	AWLCANMessage message;
+
+	message.id = 80;       // Message id: 80- Command message
+
+	message.len = 8;       // Frame size (0.8)
+	message.data[0] = 0xC0;   // Set Parameter
+	message.data[1] = 0x11; // Tracker-select  
+
+	*(int16_t *)&message.data[2] = 0L; // Unused
+	*(int32_t *)&message.data[4] = trackerID;
+
+	// Signal that we are waiting for an update of the register settings.
+
+	// We should increment the pointer, but we just reset the 
+	// counter to 1.  This makes display more robust in case we 
+	// fall out of sync.
+	receiverStatus.currentTracker = trackerID;
+	receiverStatus.currentTrackerPendingUpdates = 1;
+	bool bMessageOk = WriteMessage(message);
+
+	return(bMessageOk);
+}
+
 
 bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t registerValue)
 {
@@ -1436,6 +1533,33 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
  	return(bMessageOk);
 }
 
+bool ReceiverCANCapture::SetTrackerParameter(int trackerID, uint16_t registerAddress, uint32_t registerValue)
+{
+	AWLCANMessage message;
+
+	message.id = 80;       // Message id: 80- Command message
+
+	message.len = 8;       // Frame size (0.8)
+	message.data[0] = 0xC0;   // Set Parameter
+	message.data[1] = 0x12; // TRACKER_PARAMETER 
+
+	*(int16_t *)&message.data[2] = registerAddress;
+	*(int32_t *)&message.data[4] = registerValue;
+
+	// Signal that we are waiting for an update of thet register settings.
+	bool bMessageOk = false;
+	AlgorithmParameter *parameter = FindTrackerParamByAddress(trackerID, registerAddress);
+	if (parameter != NULL)
+	{
+		// We should increment the pointer, but we just reset the 
+		// counter to 1.  This makes display more robust in case we 
+		// fall out of sync.
+		parameter->pendingUpdates = updateStatusPendingUpdate;
+		bMessageOk = WriteMessage(message);
+	}
+
+	return(bMessageOk);
+}
 
 bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
 
@@ -1487,6 +1611,30 @@ bool ReceiverCANCapture::QueryAlgorithm()
     return(bMessageOk);
 }
 
+bool ReceiverCANCapture::QueryTracker()
+{
+	AWLCANMessage message;
+
+	message.id = 80;       // Message id: 80- Command message
+
+	message.len = 8;       // Frame size (0.8)
+	message.data[0] = 0xC1;   // Query Parameter
+	message.data[1] = 0x11; // Tracker-select  
+
+	*(int16_t *)&message.data[2] = 0L;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = WriteMessage(message);
+
+	// Signal that we are waiting for an update of the register settings.
+
+	// We should increment the pointer, but we just reset the 
+	// counter to 1.  This makes display more robust in case we 
+	// fall out of sync.
+	receiverStatus.currentTrackerPendingUpdates = updateStatusPendingUpdate;
+
+	return(bMessageOk);
+}
 
 bool ReceiverCANCapture::QueryFPGARegister(uint16_t registerAddress)
 {
@@ -1628,6 +1776,33 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 	return(bMessageOk);
 }
 
+bool ReceiverCANCapture::QueryTrackerParameter(int trackerID, uint16_t registerAddress)
+{
+	AWLCANMessage message;
+
+	message.id = 80;       // Message id: 80- Command message
+
+	message.len = 8;       // Frame size (0.8)
+	message.data[0] = 0xC1;   // Query Parameter
+	message.data[1] = 0x12; // Tracker parameter 
+
+	*(int16_t *)&message.data[2] = registerAddress;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = WriteMessage(message);
+
+	// Signal that we are waiting for an update of thet register settings.
+	AlgorithmParameter *parameter = FindTrackerParamByAddress(trackerID, registerAddress);
+	if (parameter != NULL)
+	{
+		// We should increment the pointer, but we just reset the 
+		// counter to 1.  This makes display more robust in case we 
+		// fall out of sync.
+		parameter->pendingUpdates = updateStatusPendingUpdate;
+	}
+
+	return(bMessageOk);
+}
 
 bool ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
@@ -1652,6 +1827,8 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 	registersADC.clear();
 	registersGPIO.clear();
 	parametersAlgos.algorithms.clear();
+	parametersTrackers.algorithms.clear();
+
 
 	// Read all FPGA Registers default descriptions
 	std::string registerDescKey = "config." + sReceiverRegisterSet;
@@ -1776,6 +1953,51 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 			parametersAlgos.algorithms.push_back(algoDescription);
 		} //		if (algoNode.first == "algo")
 	} // BOOST_FOREACH(algosNode)
+
+	// Load all atracker parameters for all Trackers
+
+	parametersTrackers.defaultAlgo = configurationNodePtr->get<uint16_t>("trackers.defaultTracker");
+	BOOST_FOREACH(ptree::value_type &trackersNode, configurationNodePtr->get_child("trackers"))
+	{
+		if (trackersNode.first == "tracker")
+		{
+			boost::property_tree::ptree &trackerNode = trackersNode.second;
+			AlgorithmDescription algoDescription;
+			algoDescription.algoID = trackerNode.get<uint16_t>("trackerID");
+			algoDescription.sAlgoName = trackerNode.get<std::string>("trackerName");
+
+			// All parameter info for the receiver
+			BOOST_FOREACH(ptree::value_type &parametersNode, trackerNode/*.get_child("parameter")*/)
+			{
+				if (parametersNode.first == "parameter")
+				{
+					boost::property_tree::ptree &parameterNode = parametersNode.second;
+					AlgorithmParameter parameter;
+					parameter.sIndex = parameterNode.get<std::string>("index");
+					parameter.address = parameterNode.get<uint16_t>("address");
+					parameter.sDescription = parameterNode.get<std::string>("description");
+					std::string sType = parameterNode.get<std::string>("type");
+					if (!sType.compare("int"))
+					{
+						parameter.paramType = eAlgoParamInt;
+						parameter.intValue = parameterNode.get<uint32_t>("default");
+						parameter.floatValue = 0.0;
+					}
+					else if (!sType.compare("float"))
+					{
+						parameter.paramType = eAlgoParamFloat;
+						parameter.intValue = 0;
+						parameter.floatValue = parameterNode.get<float>("default");
+					}
+
+					parameter.pendingUpdates = updateStatusUpToDate;
+					algoDescription.parameters.push_back(parameter);
+				} // if (parametersNode.first)
+			} // BOOST_FOREACH (parametersNode)
+
+			parametersTrackers.algorithms.push_back(algoDescription);
+		} //		if (trackerNode.first == "algo")
+	} // BOOST_FOREACH(trackersNode)
 
 	return(true);
 }

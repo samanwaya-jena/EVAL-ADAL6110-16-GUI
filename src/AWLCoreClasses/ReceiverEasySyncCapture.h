@@ -66,12 +66,15 @@ public:
 		* \param[in] inRegistersADC default description of the ADC registers
 		* \param[in] inRegistersGPIO default description of the GPIO registers
         * \param[in] inParametersAlgos default description if the algorithm parameters
+ 		* \param[in] inParametersTrackers default description of the Tracker parameters
       */
 
 	ReceiverEasySyncCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 		               const std::string &inSerialPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
+					   const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers);
 
 	/** \brief ReceiverEasySyncCapture constructor from a configuration file information.
  	    * \param[in] inReceiverID  unique receiverID

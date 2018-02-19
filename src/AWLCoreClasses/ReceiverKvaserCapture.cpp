@@ -53,9 +53,11 @@ const int reopenPortDelayMillisec = 4000; // We try to repopen the conmm ports e
 ReceiverKvaserCapture::ReceiverKvaserCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 	                   const int inKvaserChannel, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
+					   const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers) :
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround,
-				   inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos),
+				   inCANBitRate, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
+				   inParametersAlgos, inParametersTrackers),
 canChannelID(inKvaserChannel),
 kvaserHandle(-1),
 closeCANReentryCount(0)

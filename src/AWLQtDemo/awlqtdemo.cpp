@@ -193,7 +193,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	FillGPIOList(globalSettings);
 
 	// Prepare the parameters view
-	PrepareParametersView();
+	PrepareAlgoParametersView();
 	PrepareGlobalParametersView();
 
 	// Initialize the controls from the settings in INI file
@@ -272,6 +272,16 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	ui.algoSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersAlgos.defaultAlgo - 1);
 
+	// Fill in the tracker select combo box
+	ui.trackerSelectComboBox->clear();
+	int trackerQty = receiverCaptures[0]->parametersTrackers.algorithms.size();
+	for (int i = 0; i < trackerQty; i++)
+	{
+		QString trackerLabel = QString(receiverCaptures[0]->parametersTrackers.algorithms[i].sAlgoName.c_str());
+		ui.trackerSelectComboBox->addItem(trackerLabel, QVariant(receiverCaptures[0]->parametersTrackers.algorithms[i].algoID));
+	}
+
+	ui.trackerSelectComboBox->setCurrentIndex(receiverCaptures[0]->parametersTrackers.defaultAlgo);
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -402,8 +412,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		showNormal();
 	else
 		showNormal();
-
-
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -1063,7 +1071,7 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		ui.registerADCSetPushButton->setEnabled(bEnableButtons);
 		ui.registerADCGetPushButton->setEnabled(bEnableButtons);
 
-		UpdateParametersView();
+		UpdateAlgoParametersView();
 		UpdateGlobalParametersView();
 }
 
@@ -1099,20 +1107,22 @@ void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
 	{
 		receiverCaptures[receiverID]->SetAlgorithm(ui.algoSelectComboBox->itemData(newIndex).value<int>());
 	}
-	PrepareParametersView();
+	PrepareAlgoParametersView();
 
 }
 
-void AWLQtDemo::PrepareParametersView()
+
+void AWLQtDemo::PrepareAlgoParametersView()
 
 {
 	int currentAlgo = 0;
+	int currentTracker = 0;
 
 	if (receiverCaptures[0]) 
 	{
 		currentAlgo = receiverCaptures[0]->receiverStatus.currentAlgo;
-		if (currentAlgo > ALGO_QTY) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
-	}
+		if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) currentAlgo = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+		}
 
 	if (currentAlgo >= receiverCaptures[0]->parametersAlgos.algorithms.size()) return;
 
@@ -1121,25 +1131,25 @@ void AWLQtDemo::PrepareParametersView()
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
 
-	ui.parametersTable->horizontalHeader()->setVisible(true);
+	ui.algoParametersTable->horizontalHeader()->setVisible(true);
 
 	// Set the number of rows in the table depending on the number of parameters for the algo, 
 	// based on info in INI file.
-	ui.parametersTable->setRowCount(rowCount);
+	ui.algoParametersTable->setRowCount(rowCount);
 
 	// Set the column widths
-	ui.parametersTable->horizontalHeader()->setSectionResizeMode(eParameterCheckColumn, QHeaderView::Fixed);
-	ui.parametersTable->horizontalHeader()->setSectionResizeMode(eParameterDescriptionColumn, QHeaderView::Fixed);
-	ui.parametersTable->horizontalHeader()->setSectionResizeMode(eParameterValueColumn, QHeaderView::Fixed);
-	ui.parametersTable->horizontalHeader()->setSectionResizeMode(eParameterConfirmColumn, QHeaderView::Fixed);
+	ui.algoParametersTable->horizontalHeader()->setSectionResizeMode(eParameterCheckColumn, QHeaderView::Fixed);
+	ui.algoParametersTable->horizontalHeader()->setSectionResizeMode(eParameterDescriptionColumn, QHeaderView::Fixed);
+	ui.algoParametersTable->horizontalHeader()->setSectionResizeMode(eParameterValueColumn, QHeaderView::Fixed);
+	ui.algoParametersTable->horizontalHeader()->setSectionResizeMode(eParameterConfirmColumn, QHeaderView::Fixed);
 		// Column 0 is ID/Checkboxmake it quite small 
-	ui.parametersTable->setColumnWidth(eParameterCheckColumn, 45);
+	ui.algoParametersTable->setColumnWidth(eParameterCheckColumn, 45);
 	// Column 1 is description, make it much larger than the default 
-	ui.parametersTable->setColumnWidth(eParameterDescriptionColumn, 160);
+	ui.algoParametersTable->setColumnWidth(eParameterDescriptionColumn, 160);
 	// Column 2 is value , make it slightly larger
-	ui.parametersTable->setColumnWidth(eParameterValueColumn, 60);
+	ui.algoParametersTable->setColumnWidth(eParameterValueColumn, 60);
 	// Column 3 is confirmation , make it slightly larger
-	ui.parametersTable->setColumnWidth(eParameterConfirmColumn, 60);
+	ui.algoParametersTable->setColumnWidth(eParameterConfirmColumn, 60);
 		
 	// Put the contents in the table
 	for (int row = 0; row < rowCount; row++) 
@@ -1148,12 +1158,12 @@ void AWLQtDemo::PrepareParametersView()
 		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
 		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 		newItem->setCheckState(Qt::Unchecked);
-		ui.parametersTable->setItem(row, eParameterCheckColumn, newItem);
+		ui.algoParametersTable->setItem(row, eParameterCheckColumn, newItem);
 
 		// Column 1: Is Description .  Not editable text
 		newItem = new QTableWidgetItem(algoParameters[row].sDescription.c_str());
 		newItem->setFlags(Qt::ItemIsEnabled);
-		ui.parametersTable->setItem(row, eParameterDescriptionColumn, newItem);
+		ui.algoParametersTable->setItem(row, eParameterDescriptionColumn, newItem);
 
 		// Column 2: Is Value .  Editable text
 		QString sValue;
@@ -1168,7 +1178,7 @@ void AWLQtDemo::PrepareParametersView()
 
 		newItem = new QTableWidgetItem(sValue);
 		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable |  Qt::ItemIsEnabled);
-		ui.parametersTable->setItem(row, eParameterValueColumn, newItem);
+		ui.algoParametersTable->setItem(row, eParameterValueColumn, newItem);
 	
 		// Column 3: Is Confirmation .  Not editable text
 		QString sValueConfirm;
@@ -1182,11 +1192,11 @@ void AWLQtDemo::PrepareParametersView()
 		}
 		newItem = new QTableWidgetItem(sValueConfirm);
 		newItem->setFlags(Qt::ItemIsEnabled);
-		ui.parametersTable->setItem(row, eParameterConfirmColumn, newItem);
+		ui.algoParametersTable->setItem(row, eParameterConfirmColumn, newItem);
 	}
 }
 
-void AWLQtDemo::UpdateParametersView()
+void AWLQtDemo::UpdateAlgoParametersView()
 
 {
 	int currentAlgo = 0;
@@ -1204,8 +1214,8 @@ void AWLQtDemo::UpdateParametersView()
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
-		QTableWidgetItem *checkItem = ui.parametersTable->item(row, eParameterCheckColumn);
-		QTableWidgetItem *confirmItem = ui.parametersTable->item(row, eParameterConfirmColumn);
+		QTableWidgetItem *checkItem = ui.algoParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *confirmItem = ui.algoParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
 		// Going from partially checked to another value means we got an update
@@ -1216,7 +1226,7 @@ void AWLQtDemo::UpdateParametersView()
 			// Update was received.  CheckState falls back to default.
 
 			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
-			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
 			// Get the confirm value and format.
 			QString sValueConfirm;
 			if (algoParameters[row].paramType == eAlgoParamInt)
@@ -1228,7 +1238,7 @@ void AWLQtDemo::UpdateParametersView()
 				sValueConfirm.sprintf("%f", algoParameters[row].floatValue);
 			}
 			confirmItem->setText(sValueConfirm);
-			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			ui.algoParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 			algoParameters[row].pendingUpdates = updateStatusUpToDate;
 			break;
 
@@ -1238,7 +1248,7 @@ void AWLQtDemo::UpdateParametersView()
 			// Update was received.  CheckState falls back to default.
 
 			if (originalCheckState != Qt::PartiallyChecked) checkItem->setCheckState(Qt::PartiallyChecked);
-			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
 			// Get the confirm value and format.
 			QString sValueConfirm;
 			if (algoParameters[row].paramType == eAlgoParamInt)
@@ -1250,14 +1260,14 @@ void AWLQtDemo::UpdateParametersView()
 				sValueConfirm.sprintf("%f", algoParameters[row].floatValue);
 			}
 			confirmItem->setText(sValueConfirm);
-			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			ui.algoParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 			break;
 		}
 
 		default:
 		{
 			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
-			//			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			//			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
 			break;
 		}
 		}// end case
@@ -1282,20 +1292,20 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 
 		// Column 0 is "Select" row:  Editable checkbox.
 		// If the checkbox is checked, then we will set that parameter.
-		QTableWidgetItem *checkItem = ui.parametersTable->item(row, eParameterCheckColumn);
-		QTableWidgetItem *valueItem = ui.parametersTable->item(row, eParameterValueColumn);
-		QTableWidgetItem *confirmItem = ui.parametersTable->item(row, eParameterConfirmColumn);
+		QTableWidgetItem *checkItem = ui.algoParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *valueItem = ui.algoParametersTable->item(row, eParameterValueColumn);
+		QTableWidgetItem *confirmItem = ui.algoParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
 		if (originalCheckState == Qt::Checked)
 		{
 			// Going from checked to PartiallyChecked, while update is going on.
 			checkItem->setCheckState(Qt::PartiallyChecked);
-			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
 
 			// The confirmation value is emptied
 			confirmItem->setText("");
-			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			ui.algoParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			// The value value is read.
 			// Format depends on the cell type
@@ -1340,20 +1350,20 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 
 		// Column 0 is "Select" row:  Editable checkbox.
 		// If the checkbox is checked, then we will set that parameter.
-		QTableWidgetItem *checkItem = ui.parametersTable->item(row, eParameterCheckColumn);
-		QTableWidgetItem *valueItem = ui.parametersTable->item(row, eParameterValueColumn);
-		QTableWidgetItem *confirmItem = ui.parametersTable->item(row, eParameterConfirmColumn);
+		QTableWidgetItem *checkItem = ui.algoParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *valueItem = ui.algoParametersTable->item(row, eParameterValueColumn);
+		QTableWidgetItem *confirmItem = ui.algoParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
 		if (originalCheckState == Qt::Checked)
 		{
 			// Going from checked to PartiallyChecked, while update is going on.
 			checkItem->setCheckState(Qt::PartiallyChecked);
-			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
 
 			// The confirmation value is emptied
 			confirmItem->setText("");
-			ui.parametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			ui.algoParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
 
 			uint16_t parameterAddress = algoParameters[row].address;
 			receiverCaptures[0]->QueryAlgoParameter(currentAlgo,  parameterAddress); 
@@ -1506,7 +1516,7 @@ void AWLQtDemo::UpdateGlobalParametersView()
 		default:
 		{
 			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
-			//			ui.parametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			//			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
 			break;
 		}
 		}// end case
@@ -1599,6 +1609,279 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 		} // if checked
 	} // for 
 }
+
+void AWLQtDemo::on_trackerSelectComboBox_indexChanged(int newIndex)
+
+{
+	if (newIndex < 0) return;
+
+	int receiverCount = receiverCaptures.size();
+	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	{
+		receiverCaptures[receiverID]->SetTracker(ui.trackerSelectComboBox->itemData(newIndex).value<int>());
+	}
+	PrepareTrackerParametersView();
+
+}
+
+void AWLQtDemo::PrepareTrackerParametersView()
+
+{
+	int currentTracker = 0;
+
+	if (receiverCaptures[0])
+	{
+		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
+		if (currentTracker >= receiverCaptures[0]->parametersTrackers.algorithms.size()) currentTracker = receiverCaptures[0]->parametersAlgos.defaultAlgo;
+	}
+
+	if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size() - 1) return;
+
+	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	int rowCount = trackerParameters.size();
+
+	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
+
+	ui.trackerParametersTable->horizontalHeader()->setVisible(true);
+
+	// Set the number of rows in the table depending on the number of parameters for the algo, 
+	// based on info in INI file.
+	ui.trackerParametersTable->setRowCount(rowCount);
+
+	// Set the column widths
+	ui.trackerParametersTable->horizontalHeader()->setSectionResizeMode(eParameterCheckColumn, QHeaderView::Fixed);
+	ui.trackerParametersTable->horizontalHeader()->setSectionResizeMode(eParameterDescriptionColumn, QHeaderView::Fixed);
+	ui.trackerParametersTable->horizontalHeader()->setSectionResizeMode(eParameterValueColumn, QHeaderView::Fixed);
+	ui.trackerParametersTable->horizontalHeader()->setSectionResizeMode(eParameterConfirmColumn, QHeaderView::Fixed);
+	// Column 0 is ID/Checkboxmake it quite small 
+	ui.trackerParametersTable->setColumnWidth(eParameterCheckColumn, 45);
+	// Column 1 is description, make it much larger than the default 
+	ui.trackerParametersTable->setColumnWidth(eParameterDescriptionColumn, 160);
+	// Column 2 is value , make it slightly larger
+	ui.trackerParametersTable->setColumnWidth(eParameterValueColumn, 60);
+	// Column 3 is confirmation , make it slightly larger
+	ui.trackerParametersTable->setColumnWidth(eParameterConfirmColumn, 60);
+
+	// Put the contents in the table
+	for (int row = 0; row < rowCount; row++)
+	{
+		// Column 0 is "Select" row:  Editable checkbox.
+		QTableWidgetItem *newItem = new QTableWidgetItem(trackerParameters[row].sIndex.c_str());
+		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+		newItem->setCheckState(Qt::Unchecked);
+		ui.trackerParametersTable->setItem(row, eParameterCheckColumn, newItem);
+
+		// Column 1: Is Description .  Not editable text
+		newItem = new QTableWidgetItem(trackerParameters[row].sDescription.c_str());
+		newItem->setFlags(Qt::ItemIsEnabled);
+		ui.trackerParametersTable->setItem(row, eParameterDescriptionColumn, newItem);
+
+		// Column 2: Is Value .  Editable text
+		QString sValue;
+		if (trackerParameters[row].paramType == eAlgoParamInt)
+		{
+			sValue.sprintf("%d", trackerParameters[row].intValue);
+		}
+		else
+		{
+			sValue.sprintf("%f", trackerParameters[row].floatValue);
+		}
+
+		newItem = new QTableWidgetItem(sValue);
+		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
+		ui.trackerParametersTable->setItem(row, eParameterValueColumn, newItem);
+
+		// Column 3: Is Confirmation .  Not editable text
+		QString sValueConfirm;
+		if (trackerParameters[row].paramType == eAlgoParamInt)
+		{
+			sValueConfirm.sprintf("%d", trackerParameters[row].intValue);
+		}
+		else
+		{
+			sValueConfirm.sprintf("%f", trackerParameters[row].floatValue);
+		}
+		newItem = new QTableWidgetItem(sValueConfirm);
+		newItem->setFlags(Qt::ItemIsEnabled);
+		ui.trackerParametersTable->setItem(row, eParameterConfirmColumn, newItem);
+	}
+}
+
+void AWLQtDemo::UpdateTrackerParametersView()
+
+{
+	int currentTracker = 0;
+	if (receiverCaptures[0])
+	{
+		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
+		if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size()) currentTracker = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+	}
+
+	if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size()-1) return;
+
+	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	int rowCount = trackerParameters.size();
+	for (int row = 0; row < rowCount; row++)
+	{
+
+		// Column 0 is "Select" row:  Editable checkbox.
+		QTableWidgetItem *checkItem = ui.trackerParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *confirmItem = ui.trackerParametersTable->item(row, eParameterConfirmColumn);
+
+		Qt::CheckState originalCheckState = checkItem->checkState();
+		// Going from partially checked to another value means we got an update
+		// Update the value text.
+		switch (trackerParameters[row].pendingUpdates) {
+		case updateStatusPendingVisual:
+		{
+			// Update was received.  CheckState falls back to default.
+
+			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
+			ui.trackerParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			// Get the confirm value and format.
+			QString sValueConfirm;
+			if (trackerParameters[row].paramType == eAlgoParamInt)
+			{
+				sValueConfirm.sprintf("%d", trackerParameters[row].intValue);
+			}
+			else
+			{
+				sValueConfirm.sprintf("%f", trackerParameters[row].floatValue);
+			}
+			confirmItem->setText(sValueConfirm);
+			ui.trackerParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			trackerParameters[row].pendingUpdates = updateStatusUpToDate;
+			break;
+
+		}
+		case updateStatusPendingUpdate:
+		{
+			// Update was received.  CheckState falls back to default.
+
+			if (originalCheckState != Qt::PartiallyChecked) checkItem->setCheckState(Qt::PartiallyChecked);
+			ui.trackerParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			// Get the confirm value and format.
+			QString sValueConfirm;
+			if (trackerParameters[row].paramType == eAlgoParamInt)
+			{
+				sValueConfirm.sprintf("%d", trackerParameters[row].intValue);
+			}
+			else
+			{
+				sValueConfirm.sprintf("%f", trackerParameters[row].floatValue);
+			}
+			confirmItem->setText(sValueConfirm);
+			ui.trackerParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+			break;
+		}
+
+		default:
+		{
+			if (originalCheckState != Qt::Unchecked) checkItem->setCheckState(Qt::Unchecked);
+			//			ui.algoParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+			break;
+		}
+		}// end case
+	} // for (int row
+}
+
+void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
+{
+	int currentTracker = 0;
+	if (receiverCaptures[0])
+	{
+		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
+		if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size()-1) currentTracker = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+	}
+
+	if (currentTracker >= receiverCaptures[0]->parametersTrackers.algorithms.size()) return;
+
+	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	int rowCount = trackerParameters.size();
+	for (int row = 0; row < rowCount; row++)
+	{
+
+		// Column 0 is "Select" row:  Editable checkbox.
+		// If the checkbox is checked, then we will set that parameter.
+		QTableWidgetItem *checkItem = ui.trackerParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *valueItem = ui.trackerParametersTable->item(row, eParameterValueColumn);
+		QTableWidgetItem *confirmItem = ui.trackerParametersTable->item(row, eParameterConfirmColumn);
+
+		Qt::CheckState originalCheckState = checkItem->checkState();
+		if (originalCheckState == Qt::Checked)
+		{
+			// Going from checked to PartiallyChecked, while update is going on.
+			checkItem->setCheckState(Qt::PartiallyChecked);
+			ui.trackerParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+
+			// The confirmation value is emptied
+			confirmItem->setText("");
+			ui.trackerParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+
+			// The value value is read.
+			// Format depends on the cell type
+
+			QString sValueText = valueItem->text();
+			uint16_t parameterAddress = trackerParameters[row].address;
+			uint32_t parameterValue = 0L;
+			if (trackerParameters[row].paramType == eAlgoParamInt)
+			{
+				int intValue = 0;
+				sscanf(sValueText.toStdString().c_str(), "%d", &intValue);
+				// Send to the parameter value as uint32_t
+				parameterValue = (uint32_t)intValue;
+			}
+			else
+			{
+				int floatValue = 0;
+				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
+				parameterValue = *(uint32_t *)&floatValue;
+			}
+
+			receiverCaptures[0]->SetTrackerParameter(currentTracker, parameterAddress, parameterValue);
+		} // if checked
+	} // for 
+}
+
+void AWLQtDemo::on_trackerParametersGetPushButton_clicked()
+{
+	int currentTracker = 0;
+	if (receiverCaptures[0])
+	{
+		currentTracker = receiverCaptures[0]->receiverStatus.currentTracker;
+		if (currentTracker > receiverCaptures[0]->parametersTrackers.algorithms.size() - 1) currentTracker = receiverCaptures[0]->parametersTrackers.defaultAlgo;
+	}
+
+	if (currentTracker >= receiverCaptures[0]->parametersTrackers.algorithms.size()) return;
+
+	AlgorithmParameterVector trackerParameters = receiverCaptures[0]->parametersTrackers.algorithms[currentTracker].parameters;
+	int rowCount = trackerParameters.size();
+	for (int row = 0; row < rowCount; row++)
+	{
+
+		// Column 0 is "Select" row:  Editable checkbox.
+		// If the checkbox is checked, then we will set that parameter.
+		QTableWidgetItem *checkItem = ui.trackerParametersTable->item(row, eParameterCheckColumn);
+		QTableWidgetItem *valueItem = ui.trackerParametersTable->item(row, eParameterValueColumn);
+		QTableWidgetItem *confirmItem = ui.trackerParametersTable->item(row, eParameterConfirmColumn);
+
+		Qt::CheckState originalCheckState = checkItem->checkState();
+		if (originalCheckState == Qt::Checked)
+		{
+			// Going from checked to PartiallyChecked, while update is going on.
+			checkItem->setCheckState(Qt::PartiallyChecked);
+			ui.trackerParametersTable->setItem(row, eParameterCheckColumn, checkItem);
+
+			// The confirmation value is emptied
+			confirmItem->setText("");
+			ui.trackerParametersTable->setItem(row, eParameterConfirmColumn, confirmItem);
+
+			uint16_t parameterAddress = trackerParameters[row].address;
+			receiverCaptures[0]->QueryTrackerParameter(currentTracker, parameterAddress);
+		} // if checked
+	} // for 
+}
+
 
 void AWLQtDemo::on_view2DActionToggled()
 {

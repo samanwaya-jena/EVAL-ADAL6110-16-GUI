@@ -67,7 +67,8 @@ public:
 
 	ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
+					   const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers);
 
 	/** \brief ReceiverSimulatorCapture constructor from a configuration file information.
  	    * \param[in] inReceiverID  unique receiverID
@@ -90,13 +91,21 @@ public:
      */
 	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask) {return(true);};
 
-		/** \brief Issues the command to set the current algorithm in the FPGA.
+		/** \brief Issues the command to set the current algorithm in the sensor.
 	  *\param[in] algorigthmID  ID of the selected algorithm.
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 		
 	virtual bool SetAlgorithm(uint16_t algorithmID) {return(true);};
+
+	/** \brief Issues the command to set the current Tracker in the sensor.
+	*\param[in] trackerID  ID of the selected algorithm.
+	* \return true if success.  false on error.
+	* \remarks In Simulation, does nothing. Returns true.
+	*/
+
+	virtual bool SetTracker(uint16_t trackerID) { return(true); };
 
 	/** \brief Sets an internal FPGA register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -134,6 +143,7 @@ public:
 		
 	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue) {return(true);};
 
+
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the parameter to change.
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
@@ -142,6 +152,16 @@ public:
 	*/
 		
 	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) {return(true);};
+
+	/** \brief Sets tracker parameters to the value sent as argument.
+	*\param[in] trackerID ID of the tracker algo affected by the change.
+	*\param[in] registerAddress Adrress of the parameter to change.
+	*\param[in] registerValue Value to put into register (values accepted are 0-1).
+	* \return true if success.  false on error.
+	* \remarks In Simulation, does nothing. Returns true.
+	*/
+
+	virtual bool SetTrackerParameter(int trackerID, uint16_t registerAddress, uint32_t registerValue) { return(true); };
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
 	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -157,6 +177,14 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 	virtual bool QueryAlgorithm() {return(true);};
+
+
+	/** \  an asynchronous query command to get the current Tracker.
+	* \return true if success.  false on error.
+	* \remarks In Simulation, does nothing. Returns true.
+	*/
+	virtual bool QueryTracker() { return(true); };
+
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -194,6 +222,14 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
 	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) {return(true);};
+
+	/** \brief Send an asynchronous query command for a Tracker parameter.
+	*\param[in] trackerID ID of the Tracker algo for which we want to query.
+	*\param[in] registerAddress Adrress of the register to query.
+	* \return true if success.  false on error.
+	* \remarks In Simulation, does nothing. Returns true.
+	*/
+	virtual bool QueryTrackerParameter(int algoID, uint16_t registerAddress) { return(true); };
 
 // Protected methods
 protected:

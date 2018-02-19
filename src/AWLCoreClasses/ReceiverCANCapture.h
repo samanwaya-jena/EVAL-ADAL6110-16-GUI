@@ -98,12 +98,15 @@ public:
 		* \param[in] inRegistersFPGA default de .cription of the FPGA registers
 		* \param[in] inRegistersADC default description of the ADC registers
 		* \param[in] inRegistersGPIO default description of the GPIO registers
-        * \param[in] inParametersAlgos default description if the algorithm parameters
+        * \param[in] inParametersAlgos default description of the algorithm parameters
+		* \param[in] inParametersTrackers default description of the Tracker parameters
       */
 
 	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 					   eReceiverCANRate inCANRate, int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos);
+		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
+					   const AlgorithmSet &inParametersAlgos,
+					   const AlgorithmSet &inParametersTrackers);
 
 	/** \brief ReceiverCANCapture constructor from a configuration file information.
  	    * \param[in] inReceiverID  unique receiverID
@@ -187,12 +190,19 @@ public:
 	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
 
 
-	/** \brief Issues the command to set the current algorithm in the FPGA.
+	/** \brief Issues the command to set the current algorithm in the sensor.
 	  *\param[in] algorigthmID  ID of the selected algorithm.
 	* \return true if success.  false on error.
 	*/
 		
 	virtual bool SetAlgorithm(uint16_t algorithmID);
+
+	/** \brief Issues the command to set the current tracker in the sensor.
+	*\param[in] tarckerID  ID of the selected tracker.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool SetTracker(uint16_t trackerID);
 
 	/** \brief Sets an internal FPGA register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -234,6 +244,15 @@ public:
 		
 	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue);
 
+	/** \brief Sets tracker parameters to the value sent as argument.
+	*\param[in] trackerID of the detection algo affected by the change.
+	*\param[in] registerAddress Adrress of the parameter to change.
+	*\param[in] registerValue Value to put into register (values accepted are 0-1).
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool SetTrackerParameter(int trackerID, uint16_t registerAddress, uint32_t registerValue);
+
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
     * \param[in] channelMask mask for the analyzed channels.
@@ -249,6 +268,10 @@ public:
 	*/
 	virtual bool QueryAlgorithm();
 
+	/** \brief Issues an asynchronous query command to get the current tracker.
+	* \return true if success.  false on error.
+	*/
+	virtual bool QueryTracker();
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -291,6 +314,16 @@ public:
 	  *          placed in the receiverStatus member and in the globalSettings. 
 		*/
 	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress);
+
+	/** \brief Send an asynchronous query command for a tracker parameter.
+	*\param[in] trackerID ID of the tracker algo for which we want to query.
+	*\param[in] registerAddress Adrress of the register to query.
+	* \return true if success.  false on error.
+	* \remarks On reception of the answer to query the register address and value will be
+	*          placed in the a trackerParameters registerSet.
+	*/
+	virtual bool QueryTrackerParameter(int trackerID, uint16_t registerAddress);
+
 // Protected methods
 protected:
 
@@ -391,6 +424,8 @@ protected:
 
 	void ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg);
 	void ParseParameterAlgoParameterResponse(AWLCANMessage &inMsg);
+	void ParseParameterTrackerSelectResponse(AWLCANMessage &inMsg);
+	void ParseParameterTrackerParameterResponse(AWLCANMessage &inMsg);
 	void ParseParameterFPGARegisterResponse(AWLCANMessage &inMsg);
 	void ParseParameterBiasResponse(AWLCANMessage &inMsg);
 	void ParseParameterADCRegisterResponse(AWLCANMessage &inMsg);
@@ -403,6 +438,8 @@ protected:
 
 	void ParseParameterAlgoSelectError(AWLCANMessage &inMsg);
 	void ParseParameterAlgoParameterError(AWLCANMessage &inMsg);
+	void ParseParameterTrackerSelectError(AWLCANMessage &inMsg);
+	void ParseParameterTrackerParameterError(AWLCANMessage &inMsg);
 	void ParseParameterFPGARegisterError(AWLCANMessage &inMsg);
 	void ParseParameterBiasError(AWLCANMessage &inMsg);
 	void ParseParameterADCRegisterError(AWLCANMessage &inMsg);

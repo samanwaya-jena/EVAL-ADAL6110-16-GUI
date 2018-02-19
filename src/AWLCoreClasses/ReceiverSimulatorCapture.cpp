@@ -36,10 +36,11 @@ using namespace awl;
 
 
 ReceiverSimulatorCapture::ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos):
-ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
-					   inFrameRate, inChannelMask, inMessageMask, inRangeOffset, inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos)
+	int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+	const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO,
+	const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers) :
+ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,
+					   inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers)
 
 {
 }
