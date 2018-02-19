@@ -228,12 +228,9 @@ public:
 
 	int	GetTrackID() {return(trackID);}
 
-	// A track is built from 4 distinct CAN message sections.  Make sure all parts are entered before a track is completed.
-#if 1
-	bool IsComplete() { return (part1Entered && part2Entered && part3Entered && part4Entered); };
-#else
+	// A track is built from 2 distinct CAN message sections.  Make sure all parts are entered before a track is completed.
+	// Note: (Before 2018-02-18, it used to be 4 parts, but messages of part 3 and 4 were deprecated.
 	bool IsComplete() { return (part1Entered && part2Entered); };
-#endif
 public:
 	/** \brief Track ID. */
 	TrackID	trackID;
@@ -279,8 +276,8 @@ public:
 
 	bool part1Entered;
 	bool part2Entered;
-	bool part3Entered;
-	bool part4Entered;
+	bool part3Entered;  // Not required anymore, message was deprecated.
+	bool part4Entered;  // Note required anymore, message was deprecated.
 protected:
 };
 

@@ -476,7 +476,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	track->trackMainChannel = trackReorder[*(uint16_t *)&inMsg.data[3]];
 #if 1
 	// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
-	// Other versions send trackMainChannel.
+	// Other versions send trackMainChannel. For AWL-7 track main channel is 0.
 	// Rebuild trackMainChannel from AWL 7 data.
 	if (track->trackChannels.byteData  && !track->trackMainChannel)
 	{
@@ -496,7 +496,9 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	// Decode rest of message
 	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
 	track->probability = *(uint8_t *) &inMsg.data[5];
-	track->timeToCollision = (*(uint8_t *) &inMsg.data[6]) / 1000.0;  // Convert from ms to seconds.  Currently empty
+
+	uint16_t intensity = (*(uint16_t *)&inMsg.data[6]);
+	track->intensity = ConvertIntensityToSNR(intensity);
 
 	track->part1Entered = true;
 
@@ -540,14 +542,14 @@ void ReceiverCANCapture::ParseObstacleSize(AWLCANMessage &inMsg)
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
 
-	uint16_t height  = (*(uint16_t *) &inMsg.data[2]);
-	uint16_t width = (*(uint16_t *) &inMsg.data[4]);
-	uint16_t intensity = (*(uint16_t *) &inMsg.data[6]);
+	uint16_t height  = (*(uint16_t *) &inMsg.data[2]);  // Not transmitted. Should be 0.
+	uint16_t width = (*(uint16_t *) &inMsg.data[4]);    // Not transmitted. Should be 0.
+	uint16_t intensity = (*(uint16_t *) &inMsg.data[6]); // Also transmitted as  part of obstacle track.
 
 	track->intensity = ConvertIntensityToSNR(intensity);
 
 	track->part3Entered = true;
-#if 1
+#if 0
 	// Track is invalidated if intensity is invalid
 	if (track->intensity < receiverStatus.signalToNoiseFloor)
 	{
@@ -568,12 +570,12 @@ void ReceiverCANCapture::ParseObstacleAngularPosition(AWLCANMessage &inMsg)
 	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
 
-	uint16_t startAngle  = (*(uint16_t *) &inMsg.data[2]);
-	uint16_t endAngle = (*(uint16_t *) &inMsg.data[4]);
-	uint16_t angularVelocity = (*(uint16_t *) &inMsg.data[6]);
+	uint16_t startAngle  = (*(uint16_t *) &inMsg.data[2]); // Not transmitted. Should be 0.
+	uint16_t endAngle = (*(uint16_t *) &inMsg.data[4]); // Not transmitted. Should be 0.
+	uint16_t angularVelocity = (*(uint16_t *) &inMsg.data[6]); // Not transmitted. Should be 0.
 
 
-	// Nothing done with this message yet, just log that we have received it.
+	// Nothing done with this message (now deprecated), just log that we have received it.
 	track->part4Entered = true;
 
 	rawLock.unlock();
