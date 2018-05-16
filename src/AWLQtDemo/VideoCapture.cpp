@@ -14,7 +14,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
-
+// define XIFORWINDOWS
 #include <fstream>
 
 #ifndef Q_MOC_RUN
@@ -248,7 +248,7 @@ void VideoCapture::ListCameras()
 	DebugFilePrintf("Requested Camera: %s", sCameraName.c_str());
 	DWORD dwNumDevices;												
 	//num of connected SHT devices	
-	
+#ifdef XIFORWINDOWS	
 	if(xiGetNumberDevices(&dwNumDevices) == XI_OK)
 	{
 		int dwSerial = 0;
@@ -266,7 +266,7 @@ void VideoCapture::ListCameras()
 				
 		DebugFilePrintf("%s %08X", camName, dwSerial);
 	}
-
+#endif
 
 
 	for (int i = 0; i < 2000; i++) 

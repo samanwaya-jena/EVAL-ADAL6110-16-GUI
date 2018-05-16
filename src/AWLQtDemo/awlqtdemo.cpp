@@ -20,7 +20,7 @@
 
 
 #include "AWLSettings.h"
-#include "AWLCoord.h"
+#include "awlcoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverEasySyncCapture.h"
@@ -45,7 +45,7 @@
 
 #include "tableview.h"
 
-#include "..\awlqtscope\awlqtscope.h"
+#include "awlqtscope.h"
 
 
 using namespace std;

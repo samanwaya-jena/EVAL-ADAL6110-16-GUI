@@ -17,7 +17,7 @@
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
-#include "AWLCoord.h"
+#include "awlcoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
 #include "DetectionStruct.h"
@@ -43,7 +43,9 @@
 using namespace std;
 using namespace awl;
 
-#include <windows.h>
+#ifdef _WIN32
+  #include <windows.h>
+#endif
 
 #include <QPainter>
 #include <QPaintDevice>

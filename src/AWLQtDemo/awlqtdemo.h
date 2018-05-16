@@ -31,9 +31,9 @@
 #include "ReceiverCapture.h"
 #include "VideoViewer.h"
 
-#include "FOV_2DScan.h"
+#include "fov_2dscan.h"
 #include "TableView.h"
-#include "..\awlqtscope\awlqtscope.h"
+#include "awlqtscope.h"
 
 
 namespace awl
@@ -150,7 +150,7 @@ protected:
 
 	void UpdateGPIOList();
 
-	void AWLQtDemo::ChangeRangeMax(int channelID, double range);
+	void ChangeRangeMax(int channelID, double range);
 
 private:
 	Ui::AWLQtDemoClass ui;

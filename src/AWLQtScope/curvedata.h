@@ -38,8 +38,8 @@ public:
 
     virtual QRectF boundingRect() const;
 
-	QPointF CurveData::addValue(double x, double y);
-	QPointF CurveData::addValue(const QPointF &point);
+	QPointF addValue(double x, double y);
+	QPointF addValue(const QPointF &point);
 
 protected:
 	SignalData	*signalData;

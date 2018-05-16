@@ -70,7 +70,7 @@ protected:
 	  *          Yizhen Zhang, Erik K. Antonsson and Karl Grote: A New Threat Assessment Measure for Collision Avoidance Systems
       */
 
-	float ReceiverPostProcessor::PredictTimeToCollisionConstant (float currentDistance, float relativeSpeed);
+	float PredictTimeToCollisionConstant (float currentDistance, float relativeSpeed);
 
 	/** \brief Predict the relative distance of an obstacle after a certain time delay,  
 	  *        given current distance speed and  deceleration.
@@ -82,7 +82,7 @@ protected:
 	  * \remarks  arguments use acceleration, not deceleration! Positive acceleration means object is moving away.
       */
 
-	float ReceiverPostProcessor::PredictDistance(float currentDistance, float relativeSpeed, float acceleration, float time);
+	float PredictDistance(float currentDistance, float relativeSpeed, float acceleration, float time);
 
 	/** \brief Calculate the required accceleration to get to zero speed at the specified distance, 
 	  *        given currentSpeed and current deceleration.

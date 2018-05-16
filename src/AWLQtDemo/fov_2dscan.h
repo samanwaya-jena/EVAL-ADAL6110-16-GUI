@@ -23,7 +23,7 @@
 #include <QAction>
 #include <QActionGroup>
 
-#include "ui_FOV_2dScan.h"
+#include "ui_fov_2dscan.h"
 #include "DetectionStruct.h"
 
 namespace awl

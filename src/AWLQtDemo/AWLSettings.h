@@ -125,7 +125,9 @@ public:
 	/** \brief Stores the current receiver calibration settings
 		* \return true if storage processe dwithout error. False in case of a storage error.
       */
-	bool AWLSettings::StoreReceiverCalibration();
+	//bool AWLSettings::StoreReceiverCalibration();
+	//Linux
+	bool StoreReceiverCalibration();
 
 public:
 	// Receiver configuration

@@ -26,8 +26,8 @@
 
 using namespace std;
 
-#include "include/opencv2/core/core_c.h"
-#include "include/opencv2/core/core.hpp"
+#include <opencv2/core/core_c.h>
+#include <opencv2/core/core.hpp>
 
 #include "VideoCapture.h"
 #include "DetectionStruct.h"
@@ -56,7 +56,7 @@ public:
 	  * \param[in] inVideoCapture videoCaptureDevice we feed image from.
 	  * \param[in] inProjector receiverProjector that supplies us with range info
       */
-	explicit VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget=0);
+	explicit VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget=0);
 
 	typedef boost::shared_ptr<cv::Mat> FramePtr;
 	typedef boost::container::vector<FramePtr> FrameList;
@@ -69,7 +69,7 @@ public:
 
 	/** \brief Video Viewer destructor. Insures that the viewer is Stopped()
       */
-	virtual VideoViewer::~VideoViewer();
+	virtual ~VideoViewer();
 
 	/** \brief Prepare the video display for the display loop.  Creates the display window.
       */

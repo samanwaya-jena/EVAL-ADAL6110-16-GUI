@@ -433,7 +433,9 @@ public:
 	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
-	bool ReceiverCapture::CopyReceiverFrame(FrameID inFrameID, SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID);
+	//bool ReceiverCapture::CopyReceiverFrame(FrameID inFrameID, SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID);
+	// Linux
+	bool CopyReceiverFrame(FrameID inFrameID, SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID);
 
 	/** \brief copy the raw detection data identified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
