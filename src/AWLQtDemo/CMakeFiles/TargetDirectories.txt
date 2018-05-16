@@ -1,0 +1,4 @@
+/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles/rebuild_cache.dir
+/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles/LinuxCute.dir
+/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles/edit_cache.dir
+/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles/LinuxCute_autogen.dir
