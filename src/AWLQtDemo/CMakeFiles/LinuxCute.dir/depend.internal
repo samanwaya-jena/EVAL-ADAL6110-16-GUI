@@ -16,6 +16,7 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o
  ../AWLQtScope/awlqtscope.h
  ../AWLQtScope/awlscopeplot.h
  ../AWLQtScope/curvedata.h
+ ../AWLQtScope/ui_awlqtscope.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/AWLSettings.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/LinuxCute_autogen/EWIEGA46WW/moc_TableView.cpp
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/LinuxCute_autogen/EWIEGA46WW/moc_VideoViewer.cpp
@@ -165,6 +166,7 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o
  /usr/include/qt5/QtWidgets/QListWidget
  /usr/include/qt5/QtWidgets/QMainWindow
  /usr/include/qt5/QtWidgets/QPushButton
+ /usr/include/qt5/QtWidgets/QRadioButton
  /usr/include/qt5/QtWidgets/QSpinBox
  /usr/include/qt5/QtWidgets/QStatusBar
  /usr/include/qt5/QtWidgets/QTabWidget
@@ -198,6 +200,7 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o
  /usr/include/qt5/QtWidgets/qlistwidget.h
  /usr/include/qt5/QtWidgets/qmainwindow.h
  /usr/include/qt5/QtWidgets/qpushbutton.h
+ /usr/include/qt5/QtWidgets/qradiobutton.h
  /usr/include/qt5/QtWidgets/qrubberband.h
  /usr/include/qt5/QtWidgets/qsizepolicy.h
  /usr/include/qt5/QtWidgets/qslider.h
@@ -234,7 +237,6 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o
  /usr/include/qwt/qwt_system_clock.h
  /usr/include/qwt/qwt_text.h
  /usr/include/qwt/qwt_transform.h
- ui_awlqtscope.h
 CMakeFiles/LinuxCute.dir/TableView.cpp.o
  ../AWLCoreClasses/CoordinateSystem.h
  ../AWLCoreClasses/DetectionStruct.h
@@ -556,6 +558,7 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o
  ../AWLQtScope/awlqtscope.h
  ../AWLQtScope/awlscopeplot.h
  ../AWLQtScope/curvedata.h
+ ../AWLQtScope/ui_awlqtscope.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/AWLSettings.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/TableView.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/VideoCapture.h
@@ -711,6 +714,7 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o
  /usr/include/qt5/QtWidgets/QMainWindow
  /usr/include/qt5/QtWidgets/QMessageBox
  /usr/include/qt5/QtWidgets/QPushButton
+ /usr/include/qt5/QtWidgets/QRadioButton
  /usr/include/qt5/QtWidgets/QSpinBox
  /usr/include/qt5/QtWidgets/QStatusBar
  /usr/include/qt5/QtWidgets/QTabWidget
@@ -746,6 +750,7 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o
  /usr/include/qt5/QtWidgets/qmainwindow.h
  /usr/include/qt5/QtWidgets/qmessagebox.h
  /usr/include/qt5/QtWidgets/qpushbutton.h
+ /usr/include/qt5/QtWidgets/qradiobutton.h
  /usr/include/qt5/QtWidgets/qrubberband.h
  /usr/include/qt5/QtWidgets/qsizepolicy.h
  /usr/include/qt5/QtWidgets/qslider.h
@@ -782,7 +787,6 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o
  /usr/include/qwt/qwt_system_clock.h
  /usr/include/qwt/qwt_text.h
  /usr/include/qwt/qwt_transform.h
- ui_awlqtscope.h
 CMakeFiles/LinuxCute.dir/fov_2dscan.cpp.o
  ../AWLCoreClasses/CoordinateSystem.h
  ../AWLCoreClasses/DetectionStruct.h
@@ -945,6 +949,7 @@ CMakeFiles/LinuxCute.dir/main.cpp.o
  ../AWLQtScope/awlqtscope.h
  ../AWLQtScope/awlscopeplot.h
  ../AWLQtScope/curvedata.h
+ ../AWLQtScope/ui_awlqtscope.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/AWLSettings.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/TableView.h
  /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/VideoCapture.h
@@ -1090,6 +1095,7 @@ CMakeFiles/LinuxCute.dir/main.cpp.o
  /usr/include/qt5/QtWidgets/QListWidget
  /usr/include/qt5/QtWidgets/QMainWindow
  /usr/include/qt5/QtWidgets/QPushButton
+ /usr/include/qt5/QtWidgets/QRadioButton
  /usr/include/qt5/QtWidgets/QSpinBox
  /usr/include/qt5/QtWidgets/QStatusBar
  /usr/include/qt5/QtWidgets/QTabWidget
@@ -1123,6 +1129,7 @@ CMakeFiles/LinuxCute.dir/main.cpp.o
  /usr/include/qt5/QtWidgets/qlistwidget.h
  /usr/include/qt5/QtWidgets/qmainwindow.h
  /usr/include/qt5/QtWidgets/qpushbutton.h
+ /usr/include/qt5/QtWidgets/qradiobutton.h
  /usr/include/qt5/QtWidgets/qrubberband.h
  /usr/include/qt5/QtWidgets/qsizepolicy.h
  /usr/include/qt5/QtWidgets/qslider.h
@@ -1159,4 +1166,3 @@ CMakeFiles/LinuxCute.dir/main.cpp.o
  /usr/include/qwt/qwt_system_clock.h
  /usr/include/qwt/qwt_text.h
  /usr/include/qwt/qwt_transform.h
- ui_awlqtscope.h

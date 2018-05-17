@@ -15,6 +15,7 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: ../AWLCoreCla
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: ../AWLQtScope/awlqtscope.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: ../AWLQtScope/awlscopeplot.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: ../AWLQtScope/curvedata.h
+CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: ../AWLQtScope/ui_awlqtscope.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: AWLSettings.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: LinuxCute_autogen/EWIEGA46WW/moc_TableView.cpp
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: LinuxCute_autogen/EWIEGA46WW/moc_VideoViewer.cpp
@@ -164,6 +165,7 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QListWidget
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QMainWindow
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QPushButton
+CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QRadioButton
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QSpinBox
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QStatusBar
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/QTabWidget
@@ -197,6 +199,7 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qlistwidget.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qmainwindow.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qpushbutton.h
+CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qradiobutton.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qrubberband.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qsizepolicy.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qt5/QtWidgets/qslider.h
@@ -233,7 +236,6 @@ CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qwt/qwt_system_clock.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qwt/qwt_text.h
 CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: /usr/include/qwt/qwt_transform.h
-CMakeFiles/LinuxCute.dir/LinuxCute_autogen/mocs_compilation.cpp.o: ui_awlqtscope.h
 
 CMakeFiles/LinuxCute.dir/TableView.cpp.o: ../AWLCoreClasses/CoordinateSystem.h
 CMakeFiles/LinuxCute.dir/TableView.cpp.o: ../AWLCoreClasses/DetectionStruct.h
@@ -555,6 +557,7 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ../AWLCoreClasses/awlcoord.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ../AWLQtScope/awlqtscope.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ../AWLQtScope/awlscopeplot.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ../AWLQtScope/curvedata.h
+CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ../AWLQtScope/ui_awlqtscope.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: AWLSettings.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: TableView.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: VideoCapture.h
@@ -710,6 +713,7 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QListWidget
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QMainWindow
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QMessageBox
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QPushButton
+CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QRadioButton
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QSpinBox
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QStatusBar
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/QTabWidget
@@ -745,6 +749,7 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qlistwidget
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qmainwindow.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qmessagebox.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qpushbutton.h
+CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qradiobutton.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qrubberband.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qsizepolicy.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qt5/QtWidgets/qslider.h
@@ -781,7 +786,6 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qwt/qwt_series_store.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qwt/qwt_system_clock.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qwt/qwt_text.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: /usr/include/qwt/qwt_transform.h
-CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ui_awlqtscope.h
 
 CMakeFiles/LinuxCute.dir/fov_2dscan.cpp.o: ../AWLCoreClasses/CoordinateSystem.h
 CMakeFiles/LinuxCute.dir/fov_2dscan.cpp.o: ../AWLCoreClasses/DetectionStruct.h
@@ -944,6 +948,7 @@ CMakeFiles/LinuxCute.dir/main.cpp.o: ../AWLCoreClasses/ThreadedWorker.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: ../AWLQtScope/awlqtscope.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: ../AWLQtScope/awlscopeplot.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: ../AWLQtScope/curvedata.h
+CMakeFiles/LinuxCute.dir/main.cpp.o: ../AWLQtScope/ui_awlqtscope.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: AWLSettings.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: TableView.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: VideoCapture.h
@@ -1089,6 +1094,7 @@ CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QLineEdit
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QListWidget
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QMainWindow
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QPushButton
+CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QRadioButton
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QSpinBox
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QStatusBar
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/QTabWidget
@@ -1122,6 +1128,7 @@ CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qlistview.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qlistwidget.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qmainwindow.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qpushbutton.h
+CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qradiobutton.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qrubberband.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qsizepolicy.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qt5/QtWidgets/qslider.h
@@ -1158,5 +1165,4 @@ CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qwt/qwt_series_store.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qwt/qwt_system_clock.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qwt/qwt_text.h
 CMakeFiles/LinuxCute.dir/main.cpp.o: /usr/include/qwt/qwt_transform.h
-CMakeFiles/LinuxCute.dir/main.cpp.o: ui_awlqtscope.h
 

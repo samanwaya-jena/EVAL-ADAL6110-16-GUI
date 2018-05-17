@@ -87,7 +87,7 @@ protected:
 private:
 	QwtPlotCurve::CurveStyle curveStyle;
 	//Linux temp
-	//Ui::AWLQtScopeClass ui; 
+	Ui::AWLQtScopeClass ui; 
 
     WheelBox *d_intervalWheel;
 

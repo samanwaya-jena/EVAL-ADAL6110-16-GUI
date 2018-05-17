@@ -42,3 +42,4 @@ src/AWLQtDemo/*.dat
 
 src/PhantomLidarDemoSetup/AWLSetup/Express/DVD-5/LogFiles/error
 *.dbg
+src/AWLQtDemo/CMakeFiles/
