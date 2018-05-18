@@ -21,7 +21,7 @@
 #include <boost/foreach.hpp>
 
 #include "awlqtscope.h"
-#include "AWLScopePlot.h"
+#include "awlscopeplot.h"
 
 #include "knob.h"
 #include "wheelbox.h"

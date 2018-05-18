@@ -41,12 +41,6 @@ Boost_FILESYSTEM_LIBRARY_DEBUG:FILEPATH=/usr/lib64/libboost_filesystem.so
 //Boost filesystem library (release)
 Boost_FILESYSTEM_LIBRARY_RELEASE:FILEPATH=/usr/lib64/libboost_filesystem.so
 
-//Boost gregorian library (debug)
-Boost_GREGORIAN_LIBRARY_DEBUG:FILEPATH=Boost_GREGORIAN_LIBRARY_DEBUG-NOTFOUND
-
-//Boost gregorian library (release)
-Boost_GREGORIAN_LIBRARY_RELEASE:FILEPATH=Boost_GREGORIAN_LIBRARY_RELEASE-NOTFOUND
-
 //Path to a file.
 Boost_INCLUDE_DIR:PATH=/usr/include
 
@@ -260,14 +254,17 @@ LinuxCute_BINARY_DIR:STATIC=/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/a
 //Value Computed by CMake
 LinuxCute_SOURCE_DIR:STATIC=/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo
 
-//Value Computed by CMake
-Linuxcute_BINARY_DIR:STATIC=/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo
-
-//Value Computed by CMake
-Linuxcute_SOURCE_DIR:STATIC=/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo
-
 //The directory containing a CMake configuration file for OpenCV.
 OpenCV_DIR:PATH=/usr/lib64/OpenCV
+
+//Path to a file.
+QWT_INCLUDE_DIR:PATH=/usr/include/qt5/qwt
+
+//Path to a library.
+QWT_LIB:FILEPATH=QWT_LIB-NOTFOUND
+
+//Path to a library.
+QWT_LIBRARY:FILEPATH=QWT_LIBRARY-NOTFOUND
 
 //The directory containing a CMake configuration file for Qt5Core.
 Qt5Core_DIR:PATH=/usr/lib64/cmake/Qt5Core
@@ -277,6 +274,9 @@ Qt5Gui_DIR:PATH=/usr/lib64/cmake/Qt5Gui
 
 //The directory containing a CMake configuration file for Qt5Widgets.
 Qt5Widgets_DIR:PATH=/usr/lib64/cmake/Qt5Widgets
+
+//The directory containing a CMake configuration file for Qwt.
+Qwt_DIR:PATH=Qwt_DIR-NOTFOUND
 
 
 ########################
@@ -301,10 +301,6 @@ Boost_DIR-ADVANCED:INTERNAL=1
 Boost_FILESYSTEM_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY_RELEASE
 Boost_FILESYSTEM_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: Boost_GREGORIAN_LIBRARY_DEBUG
-Boost_GREGORIAN_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: Boost_GREGORIAN_LIBRARY_RELEASE
-Boost_GREGORIAN_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_INCLUDE_DIR
 Boost_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_LIBRARY_DIR_DEBUG
@@ -475,7 +471,7 @@ FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[/usr][v3.2.0()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Components requested for this build tree.
-_Boost_COMPONENTS_SEARCHED:INTERNAL=atomic;chrono;date_time;filesystem;gregorian;signals;system;thread
+_Boost_COMPONENTS_SEARCHED:INTERNAL=atomic;chrono;date_time;filesystem;signals;system;thread
 //Last used Boost_INCLUDE_DIR value.
 _Boost_INCLUDE_DIR_LAST:INTERNAL=/usr/include
 //Last used Boost_LIBRARY_DIR_DEBUG value.

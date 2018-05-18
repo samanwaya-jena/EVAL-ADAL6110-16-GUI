@@ -328,6 +328,546 @@ fov_2dscan.cpp.s:
 	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/fov_2dscan.cpp.s
 .PHONY : fov_2dscan.cpp.s
 
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.cpp.s
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.o: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.o
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.o
+
+# target to build an object file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.o:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.o
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.o
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.i: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.i
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.i
+
+# target to preprocess a source file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.i:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.i
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.i
+
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.s: home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.s
+
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.s
+
+# target to generate assembly for a file
+home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.s:
+	$(MAKE) -f CMakeFiles/LinuxCute.dir/build.make CMakeFiles/LinuxCute.dir/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.s
+.PHONY : home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -386,6 +926,66 @@ help:
 	@echo "... fov_2dscan.o"
 	@echo "... fov_2dscan.i"
 	@echo "... fov_2dscan.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/CoordinateSystem.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DebugPrintf.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/DetectionStruct.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/LoopedWorker.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Publisher.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCANCapture.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverCapture.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverEasySyncCapture.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverKvaserCapture.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverPostProcessor.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ReceiverSimulatorCapture.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/Subscription.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/ThreadedWorker.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLCoreClasses/awlcoord.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlqtscope.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/awlscopeplot.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/curvedata.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/knob.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/signaldata.s"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.o"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.i"
+	@echo "... home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtScope/wheelbox.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

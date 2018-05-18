@@ -3,3 +3,7 @@
 #include "EWIEGA46WW/moc_VideoViewer.cpp"
 #include "EWIEGA46WW/moc_awlqtdemo.cpp"
 #include "EWIEGA46WW/moc_fov_2dscan.cpp"
+#include "OFKEJFRBZI/moc_awlqtscope.cpp"
+#include "OFKEJFRBZI/moc_awlscopeplot.cpp"
+#include "OFKEJFRBZI/moc_knob.cpp"
+#include "OFKEJFRBZI/moc_wheelbox.cpp"

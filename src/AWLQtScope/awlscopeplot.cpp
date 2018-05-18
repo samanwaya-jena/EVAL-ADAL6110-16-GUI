@@ -17,7 +17,7 @@
 
 
 
-#include "AWLScopePlot.h"
+#include "awlscopeplot.h"
 
 #include "ReceiverCapture.h"
 #include "AWLSettings.h"

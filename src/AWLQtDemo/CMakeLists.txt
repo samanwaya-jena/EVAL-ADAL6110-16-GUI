@@ -15,23 +15,34 @@ find_package (Threads)
 if(Boost_FOUND)
 	message("Boost Found!")
 endif()
-SET(BOOST_INCLUDE_DIRS "/usr/include/boost")
-file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
-#find_package(Boost REQUIRED)
-#FIND_PACKAGE(Qwt)
-file(GLOB QWT_LIBRARIES "/usr/lib/libqwt*")
+#SET(BOOST_INCLUDE_DIRS "/usr/include/boost")
+file(GLOB QWT_INCLUDE_DIR "/usr/include/qt5/qwt")
+file(GLOB QWT_LIBRARIES "/usr/lib64/libqwt-qt5*")
+file(GLOB CAN_LIBRARIES "/usr/lib/libcan*")
 # Qt5Widgets_INCLUDES inclut aussi les entêtes pour ses dépendances (QtCore et QtGui)
 INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
 #  -DQT_WIDGETS_LIB est nécessaire quand on utilise QtWidgets dans Qt5.
-file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
+#file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
 include_directories(include ${catkin_INCLUDE_DIRS} ${QWT_INCLUDE_DIR})
 include_directories(include "../AWLCoreClasses")
 include_directories(include "../AWLQtScope")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
 # La création de l'exécutable échoue dans Qt5 avec la configuration par défaut
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp  TableView.cpp  VideoCapture.cpp  VideoViewer.cpp awlqtdemo.ui  fov_2dscan.ui  TableView.ui )
+ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp
+      	TableView.cpp VideoCapture.cpp  VideoViewer.cpp awlqtdemo.ui  fov_2dscan.ui TableView.ui
+../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
+../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
+../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
+../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ReceiverEasySyncCapture.cpp  ../AWLCoreClasses/ThreadedWorker.cpp
+../AWLCoreClasses/LoopedWorker.cpp      ../AWLCoreClasses/ReceiverKvaserCapture.cpp
+../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
+../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
+../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
+../AWLQtScope/awlqtscope.ui 
+)
 # Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
-TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${OpenCV_LIBS} ${QWT} 
-	${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY})
+TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${OpenCV_LIBS} ${QWT_LIBRARIES}  ${CAN_LIBRARIES}
+${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY} )
 #target_link_libraries(Linuxcute Qt5::Widgets)

@@ -236,13 +236,15 @@ bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publishe
 
 FrameID ReceiverCapture::GetFrameID(uint16_t  inFrameIndex)
 {
+	return 0;
 	boost::mutex::scoped_lock updateLock(GetMutex());
 	FrameID frameID;
 
 	if (inFrameIndex > (int) acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
 	else 
 	{ 
-		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(inFrameIndex);
+		//SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(inFrameIndex);
+		SensorFrame::Ptr sensorFrame = 0;
 		frameID = sensorFrame->frameID;
 	}
 
