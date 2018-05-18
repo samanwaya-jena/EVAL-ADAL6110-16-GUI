@@ -43,7 +43,7 @@
 #include <string>
 
 
-#include "tableview.h"
+#include "TableView.h"
 
 #include "awlqtscope.h"
 

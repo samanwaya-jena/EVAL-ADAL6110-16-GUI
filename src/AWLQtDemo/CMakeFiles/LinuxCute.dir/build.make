@@ -214,8 +214,10 @@ LinuxCute: /usr/lib64/libopencv_text.so.3.2.0
 LinuxCute: /usr/lib64/libopencv_ximgproc.so.3.2.0
 LinuxCute: /usr/lib64/libopencv_xobjdetect.so.3.2.0
 LinuxCute: /usr/lib64/libopencv_xphoto.so.3.2.0
+LinuxCute: /usr/lib64/libboost_date_time.so
 LinuxCute: /usr/lib64/libboost_filesystem.so
-LinuxCute: /usr/lib64/libboost_system.so
+LinuxCute: /usr/lib64/libboost_signals.so
+LinuxCute: /usr/lib64/libboost_thread.so
 LinuxCute: /usr/lib64/libopencv_video.so.3.2.0
 LinuxCute: /usr/lib64/libopencv_phase_unwrapping.so.3.2.0
 LinuxCute: /usr/lib64/libopencv_rgbd.so.3.2.0

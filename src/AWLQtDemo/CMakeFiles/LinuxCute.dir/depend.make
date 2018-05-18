@@ -565,7 +565,6 @@ CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: VideoViewer.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: awlqtdemo.cpp
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: awlqtdemo.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: fov_2dscan.h
-CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: tableview.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ui_TableView.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ui_awlqtdemo.h
 CMakeFiles/LinuxCute.dir/awlqtdemo.cpp.o: ui_fov_2dscan.h

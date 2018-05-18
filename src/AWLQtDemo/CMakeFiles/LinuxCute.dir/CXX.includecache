@@ -485,8 +485,8 @@ QDir
 -
 string
 -
-tableview.h
-/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/tableview.h
+TableView.h
+/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/TableView.h
 awlqtscope.h
 /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/awlqtscope.h
 
@@ -564,20 +564,6 @@ DetectionStruct.h
 awlqtdemo.h
 /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/awlqtdemo.h
 QtWidgets/QApplication
--
-
-/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/tableview.h
-QFrame
--
-QAction
--
-QActionGroup
--
-ui_TableView.h
-/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/ui_TableView.h
-DetectionStruct.h
-/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/DetectionStruct.h
-boost/container/vector.hpp
 -
 
 /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/ui_TableView.h
