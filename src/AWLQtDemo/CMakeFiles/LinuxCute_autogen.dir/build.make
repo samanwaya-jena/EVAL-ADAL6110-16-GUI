@@ -58,7 +58,7 @@ include CMakeFiles/LinuxCute_autogen.dir/progress.make
 
 CMakeFiles/LinuxCute_autogen:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC for target LinuxCute"
-	/usr/bin/cmake -E cmake_autogen /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles/LinuxCute_autogen.dir/AutogenInfo.cmake ""
+	/usr/bin/cmake -E cmake_autogen /home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/CMakeFiles/LinuxCute_autogen.dir/AutogenInfo.cmake Debug
 
 LinuxCute_autogen: CMakeFiles/LinuxCute_autogen
 LinuxCute_autogen: CMakeFiles/LinuxCute_autogen.dir/build.make

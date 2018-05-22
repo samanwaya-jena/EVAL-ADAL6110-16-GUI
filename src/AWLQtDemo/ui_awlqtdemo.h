@@ -36,6 +36,7 @@ QT_BEGIN_NAMESPACE
 
 class Ui_AWLQtDemoClass
 {
+
 public:
     QAction *actionQuitter;
     QAction *actionGraph;
@@ -2632,7 +2633,7 @@ public:
         QObject::connect(playbackButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_playbackPushButton_clicked()));
         QObject::connect(stopButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_stopPushButton_clicked()));
         QObject::connect(calibrateButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_calibratePushButton_clicked()));
-        QObject::connect(registerFPGASetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(onRegisterFPGASetPushButton_clicked()));
+        QObject::connect(registerFPGASetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerFPGASetPushButton_clicked()));
         QObject::connect(registerFPGAGetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerFPGAGetPushButton_clicked()));
         QObject::connect(registerADCSetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerADCSetPushButton_clicked()));
         QObject::connect(registerADCGetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerADCGetPushButton_clicked()));

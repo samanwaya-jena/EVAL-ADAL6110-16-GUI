@@ -19,7 +19,7 @@ set(AM_QT_MOC_EXECUTABLE "/usr/lib64/qt5/bin/moc")
 set(AM_QT_UIC_EXECUTABLE "")
 # MOC settings
 set(AM_MOC_SKIP "/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/LinuxCute_autogen/mocs_compilation.cpp")
-set(AM_MOC_DEFINITIONS "QT_CORE_LIB;QT_GUI_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB")
+set(AM_MOC_DEFINITIONS "QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB")
 set(AM_MOC_INCLUDES "/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo;/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/LinuxCute_autogen/include;/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/include;/usr/include/qt5/qwt;/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/../AWLCoreClasses;/home/jack/ACME/Phantom-Int/2017/Avenger/LinuxPort/awlcutedemo/src/AWLQtDemo/../AWLQtScope;/usr/include/qt5;/usr/include/qt5/QtWidgets;/usr/include/qt5/QtGui;/usr/include/qt5/QtCore;/usr/lib64/qt5/./mkspecs/linux-g++;/usr/include/opencv;/usr/include")
 set(AM_MOC_OPTIONS "")
 set(AM_MOC_RELAXED_MODE "")

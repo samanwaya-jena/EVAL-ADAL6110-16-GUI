@@ -30,12 +30,12 @@
          "Normal" = Show normal
          Defaults to "Normal"
          -->
-    <displayShowSize>FullScreen</displayShowSize>
+    <displayShowSize>Minimized</displayShowSize>
   </layout>
 
   <debug>
-    <enableDebugFile>false</enableDebugFile>
-    <enableLogFile>false</enableLogFile>
+    <enableDebugFile>true</enableDebugFile>
+    <enableLogFile>true</enableLogFile>
   </debug>
 
    <video>
@@ -49,7 +49,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>KvaserLeaf</receiverType>
+      <receiverType>Simulator</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
