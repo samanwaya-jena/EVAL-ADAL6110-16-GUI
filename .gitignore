@@ -42,4 +42,10 @@ src/AWLQtDemo/*.dat
 
 src/PhantomLidarDemoSetup/AWLSetup/Express/DVD-5/LogFiles/error
 *.dbg
+
+*.o
+*.a
+src/AWLQtDemo/CMakeCache.txt
 src/AWLQtDemo/CMakeFiles/
+src/AWLQtDemo/LinuxCute_autogen/
+
