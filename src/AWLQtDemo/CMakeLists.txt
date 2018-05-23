@@ -39,7 +39,7 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 ../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
 ../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
 ../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ReceiverEasySyncCapture.cpp  ../AWLCoreClasses/ThreadedWorker.cpp
-../AWLCoreClasses/LoopedWorker.cpp      ../AWLCoreClasses/ReceiverKvaserCapture.cpp
+../AWLCoreClasses/LoopedWorker.cpp      ../AWLCoreClasses/ReceiverKvaserCapture.cpp    ../AWLCoreClasses/ReceiverSocketCANCapture.cpp
 ../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
 ../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
 ../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp

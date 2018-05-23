@@ -43,6 +43,7 @@ src/AWLQtDemo/*.dat
 src/PhantomLidarDemoSetup/AWLSetup/Express/DVD-5/LogFiles/error
 *.dbg
 
+docs/Doxygen/
 *.o
 *.a
 src/AWLQtDemo/CMakeCache.txt

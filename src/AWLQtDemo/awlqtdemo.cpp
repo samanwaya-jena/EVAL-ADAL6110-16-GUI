@@ -24,6 +24,7 @@
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverEasySyncCapture.h"
+#include "ReceiverSocketCANCapture.h"
 #include "ReceiverKvaserCapture.h"
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
@@ -158,6 +159,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		{
 			// Kvaser Leaf CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
+		}
+		else if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "SocketCAN"))
+		{
+			// SocketCAN Capture is used if defined in the ini file
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSocketCANCapture(receiverID, globalSettings->GetPropTree()));
 		}
 		else 
 		{

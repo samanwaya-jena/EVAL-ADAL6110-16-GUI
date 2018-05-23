@@ -26,6 +26,7 @@
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #include "ReceiverEasySyncCapture.h"
+#include "ReceiverSocketCANCapture.h"
 #include "ReceiverKvaserCapture.h"
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"

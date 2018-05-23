@@ -48,8 +48,8 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN" or "Simulator" (case sensistive!) -->
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -66,6 +66,9 @@
 
       <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
       <kvaserChannel>0</kvaserChannel>
+
+      <!-- The SocketCAN device path -->
+      <socketCANdevice>vcan0</socketCANdevice>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
