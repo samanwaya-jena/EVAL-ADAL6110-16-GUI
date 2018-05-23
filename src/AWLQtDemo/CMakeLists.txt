@@ -7,6 +7,8 @@ SET(CMAKE_AUTOMOC ON)
 # Les fichiers générés par le moc sont générés dans le dossier bin, dire à CMake de toujours 	
 # inclure les entêtes de ce dossier
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 # Le module QtWidgets trouve ses propres dépendances (QtGui and QtCore)
 FIND_PACKAGE(Qt5Widgets)
 FIND_PACKAGE(OpenCV REQUIRED)
@@ -18,12 +20,14 @@ endif()
 #SET(BOOST_INCLUDE_DIRS "/usr/include/boost")
 file(GLOB QWT_INCLUDE_DIR "/usr/include/qt5/qwt")
 file(GLOB QWT_LIBRARIES "/usr/lib64/libqwt-qt5*")
-file(GLOB CAN_LIBRARIES "/usr/lib/libcan*")
+file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
+file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
 # Qt5Widgets_INCLUDES inclut aussi les entêtes pour ses dépendances (QtCore et QtGui)
 INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
 #  -DQT_WIDGETS_LIB est nécessaire quand on utilise QtWidgets dans Qt5.
 #file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
-include_directories(include ${catkin_INCLUDE_DIRS} ${QWT_INCLUDE_DIR})
+#include_directories(include ${catkin_INCLUDE_DIRS} ${QWT_INCLUDE_DIR} ${CAN_INCLUDE_DIR})
+include_directories(include ${QWT_INCLUDE_DIR} ${CAN_INCLUDE_DIR})
 include_directories(include "../AWLCoreClasses")
 include_directories(include "../AWLQtScope")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
@@ -45,4 +49,5 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${OpenCV_LIBS} ${QWT_LIBRARIES}  ${CAN_LIBRARIES}
 ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
 ${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY} )
-#target_link_libraries(Linuxcute Qt5::Widgets)
+#target_link_libraries(LinuxCute Qt5::Widgets)
+target_link_libraries(LinuxCute Threads::Threads)
