@@ -17,10 +17,10 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>:/Logos/Images/Logos/Phantom-Black-logo.png</logoFileName>
+    <logoFileName>./Images/Logos/Phantom-Black-logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
-    <iconFileName>:/Logos/Images/Logos/AWLQtDemo.ico</iconFileName>
+    <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
 
     <!-- displayShowSize:: Default display mode for the main window
          Possible values are:
@@ -30,7 +30,7 @@
          "Normal" = Show normal
          Defaults to "Normal"
          -->
-    <displayShowSize>Minimized</displayShowSize>
+    <displayShowSize>Normal</displayShowSize>
   </layout>
 
   <debug>
@@ -137,12 +137,12 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
        for cameras that need to be fixed upside down. -->
-      <cameraFlip>true</cameraFlip>
+      <cameraFlip>false</cameraFlip>
 
       <position>
         <!-- positionFromBumper -->
@@ -229,7 +229,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
