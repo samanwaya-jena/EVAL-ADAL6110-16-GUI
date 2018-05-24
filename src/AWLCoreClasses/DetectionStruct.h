@@ -290,7 +290,7 @@ class SensorFrame
 public:
 	typedef boost::shared_ptr<SensorFrame> Ptr;
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
-	typedef std::queue<SensorFrame::Ptr> Queue;
+	typedef std::deque<SensorFrame::Ptr> Queue;
 public:
 	SensorFrame(int inReceiverID, FrameID inFrameID, int inChannelQty);
 	virtual ~SensorFrame() {};

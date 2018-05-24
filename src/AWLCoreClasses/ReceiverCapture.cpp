@@ -236,15 +236,13 @@ bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publishe
 
 FrameID ReceiverCapture::GetFrameID(uint16_t  inFrameIndex)
 {
-	return 0;
 	boost::mutex::scoped_lock updateLock(GetMutex());
 	FrameID frameID;
 
 	if (inFrameIndex > (int) acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
 	else 
 	{ 
-		//SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames._Get_container().at(inFrameIndex);
-		SensorFrame::Ptr sensorFrame = 0;
+		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames.at(inFrameIndex);
 		frameID = sensorFrame->frameID;
 	}
 
@@ -370,13 +368,13 @@ void ReceiverCapture::ProcessCompletedFrame()
 	if (!bFrameInvalidated)
 	{
 		// Push the current frame in the frame buffer
-		acquisitionSequence->sensorFrames.push(currentFrame);
+		acquisitionSequence->sensorFrames.push_front(currentFrame);
 	
 		// Make sure we do not keep too many of those frames around.
 		// Remove the older frame if we exceed the buffer capacity
 		if (acquisitionSequence->sensorFrames.size() > maximumSensorFrames) 
 		{
-			acquisitionSequence->sensorFrames.pop();
+			acquisitionSequence->sensorFrames.pop_back();
 		}
 
 		bFrameToBePublished = true;

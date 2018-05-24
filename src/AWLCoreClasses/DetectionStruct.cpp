@@ -88,11 +88,9 @@ Track::Ptr AcquisitionSequence::MakeUniqueTrack(SensorFrame::Ptr currentFrame, T
 
 bool AcquisitionSequence::FindSensorFrame(FrameID frameID, SensorFrame::Ptr &outSensorFrame)
 {
-	return false;
 	for (uint16_t i = 0; i < sensorFrames.size(); i++) 
 	{
-		//SensorFrame::Ptr sensorFrame = sensorFrames._Get_container().at(i);
-		SensorFrame::Ptr sensorFrame = 0;
+		SensorFrame::Ptr sensorFrame = sensorFrames.at(i);
 		if (sensorFrame->GetFrameID() == frameID) 
 		{
 			outSensorFrame = sensorFrame;
