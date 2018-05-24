@@ -23,9 +23,15 @@
 #include "awlcoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
+#ifdef USE_CAN_EASYSYNC
 #include "ReceiverEasySyncCapture.h"
+#endif
+#ifdef USE_CAN_SOCKETCAN
 #include "ReceiverSocketCANCapture.h"
+#endif
+#ifdef USE_CAN_KVASER
 #include "ReceiverKvaserCapture.h"
+#endif
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
 
@@ -150,22 +156,30 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
 
+#ifdef USE_CAN_EASYSYNC
 		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("EasySyncCAN"))
 		{
 			// EasySync CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
 		}
-		else if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "KvaserLeaf"))
+		else
+#endif
+#ifdef USE_CAN_KVASER
+		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "KvaserLeaf"))
 		{
 			// Kvaser Leaf CAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
 		}
-		else if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "SocketCAN"))
+		else
+#endif
+#ifdef USE_CAN_SOCKETCAN
+		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "SocketCAN"))
 		{
 			// SocketCAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSocketCANCapture(receiverID, globalSettings->GetPropTree()));
 		}
 		else 
+#endif
 		{
 			// If the type is undefined, just use the dumb simulator, not using external device
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSimulatorCapture(receiverID, globalSettings->GetPropTree()));

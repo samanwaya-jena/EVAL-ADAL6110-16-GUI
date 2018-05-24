@@ -38,15 +38,29 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 ../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
 ../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
 ../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
-../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ReceiverEasySyncCapture.cpp  ../AWLCoreClasses/ThreadedWorker.cpp
-../AWLCoreClasses/LoopedWorker.cpp      ../AWLCoreClasses/ReceiverKvaserCapture.cpp    ../AWLCoreClasses/ReceiverSocketCANCapture.cpp
+../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ThreadedWorker.cpp
+../AWLCoreClasses/LoopedWorker.cpp      
 ../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
 ../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
 ../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
 ../AWLQtScope/awlqtscope.ui 
 )
+
+# Comment next 2 lines to disable EasySync support
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
+
+# Comment next 3 lines to disable Kvaser support
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
+TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
+
+# Comment next 2 lines to disable SocketCAN support
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp )
+
 # Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
-TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${OpenCV_LIBS} ${QWT_LIBRARIES}  ${CAN_LIBRARIES}
+TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${OpenCV_LIBS} ${QWT_LIBRARIES}
 ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
 ${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY} )
 #target_link_libraries(LinuxCute Qt5::Widgets)
