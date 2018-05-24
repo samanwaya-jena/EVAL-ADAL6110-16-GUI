@@ -127,7 +127,7 @@ bool  ReceiverSocketCANCapture::OpenCANPort()
 		goto socketcan_exit;
 	}
 
-	printf("CAN Using interface %s\n", sCANDevicePath);
+	printf("CAN Using interface %s\n", sCANDevicePath.c_str());
 
 	ret = bind(fd, (struct sockaddr*)&can_addr, sizeof(can_addr));
 	if (ret < 0) {
@@ -177,70 +177,36 @@ void ReceiverSocketCANCapture::DoOneThreadIteration()
 	size_t size = sizeof(cf);
 	int ret;
 
-	if (!WasStopped())
+	AWLCANMessage msg;
+
+	if (fd >= 0)
 	{
-		AWLCANMessage msg;
-
-		if (fd < 0)
+		ret = read(fd, &cf, size);
+		if (ret < 0)
 		{
-			char buf[8];
-			size_t size;
-
-
-			ret = read(fd, &cf, size);
-			if (ret < 0)
-			{
-				perror("CAN read");
-			}
-			else
-			{
+			//perror("CAN read");
+		}
+		else
+		{
 			//	if (cf.can_id == MSG_CONTROL_GROUP) {
-				//process_cmd(awl, cf.can_id, cf.data, cf.can_dlc);
-				msg.id  = cf.can_id;
-				msg.len = cf.can_dlc;
-				for (int i = 0; i < 8 && i < msg.len; i ++) {
-					msg.data[i] = cf.data[i];
+			//process_cmd(awl, cf.can_id, cf.data, cf.can_dlc);
+			msg.id  = cf.can_id;
+			msg.len = cf.can_dlc;
+			for (int i = 0; i < 8 && i < msg.len; i ++) {
+				msg.data[i] = cf.data[i];
+			}
+			if (0 && cf.can_id > 0 && cf.can_dlc > 0) {	
+				printf ("CAN id %03x", cf.can_id);
+				for (int i = 0; i < 8 && i < cf.can_dlc; i++) {
+					printf (" %02x", cf.data[i]);
 				}
-
-				ParseMessage(msg);
+				printf ("\n");
 			}
-		}
-		// read_char returned false.  
-		// This means we have a time out on the fd after receiveTimeOutInMillisec.
-		// Try to repoen the fd
-		/*
-		else 
-		{
-			DebugFilePrintf(debugFile,  "Time Outon read_char.  Resetting CAN Port"); 
-			CloseCANPort();
-			if (OpenCANPort())
-			{
-				WriteCurrentDateTime();
-				SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
-				// Update all the info (eventually) from the status of the machine
-				QueryAlgorithm();
-				QueryTracker();
-			}
-		}
-		*/
+		
 
-	} // if (fd->is_open)
-	else 
-	{
-		// Port is not opened.  Try to repoen after a certain delay.
-		if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
-		{
-			DebugFilePrintf(debugFile,  "Reconnecting CAN Port"); 
-			if (OpenCANPort())
-			{
-				WriteCurrentDateTime();
-				SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
-				QueryAlgorithm();
-				QueryTracker();
-			}
+			ParseMessage(msg);
 		}
-
-	} // if  (!WasStoppped)
+	}
 }
 
 bool ReceiverSocketCANCapture::WriteMessage(const AWLCANMessage &inMsg)

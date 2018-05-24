@@ -24,8 +24,6 @@
 #include <boost/asio/serial_port.hpp> 
 #endif
 
-#include "BlockingReader.h"
-
 #include "Publisher.h"
 #include "ThreadedWorker.h"
 #include "DetectionStruct.h"

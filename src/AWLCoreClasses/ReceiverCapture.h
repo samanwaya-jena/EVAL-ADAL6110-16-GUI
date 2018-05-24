@@ -58,8 +58,8 @@ typedef union
 		bool distance_5_8			: 1;
 		bool intensity_1_4			: 1;
 		bool intensity_5_8			: 1;
-		bool distance_intensity		: 1;
-		bool unused_7				: 1;
+		bool distance_intensity			: 1;
+		bool obstacle_compact			: 1;
 	} bitFieldData;
 } MessageMask;
 
