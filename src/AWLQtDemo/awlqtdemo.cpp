@@ -75,7 +75,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	actionSettingsButton(NULL),
 	action2DButton(NULL),
 	actionTableButton(NULL),
+#ifdef USE_OPENCV_VIDEO
 	actionCameraButton(NULL),
+#endif
 	actionResizeButton(NULL),
 	actionQuitButton(NULL),
 	actionResizeMaximizeIcon(NULL),
@@ -188,6 +190,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
 	}
 
+#ifdef USE_OPENCV_VIDEO
 	// Create the video capture objects
 	int videoCaptureQty = globalSettings->cameraSettings.size();
 	for (int cameraID = 0; cameraID < videoCaptureQty; cameraID++)
@@ -206,6 +209,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		VideoViewer *viewer =  new VideoViewer(cameraName.toStdString(), videoCaptures[videoViewerID]);
 		videoViewers.push_back(VideoViewer::Ptr(viewer));
 	}
+#endif
 
 	// Fill the parameters  tables from the settings
 	FillFPGAList(globalSettings);
@@ -392,7 +396,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		mTableView->hide();
 	}
 
-
+#ifdef USE_OPENCV_VIDEO
 	// Camera views
 	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
@@ -405,6 +409,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			videoViewers[videoViewerID]->hide();
 		}
 	}
+#endif
 
 
 	// Position the main widget on the top left corner
@@ -433,11 +438,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		receiverCaptures[receiverID]->Go();
 	}
 
+#ifdef USE_OPENCV_VIDEO
 	// Start the threads for background video capture objects
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
 		videoCaptures[cameraID]->Go();
 	}
+#endif
+
 #endif
 }
 
@@ -486,10 +494,12 @@ void AWLQtDemo::SetupToolBar()
 	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
 	ui.mainToolBar->addAction(actionTableButton);
 
+#ifdef USE_OPENCV_VIDEO
 	actionCameraButton = new QAction(QIcon("./Images/ButtonBitmaps/Camera.png"), "Camera View", 0);
 	actionCameraButton->setCheckable(true);
 	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
 	ui.mainToolBar->addAction(actionCameraButton);
+#endif
 
 	actionSettingsButton = new QAction(QIcon("./Images/ButtonBitmaps/Settings.png"), "Settings", 0);
 	actionSettingsButton->setCheckable(true);
@@ -513,7 +523,9 @@ void AWLQtDemo::SetupToolBar()
 
 	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
 	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
+#ifdef USE_OPENCV_VIDEO
 	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
+#endif
 	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
 	connect(actionResizeButton, SIGNAL(toggled(bool )), this, SLOT(on_resizeActionToggled()));
 	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
@@ -529,29 +541,37 @@ void AWLQtDemo::SetupDisplayGrid()
 	ui.gridDisplayLayout->addWidget((m2DScan, 0, 0, 3, 3, Qt::AlignTop);
 	ui.gridDisplayLayout->addWidget(mTableView, 0, 4, 3, 1, Qt::AlignTop);
 
+#ifdef USE_OPENCV_VIDEO
 	int videoViewerQty = videoCaptures.size();
 	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
 		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 5, 1, 1, Qt::AlignTop);
 	}
+#endif
+
 #else
 	ui.gridDisplayLayout->addWidget(m2DScan, 0, 0, Qt::AlignTop);
 	ui.gridDisplayLayout->addWidget(mTableView, 0, 1, Qt::AlignTop);
 
+#ifdef USE_OPENCV_VIDEO
 	int videoViewerQty = videoCaptures.size();
 	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
 		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 2, Qt::AlignTop);
 	}
 #endif
+
+#endif
 }
 
 void AWLQtDemo::on_destroy()
 {
+#ifdef USE_OPENCV_VIDEO
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
 	}
+#endif
 
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
@@ -835,6 +855,7 @@ void AWLQtDemo::on_timerTimeout()
 	bool bContinue = true;
 	
 
+#ifdef USE_OPENCV_VIDEO
 	// Check that the cameras are still working.  Otherwise Stop everyting
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
@@ -844,6 +865,7 @@ void AWLQtDemo::on_timerTimeout()
 			break;
 		}
 	}
+#endif
 
 	
 	// For each receiver. Validate that the receiver exists.
@@ -880,11 +902,13 @@ void AWLQtDemo::on_timerTimeout()
 		// Update the 2D view only if there is new data.
 		if (m2DScan && bNewDetections) m2DScan->slotDetectionDataChanged(detectionData);
 
+#ifdef USE_OPENCV_VIDEO
 		// Update the data for the camera views. Only if detections have changed have changed.
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID] && bNewDetections) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
 		}
+#endif
 
 		// Update the table views only if there is new data
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
@@ -892,11 +916,13 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue) 
 	{
+#ifdef USE_OPENCV_VIDEO
 		// Always spin the video viewers.
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) videoViewers[viewerID]->slotImageChanged();
 		}
+#endif
 	}
 
 	// Let's go for the next run
@@ -2038,6 +2064,7 @@ void AWLQtDemo::on_viewGraphActionToggled()
 	}
 }
 
+#ifdef USE_OPENCV_VIDEO
 void AWLQtDemo::on_viewCameraActionToggled()
 {
 	if (actionCameraButton->isChecked())
@@ -2050,7 +2077,6 @@ void AWLQtDemo::on_viewCameraActionToggled()
 		}
 		actionCameraButton->setChecked(true);
 	}
-
 	else
 	{
 		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
@@ -2063,6 +2089,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 		actionCameraButton->setChecked(false);
 	}
 }
+#endif
 
 void AWLQtDemo::on_resizeActionToggled()
 {
@@ -2356,10 +2383,12 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 
 void AWLQtDemo::closeEvent(QCloseEvent * event)
 {
+#ifdef USE_OPENCV_VIDEO
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
 	}
+#endif
 
 
 	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)

@@ -27,9 +27,13 @@
 #include "ui_awlqtdemo.h"
 
 #include "AWLSettings.h"
+
+#ifdef USE_OPENCV_VIDEO
 #include "VideoCapture.h"
-#include "ReceiverCapture.h"
 #include "VideoViewer.h"
+#endif
+
+#include "ReceiverCapture.h"
 
 #include "fov_2dscan.h"
 #include "TableView.h"
@@ -105,7 +109,9 @@ private slots:
 	void on_view2DActionToggled();
 	void on_viewTableViewActionToggled();
 	void on_viewGraphActionToggled();
+#ifdef USE_OPENCV_VIDEO
 	void on_viewCameraActionToggled();
+#endif
 	void on_resizeActionToggled();
 
 	void on_view2DClose();
@@ -165,15 +171,20 @@ private:
 	QAction *actionSettingsButton;
 	QAction *action2DButton;
 	QAction *actionTableButton;
+#ifdef USE_OPENCV_VIDEO
 	QAction *actionCameraButton;
+#endif
 	QAction *actionResizeButton;
 	QAction *actionQuitButton;
 	QIcon *actionResizeMaximizeIcon;
 	QIcon *actionResizeRestoreDownIcon;
 
 	ReceiverCapture::List receiverCaptures;
+
+#ifdef USE_OPENCV_VIDEO
 	VideoCapture::List videoCaptures;
 	VideoViewer::List  videoViewers;
+#endif
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;
