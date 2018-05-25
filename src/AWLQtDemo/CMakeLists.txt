@@ -46,7 +46,7 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
 
-# Comment next 3 lines to disable Kvaser support
+# Comment next 6 lines to disable Kvaser support
 file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
 file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
 include_directories(include ${CAN_INCLUDE_DIR})
