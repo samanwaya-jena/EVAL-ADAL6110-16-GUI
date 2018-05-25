@@ -498,7 +498,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 	rawLock.unlock();
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %d %f %f", inMsg.id, track->trackID, track->trackChannels, track->trackMainChannel, track->probability, track->timeToCollision);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %d %f %f", inMsg.id, track->trackID, track->trackChannels, track->trackMainChannel, track->probability, track->intensity);
 }
 
 

@@ -1,15 +1,15 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 PROJECT(LinuxCute)
-# Ici on jase
+# Let's talk
 SET(CMAKE_VERBOSE_MAKEFILE ON)
-# Appeler automatique le moc quand nécessaire
+# Automaticaly call moc when necessary
 SET(CMAKE_AUTOMOC ON)
-# Les fichiers générés par le moc sont générés dans le dossier bin, dire à CMake de toujours 	
-# inclure les entêtes de ce dossier
+# moc genreated files are located in the bin directory,
+# tell CMake to always include header files in this directory
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-# Le module QtWidgets trouve ses propres dépendances (QtGui and QtCore)
+# QtWidgets always finds its dependencies (QtGui and QtCore)
 FIND_PACKAGE(Qt5Widgets)
 find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
 find_package (Threads)
@@ -21,16 +21,16 @@ file(GLOB QWT_INCLUDE_DIR "/usr/include/qt5/qwt")
 file(GLOB QWT_LIBRARIES "/usr/lib64/libqwt-qt5*")
 file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
 file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
-# Qt5Widgets_INCLUDES inclut aussi les entêtes pour ses dépendances (QtCore et QtGui)
+# Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
 INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
-#  -DQT_WIDGETS_LIB est nécessaire quand on utilise QtWidgets dans Qt5.
+#  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
 #file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
 #include_directories(include ${catkin_INCLUDE_DIRS} ${QWT_INCLUDE_DIR} ${CAN_INCLUDE_DIR})
 include_directories(include ${QWT_INCLUDE_DIR} ${CAN_INCLUDE_DIR})
 include_directories(include "../AWLCoreClasses")
 include_directories(include "../AWLQtScope")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
-# La création de l'exécutable échoue dans Qt5 avec la configuration par défaut
+# Creation of executable fails in Qt5 with default configuration
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp
       	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui
