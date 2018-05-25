@@ -34,8 +34,8 @@
   </layout>
 
   <debug>
-    <enableDebugFile>true</enableDebugFile>
-    <enableLogFile>true</enableLogFile>
+    <enableDebugFile>false</enableDebugFile>
+    <enableLogFile>false</enableLogFile>
   </debug>
 
    <video>
