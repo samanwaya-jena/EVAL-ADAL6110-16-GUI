@@ -854,7 +854,6 @@ void AWLQtDemo::on_timerTimeout()
 
 	bool bContinue = true;
 	
-
 #ifdef USE_OPENCV_VIDEO
 	// Check that the cameras are still working.  Otherwise Stop everyting
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)

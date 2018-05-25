@@ -314,8 +314,8 @@
     <carLength>4.53</carLength>
     <!-- Car width in meters -->
     <carHeight>1.44</carHeight>
-    <!-- LaneWidth in meters -->
-    <laneWidth>3.7</laneWidth>
+    <!-- LaneWidth in meters 3.7 -->
+    <laneWidth>0</laneWidth>
     <!--Lane width in meters -->
 
     <!-- velocity for colorCoding in m/s -->

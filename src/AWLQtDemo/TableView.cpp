@@ -351,7 +351,6 @@ void TableView::DisplayReceiverValues(const Detection::Vector &data)
 
 	QTableWidget *tableWidget = ui.distanceTable;
 	int rowCount = tableWidget->rowCount();
-
 	// Fill the table with blanks
 	int receiverCount = globalSettings->receiverSettings.size();
 	int tableRow = 0;
