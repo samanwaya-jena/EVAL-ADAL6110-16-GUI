@@ -46,23 +46,23 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 )
 
 # Comment next 2 lines to disable EasySync support
-#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
-#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
 
 # Comment next 3 lines to disable Kvaser support
-#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
-#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
-#TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
+TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 
 # Comment next 2 lines to disable SocketCAN support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp )
 
 # Comment next 4 lines to disable OpenCV Video (and OpenCV in general)
-#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
-#FIND_PACKAGE(OpenCV REQUIRED)
-#TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
-#TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
+FIND_PACKAGE(OpenCV REQUIRED)
+TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
+TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
 
 # Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
 TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${QWT_LIBRARIES}
