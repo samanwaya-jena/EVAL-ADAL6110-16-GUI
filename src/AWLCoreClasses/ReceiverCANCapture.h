@@ -28,7 +28,7 @@ using namespace std;
 
 #define GLOBAL_PARAMETERS_ID 0
 
-#define FORCE_FRAME_RESYNC_PATCH 1
+//#define FORCE_FRAME_RESYNC_PATCH 1
 
 namespace awl
 {
