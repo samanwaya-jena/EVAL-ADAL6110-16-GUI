@@ -28,6 +28,7 @@ For linux pc std architecture:
   $cp CMakeLists.txt.linux CMakeLists.txt
 For petalinux on ultrascale board
   $cp CMakeLists.txt.ultrascale CMakeLists.txt
+  $export QT_BIN_PATH=/usr/bin/qt5	
 
 $cmake .
 $make
