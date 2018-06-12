@@ -21,14 +21,21 @@ file(GLOB QWT_INCLUDE_DIR "/usr/include/qt5/qwt")
 file(GLOB QWT_LIBRARIES "/usr/lib64/libqwt-qt5*")
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
 INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
+message("QT5 INC")
+message("${Qt5Widgets_INCLUDES}")
+
 #  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
 #file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
 include_directories(include ${QWT_INCLUDE_DIR} )
 include_directories(include "../AWLCoreClasses")
 include_directories(include "../AWLQtScope")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
+message("QT5 DEF")
+message(${Qt5Widgets_DEFINITIONS})
 # Creation of executable fails in Qt5 with default configuration
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+message("QT5 CFLAGS")
+message("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp
       	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui
 ../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
@@ -58,6 +65,10 @@ TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp )
 
+# Comment next 2 lines to disable PosixUDP support
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXUDP )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixUDPCapture.cpp )
+
 # Comment next 4 lines to disable OpenCV Video (and OpenCV in general)
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
 FIND_PACKAGE(OpenCV REQUIRED)
@@ -65,6 +76,11 @@ TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
 TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
 
 # Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
+message ("QT5_LIB")
+message (${Qt5Widgets_LIBRARIES})
+message ("QT5:LIB")
+message (Qt5::Widgets)
+message ("QT5 END")
 TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${QWT_LIBRARIES}
 ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
 ${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY} )

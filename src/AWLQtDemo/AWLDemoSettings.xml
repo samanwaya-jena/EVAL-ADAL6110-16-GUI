@@ -48,8 +48,8 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN" or "Simulator" (case sensistive!) -->
-      <receiverType>SocketCAN</receiverType>
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP" or "Simulator" (case sensistive!) -->
+      <receiverType>PosixUDP</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -69,6 +69,12 @@
 
       <!-- The SocketCAN device path -->
       <socketCANdevice>vcan0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>127.0.0.1</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:

@@ -29,6 +29,9 @@
 #ifdef USE_CAN_SOCKETCAN
 #include "ReceiverSocketCANCapture.h"
 #endif
+#ifdef USE_POSIXUDP
+#include "ReceiverPosixUDPCapture.h"
+#endif
 #ifdef USE_CAN_KVASER
 #include "ReceiverKvaserCapture.h"
 #endif
@@ -179,6 +182,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		{
 			// SocketCAN Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSocketCANCapture(receiverID, globalSettings->GetPropTree()));
+		}
+		else 
+#endif
+#ifdef USE_POSIXUDP
+		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "PosixUDP"))
+		{
+			// PosixUDP Capture is used if defined in the ini file
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixUDPCapture(receiverID, globalSettings->GetPropTree()));
 		}
 		else 
 #endif

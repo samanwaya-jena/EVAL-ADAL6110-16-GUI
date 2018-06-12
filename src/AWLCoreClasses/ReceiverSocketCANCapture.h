@@ -125,7 +125,7 @@ protected:
 	void ConvertSocketCANCANBitRateCode();
 // Protected variables
 protected:
-	    	/** \brief Operating system identification string for the CAN device (ex: "/dev/can0") */
+	    	/** \brief Operating system identification string for the CAN device (ex: "can0") */
 		std::string sCANDevicePath;
 
 	    	/** \brief CAN file descriptor.*/
