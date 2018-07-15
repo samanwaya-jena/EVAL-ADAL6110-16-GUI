@@ -54,12 +54,12 @@ TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
 
 # Comment next 6 lines to disable Kvaser support
-file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
-file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
-include_directories(include ${CAN_INCLUDE_DIR})
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
-TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
-TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
+#file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
+#file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
+#include_directories(include ${CAN_INCLUDE_DIR})
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
+#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
+#TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 
 # Comment next 2 lines to disable SocketCAN support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
@@ -68,6 +68,11 @@ TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp 
 # Comment next 2 lines to disable PosixUDP support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXUDP )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixUDPCapture.cpp )
+
+# Comment next 2 lines to disable LibUSB support
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_LIBUSB )
+TARGET_LINK_LIBRARIES( LinuxCute /usr/lib64/libusb-1.0.so.0 )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverLibUSBCapture.cpp )
 
 # Comment next 4 lines to disable OpenCV Video (and OpenCV in general)
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
