@@ -69,6 +69,10 @@ TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp 
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXUDP )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixUDPCapture.cpp )
 
+# Comment next 2 lines to disable PosixTTY support
+TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXTTY )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixTTYCapture.cpp )
+
 # Comment next 2 lines to disable LibUSB support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_LIBUSB )
 TARGET_LINK_LIBRARIES( LinuxCute /usr/lib64/libusb-1.0.so.0 )

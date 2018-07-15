@@ -48,7 +48,7 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN" or "Simulator" (case sensistive!) -->
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
       <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
@@ -68,7 +68,27 @@
       <kvaserChannel>0</kvaserChannel>
 
       <!-- The SocketCAN device path -->
-      <socketCANdevice>vcan0</socketCANdevice>
+      <socketCANdevice>can0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.83</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>0x1111</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>0xffff</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>1</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>3000<libUsbTimeOut>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -1712,6 +1732,9 @@
       <defaultTracker>1</defaultTracker>
       <tracker>
         <!-- Tracker 0 is A/B tracker -->
+        <trackerID>0</trackerID>
+        <trackerName>No Track</trackerName>
+
         <trackerID>1</trackerID>
         <trackerName>ABFilter</trackerName>
 
