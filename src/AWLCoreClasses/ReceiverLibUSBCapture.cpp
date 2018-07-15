@@ -54,6 +54,14 @@ ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiv
 				   inParametersAlgos, inParametersTrackers),
 closeCANReentryCount(0)
 {
+
+	/*
+	#define USB_VENDOR_ID	    0x0483
+	#define USB_PRODUCT_ID	    0xFFFF 
+	#define USB_ENDPOINT_IN	    (LIBUSB_ENDPOINT_IN  | 1) 
+	#define USB_ENDPOINT_OUT	(LIBUSB_ENDPOINT_OUT | 2) 
+	#define USB_TIMEOUT	3000 
+	*/
 }
 
 
@@ -227,6 +235,13 @@ bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters
 
+	/*
+	#define USB_VENDOR_ID	    0x0483
+	#define USB_PRODUCT_ID	    0xFFFF 
+	#define USB_ENDPOINT_IN	    (LIBUSB_ENDPOINT_IN  | 1) 
+	#define USB_ENDPOINT_OUT	(LIBUSB_ENDPOINT_OUT | 2) 
+	#define USB_TIMEOUT	3000 
+	*/
 	usbVendorId =  receiverNode.get<int>("libUsbVendorId");
 	usbProductId =  receiverNode.get<int>("libUsbProductId");
 	usbEndPointIn =  receiverNode.get<int>("libUsbEndPointIn");
