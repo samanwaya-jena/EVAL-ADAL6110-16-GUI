@@ -88,7 +88,7 @@
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>2</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>3000<libUsbTimeOut>
+      <libUsbTimeOut>3000</libUsbTimeOut>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
