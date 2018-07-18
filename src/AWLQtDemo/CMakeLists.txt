@@ -61,15 +61,15 @@ TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
 #TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
 #TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 
-# Comment next 2 lines to disable SocketCAN support
+# Comment next 2 lines to disable SocketCAN support WARNING Linux Only
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp )
 
-# Comment next 2 lines to disable PosixUDP support
+# Comment next 2 lines to disable PosixUDP support WARNING Linux Only
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXUDP )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixUDPCapture.cpp )
 
-# Comment next 2 lines to disable PosixTTY support
+# Comment next 2 lines to disable PosixTTY support WARNING Linux Only
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXTTY )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixTTYCapture.cpp )
 
