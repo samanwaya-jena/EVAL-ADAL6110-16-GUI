@@ -37,6 +37,7 @@ typedef uint32_t FrameID;
 
 class AlertCondition;
 class Detection;
+class AScan;
 class Track;
 class SensorFrame;
 class ChannelFrame;
@@ -218,13 +219,6 @@ enum RawProvider{
 	rawFromLibUSB
 }; 
 
-class RawProcessor
-{
-public:
-	void ProcessRaw(RawProvider provider, uint8_t *rawData) {
-	}
-};
-
 class AScan
 {
 public:
@@ -232,11 +226,19 @@ public:
     typedef boost::shared_ptr<AScan> ConstPtr;
 	typedef boost::container::vector<AScan::Ptr> Vector;
 public:
-	AScan() {};
+	AScan(int inReceiverID, int inChannelID, int inAScanID)
+	{
+		receiverID = inReceiverID;
+		channelID = inChannelID;
+		aScanID = inAScanID;
+	}
+
 	int	GetChannelID() {return(channelID);}
 public:
+	int receiverID;
 	/** \brief channel ID of the channel where detection origins from */
-	int	  channelID;
+	int channelID;
+	int aScanID;
 
 	RawProvider rawProvider;
 
@@ -249,6 +251,7 @@ public:
 	bool sampleSigned;
 
 	void *samples;
+
 
 };
 
@@ -342,12 +345,16 @@ public:
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
 	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
 
+	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector, int channelID, int detectionID);
+	bool FindAScan(AScan::Vector &detectionVector, int inChannelID, int inAScanID, AScan::Ptr &outAScan);
+
 public:
 	int receiverID;
 	FrameID frameID;
 	int channelQty;
 
 	Detection::Vector rawDetections;		// Raw detections as acquired from device
+	AScan::Vector aScans;
 
 	Track::Vector tracks; 
 

@@ -60,7 +60,7 @@ typedef struct {
    *        Use the ReceiverEasySyncCapture class as a reference for deriving CAN-Based Receivers.
   * \author Jean-Yves Deschênes
   */
-class ReceiverCANCapture: public ReceiverCapture, public RawProcessor
+class ReceiverCANCapture: public ReceiverCapture
 {
 // Public types
 public:
@@ -131,6 +131,8 @@ public:
  	    * \param[in] inMsg  CAN message contents
       */
 	void ParseMessage(AWLCANMessage &inMsg);
+
+	void ProcessRaw(RawProvider provider, uint8_t *rawData);
 
 		/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.

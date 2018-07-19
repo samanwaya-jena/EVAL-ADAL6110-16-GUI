@@ -145,6 +145,38 @@ bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChanne
 	return(false);
 }
 
+AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int channelID, int aScanID)
+
+{
+	AScan::Ptr aScan;
+	bool bExists = FindAScan(aScanVector, channelID, aScanID, aScan);
+	if (!bExists) 
+	{
+		aScan = AScan::Ptr(new AScan(receiverID, channelID, aScanID));
+		aScanVector.push_back(aScan);
+	}
+
+	return(aScan);
+}
+
+bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inChannelID, int inAScanID, AScan::Ptr &outAScan)
+{
+	AScan::Vector::iterator  aScanIterator = aScanVector.begin();
+	while (aScanIterator != aScanVector.end()) 
+	{
+		AScan::Ptr aScan = *aScanIterator;
+		if (aScan->channelID == inChannelID && aScan->aScanID == inAScanID) 
+		{
+			outAScan = aScan;
+			return(true);
+		}
+
+		aScanIterator++;
+	}
+
+	return(false);
+}
+
 
 Detection::Detection():
 receiverID(0),

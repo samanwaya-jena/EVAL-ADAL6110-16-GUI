@@ -2086,3 +2086,25 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 }
 
 #endif // FORCE_FRAME_RESYNC_PATCH
+
+void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData)
+{
+	int channel;
+	int detectOffset = 0;
+	
+	channel = 1;
+
+	if (channel >= 0) 
+	{
+		boost::mutex::scoped_lock rawLock(GetMutex());
+
+		int detectionIndex = 0+detectOffset;
+		AScan::Ptr detection = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel, detectionIndex);
+	
+		rawLock.unlock();
+	}
+
+	// Debug and Log messages
+	//DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
+}
+
