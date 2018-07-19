@@ -42,7 +42,6 @@ typedef struct {
     unsigned char data[8]; // Databytes 0..7
 } AWLCANMessage;
 
-
 /** \brief TheReceiverCANCapture class is a virtual base class that is a specialized implementation of the ReceiverCapture
    *        It implements the mechanics for acquisition of CAN data messages.
    *
@@ -61,7 +60,7 @@ typedef struct {
    *        Use the ReceiverEasySyncCapture class as a reference for deriving CAN-Based Receivers.
   * \author Jean-Yves Deschênes
   */
-class ReceiverCANCapture: public ReceiverCapture
+class ReceiverCANCapture: public ReceiverCapture, public RawProcessor
 {
 // Public types
 public:

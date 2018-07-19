@@ -45,6 +45,7 @@ const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh ra
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
+const size_t bufferSize = 5192;
 
 ReceiverPosixUDPCapture::ReceiverPosixUDPCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 	                   const std::string &inAddress, int inUDPPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
@@ -74,10 +75,20 @@ closeCANReentryCount(0)
 	// Read the configuration from the configuration file
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
+	for (int i = 0; i < numBuffers; i++) {
+		buffers[i] = (uint8_t *)malloc(bufferSize);
+	}
+	currentBuffer = 0;
 }
 
 ReceiverPosixUDPCapture::~ReceiverPosixUDPCapture()
 {
+	for (int i = 0; i < numBuffers; i++) {
+		if (buffers[i]) {
+			free(buffers[i]);
+			buffers[i] = 0;
+		}
+	}
 	CloseDebugFile(debugFile);
 	EndDistanceLog();
 	Stop(); // Stop the thread
@@ -163,16 +174,29 @@ bool  ReceiverPosixUDPCapture::CloseCANPort()
 		return(true);
 }
 
+uint8_t *ReceiverPosixUDPCapture::GetCurrentBuffer()
+{
+	return buffers[currentBuffer];
+}
+
+uint8_t *ReceiverPosixUDPCapture::GetNextBuffer()
+{
+	currentBuffer = (currentBuffer + 1) % numBuffers;
+	return buffers[currentBuffer];
+}
+
 
 void ReceiverPosixUDPCapture::DoOneThreadIteration()
 
 {
-	uint8_t buffer[256];
+	uint8_t *buffer;
 	uint32_t *buf32;
-	size_t size = sizeof(buffer);
+	size_t size;
 	int ret;
 
+	buffer = GetNextBuffer();
 	buf32 = (uint32_t*)buffer;
+	size = bufferSize;
 
 	AWLCANMessage msg;
 
@@ -182,18 +206,20 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 
 		if (ret < 0)
 		{
-			//perror("CAN read");
+			//perror("UDP read");
 		}
 		else
 		{
-			//	if (buffer.can_id == MSG_CONTROL_GROUP) {
-			//process_cmd(awl, buffer.can_id, buffer.data, buffer.can_dlc);
 			msg.id  = buf32[0];
-			msg.len = ret - sizeof(uint32_t);
-			for (int i = 0; i < 8 && i < msg.len; i ++) {
-				msg.data[i] = buffer[sizeof(uint32_t)+i];
+			if (msg.id < 0x60) {
+				msg.len = ret - sizeof(uint32_t);
+				for (int i = 0; i < 8 && i < msg.len; i ++) {
+					msg.data[i] = buffer[sizeof(uint32_t)+i];
+				}
+				ParseMessage(msg);
+			} else {
+				ProcessRaw(rawFromPosixUDP, buffer);
 			}
-			ParseMessage(msg);
 		}
 	}
 }

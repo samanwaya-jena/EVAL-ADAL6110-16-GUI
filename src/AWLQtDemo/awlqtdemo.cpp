@@ -946,6 +946,12 @@ void AWLQtDemo::on_timerTimeout()
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
 	}
 
+	if (bContinue)
+	{
+		AScan::Vector aScanData;
+		bool bNewAScans = GetLatestAScans(aScanData);
+	}
+
 	if (bContinue) 
 	{
 #ifdef USE_OPENCV_VIDEO
@@ -1009,6 +1015,10 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 	return(bNew);
 }
 
+bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
+{
+	return(false);
+}
 
 void AWLQtDemo::DisplayReceiverStatus()
 {

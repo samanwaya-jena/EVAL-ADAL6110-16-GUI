@@ -212,6 +212,46 @@ public:
 	AlertCondition::ThreatLevel	threatLevel;
 };
 
+enum RawProvider{
+	rawFromPosixUDP,
+	rawFromPosixTTY,
+	rawFromLibUSB
+}; 
+
+class RawProcessor
+{
+public:
+	void ProcessRaw(RawProvider provider, uint8_t *rawData) {
+	}
+};
+
+class AScan
+{
+public:
+	typedef boost::shared_ptr<AScan> Ptr;
+    typedef boost::shared_ptr<AScan> ConstPtr;
+	typedef boost::container::vector<AScan::Ptr> Vector;
+public:
+	AScan() {};
+	int	GetChannelID() {return(channelID);}
+public:
+	/** \brief channel ID of the channel where detection origins from */
+	int	  channelID;
+
+	RawProvider rawProvider;
+
+	size_t sampleOffset;
+
+	size_t sampleCount;
+
+	size_t sampleSize;
+
+	bool sampleSigned;
+
+	void *samples;
+
+};
+
 
 /** \brief A track corresponds to an obstacle tracking based on a singl;e or multiple detections,
            and gives information on the evolution of the detected obstacle across multiple frames

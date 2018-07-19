@@ -120,6 +120,9 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
+	uint8_t *GetCurrentBuffer(void);
+	uint8_t *GetNextBuffer(void);
+
 // Protected variables
 protected:
 	    	/** \brief Server Address (ex: "127.0.0.1") */
@@ -142,6 +145,10 @@ protected:
 
 		/** \brief counter in the close() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
+
+		static const int numBuffers = 4;
+		uint8_t *buffers[numBuffers];
+		int currentBuffer;
 
 };
 

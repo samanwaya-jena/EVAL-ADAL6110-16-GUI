@@ -146,6 +146,7 @@ protected:
 	// Fil the detection data vector with the latest detection data.
 	// Return true if the data has changed since last request.
 	bool GetLatestDetections(Detection::Vector &detectionData);
+	bool GetLatestAScans(AScan::Vector &aScanData);
 	void closeEvent(QCloseEvent * event);
 
 	void FillChannelSelectList();

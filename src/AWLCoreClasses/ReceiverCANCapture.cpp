@@ -215,7 +215,6 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	}
 }
 
-
 void ReceiverCANCapture::ParseSensorStatus(AWLCANMessage &inMsg)
 
 {
