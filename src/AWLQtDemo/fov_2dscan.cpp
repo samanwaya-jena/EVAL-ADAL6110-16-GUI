@@ -1609,7 +1609,7 @@ void FOV_2DScan::plotAScans()
 		b32 = (int32_t *)(aScan->samples);
 		for (int x = aScan->sampleOffset; x < aScan->sampleCount; x ++) {
 			x2 = 100 + x;
-			y2 = 100 + 100 * aScan->channelID - b32[x] / 100000000;
+			y2 = 100 + 50 * aScan->channelID - b32[x] / 100000000;
 			painter.drawLine(x1, y1, x2, y2);
 			x1 = x2;
 			y1 = y2;

@@ -1608,7 +1608,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
     message.data[0] = 0xE0;   // Transmit_raw enable flags
 
 	message.data[1] = channelMask.byteData; // Channel mask
-	message.data[2] = 0;  // Reserved
+	message.data[2] = 0xFF;  // Reserved
 	message.data[3] = 0;
 	message.data[4] = 0;
 	message.data[5] = 0;  // Reserved
