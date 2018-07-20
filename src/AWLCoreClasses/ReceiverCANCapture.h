@@ -132,7 +132,7 @@ public:
       */
 	void ParseMessage(AWLCANMessage &inMsg);
 
-	void ProcessRaw(RawProvider provider, uint8_t *rawData);
+	void ProcessRaw(RawProvider provider, uint8_t *rawData, size_t size);
 
 		/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.
@@ -529,6 +529,10 @@ protected:
 		  *
 		 */
 		eReceiverCANRate canRate;
+
+		static const size_t maxRawBufferCount = 1024;
+		static const size_t maxRawBufferSize = 16384;
+		uint8_t * rawBuffers[maxRawBufferCount];
 
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/

@@ -60,6 +60,10 @@ closeCANReentryCount(0)
 	yearOffset = defaultYearOffset;
 	monthOffset = defaultMonthOffset;
 
+	for (int i = 0; i < maxRawBufferCount; i++) {
+		rawBuffers[i] = 0;
+	}
+
 	OpenDebugFile(debugFile, "CanBusLog.dat");
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
@@ -84,6 +88,10 @@ closeCANReentryCount(0)
 	yearOffset = defaultYearOffset;
 	monthOffset = defaultMonthOffset;
 
+	for (int i = 0; i < maxRawBufferCount; i++) {
+		rawBuffers[i] = 0;
+	}
+
 	OpenDebugFile(debugFile, "CanBusLog.dat");
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
@@ -94,6 +102,9 @@ ReceiverCANCapture::~ReceiverCANCapture()
 	CloseDebugFile(debugFile);
 	EndDistanceLog();
 	Stop(); // Stop the thread
+	for (int i = 0; i < maxRawBufferCount; i++) {
+		if (rawBuffers [i]) delete rawBuffers [i];
+	}
 }
 
 void  ReceiverCANCapture::Go() 
@@ -1594,6 +1605,18 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 
 	bool bMessageOk = WriteMessage(message);
 
+    message.data[0] = 0xE0;   // Transmit_raw enable flags
+
+	message.data[1] = channelMask.byteData; // Channel mask
+	message.data[2] = 0;  // Reserved
+	message.data[3] = 0;
+	message.data[4] = 0;
+	message.data[5] = 0;  // Reserved
+	message.data[6] = 0;  // Reserved
+	message.data[7] = 0;  // Reserved
+
+	bMessageOk = WriteMessage(message);
+
 	// The message has no confirmation built in
    return(bMessageOk);
 }
@@ -2087,22 +2110,62 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 #endif // FORCE_FRAME_RESYNC_PATCH
 
-void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData)
+void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size_t size)
 {
-	int channel;
-	int detectOffset = 0;
-	
-	channel = 1;
+	int channel = -1;
+	int msg_id = -1;
+	size_t sampleOffset;
+	size_t sampleCount;
+	size_t sampleSize;
+	bool sampleSigned;
+	bool transmit = false;
 
-	if (channel >= 0) 
-	{
+
+	switch (provider) {
+		default:
+		case rawFromLibUSB:
+		case rawFromPosixTTY:
+			return;
+		case rawFromPosixUDP:
+			msg_id = rawData[0];
+			channel = rawData[2];
+			if (channel >= maxRawBufferCount) return;
+			sampleOffset = 16;
+			sampleSize = 4;
+			sampleSigned = true;
+			switch (msg_id) {
+			default:
+				return;
+			case 0x80:
+			case 0x81:
+				rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+				memcpy (rawBuffers[channel], rawData, size);
+				sampleCount = size;
+				return;
+			case 0x82:
+			case 0x83:
+			case 0x84:
+				memcpy (rawBuffers[channel] + size * (msg_id - 0x81), rawData, size);
+				sampleCount + size;
+				break;
+			}
+			if (msg_id == 0x80 || msg_id == 0x84) transmit = true;
+	}	
+
+	if (transmit) {
+
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
-		int detectionIndex = 0+detectOffset;
-		AScan::Ptr detection = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel, detectionIndex);
-	
-		rawLock.unlock();
-	}
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel);
+		aScan->samples = rawBuffers[channel];
+		aScan->sampleSize = sampleSize;
+		aScan->rawProvider = provider;
+		aScan->sampleOffset = sampleOffset;
+		aScan->sampleCount =  sampleCount;;
+		aScan->sampleSigned = sampleSigned;
+		//printf("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+
+		rawLock.unlock(); }
 
 	// Debug and Log messages
 	//DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);

@@ -226,11 +226,10 @@ public:
     typedef boost::shared_ptr<AScan> ConstPtr;
 	typedef boost::container::vector<AScan::Ptr> Vector;
 public:
-	AScan(int inReceiverID, int inChannelID, int inAScanID)
+	AScan(int inReceiverID, int inChannelID)
 	{
 		receiverID = inReceiverID;
 		channelID = inChannelID;
-		aScanID = inAScanID;
 	}
 
 	int	GetChannelID() {return(channelID);}
@@ -238,7 +237,6 @@ public:
 	int receiverID;
 	/** \brief channel ID of the channel where detection origins from */
 	int channelID;
-	int aScanID;
 
 	RawProvider rawProvider;
 
@@ -345,8 +343,8 @@ public:
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
 	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
 
-	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector, int channelID, int detectionID);
-	bool FindAScan(AScan::Vector &detectionVector, int inChannelID, int inAScanID, AScan::Ptr &outAScan);
+	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector, int channelID);
+	bool FindAScan(AScan::Vector &detectionVector, int inChannelID, AScan::Ptr &outAScan);
 
 public:
 	int receiverID;

@@ -950,6 +950,12 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		AScan::Vector aScanData;
 		bool bNewAScans = GetLatestAScans(aScanData);
+		printf ("ascan new %d\n", bNewAScans);
+		BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+		{
+			printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+		}
+		printf ("\n");
 	}
 
 	if (bContinue) 
@@ -1017,7 +1023,22 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 
 bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 {
-	return(false);
+	bool bNew = false;
+	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
+		// Use the frame snapped by the main display timer as the current frame
+		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
+		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
+		if (receiver->HasNews(subscriberID))
+		{
+			bNew = true;	
+		}
+
+		// TODO: copy data
+
+	}
+	return(bNew);
 }
 
 void AWLQtDemo::DisplayReceiverStatus()

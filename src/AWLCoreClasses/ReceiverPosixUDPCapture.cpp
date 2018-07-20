@@ -218,7 +218,8 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 				}
 				ParseMessage(msg);
 			} else {
-				ProcessRaw(rawFromPosixUDP, buffer);
+				ProcessRaw(rawFromPosixUDP, buffer, ret);
+				//printf("raw %02x \n", buffer[0]);
 			}
 		}
 	}
