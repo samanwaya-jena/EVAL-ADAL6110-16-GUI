@@ -100,6 +100,7 @@ signals:
 public slots:
     void slotConfigChanged();
     void slotDetectionDataChanged(const Detection::Vector & data);
+    void aScanDataChanged(const AScan::Vector & data);
 	void ShowContextMenu(const QPoint& pos);
 	void slotPaletteAction();
 	void slotMergeDisplayAction();
@@ -122,6 +123,8 @@ private:
 	float carLength;
 	float carHeight;
 	float laneWidth;
+    AScan::Vector aScanData;
+    void plotAScans(void);
 
     float Ratio;
     bool ShowPalette;
@@ -203,6 +206,7 @@ private:
 
 	void createAction();
 	void calculateResize();
+
 };
 
 

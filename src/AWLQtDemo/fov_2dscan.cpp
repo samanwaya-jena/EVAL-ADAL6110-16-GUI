@@ -880,6 +880,8 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 			drawDetection(&painter, detection, true, false);
 		}
 	} // BOOST_FOREACH(const Detection::Ptr
+
+	plotAScans();
 }
 
 void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
@@ -1586,6 +1588,34 @@ void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
 
 	//Merge detections according to distance criteria
 	mergeDetection();
+    update();
+}
+
+void FOV_2DScan::aScanDataChanged(const AScan::Vector& data)
+{
+	aScanData = data;
+}
+
+void FOV_2DScan::plotAScans()
+{
+	int32_t *b32;
+	int x1, y1, x2, y2 = 0;
+    QPainter painter(this);
+		painter.setPen(QPen(rgbRulerLight));
+
+	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+	{
+		x1 = y1 = 100;
+		b32 = (int32_t *)(aScan->samples);
+		for (int x = aScan->sampleOffset; x < aScan->sampleCount; x ++) {
+			x2 = 100 + x;
+			y2 = 100 + 100 * aScan->channelID - b32[x] / 100000000;
+			painter.drawLine(x1, y1, x2, y2);
+			x1 = x2;
+			y1 = y2;
+		}
+	}
+
     update();
 }
 
