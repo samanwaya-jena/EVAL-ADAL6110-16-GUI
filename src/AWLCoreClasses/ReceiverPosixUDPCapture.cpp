@@ -76,7 +76,7 @@ closeCANReentryCount(0)
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
 	for (int i = 0; i < numBuffers; i++) {
-		buffers[i] = (uint8_t *)malloc(bufferSize);
+		buffers[i] = new uint8_t[bufferSize];
 	}
 	currentBuffer = 0;
 }
@@ -85,7 +85,7 @@ ReceiverPosixUDPCapture::~ReceiverPosixUDPCapture()
 {
 	for (int i = 0; i < numBuffers; i++) {
 		if (buffers[i]) {
-			free(buffers[i]);
+			delete buffers[i];
 			buffers[i] = 0;
 		}
 	}

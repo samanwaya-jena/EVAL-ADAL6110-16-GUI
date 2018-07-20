@@ -221,6 +221,21 @@ bool ReceiverCapture::CopyReceiverRawDetections(FrameID inFrameID,  Detection::V
 	return(bFound);
 }
 
+bool ReceiverCapture::CopyReceiverAScans(FrameID inFrameID,  AScan::Vector &outAScans, Publisher::SubscriberID inSubscriberID)
+{
+	if (!LockNews(inSubscriberID)) return(false);
+
+	SensorFrame::Ptr sensorFrame;
+	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
+	if (bFound) 
+	{ 
+		outAScans.clear();
+		outAScans = sensorFrame->aScans;
+	}
+
+	UnlockNews(inSubscriberID);
+	return(bFound);
+}
 
 
 

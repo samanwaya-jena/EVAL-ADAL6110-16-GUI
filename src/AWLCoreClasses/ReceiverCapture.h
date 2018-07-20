@@ -445,6 +445,8 @@ public:
      */
 	virtual bool CopyReceiverRawDetections(FrameID inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
 
+	virtual bool CopyReceiverAScans(FrameID inFrameID,  AScan::Vector &outAScans, Publisher::SubscriberID inSubscriberID);
+
 	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
