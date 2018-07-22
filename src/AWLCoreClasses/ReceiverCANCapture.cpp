@@ -2139,6 +2139,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			case 0x80:
 			case 0x81:
 				rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+				rawBufferCount ++;
 				memcpy (rawBuffers[channel], rawData, size);
 				sampleCount = size;
 				return;

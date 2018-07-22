@@ -533,6 +533,7 @@ protected:
 		static const size_t maxRawBufferCount = 1024;
 		static const size_t maxRawBufferSize = 16384;
 		uint8_t * rawBuffers[maxRawBufferCount];
+		size_t rawBufferCount;
 
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/

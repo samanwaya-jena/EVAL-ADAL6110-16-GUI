@@ -1613,6 +1613,7 @@ void FOV_2DScan::plotAScans()
 			painter.drawLine(x1, y1, x2, y2);
 			x1 = x2;
 			y1 = y2;
+			//aScan.reset();
 		}
 	}
 
