@@ -159,6 +159,45 @@ AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int channelI
 	return(aScan);
 }
 
+void AScan::FindMinMaxMean(float *min, float *max, float *mean)
+{
+	uint32_t *u32;
+	int32_t *i32;
+	int i;
+
+	u32 = (uint32_t*)samples;
+	i32 = (int32_t*)samples;
+
+	*min = *max = *mean = 0.0;
+	for (i = sampleOffset; i < sampleCount; i ++) {
+		switch (sampleSize) {
+		default:
+				return;
+		case 2:
+				return;
+		case 4:
+			if (sampleSigned) {
+				if (i32[i] < *min) *min = i32[i];
+				if (i32[i] > *max) *max = i32[i];
+				*mean += i32[i];
+			} else {
+				if (u32[i] < *min) *min = u32[i];
+				if (u32[i] > *max) *max = u32[i];
+				*mean += u32[i];
+			}
+		}
+
+	}
+	*mean = *mean / i;
+}
+
+float AScan::GetScaleFactorForRange(int range)
+{
+	float min, max, mean;
+	FindMinMaxMean (&min, &max, &mean);
+	return range / (max - min);
+}
+
 bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inChannelID, AScan::Ptr &outAScan)
 {
 	AScan::Vector::iterator  aScanIterator = aScanVector.begin();

@@ -2138,7 +2138,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 				return;
 			case 0x80:
 			case 0x81:
-				rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+				if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
 				rawBufferCount ++;
 				memcpy (rawBuffers[channel], rawData, size);
 				sampleCount = size;
@@ -2151,6 +2151,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 				break;
 			}
 			if (msg_id == 0x80 || msg_id == 0x84) transmit = true;
+			transmit = true;
 	}	
 
 	if (transmit) {

@@ -238,13 +238,15 @@ public:
 		sampleSigned = false;
 		samples = 0;
 	}
-
+/*
 	~AScan()
 	{
-		if (samples) delete samples;
+		//if (samples) delete samples;
 	}
-
+*/
 	int	GetChannelID() {return(channelID);}
+	float GetScaleFactorForRange(int range);
+	void FindMinMaxMean(float *min, float *max, float *mean);
 public:
 	int receiverID;
 	/** \brief channel ID of the channel where detection origins from */

@@ -1596,26 +1596,27 @@ void FOV_2DScan::aScanDataChanged(const AScan::Vector& data)
 	aScanData = data;
 }
 
+
 void FOV_2DScan::plotAScans()
 {
 	int32_t *b32;
-	int x1, y1, x2, y2 = 0;
+	float scaleFactor;
+	int32_t x1, y1, x2, y2 = 0;
     QPainter painter(this);
 		painter.setPen(QPen(rgbRulerLight));
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
 		x1 = y1 = 100;
+		scaleFactor = aScan->GetScaleFactorForRange(50);
 		if (aScan->samples) {
 			b32 = (int32_t *)(aScan->samples);
 			for (int x = aScan->sampleOffset; x < aScan->sampleCount; x ++) {
 				x2 = 100 + x;
-				y2 = 100 + 50 * aScan->channelID - b32[x] / 100000000;
+				y2 = 100 + 50 * aScan->channelID - b32[x] * scaleFactor;
 				painter.drawLine(x1, y1, x2, y2);
 				x1 = x2;
 				y1 = y2;
-				delete aScan->samples;
-				aScan->samples = 0;
 			}
 
 		}
