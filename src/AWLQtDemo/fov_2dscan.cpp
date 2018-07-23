@@ -1621,9 +1621,9 @@ void FOV_2DScan::plotAScan(AScan::Ptr aScan, QPainter *painter, int top, int lef
 		y1 = top;
 		scaleFactor = aScan->GetScaleFactorForRange(height);
 		b32 = (int32_t *)(aScan->samples);
-		for (int x=0, i = aScan->sampleOffset; i < aScan->sampleCount; i ++, x++) {
-			x2 = left + x;
-			y2 = top + b32[i] * scaleFactor;
+		for (int i = aScan->sampleOffset; i < aScan->sampleCount; i ++) {
+			x2 = left + i;
+			y2 = top + b32[i + aScan->sampleOffset] * scaleFactor;
 			painter->drawLine(x1, y1, x2, y2);
 			x1 = x2;
 			y1 = y2;

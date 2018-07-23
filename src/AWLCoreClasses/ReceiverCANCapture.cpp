@@ -2130,7 +2130,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			msg_id = rawData[0];
 			channel = rawData[2];
 			if (channel >= maxRawBufferCount) return;
-			sampleOffset = 200;
+			sampleOffset = 16;
 			sampleSize = 4;
 			sampleSigned = true;
 			switch (msg_id) {
