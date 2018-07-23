@@ -1599,30 +1599,36 @@ void FOV_2DScan::aScanDataChanged(const AScan::Vector& data)
 
 void FOV_2DScan::plotAScans()
 {
-	int32_t *b32;
-	float scaleFactor;
-	int32_t x1, y1, x2, y2 = 0;
     QPainter painter(this);
-		painter.setPen(QPen(rgbRulerLight));
+	painter.setPen(QPen(rgbRulerLight));
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		x1 = y1 = 100;
-		scaleFactor = aScan->GetScaleFactorForRange(50);
-		if (aScan->samples) {
-			b32 = (int32_t *)(aScan->samples);
-			for (int x = aScan->sampleOffset; x < aScan->sampleCount; x ++) {
-				x2 = 100 + x;
-				y2 = 100 + 50 * aScan->channelID - b32[x] * scaleFactor;
-				painter.drawLine(x1, y1, x2, y2);
-				x1 = x2;
-				y1 = y2;
-			}
-
-		}
+		plotAScan(aScan, &painter, 100 + 50 * aScan->channelID, 100, aScan->sampleCount, 50);
 	}
 
     update();
+}
+
+void FOV_2DScan::plotAScan(AScan::Ptr aScan, QPainter *painter, int top, int left, int width, int height)
+{
+	int32_t *b32;
+	float scaleFactor;
+	int32_t x1, y1, x2, y2 = 0;
+
+	if (aScan->samples) {
+		x1 = left;
+		y1 = top;
+		scaleFactor = aScan->GetScaleFactorForRange(height);
+		b32 = (int32_t *)(aScan->samples);
+		for (int x=0, i = aScan->sampleOffset; i < aScan->sampleCount; i ++, x++) {
+			x2 = left + x;
+			y2 = top + b32[i] * scaleFactor;
+			painter->drawLine(x1, y1, x2, y2);
+			x1 = x2;
+			y1 = y2;
+		}
+	}
 }
 
 void FOV_2DScan::mergeDetection()

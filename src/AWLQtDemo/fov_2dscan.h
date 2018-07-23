@@ -125,6 +125,7 @@ private:
 	float laneWidth;
     AScan::Vector aScanData;
     void plotAScans(void);
+    void plotAScan(AScan::Ptr aScan, QPainter *painter, int top, int left, int width, int height);
 
     float Ratio;
     bool ShowPalette;
