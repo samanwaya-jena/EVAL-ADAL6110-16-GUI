@@ -77,7 +77,7 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 	// 2018-07-19 - JYD:  The scope windows are appended after the plots are placed.
 #if	1		
 	d_plot.append(new AWLScopePlot(this));
-	d_plot.append(new AWLScopePlot(this));
+//	d_plot.append(new AWLScopePlot(this));
 //	d_plot.append(new AWLScopePlot(this));
 //	d_plot.append(new AWLScopePlot(this));
 //	d_plot.append(new AWLScopePlot(this));
