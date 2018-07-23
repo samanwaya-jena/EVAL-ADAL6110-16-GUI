@@ -214,6 +214,7 @@ public:
 };
 
 enum RawProvider{
+	rawFromNothing,
 	rawFromPosixUDP,
 	rawFromPosixTTY,
 	rawFromLibUSB
@@ -230,6 +231,17 @@ public:
 	{
 		receiverID = inReceiverID;
 		channelID = inChannelID;
+		rawProvider = rawFromNothing;
+		sampleOffset = 0;
+		sampleCount = 0;
+		sampleSize = 0;
+		sampleSigned = false;
+		samples = 0;
+	}
+
+	~AScan()
+	{
+		if (samples) delete samples;
 	}
 
 	int	GetChannelID() {return(channelID);}
@@ -248,7 +260,7 @@ public:
 
 	bool sampleSigned;
 
-	void *samples;
+	uint8_t *samples;
 
 
 };

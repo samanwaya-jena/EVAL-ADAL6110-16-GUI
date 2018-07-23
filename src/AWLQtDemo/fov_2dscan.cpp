@@ -1614,7 +1614,7 @@ void FOV_2DScan::plotAScans()
 				painter.drawLine(x1, y1, x2, y2);
 				x1 = x2;
 				y1 = y2;
-				delete (uint8_t *)(aScan->samples);
+				delete aScan->samples;
 				aScan->samples = 0;
 			}
 
