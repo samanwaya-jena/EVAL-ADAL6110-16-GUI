@@ -5,8 +5,7 @@
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
+			http://www.apache.org/licenses/LICENSE-2.0
 
 	Unless required by applicable law or agreed to in writing, software
 	distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,33 +44,60 @@ const QwtPlotCurve::CurveStyle defaultCurveStyle = QwtPlotCurve::Dots;
 const double intervalLength = 15.0; // seconds
 
 AWLQtScope::AWLQtScope(QWidget *parent)
-	: QWidget(parent),
+// 2018-07-19 - JYD:  The Scope should be a QFrame
+: QFrame(parent),
 	d_timerId(0),
 	curveStyle(defaultCurveStyle)
 {
 	ui.setupUi(this);
-
+	setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	timerInterval = globalSettings->scopeTimerInterval;
 
 	this->setWindowTitle(this->windowTitle() + " Scope view");
 
-	// Position the widget on the top left corner
-	QRect scr = QApplication::desktop()->screenGeometry();
-	move(scr.left(), scr.top()+5); 
+	// Place the windget used to set the display interval
+	d_intervalWheel = new WheelBox("Displayed [s]", 1.0, 100.0, 1.0, this);
+	d_intervalWheel->setValue(intervalLength);
 
+	// layout the interval wheel within the window
+	QVBoxLayout* vLayout1 = new QVBoxLayout();
+	vLayout1->addWidget(d_intervalWheel);
+	vLayout1->addWidget(ui.scopeDisplayGroupBox);
+	vLayout1->addStretch(10);
+	vLayout1->addWidget(ui.scopeCurveStyleGroupBox);
+	vLayout1->addStretch(10);
+
+	QHBoxLayout *hLayout = new QHBoxLayout(this);
+	// 2018-07-19 - JYD: Don't need the Scope Frame anymore
+#if 0
+	hLayout->addWidget(ui.scopeFrame, 10);
+#endif 
 	// Append the individual scope windows
-	d_plot.append(ui.channel1PlotFrame);
-	d_plot.append(ui.channel2PlotFrame);
-	d_plot.append(ui.channel3PlotFrame);
-	d_plot.append(ui.channel4PlotFrame);
-	d_plot.append(ui.channel5PlotFrame);
-	d_plot.append(ui.channel6PlotFrame);
-	d_plot.append(ui.channel7PlotFrame);
-	
+	// 2018-07-19 - JYD:  The scope windows are appended after the plots are placed.
+#if	1		
+	d_plot.append(new AWLScopePlot(this));
+	d_plot.append(new AWLScopePlot(this));
+//	d_plot.append(new AWLScopePlot(this));
+//	d_plot.append(new AWLScopePlot(this));
+//	d_plot.append(new AWLScopePlot(this));
+//	d_plot.append(new AWLScopePlot(this));
+//	d_plot.append(new AWLScopePlot(this));
+#endif
+#if 1
+	// 2018-07-19 - JYD:  The plots should be manually added to one of the 2 layouts within the frame
 	for (int i = 0; i < d_plot.size(); i++)
-	{ 
+	{
+		hLayout->addWidget(d_plot[i]);		
+	}
+#endif
 
+	// Add the buttons, that were created in the vLayout, to the right of the scope plots
+	hLayout->addLayout(vLayout1);
+
+	// Set the style of the curves in the individual plots
+	for (int i = 0; i < d_plot.size(); i++)
+	{
 		//
 		// Distance curve
 		d_distanceCurveDataArray.append(d_plot[i]->getDistanceCurveData());
@@ -87,32 +113,19 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 		d_plot[i]->setVelocityCurveStyle(curveStyle);
 
 		// Set the individual interval length: common to both distance and velocity curves
-		d_plot[i]->setIntervalLength( intervalLength);
+		d_plot[i]->setIntervalLength(intervalLength);
 	}
 
-	// Place the windget used to set the display interval
-	d_intervalWheel = new WheelBox( "Displayed [s]", 1.0, 100.0, 1.0, this );
-	d_intervalWheel->setValue( intervalLength );
 
-	// layout the interval wheel within the window
-	QVBoxLayout* vLayout1 = new QVBoxLayout();
-	vLayout1->addWidget( d_intervalWheel );
-	vLayout1->addWidget( ui.scopeDisplayGroupBox);
-	vLayout1->addStretch( 10 );
-	vLayout1->addWidget( ui.scopeCurveStyleGroupBox);
-	vLayout1->addStretch( 10 );
 
-	QHBoxLayout *layout = new QHBoxLayout( this );
-	layout->addWidget( ui.scopeFrame, 10);
-	layout->addLayout( vLayout1 );
 
 	// Set the default value for the displayed curves check boxes
 	ui.scopeDisplayDistanceCheckBox->setChecked(globalSettings->bDisplayScopeDistance);
 	ui.scopeDisplayVelocityCheckBox->setChecked(globalSettings->bDisplayScopeVelocity);
 
 	// Set the default value foor the curveStyle check box
-	ui.scopeCurveStyleDotsRadioButton->setChecked(curveStyle ==  QwtPlotCurve::Dots);
-	ui.scopeCurveStyleLinesRadioButton->setChecked(curveStyle==  QwtPlotCurve::Lines);
+	ui.scopeCurveStyleDotsRadioButton->setChecked(curveStyle == QwtPlotCurve::Dots);
+	ui.scopeCurveStyleLinesRadioButton->setChecked(curveStyle == QwtPlotCurve::Lines);
 
 	// Adjust the display units on the labels
 	QString velocityText = " (m/s)";
@@ -120,10 +133,10 @@ AWLQtScope::AWLQtScope(QWidget *parent)
 		velocityText = " (km/h)";
 	ui.scopeDisplayVelocityCheckBox->setText(ui.scopeDisplayVelocityCheckBox->text() + velocityText);
 
-
 	// Start the plot
 	for (int i = 0; i < d_plot.size(); i++) 
 	{
+		d_plot[i]->resize(200, 200);
 		connect( d_intervalWheel, SIGNAL( valueChanged( double ) ),
 			d_plot[i], SLOT( setIntervalLength( double ) ) );
 	}
@@ -148,6 +161,8 @@ void AWLQtScope::start(ReceiverCapture::Ptr inReceiverCapture)
 	}
 
 	if (d_timerId == 0) d_timerId = startTimer( timerInterval );
+
+
 }
 
 
@@ -218,6 +233,9 @@ void AWLQtScope::updateCurveDataRaw()
 			detectionIndexes.resize(d_receiverCapture->receiverChannelQty);
 			BOOST_FOREACH(const Detection::Ptr &detection, detectionData)
 			{
+				// 2018-07-19 - JYD:  Just make sure we do not ask to display stuff if the scope window does not exist
+				if (detection->channelID < d_plot.size())
+				{ 
 				int detectionIndex = detectionIndexes[detection->channelID]++;
 
 				// Replace the new point to the end, with detected value
@@ -235,6 +253,7 @@ void AWLQtScope::updateCurveDataRaw()
 
 				const QPointF velocityPoint(elapsed,  velocity);
 				d_velocityCurveDataArray[detection->channelID]->at(detectionIndex)->addValue(velocityPoint);
+				}
 			} // while (detectionIterator
 		} // if (postProcessor.GetEnhanced
 

@@ -30,6 +30,7 @@
 #endif
 
 #include <QtWidgets/QWidget>
+#include <QFrame>
 #include <qwt_plot_curve.h>
 
 #include "ui_awlqtscope.h"
@@ -47,7 +48,7 @@ using namespace awl;
 class Knob;
 class WheelBox;
 
-class AWLQtScope : public QWidget
+class AWLQtScope : public QFrame
 {
 	Q_OBJECT
 
@@ -86,7 +87,7 @@ protected:
 
 private:
 	QwtPlotCurve::CurveStyle curveStyle;
-	//Linux temp
+
 	Ui::AWLQtScopeClass ui; 
 
     WheelBox *d_intervalWheel;

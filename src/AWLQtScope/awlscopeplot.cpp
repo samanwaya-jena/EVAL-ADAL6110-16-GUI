@@ -97,12 +97,16 @@ void AWLScopePlot::setupInterface()
 
 {
 	d_interval = QwtInterval(0.0, 10.0);
-    d_directPainter = new QwtPlotDirectPainter();
+	// 2018-07-19 JYD : Painter is in the Plot? Should pass argument there...
+	d_directPainter = new QwtPlotDirectPainter();
 
-	setAutoReplot( false );
-    setCanvas( new Canvas() );
+	setAutoReplot(false);
 
-    plotLayout()->setAlignCanvasToScales( true );
+
+	// 2018-07-19 JYD : Canvas is in the Plot? Should pass argument there...
+	setCanvas(new Canvas());
+
+ //   plotLayout()->setAlignCanvasToScales( true );
 
  //   setAxisTitle( QwtPlot::xBottom, "Time [s]" );
 
@@ -252,6 +256,8 @@ void AWLScopePlot::replot()
 	// If distance is displayed and the maxRange has changed, redo the axes
 	if (settings->bDisplayScopeDistance)
 	{
+		float displayedRangeMax = settings->receiverSettings[0].displayedRangeMax;
+		float scaleUpperBound = axisScaleDiv(QwtPlot::yLeft).upperBound();
 		if (abs(settings->receiverSettings[0].displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
 		{
 			bRescale = true;
@@ -304,13 +310,20 @@ bool AWLScopePlot::doTimeUpdate()
 {
     const double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
 
+	// 20180719-JYD
+#if	1
+	updateCurve();
+#endif
+
     if ( elapsed > d_interval.maxValue() ) 
 	{
         incrementInterval();
 	}
 	else 
 	{
+#if 0
 		replot();
+#endif
 	}
 
 	return(false);
@@ -324,9 +337,11 @@ void AWLScopePlot::updateCurve()
 		data->values().lock();
 
 		const int numPoints = data->size();
-		if ( numPoints > d_paintedPoints[i] )
+		int paintedPoints = d_paintedPoints[i];
+		if (numPoints > paintedPoints )
 		{
-			const bool doClip = !canvas()->testAttribute( Qt::WA_PaintOnScreen );
+			bool doClip = !canvas()->testAttribute( Qt::WA_PaintOnScreen );
+
 			if ( doClip )
 			{
 				/*
@@ -340,17 +355,17 @@ void AWLScopePlot::updateCurve()
 				const QwtScaleMap yMap = canvasMap( d_distanceCurve[i]->yAxis() );
 
 				QRectF br = qwtBoundingRect( *data,
-					d_paintedPoints[i]  - 1, numPoints - 1 );
+					paintedPoints  - 1, numPoints - 1 );
 
 				const QRect clipRect = QwtScaleMap::transform( xMap, yMap, br ).toRect();
 				d_directPainter->setClipRegion( clipRect );
 			}
 
 			d_directPainter->drawSeries( d_distanceCurve[i],
-				d_paintedPoints[i] - 1, numPoints - 1 );
+				paintedPoints - 1, numPoints - 1 );
 
 			d_directPainter->drawSeries( d_velocityCurve[i],
-				d_paintedPoints[i] - 1, numPoints - 1 );
+				paintedPoints - 1, numPoints - 1 );
 
 
 			d_paintedPoints[i] = numPoints;
@@ -362,31 +377,42 @@ void AWLScopePlot::updateCurve()
 
 void AWLScopePlot::incrementInterval()
 {
-    double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
+	double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
 	elapsed = ceil(elapsed);
 
 	double minValue = ((elapsed - d_interval.width()));
 
-	if (minValue <0.0) minValue = 0.0;
+	if (minValue < 0.0) minValue = 0.0;
 	double maxValue = minValue + d_interval.width();
-    d_interval = QwtInterval( minValue, maxValue);
+	d_interval = QwtInterval(minValue, maxValue);
 
 
-    for (int i = 0; i < d_distanceCurveData.size(); i++) 
+	for (int i = 0; i < d_distanceCurveData.size(); i++)
 	{
 		CurveData *data = getDistanceCurveData(i);
-		data->values().clearStaleValues( d_interval.minValue() );
+		data->values().clearStaleValues(d_interval.minValue());
 	}
 
-    for (int i = 0; i < d_velocityCurveData.size(); i++) 
+	for (int i = 0; i < d_velocityCurveData.size(); i++)
 	{
 		CurveData *data = getVelocityCurveData(i);
-		data->values().clearStaleValues( d_interval.minValue() );
+		data->values().clearStaleValues(d_interval.minValue());
 	}
 
-    setAxisScale( QwtPlot::xBottom, d_interval.minValue(), d_interval.maxValue());
+	setAxisScale(QwtPlot::xBottom, d_interval.minValue(), d_interval.maxValue());
 
-    replot();
+	// 20190728- JYD - Test
+#if 0
+	for (int i = 0; i < d_distanceCurve.size(); i++)
+	{
+		d_paintedPoints[i] -= 1000;
+	}
+	updateCurve();
+
+#endif
+#if 1
+	replot();
+#endif
 }
 
 void AWLScopePlot::resizeEvent( QResizeEvent *event )

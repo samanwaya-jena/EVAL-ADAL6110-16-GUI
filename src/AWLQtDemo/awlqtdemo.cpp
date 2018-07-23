@@ -480,6 +480,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 #endif
 
 #endif
+
+        //20180719-JYD  Restart the scope...... It accidentally started before the receivers were available and the time base is off....
+
+        scopeWindow->start(receiverCaptures[0]);
+	
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -585,6 +590,9 @@ void AWLQtDemo::SetupDisplayGrid()
 #else
 	ui.gridDisplayLayout->addWidget(m2DScan, 0, 0, Qt::AlignTop);
 	ui.gridDisplayLayout->addWidget(mTableView, 0, 1, Qt::AlignTop);
+       //20180719- JYD Add the scope to a bottom row of the layout
+       // ui.gridDisplayLayout->addWidget(scopeWindow, videoViewerQty, 0, videoViewerQty, 3, Qt::AlignTop);
+       ui.gridDisplayLayout->addWidget(scopeWindow, 0, 3, Qt::AlignTop);
 
 #ifdef USE_OPENCV_VIDEO
 	int videoViewerQty = videoCaptures.size();
@@ -950,12 +958,6 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		AScan::Vector aScanData;
 		bool bNewAScans = GetLatestAScans(aScanData);
-		if (m2DScan) m2DScan->aScanDataChanged(aScanData);
-		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-		//{
-			//printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
-		//}
-		//printf ("\n");
 	}
 
 	if (bContinue) 
@@ -1023,16 +1025,7 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 
 bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 {
-	bool bNew = false;
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
-	{
-		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
-		// Use the frame snapped by the main display timer as the current frame
-		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
-		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
-		bNew = receiver->CopyReceiverAScans(lastDisplayedFrame, aScanData, subscriberID);
-	}
-	return(bNew);
+	return(false);
 }
 
 void AWLQtDemo::DisplayReceiverStatus()
