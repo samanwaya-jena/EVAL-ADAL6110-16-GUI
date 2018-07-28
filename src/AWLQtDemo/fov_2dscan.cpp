@@ -634,6 +634,8 @@ void FOV_2DScan::calculateResize()
 
 	// For default mode where we are eDisplayZommModeFront
 	double totalDistance = config.maxSensorsRange+config.spareDepth;
+printf("MaxRange: %f %d\n", config.maxSensorsRange, config.spareDepth);
+	if (config.maxSensorsRange+config.spareDepth < 0.000000000000000001) return;
 
 	if (displayZoomMode == eDisplayZoomMode360)
 		totalDistance = (config.maxSensorsRange * 2) + carLength;
@@ -641,18 +643,22 @@ void FOV_2DScan::calculateResize()
 	float maxWidth = width() + 1;
 	float maxHeight = height();
 
+
 	while (maxWidth > width()) 
 	{
 		Ratio = (maxHeight-topInPixels) / totalDistance;
 
 		float angleInRad = DEG2RAD((config.maxAngularSpan/2)+180);
 		float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
+printf("Ratio0: %f %f %f \n", totalDistance, Ratio, angleInRad);
+printf("Width0: %f %d %f \n", maxWidth, width(), xWidth);
 
 		maxWidth = (xWidth*2)+rightInPixels;
 		if (maxWidth > width())
 		{
 			maxHeight = (maxHeight * (width() / maxWidth)) -1;
 		}
+printf("Width1: %f %d %f \n", maxWidth, width(), xWidth);
 	}
 
 	if (displayZoomMode == eDisplayZoomModeFront || displayZoomMode == eDisplayZoomModeAuto)
@@ -945,7 +951,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 	}
 
 	QString velocityLabel = " m/s";
-	float distanceDisplayed = 0;0;
+	float distanceDisplayed = 0.0;
 	float velocityDisplayed = velocityMin;
 
 	if (measureMode == eMeasureRadial)
@@ -994,10 +1000,10 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 	{
 		QString textToDisplay;
 
-	if (measureMode != eMeasureCartesian)
-		textToDisplay = "Dist: " + QString::number(distanceDisplayed, 'f', 1)+" m | Vel: "+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
-	else
-		textToDisplay = "X:" + QString::number(-(leftMin+(leftMax-leftMin/2)), 'f', 1)+" Y:"+ QString::number(distanceDisplayed, 'f', 1)+ " V:"+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
+		if (measureMode != eMeasureCartesian)
+			textToDisplay = "Dist: " + QString::number(distanceDisplayed, 'f', 1)+" m | Vel: "+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
+		else
+			textToDisplay = "X:" + QString::number(-(leftMin+(leftMax-leftMin/2)), 'f', 1)+" Y:"+ QString::number(distanceDisplayed, 'f', 1)+ " V:"+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
 
 		// Draw the detection, but without the legend
 		const Detection::Ptr detection = data.at(0);
@@ -1591,44 +1597,21 @@ void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
     update();
 }
 
-void FOV_2DScan::aScanDataChanged(const AScan::Vector& data)
+void FOV_2DScan::PlotAScan(int x1, int y1, int x2, int y2)
 {
-	aScanData = data;
+	QPainter painter(this);
+	painter.setPen(QPen(rgbRulerLight));
+	painter.drawLine(x1, y1, x2, y2);
 }
-
 
 void FOV_2DScan::plotAScans()
 {
-    QPainter painter(this);
-	painter.setPen(QPen(rgbRulerLight));
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		plotAScan(aScan, &painter, 100 + 50 * aScan->channelID, 100, aScan->sampleCount, 50);
+		aScan->Plot(100 + 50 * aScan->channelID, 100, width(), 50, this);
 	}
-
-    update();
-}
-
-void FOV_2DScan::plotAScan(AScan::Ptr aScan, QPainter *painter, int top, int left, int width, int height)
-{
-	int32_t *b32;
-	float scaleFactor;
-	int32_t x1, y1, x2, y2 = 0;
-
-	if (aScan->samples) {
-		x1 = left;
-		y1 = top;
-		scaleFactor = aScan->GetScaleFactorForRange(height);
-		b32 = (int32_t *)(aScan->samples);
-		for (int i = aScan->sampleOffset; i < aScan->sampleCount; i ++) {
-			x2 = left + i;
-			y2 = top + b32[i + aScan->sampleOffset] * scaleFactor;
-			painter->drawLine(x1, y1, x2, y2);
-			x1 = x2;
-			y1 = y2;
-		}
-	}
+	update();
 }
 
 void FOV_2DScan::mergeDetection()

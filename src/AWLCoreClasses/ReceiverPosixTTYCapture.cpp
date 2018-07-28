@@ -85,7 +85,7 @@ bool  ReceiverPosixTTYCapture::OpenCANPort()
 {
 	int ret;
 
-	if (fd < 0) 
+	if (fd >= 0) 
 	{
 		CloseCANPort();
 	}
@@ -123,7 +123,7 @@ bool  ReceiverPosixTTYCapture::CloseCANPort()
 
 	closeCANReentryCount++;
 
-		if (fd < 0) close(fd);
+		if (fd >= 0) close(fd);
 		fd = -1;
 		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 	    closeCANReentryCount--;

@@ -195,7 +195,43 @@ float AScan::GetScaleFactorForRange(int range)
 {
 	float min, max, mean;
 	FindMinMaxMean (&min, &max, &mean);
-	return range / (max - min);
+	if (max - min) return range / (max - min);
+	else return 0.0;
+}
+
+void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter)
+{
+	int32_t *b32;
+	float xScaleFactor = 0.0;
+	float yScaleFactor = 0.0;
+	int32_t x1, y1, x2, y2 = 0;
+	int i;
+
+	if (samples) {
+		x1 = left;
+		y1 = top;
+		if (width) xScaleFactor = (sampleCount) / width;
+		yScaleFactor = GetScaleFactorForRange(height);
+		b32 = (int32_t *)(samples);
+		for (int x = 0; x < width; x ++) {
+			x2 = left + x;
+			i = x * xScaleFactor;
+			y2 = top + b32[i + sampleOffset] * yScaleFactor;
+			plotter->PlotAScan(x1, y1, x2, y2);
+			x1 = x2;
+			y1 = y2;
+		}
+	}
+}
+
+void AScanPlotter::PlotAScan(int x1, int y1, int x2, int y2)
+{
+	printf("%d %d, %d %d\n", x1, y1, x2, y2);
+}
+
+void AScanPlotter::AScanDataChanged(const AScan::Vector& data)
+{
+	aScanData = data;
 }
 
 bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inChannelID, AScan::Ptr &outAScan)
