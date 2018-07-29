@@ -219,7 +219,8 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 		}
 		else
 		{
-			msg.id  = buf32[0];
+			msg.id  = buffer[0];
+			//printf ("UDP %08x\n", msg.id);
 			if (msg.id < 0x60) {
 				msg.len = ret - sizeof(uint32_t);
 				for (int i = 0; i < 8 && i < msg.len; i ++) {
