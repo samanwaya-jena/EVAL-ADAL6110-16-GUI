@@ -38,6 +38,7 @@
 #include "fov_2dscan.h"
 #include "TableView.h"
 #include "awlqtscope.h"
+#include "awlplotscan.h"
 
 
 namespace awl
@@ -165,7 +166,8 @@ private:
 
 	FOV_2DScan* m2DScan;
 	TableView * mTableView;
-	AWLQtScope* scopeWindow;
+	//AWLQtScope* scopeWindow;
+	AWLPlotScan* scopeWindow;
 #if 0
 	QLabel	mLogoLabel;
 #endif

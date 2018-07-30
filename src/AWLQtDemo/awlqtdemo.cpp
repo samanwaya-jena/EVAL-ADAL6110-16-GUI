@@ -354,9 +354,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
 	// Initialize the scope window
-	//scopeWindow = new AWLQtScope();
 	//scopeWindow = new AWLScopePlot();
-	//scopeWindow = new AWLPlotScan();
+	scopeWindow = new AWLPlotScan();
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
@@ -486,7 +485,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
         //20180719-JYD  Restart the scope...... It accidentally started before the receivers were available and the time base is off....
 
-        scopeWindow->start(receiverCaptures[0]);
+        //scopeWindow->start(receiverCaptures[0]);
 	
 }
 

@@ -150,7 +150,7 @@ AWLQtScope::~AWLQtScope()
 }
 
 
-void AWLQtScope::start(ReceiverCapture::Ptr inReceiverCapture)
+AWLQtScope::start(ReceiverCapture::Ptr inReceiverCapture)
 {
 	d_receiverCapture = inReceiverCapture;
 	d_receiverCaptureSubscriberID = d_receiverCapture->Subscribe();
@@ -166,7 +166,7 @@ void AWLQtScope::start(ReceiverCapture::Ptr inReceiverCapture)
 }
 
 
-void AWLQtScope::stop()
+AWLQtScope::stop()
 {
 	for (int i = 0; i < d_plot.size(); i++) 
 	{

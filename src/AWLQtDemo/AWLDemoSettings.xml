@@ -8,7 +8,7 @@
     <display2DWindow>true</display2DWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>false</displayScopeWindow>
+    <displayScopeWindow>true</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- velocity units: display velocity in km/h or m/s
