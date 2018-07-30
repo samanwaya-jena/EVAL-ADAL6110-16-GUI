@@ -63,6 +63,11 @@ closeCANReentryCount(0)
 	serverUDPPort = inUDPPort;
 	remoteAddress = 0;
 	localAddress = 0;
+	for (int i = 0; i < numBuffers; i++) {
+		buffers[i] = new uint8_t[bufferSize];
+	}
+	currentBuffer = 0;
+	fd = 0;
 }
 
 
@@ -73,12 +78,14 @@ closeCANReentryCount(0)
 
 {
 	// Read the configuration from the configuration file
+	printf("PosixUDP\n");
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
 	for (int i = 0; i < numBuffers; i++) {
 		buffers[i] = new uint8_t[bufferSize];
 	}
 	currentBuffer = 0;
+	fd = -1;
 }
 
 ReceiverPosixUDPCapture::~ReceiverPosixUDPCapture()
@@ -100,10 +107,12 @@ bool  ReceiverPosixUDPCapture::OpenCANPort()
 	sockaddr_in *udp_srv_addr;
 	sockaddr_in *udp_cli_addr;
 
+	//printf("PosixUDP\n");
+
 	udp_srv_addr = new sockaddr_in;
 	udp_cli_addr = new sockaddr_in;
 
-	if (fd < 0) 
+	if (fd >= 0) 
 	{
 		CloseCANPort();
 	}
@@ -167,7 +176,7 @@ bool  ReceiverPosixUDPCapture::CloseCANPort()
 
 	closeCANReentryCount++;
 
-		if (fd < 0) close(fd);
+		if (fd >= 0) close(fd);
 		fd = -1;
 		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 	    closeCANReentryCount--;
@@ -210,7 +219,8 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 		}
 		else
 		{
-			msg.id  = buf32[0];
+			msg.id  = buffer[0];
+			//printf ("UDP %08x\n", msg.id);
 			if (msg.id < 0x60) {
 				msg.len = ret - sizeof(uint32_t);
 				for (int i = 0; i < 8 && i < msg.len; i ++) {

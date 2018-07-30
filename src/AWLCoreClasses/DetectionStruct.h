@@ -38,6 +38,7 @@ typedef uint32_t FrameID;
 class AlertCondition;
 class Detection;
 class AScan;
+class AScanPlotter;
 class Track;
 class SensorFrame;
 class ChannelFrame;
@@ -247,6 +248,8 @@ public:
 	int	GetChannelID() {return(channelID);}
 	float GetScaleFactorForRange(int range);
 	void FindMinMaxMean(float *min, float *max, float *mean);
+	void Plot(int top, int left, int width, int height, AScanPlotter *plotter);
+
 public:
 	int receiverID;
 	/** \brief channel ID of the channel where detection origins from */
@@ -267,6 +270,14 @@ public:
 
 };
 
+class AScanPlotter
+{
+public:
+	AScan::Vector aScanData;
+public:
+	virtual void PlotAScan(int x1, int y1, int x2, int y2);
+	void AScanDataChanged(const AScan::Vector& data);
+};
 
 /** \brief A track corresponds to an obstacle tracking based on a singl;e or multiple detections,
            and gives information on the evolution of the detected obstacle across multiple frames
