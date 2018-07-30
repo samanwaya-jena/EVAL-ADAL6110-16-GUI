@@ -56,6 +56,7 @@
 #include <QStandardPaths>
 #include <QDir>
 
+
 #include <string>
 
 
@@ -353,7 +354,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
 	// Initialize the scope window
-	scopeWindow = new AWLQtScope();
+	//scopeWindow = new AWLQtScope();
+	//scopeWindow = new AWLScopePlot();
+	//scopeWindow = new AWLPlotScan();
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();

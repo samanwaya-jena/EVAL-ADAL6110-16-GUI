@@ -36,7 +36,8 @@ message(${Qt5Widgets_DEFINITIONS})
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 message("QT5 CFLAGS")
 message("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp
+ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
+	#awlplotscan.cpp
       	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui
 ../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
 ../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
@@ -46,7 +47,7 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 ../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
 ../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
 ../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
-../AWLQtScope/awlqtscope.ui 
+../AWLQtScope/awlqtscope.ui
 )
 
 # Comment next 2 lines to disable EasySync support
