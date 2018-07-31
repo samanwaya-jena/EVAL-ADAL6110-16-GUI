@@ -63,7 +63,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\lib32-msvc-12.0;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\stage\lib;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;qwtd.lib;m3api.lib;canlib32.lib;opencv_world310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
