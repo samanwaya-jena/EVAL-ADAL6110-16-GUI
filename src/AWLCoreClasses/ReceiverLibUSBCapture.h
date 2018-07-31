@@ -21,10 +21,10 @@
 
 #include <libusb-1.0/libusb.h>
 
-#ifndef Q_MOC_RUN
-#include <boost/asio.hpp> 
-#include <boost/asio/serial_port.hpp> 
-#endif
+//#ifndef Q_MOC_RUN
+//#include <boost/asio.hpp>
+//#include <boost/asio/serial_port.hpp>
+//#endif
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"
@@ -109,11 +109,14 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
-	/** \brief Synchronous write of a CAN message in the stream 
+  int LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending);
+  int ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCount);
+  /** \brief Synchronous write of a CAN message in the stream
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
       */
 	virtual bool WriteMessage(const AWLCANMessage &inMsg);
+  bool PollMessages(DWORD dwNumMsg);
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
@@ -140,6 +143,7 @@ protected:
 		/** \brief counter in the close() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
 
+    boost::mutex mMutexUSB;
 };
 
 } // namespace AWL
