@@ -54,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/include/opencv2/videostab;$(OPENCV_DIR)/include/opencv2/stitching;$(OPENCV_DIR)/include/opencv2/calib3d;$(OPENCV_DIR)/include/opencv2/features2d;$(OPENCV_DIR)/include/opencv2/photo;$(OPENCV_DIR)/include/opencv2/objdetect;$(OPENCV_DIR)/include/opencv2/video;$(OPENCV_DIR)/include/opencv2/ml;$(OPENCV_DIR)/include/opencv2/highgui;$(OPENCV_DIR)/include/opencv2/imgproc;$(OPENCV_DIR)/include/opencv2/flann;$(OPENCV_DIR)/include/opencv2/core;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)/src;$(XIMEA_DIR)\API;..\AWLCoreClasses;..\AWLQtScope;$(ProgramFiles)\Kvaser\Canlib\INC</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/include/opencv2/videostab;$(OPENCV_DIR)/include/opencv2/stitching;$(OPENCV_DIR)/include/opencv2/calib3d;$(OPENCV_DIR)/include/opencv2/features2d;$(OPENCV_DIR)/include/opencv2/photo;$(OPENCV_DIR)/include/opencv2/objdetect;$(OPENCV_DIR)/include/opencv2/video;$(OPENCV_DIR)/include/opencv2/ml;$(OPENCV_DIR)/include/opencv2/highgui;$(OPENCV_DIR)/include/opencv2/imgproc;$(OPENCV_DIR)/include/opencv2/flann;$(OPENCV_DIR)/include/opencv2/core;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;C:/Program Files (x86)/Intel/Composer XE/ipp/include;c:/EasySync;$(QWTDir)/src;$(XIMEA_DIR)\API;..\AWLCoreClasses;..\AWLQtScope;$(ProgramFiles)\Kvaser\Canlib\INC;$(LIBUSB_DIR)/include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -63,9 +63,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\stage\lib;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\debug;$(BOOST_DIR)\stage\lib;$(QWTDir)\lib;$(XIMEA_DIR)\API\x86;$(ProgramFiles)\Kvaser\Canlib\lib\MS;$(SolutionDir)$(Platform)\$(Configuration);$(LIBUSB_DIR)/MS32/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;qwtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libusb-1.0.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;qwtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
@@ -107,6 +107,13 @@
     <ClCompile Include="..\AWLCoreClasses\ReceiverCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverEasySyncCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverKvaserCapture.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverLibUSBCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixTTYCapture.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixUDPCapture.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp" />
