@@ -38,6 +38,7 @@
 
 using namespace awl;
 const QColor rgbRulerLight(255, 255, 255, 128); // Transparent gray light
+const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
 
 
 
@@ -79,61 +80,42 @@ void AWLPlotScan::stop()
      ;
 }	
 
+void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
+{
+	QPainter painter(this);
+	painter.setPen(QPen(rgbRulerLight));
+	painter.setBrush(QBrush(rgbRulerMed));
+	painter.drawLine(x1, y1, x2, y2);
+}
 
 void AWLPlotScan::plotAScans()
 {
-    QPainter painter(this);
-	painter.setPen(QPen(rgbRulerLight));
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		plotAScan(aScan, &painter, 100 + 50 * aScan->channelID, 100, aScan->sampleCount, 50);
+		aScan->Plot(100 + 50 * aScan->channelID, 100, width(), 50, this);
 	}
-
-    update();
+	update();
 }
 
-void AWLPlotScan::plotAScan(AScan::Ptr aScan, QPainter *painter, int top, int left, int width, int height)
-	
+void AWLPlotScan::paintEvent(QPaintEvent *p)
 {
-	int32_t *b32;
-	float scaleFactor;
-	int32_t x1, y1, x2, y2 = 0;
+	QPainter painter(this);
+	painter.setPen(QPen(rgbRulerLight));
+	painter.setBrush(QBrush(rgbRulerMed));
+	painter.drawLine(0, 0, 100, 100);
 
-	if (aScan->samples) {
-		x1 = left;
-		y1 = top;
-		scaleFactor = aScan->GetScaleFactorForRange(height);
-		b32 = (int32_t *)(aScan->samples);
-		for (int i = aScan->sampleOffset; i < aScan->sampleCount; i ++) {
-			x2 = left + i;
-			y2 = top + b32[i + aScan->sampleOffset] * scaleFactor;
-			painter->drawLine(x1, y1, x2, y2);
-			x1 = x2;
-			y1 = y2;
-		}
-	}
+	plotAScans();
+	printf ("PlotScan paint\n");
 }
 
-void AWLPlotScan::slotDetectionDataChanged(const Detection::Vector& data)
+void AWLPlotScan::closeEvent(QCloseEvent * event)
 {
-	/*
-    Detection::Vector::const_iterator i;
-    int index;
+}
 
-        // Make a copy of the provided Detection::Vector to work with
-    copyData.clear();
-        copyData = data;
-
-
-        //Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
-        std::sort(copyData.begin(), copyData.end(), sortDetectionsBottomRightTopLeft);
-
-        //Merge detections according to distance criteria
-        mergeDetection();
-    update();
-
-    */
+void AWLPlotScan::resizeEvent(QResizeEvent * event)
+{
+	update();
 }
 
 

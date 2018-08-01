@@ -71,7 +71,7 @@
       <socketCANdevice>can0</socketCANdevice>
 
       <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+      <posixUDPServerAddress>127.0.0.1</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
       <posixUDPServerPort>23456</posixUDPServerPort>

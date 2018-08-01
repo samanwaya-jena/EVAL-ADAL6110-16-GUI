@@ -399,6 +399,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		scopeWindow->hide();
 	}
+ scopeWindow->show();
 
 	// Interface parameters
 	if (actionSettingsButton->isChecked()) 
@@ -960,7 +961,8 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		AScan::Vector aScanData;
 		bool bNewAScans = GetLatestAScans(aScanData);
-		if (m2DScan) m2DScan->AScanDataChanged(aScanData);
+		if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
+		if (scopeWindow) scopeWindow->update();
 		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 		//{
 			//printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);

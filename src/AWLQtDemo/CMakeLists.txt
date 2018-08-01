@@ -38,7 +38,7 @@ message("QT5 CFLAGS")
 message("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
 	awlplotscan.cpp
-      	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui
+      	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui awlplotscan.ui
 ../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
 ../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
 ../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp

@@ -24,12 +24,13 @@
 #include <QAction>
 #include <QActionGroup>
 #include "ReceiverCapture.h"
+#include "ui_awlplotscan.h"
 #include "DetectionStruct.h"
 
 namespace awl
 {
 
-class AWLPlotScan : public QFrame
+class AWLPlotScan : public QFrame, public AScanPlotter
 {
 	Q_OBJECT
 public:
@@ -39,14 +40,15 @@ public:
 	void stop();
 private:
 	// Ui::AWLPlotScan *ui;
-	AScan::Vector aScanData;
 	void plotAScans(void);
-	void plotAScan(AScan::Ptr aScan, QPainter *painter, int top, int left, int width, int height);
+	void PlotAScan(int x1, int y1, int x2, int y2);
 
 signals:
 	void closed();
-public slots:
-	void slotDetectionDataChanged(const Detection::Vector & data);
+protected :
+   void paintEvent(QPaintEvent *p);
+	void closeEvent(QCloseEvent * event);
+	void resizeEvent(QResizeEvent * event);
 };
 
 } // namespace awl
