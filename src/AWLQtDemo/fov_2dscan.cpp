@@ -634,7 +634,7 @@ void FOV_2DScan::calculateResize()
 
 	// For default mode where we are eDisplayZommModeFront
 	double totalDistance = config.maxSensorsRange+config.spareDepth;
-printf("MaxRange: %f %d\n", config.maxSensorsRange, config.spareDepth);
+//printf("MaxRange: %f %d\n", config.maxSensorsRange, config.spareDepth);
 	if (config.maxSensorsRange+config.spareDepth < 0.000000000000000001) return;
 
 	if (displayZoomMode == eDisplayZoomMode360)
@@ -650,15 +650,15 @@ printf("MaxRange: %f %d\n", config.maxSensorsRange, config.spareDepth);
 
 		float angleInRad = DEG2RAD((config.maxAngularSpan/2)+180);
 		float xWidth = abs((totalDistance*Ratio)*sinf(angleInRad));
-printf("Ratio0: %f %f %f \n", totalDistance, Ratio, angleInRad);
-printf("Width0: %f %d %f \n", maxWidth, width(), xWidth);
+//printf("Ratio0: %f %f %f \n", totalDistance, Ratio, angleInRad);
+//printf("Width0: %f %d %f \n", maxWidth, width(), xWidth);
 
 		maxWidth = (xWidth*2)+rightInPixels;
 		if (maxWidth > width())
 		{
 			maxHeight = (maxHeight * (width() / maxWidth)) -1;
 		}
-printf("Width1: %f %d %f \n", maxWidth, width(), xWidth);
+//printf("Width1: %f %d %f \n", maxWidth, width(), xWidth);
 	}
 
 	if (displayZoomMode == eDisplayZoomModeFront || displayZoomMode == eDisplayZoomModeAuto)

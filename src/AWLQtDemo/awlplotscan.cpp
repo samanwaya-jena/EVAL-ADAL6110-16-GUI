@@ -49,6 +49,7 @@ AWLPlotScan::AWLPlotScan(QWidget *parent) :
 	QWidget window;
 	window.setFixedSize(200,200);
 	window.show();
+	printf ("PlotScan\n");
 
 
 }
@@ -65,6 +66,7 @@ void AWLPlotScan::start(ReceiverCapture::Ptr inReceiverCapture)
 
         if (d_timerId == 0) d_timerId = startTimer( timerInterval );
 	*/
+	printf ("PlotScan start\n");
 }
 
 
