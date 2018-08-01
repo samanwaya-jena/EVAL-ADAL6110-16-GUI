@@ -80,15 +80,15 @@
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
 
       <!-- The LibUSB Vendor id -->
-      <libUsbVendorId>0x1111</libUsbVendorId>
+      <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>0xffff</libUsbProductId>
+      <libUsbProductId>30755</libUsbProductId>
       <!-- The LibUSB input end point -->
-      <libUsbEndPointIn>1</libUsbEndPointIn>
+      <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>3000</libUsbTimeOut>
+      <libUsbTimeOut>1000</libUsbTimeOut>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
