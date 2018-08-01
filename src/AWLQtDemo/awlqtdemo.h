@@ -168,6 +168,7 @@ private:
 	TableView * mTableView;
 	//AWLQtScope* scopeWindow;
 	AWLPlotScan* scopeWindow;
+	//TableView * scopeWindow;
 #if 0
 	QLabel	mLogoLabel;
 #endif
