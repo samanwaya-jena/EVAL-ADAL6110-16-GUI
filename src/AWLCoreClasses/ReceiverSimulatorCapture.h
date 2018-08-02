@@ -19,10 +19,10 @@
 
 #include <stdint.h>
 
-#ifndef Q_MOC_RUN
-#include <boost/asio.hpp> 
-#include <boost/asio/serial_port.hpp> 
-#endif
+//#ifndef Q_MOC_RUN
+//#include <boost/asio.hpp> 
+//#include <boost/asio/serial_port.hpp> 
+//#endif
 
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
