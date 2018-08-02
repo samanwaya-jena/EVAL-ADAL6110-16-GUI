@@ -336,7 +336,7 @@ void ReceiverLibUSBCapture::DoOneThreadIteration()
     {
       ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
 
-      //ProcessRaw(rawFromLibUSB, (uint8_t*) buf, 1600 * 2);
+      ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, 1600 * 2);
     }
 
     if (!dwCount && !dwReadPending)
