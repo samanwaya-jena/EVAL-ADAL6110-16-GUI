@@ -887,7 +887,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 		}
 	} // BOOST_FOREACH(const Detection::Ptr
 
-	//plotAScans();
+	plotAScans();
 	//printf("2dPaint\n");
 }
 
@@ -1598,7 +1598,7 @@ void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
     update();
 }
 
-/*
+
 void FOV_2DScan::PlotAScan(int x1, int y1, int x2, int y2)
 {
 	QPainter painter(this);
@@ -1615,7 +1615,6 @@ void FOV_2DScan::plotAScans()
 	}
 	update();
 }
-*/
 
 void FOV_2DScan::mergeDetection()
 {

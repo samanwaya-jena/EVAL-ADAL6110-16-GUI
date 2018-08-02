@@ -961,8 +961,10 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		AScan::Vector aScanData;
 		bool bNewAScans = GetLatestAScans(aScanData);
-		if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
-		if (scopeWindow) scopeWindow->update();
+		if (m2DScan) m2DScan->AScanDataChanged(aScanData);
+		if (m2DScan) m2DScan->update();
+		//if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
+		//if (scopeWindow) scopeWindow->update();
 		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 		//{
 			//printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);

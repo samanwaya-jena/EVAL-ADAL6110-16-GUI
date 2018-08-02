@@ -161,12 +161,14 @@ AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int channelI
 
 void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 {
+	uint16_t *u16;
+	int16_t *i16;
 	uint32_t *u32;
 	int32_t *i32;
 	int i;
 
-	u32 = (uint32_t*)samples;
-	i32 = (int32_t*)samples;
+	u16 = (uint16_t*)samples;
+	i16 = (int16_t*)samples;
 
 	*min = *max = *mean = 0.0;
 	for (i = sampleOffset; i < sampleCount - 100; i ++) {
@@ -174,7 +176,15 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 		default:
 				return;
 		case 2:
-				return;
+			if (sampleSigned) {
+				if (i16[i] < *min) *min = i16[i];
+				if (i16[i] > *max) *max = i16[i];
+				*mean += i16[i];
+			} else {
+				if (u16[i] < *min) *min = u16[i];
+				if (u16[i] > *max) *max = u16[i];
+				*mean += u16[i];
+			}
 		case 4:
 			if (sampleSigned) {
 				if (i32[i] < *min) *min = i32[i];
@@ -201,6 +211,7 @@ float AScan::GetScaleFactorForRange(int range)
 
 void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter)
 {
+	int16_t *b16;
 	int32_t *b32;
 	float xScaleFactor = 0.0;
 	float yScaleFactor = 0.0;
@@ -212,11 +223,21 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 		y1 = top;
 		if (width) xScaleFactor = (sampleCount) / width;
 		yScaleFactor = GetScaleFactorForRange(height);
+		b16 = (int16_t *)(samples);
 		b32 = (int32_t *)(samples);
 		for (int x = 0; x < width; x ++) {
 			x2 = left + x;
 			i = x * xScaleFactor;
-			y2 = top + b32[i + sampleOffset] * yScaleFactor;
+			switch (sampleSize) {
+			default:
+				return;
+			case 2:
+				y2 = top + b16[i + sampleOffset] * yScaleFactor;
+				break;
+			case 4:
+				y2 = top + b32[i + sampleOffset] * yScaleFactor;
+				break;
+			}
 			plotter->PlotAScan(x1, y1, x2, y2);
 			x1 = x2;
 			y1 = y2;
