@@ -197,6 +197,12 @@
     <ClCompile Include="..\AWLCoreClasses\ReceiverPosixUDPCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="awlplotscan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_awlplotscan.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -237,6 +243,12 @@
     </CustomBuild>
     <CustomBuild Include="VideoViewer.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="awlplotscan.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="awlplotscan.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -307,6 +319,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_awlplotscan.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
