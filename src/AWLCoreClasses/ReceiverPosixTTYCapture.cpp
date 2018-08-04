@@ -44,7 +44,10 @@ using namespace awl;
 const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh rate is 100Hz, this should not exceed 10ms
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
+const size_t header_size = 12;
+const uint8_t tty_header[header_size] = {0xb0, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x80, 0xff, 0x7f};
 
+uint8_t buffer[4096];
 
 ReceiverPosixTTYCapture::ReceiverPosixTTYCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 	                   const std::string &inTtyName, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
@@ -54,24 +57,25 @@ ReceiverPosixTTYCapture::ReceiverPosixTTYCapture(int receiverID, int inReceiverC
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
                    canRate1Mbps, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
 				   inParametersAlgos, inParametersTrackers),
-fd(-1),
+fd(-1), synced(false), synced_state(0), payload_size(0), payload_read(0),
 closeCANReentryCount(0)
 {
 	// Update settings from application
 	ttyName = inTtyName;
-
+	printf("Using TTY %s\n", ttyName.c_str());
 }
 
 
 ReceiverPosixTTYCapture::ReceiverPosixTTYCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCANCapture(receiverID, propTree),
-fd(-1),
+fd(-1), synced(false), synced_state(0), payload_size(0), payload_read(0),
 closeCANReentryCount(0)
 
 {
 	// Read the configuration from the configuration file
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
+	printf("Using TTY %s\n", ttyName.c_str());
 }
 
 ReceiverPosixTTYCapture::~ReceiverPosixTTYCapture()
@@ -95,8 +99,6 @@ bool  ReceiverPosixTTYCapture::OpenCANPort()
 		perror("TTY open");
 		goto posixtty_exit;
 	}
-
-	printf("UDP Using port %s\n", ttyName.c_str());
 
 	return true;
 
@@ -130,39 +132,136 @@ bool  ReceiverPosixTTYCapture::CloseCANPort()
 		return(true);
 }
 
-
 void ReceiverPosixTTYCapture::DoOneThreadIteration()
 
 {
-	uint8_t buffer[256];
-	uint32_t *buf32;
 	size_t size = sizeof(buffer);
 	int ret;
+	static int fid = 0;
 
-	buf32 = (uint32_t*)buffer;
+
+	if (synced) {
+		//printf("TTY F\n");
+		ProcessFrame();
+	} else {
+		//printf("TTY S\n");
+		Sync();
+	}
+}
+
+void ReceiverPosixTTYCapture::ProcessFrame()
+{
+	ssize_t ret;
+	static int fid = 0;
+	//off_t pos;
 
 	AWLCANMessage msg;
 
-	if (fd >= 0)
-	{
-		ret = read(fd, (void*)buffer, size);
+	payload_read = 0;
 
-		if (ret < 0)
+	while (payload_read < payload_size) {
+
+		if (fd >= 0)
 		{
-			//perror("CAN read");
-		}
-		else
-		{
-			//	if (buffer.can_id == MSG_CONTROL_GROUP) {
-			//process_cmd(awl, buffer.can_id, buffer.data, buffer.can_dlc);
-			msg.id  = buf32[0];
-			msg.len = ret - sizeof(uint32_t);
-			for (int i = 0; i < 8 && i < msg.len; i ++) {
-				msg.data[i] = buffer[sizeof(uint32_t)+i];
+			//pos = lseek (fd, 0, SEEK_CUR);
+			ret = read(fd, buffer + header_size + payload_read, payload_size - payload_read);
+			if (ret < 0) {
+				if (errno != EAGAIN && errno != EWOULDBLOCK) {
+					perror("TTY read");
+					CloseCANPort();
+					OpenCANPort();
+				}
+			} else if (ret > 0) {
+				payload_read += ret;
+
+				if (payload_read == payload_size) {
+					uint16_t* data16 = (uint16_t*)msg.data;
+
+					msg.id = 0x0a;
+					msg.len = 8;
+					data16[0] = fid;
+					data16[1] = 0x200;
+					ParseMessage(msg);
+
+					msg.id = 0x0b;
+					msg.len = 8;
+					data16[0] = fid;
+					data16[2] = 0x200;
+					ParseMessage(msg);
+
+					msg.id = 0x09;
+					msg.len = 8;
+					data16[0] = fid;
+					ParseMessage(msg);
+
+					fid ++;
+
+					ProcessRaw(rawFromPosixTTY, buffer, payload_size + header_size);
+					synced = false;
+					synced_state = 0;
+					/*
+					printf ("Raw @%d %d ", pos, payload_size);
+					for (int i = 0; i < payload_size/2; i++) {
+						printf ("%04x ", ((uint16_t*)(buffer + header_size))[i]);
+					}
+					pos = lseek (fd, 0, SEEK_CUR);
+					printf (" @%d \n", pos);
+					*/
+				}
+			} else {
+				CloseCANPort();
+				OpenCANPort();
 			}
-			ParseMessage(msg);
 		}
 	}
+}
+
+void ReceiverPosixTTYCapture::Sync()
+{
+	//static int last_pixel = 0;
+	//int count;
+	//
+	//off_t pos;
+	ssize_t ret;
+
+	//pos = lseek (fd, 0, SEEK_CUR);
+	//printf ("TTY Sync @%d ", pos);
+	if (synced) return; 
+
+	while (synced_state < header_size) {
+		//printf("%d ", synced_state);
+		if (fd >= 0)
+		{
+			ret = read(fd, (void *)(buffer + synced_state), 1);
+			if (ret < 0) {
+				if (errno != EAGAIN && errno != EWOULDBLOCK) {
+					perror("TTY read");
+					CloseCANPort();
+					OpenCANPort();
+				}
+			} else if (ret > 0) {
+				if (synced_state == 3) pixel = buffer[synced_state] << 8 | buffer[synced_state - 1];
+				if (synced_state == 5) timestamp = buffer[synced_state] << 8 | buffer[synced_state - 1]; 
+				if (synced_state == 7) payload_size = (buffer[synced_state] << 8 | buffer[synced_state - 1]) * 2;
+
+				if (tty_header[synced_state] == 0x01) { // 0x01 stands for don't care
+					synced_state ++;
+				} else {
+					if (buffer[synced_state] == tty_header [synced_state]) {
+						synced_state ++;
+					} else {
+						synced_state = 0;
+					}
+				}
+			} else {
+				CloseCANPort();
+				OpenCANPort();
+			}
+		}
+	}
+	//pos = lseek (fd, 0, SEEK_CUR);
+	//printf (" @%d %d \n", pos, ret);
+	synced = true;
 }
 
 bool ReceiverPosixTTYCapture::WriteMessage(const AWLCANMessage &inMsg)
@@ -189,7 +288,6 @@ bool ReceiverPosixTTYCapture::WriteMessage(const AWLCANMessage &inMsg)
 
 	return(true);
 }
-
 
 
 bool ReceiverPosixTTYCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)

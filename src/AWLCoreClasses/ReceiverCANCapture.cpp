@@ -166,7 +166,7 @@ void ReceiverCANCapture::ParseMessage(AWLCANMessage &inMsg)
 	ForceFrameResync(inMsg);
 #endif //FORCE_FRAME_RESYNC_PATCH
 
-
+	//printf ("ParseMessage %02x \n", msgID);
 	if (msgID == 1) 
 	{
 		ParseSensorStatus(inMsg);
@@ -2120,15 +2120,39 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 	bool sampleSigned;
 	bool transmit = false;
 
+	uint16_t * rawData16;
+
+	rawData16 = (uint16_t *)rawData;
+
+	/*
+	printf ("ProcessRaw(%d) ", size);
+	for (int i = 0; i < size; i++) {
+		printf ("%02x ", rawData[i]);
+	}
+	printf ("\n");
+	*/
 
 	switch (provider) {
 		default:
 		case rawFromLibUSB:
-		case rawFromPosixTTY:
 			return;
+		case rawFromPosixTTY:
+			msg_id = rawData[0];
+			if (msg_id != 0xb0) return;
+			channel = rawData16[1];
+			if (channel >= maxRawBufferCount) return;
+			sampleOffset = 12;
+			sampleSize = 2;
+			sampleSigned = true;
+			if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+			rawBufferCount ++;
+			memcpy (rawBuffers[channel], rawData, size);
+			sampleCount = size - sampleOffset;
+			transmit = true;
+			break;	
 		case rawFromPosixUDP:
 			msg_id = rawData[0];
-			channel = rawData[2];
+			channel = rawData16[1];
 			if (channel >= maxRawBufferCount) return;
 			sampleOffset = 16;
 			sampleSize = 4;
@@ -2167,7 +2191,8 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 		aScan->sampleSigned = sampleSigned;
 		//printf("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
 
-		rawLock.unlock(); }
+		rawLock.unlock();
+	}
 
 	// Debug and Log messages
 	//DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);

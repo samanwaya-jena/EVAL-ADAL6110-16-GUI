@@ -169,9 +169,14 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 
 	u16 = (uint16_t*)samples;
 	i16 = (int16_t*)samples;
+	u32 = (uint32_t*)samples;
+	i32 = (int32_t*)samples;
 
 	*min = *max = *mean = 0.0;
-	for (i = sampleOffset; i < sampleCount - 100; i ++) {
+	*min = INFINITY;
+	*max = -INFINITY;
+
+	for (i = sampleOffset; i < sampleCount ; i ++) {
 		switch (sampleSize) {
 		default:
 				return;
@@ -185,6 +190,7 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 				if (u16[i] > *max) *max = u16[i];
 				*mean += u16[i];
 			}
+			break;
 		case 4:
 			if (sampleSigned) {
 				if (i32[i] < *min) *min = i32[i];
@@ -196,9 +202,8 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 				*mean += u32[i];
 			}
 		}
-
 	}
-	*mean = *mean / i;
+	if (i) *mean = *mean / i;
 }
 
 float AScan::GetScaleFactorForRange(int range)
@@ -221,26 +226,56 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 	if (samples) {
 		x1 = left;
 		y1 = top;
-		if (width) xScaleFactor = (sampleCount) / width;
-		yScaleFactor = GetScaleFactorForRange(height);
-		b16 = (int16_t *)(samples);
-		b32 = (int32_t *)(samples);
-		for (int x = 0; x < width; x ++) {
-			x2 = left + x;
-			i = x * xScaleFactor;
-			switch (sampleSize) {
-			default:
-				return;
-			case 2:
-				y2 = top + b16[i + sampleOffset] * yScaleFactor;
-				break;
-			case 4:
-				y2 = top + b32[i + sampleOffset] * yScaleFactor;
-				break;
+		if (sampleCount > width) {
+
+			if (width) xScaleFactor = (sampleCount) / width;
+			yScaleFactor = GetScaleFactorForRange(height);
+			b16 = (int16_t *)(samples);
+			b32 = (int32_t *)(samples);
+			for (int x = 0; x < width; x ++) {
+				x2 = left + x;
+				i = x * xScaleFactor;
+				switch (sampleSize) {
+				default:
+					return;
+				case 2:
+					y2 = top + b16[i + sampleOffset] * yScaleFactor;
+					break;
+				case 4:
+					y2 = top + b32[i + sampleOffset] * yScaleFactor;
+					break;
+				}
+				plotter->PlotAScan(x1, y1, x2, y2);
+				x1 = x2;
+				y1 = y2;
 			}
-			plotter->PlotAScan(x1, y1, x2, y2);
-			x1 = x2;
-			y1 = y2;
+		} else {
+
+			if (sampleCount) xScaleFactor = width / sampleCount;
+			yScaleFactor = GetScaleFactorForRange(height);
+			b16 = (int16_t *)(samples);
+			b32 = (int32_t *)(samples);
+			for (int x = 0; x < sampleCount; x ++) {
+				i = x * xScaleFactor;
+				x2 = left + i;
+				switch (sampleSize) {
+				default:
+					return;
+				case 2:
+					y2 = top + b16[x + sampleOffset] * yScaleFactor;
+					break;
+				case 4:
+					y2 = top + b32[i + sampleOffset] * yScaleFactor;
+					break;
+				}
+				if (x == 0) {
+					x1 = x2;
+					y1 = y2;
+				}
+				plotter->PlotAScan(x1, y1, x2, y2);
+				x1 = x2;
+				y1 = y2;
+			}
 		}
 	}
 }

@@ -120,13 +120,26 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
+	void Sync();
+	void ProcessFrame();
+
 // Protected variables
 protected:
 	    	/** \brief TTY Name. */ 
 		std::string ttyName;
 
+		bool synced;
+		int synced_state;
+
+		int pixel;
+		int timestamp;
+		size_t payload_size;
+		size_t payload_read;
+
 	    	/** \brief TTY file descriptor.*/
 		int fd;
+
+		uint8_t buffer[4096];
 
 		/** \brief Time-out without an input message after which we try to recomnnect the serial port. */
 		boost::posix_time::ptime reconnectTime;
