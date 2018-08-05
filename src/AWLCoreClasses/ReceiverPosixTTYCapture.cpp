@@ -57,7 +57,7 @@ ReceiverPosixTTYCapture::ReceiverPosixTTYCapture(int receiverID, int inReceiverC
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
                    canRate1Mbps, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
 				   inParametersAlgos, inParametersTrackers),
-fd(-1), synced(false), synced_state(0), payload_size(0), payload_read(0),
+fd(-1), synced(false), synced_state(0), payload_size(0), payload_read(0), max_pixel(0),
 closeCANReentryCount(0)
 {
 	// Update settings from application
@@ -68,7 +68,7 @@ closeCANReentryCount(0)
 
 ReceiverPosixTTYCapture::ReceiverPosixTTYCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCANCapture(receiverID, propTree),
-fd(-1), synced(false), synced_state(0), payload_size(0), payload_read(0),
+fd(-1), synced(false), synced_state(0), payload_size(0), payload_read(0), max_pixel(0),
 closeCANReentryCount(0)
 
 {
@@ -154,6 +154,7 @@ void ReceiverPosixTTYCapture::ProcessFrame()
 	ssize_t ret;
 	static int fid = 0;
 	//off_t pos;
+	static int max_pixel = 0;
 
 	AWLCANMessage msg;
 
@@ -177,24 +178,26 @@ void ReceiverPosixTTYCapture::ProcessFrame()
 				if (payload_read == payload_size) {
 					uint16_t* data16 = (uint16_t*)msg.data;
 
-					msg.id = 0x0a;
-					msg.len = 8;
-					data16[0] = fid;
-					data16[1] = 0x200;
-					ParseMessage(msg);
+					if (pixel == max_pixel) {
+						msg.id = 0x0a;
+						msg.len = 8;
+						data16[0] = fid;
+						data16[1] = 0x200;
+						ParseMessage(msg);
 
-					msg.id = 0x0b;
-					msg.len = 8;
-					data16[0] = fid;
-					data16[2] = 0x200;
-					ParseMessage(msg);
+						msg.id = 0x0b;
+						msg.len = 8;
+						data16[0] = fid;
+						data16[2] = 0x200;
+						ParseMessage(msg);
 
-					msg.id = 0x09;
-					msg.len = 8;
-					data16[0] = fid;
-					ParseMessage(msg);
+						msg.id = 0x09;
+						msg.len = 8;
+						data16[0] = fid;
+						ParseMessage(msg);
 
-					fid ++;
+						fid ++;
+					}
 
 					ProcessRaw(rawFromPosixTTY, buffer, payload_size + header_size);
 					synced = false;
@@ -243,6 +246,8 @@ void ReceiverPosixTTYCapture::Sync()
 				if (synced_state == 3) pixel = buffer[synced_state] << 8 | buffer[synced_state - 1];
 				if (synced_state == 5) timestamp = buffer[synced_state] << 8 | buffer[synced_state - 1]; 
 				if (synced_state == 7) payload_size = (buffer[synced_state] << 8 | buffer[synced_state - 1]) * 2;
+
+				if (pixel > max_pixel) max_pixel = pixel;
 
 				if (tty_header[synced_state] == 0x01) { // 0x01 stands for don't care
 					synced_state ++;

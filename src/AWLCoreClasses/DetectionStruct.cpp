@@ -223,6 +223,8 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 	int32_t x1, y1, x2, y2 = 0;
 	int i;
 
+	plotter->LabelAScan(channelID);
+
 	if (samples) {
 		x1 = left;
 		y1 = top;
@@ -287,6 +289,11 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 void AScanPlotter::PlotAScan(int x1, int y1, int x2, int y2)
 {
 	printf("%d %d, %d %d\n", x1, y1, x2, y2);
+}
+
+void AScanPlotter::LabelAScan(int channel)
+{
+	printf("Ch %d\n", channel);
 }
 
 void AScanPlotter::AScanDataChanged(const AScan::Vector& data)

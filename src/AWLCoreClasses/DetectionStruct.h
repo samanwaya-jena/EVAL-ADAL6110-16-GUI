@@ -276,6 +276,7 @@ public:
 	AScan::Vector aScanData;
 public:
 	virtual void PlotAScan(int x1, int y1, int x2, int y2);
+	virtual void LabelAScan(int channel = -1);
 	void AScanDataChanged(const AScan::Vector& data);
 };
 

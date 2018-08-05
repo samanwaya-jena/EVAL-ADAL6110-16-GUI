@@ -2120,6 +2120,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 	bool sampleSigned;
 	bool transmit = false;
 	static int max_msg_id = 0x80;
+	static int max_channel = 0;
 
 	uint16_t * rawData16;
 
@@ -2149,8 +2150,10 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			rawBufferCount ++;
 			if (size > maxRawBufferSize) size = maxRawBufferSize;
 			memcpy (rawBuffers[channel], rawData, size);
-			sampleCount = size - sampleOffset;
+			sampleCount = size / 2 - sampleOffset;
 			transmit = true;
+			if (channel > max_channel) max_channel = channel;
+			if (channel == max_channel) transmit = true;
 			break;	
 		case rawFromPosixUDP:
 			msg_id = rawData[0];

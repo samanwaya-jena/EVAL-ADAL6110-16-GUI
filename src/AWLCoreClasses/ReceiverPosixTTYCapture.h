@@ -132,6 +132,7 @@ protected:
 		int synced_state;
 
 		int pixel;
+		int max_pixel;
 		int timestamp;
 		size_t payload_size;
 		size_t payload_read;
