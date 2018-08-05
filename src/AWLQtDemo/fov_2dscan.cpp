@@ -1612,12 +1612,13 @@ void FOV_2DScan::LabelAScan(int channel)
 	QPainter painter(this);
 	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerText));
-	drawText(&painter, 200, 200 + 50 * channel, "Ch " + QString::number(channel));
+	painter.drawText(100, 100 + 50 * channel, "Ch " + QString::number(channel));
 	//printf("pixel %d\n", channel);
 }
 
 void FOV_2DScan::plotAScans()
 {
+	QPainter painter(this);
 	if (!showAScan) return;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
