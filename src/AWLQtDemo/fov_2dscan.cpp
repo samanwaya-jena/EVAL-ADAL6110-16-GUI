@@ -1602,13 +1602,23 @@ void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
 void FOV_2DScan::PlotAScan(int x1, int y1, int x2, int y2)
 {
 	QPainter painter(this);
+	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerLight));
 	painter.drawLine(x1, y1, x2, y2);
 }
 
+void FOV_2DScan::LabelAScan(int channel)
+{
+	QPainter painter(this);
+	if (!showAScan) return;
+	painter.setPen(QPen(rgbRulerText));
+	drawText(&painter, 200, 200 + 50 * channel, "Ch " + QString::number(channel));
+	//printf("pixel %d\n", channel);
+}
+
 void FOV_2DScan::plotAScans()
 {
-
+	if (!showAScan) return;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
 		aScan->Plot(100 + 50 * aScan->channelID, 100, width(), 50, this);

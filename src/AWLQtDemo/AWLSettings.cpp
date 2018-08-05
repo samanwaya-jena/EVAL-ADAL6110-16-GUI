@@ -126,6 +126,7 @@ bool AWLSettings::ReadSettings()
 	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow");
 	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow");
 	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow");;
+	bDisplayAScanViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow");;
 	bDisplayScopeWindow = propTree.get<bool>("config.layout.displayScopeWindow");
 	bDisplayCameraWindow = propTree.get<bool>("config.layout.displayCameraWindow");
 

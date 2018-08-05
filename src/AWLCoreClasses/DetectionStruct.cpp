@@ -172,7 +172,7 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 	u32 = (uint32_t*)samples;
 	i32 = (int32_t*)samples;
 
-	*min = *max = *mean = 0.0;
+	*mean = 0.0;
 	*min = INFINITY;
 	*max = -INFINITY;
 
@@ -284,6 +284,13 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 			}
 		}
 	}
+}
+
+void AScanPlotter::ShowAScan(bool show)
+{
+	showAScan = show;
+	if (showAScan) printf ("show ascan\n");
+	else printf ("hide ascan\n");
 }
 
 void AScanPlotter::PlotAScan(int x1, int y1, int x2, int y2)

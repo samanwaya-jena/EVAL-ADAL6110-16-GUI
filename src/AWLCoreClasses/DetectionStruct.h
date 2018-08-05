@@ -257,13 +257,15 @@ public:
 
 	RawProvider rawProvider;
 
-	size_t sampleOffset;
+	size_t sampleOffset; // Samples to ignore at the begining
 
-	size_t sampleCount;
+	size_t sampleDrop;  // Samples to ignore at the end
 
-	size_t sampleSize;
+	size_t sampleCount; // Samples to considere
 
-	bool sampleSigned;
+	size_t sampleSize; // Size of a sample in bytes
+
+	bool sampleSigned; // Are the sample signed ?
 
 	uint8_t *samples;
 
@@ -274,7 +276,9 @@ class AScanPlotter
 {
 public:
 	AScan::Vector aScanData;
+	bool showAScan;
 public:
+	virtual void ShowAScan(bool show);
 	virtual void PlotAScan(int x1, int y1, int x2, int y2);
 	virtual void LabelAScan(int channel = -1);
 	void AScanDataChanged(const AScan::Vector& data);

@@ -2114,10 +2114,11 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 {
 	int channel = -1;
 	int msg_id = -1;
-	size_t sampleOffset;
+	size_t sampleOffset = 0;
+	size_t sampleDrop = 0;
 	static size_t sampleCount = 0;
-	size_t sampleSize;
-	bool sampleSigned;
+	size_t sampleSize = 1;
+	bool sampleSigned = false;
 	bool transmit = false;
 	static int max_msg_id = 0x80;
 	static int max_channel = 0;
@@ -2144,6 +2145,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			channel = rawData16[1];
 			if (channel >= maxRawBufferCount) break;
 			sampleOffset = 12;
+			sampleDrop = 0;
 			sampleSize = 2;
 			sampleSigned = true;
 			if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
@@ -2161,6 +2163,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			if (channel >= maxRawBufferCount) break;
 			if (msg_id > 0xbf) return;
 			sampleOffset = 16;
+			sampleDrop = 100;
 			sampleSize = 4;
 			sampleSigned = true;
 			switch (msg_id) {
@@ -2196,7 +2199,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 		aScan->sampleSize = sampleSize;
 		aScan->rawProvider = provider;
 		aScan->sampleOffset = sampleOffset;
-		aScan->sampleCount =  sampleCount;;
+		aScan->sampleCount =  sampleCount - sampleDrop;
 		aScan->sampleSigned = sampleSigned;
 		//printf("transmit ascan %d %d\n", aScan->channelID, aScan->sampleCount);
 

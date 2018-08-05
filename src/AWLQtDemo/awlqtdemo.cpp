@@ -85,6 +85,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	actionSettingsButton(NULL),
 	action2DButton(NULL),
 	actionTableButton(NULL),
+	actionAScanButton(NULL),
 #ifdef USE_OPENCV_VIDEO
 	actionCameraButton(NULL),
 #endif
@@ -399,7 +400,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		scopeWindow->hide();
 	}
- scopeWindow->show();
 
 	// Interface parameters
 	if (actionSettingsButton->isChecked()) 
@@ -430,6 +430,15 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	else
 	{
 		mTableView->hide();
+	}
+
+	if (actionAScanButton->isChecked()) 
+	{
+		m2DScan->ShowAScan(true);
+	}
+	else
+	{
+		m2DScan->ShowAScan(false);
 	}
 
 #ifdef USE_OPENCV_VIDEO
@@ -535,6 +544,11 @@ void AWLQtDemo::SetupToolBar()
 	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
 	ui.mainToolBar->addAction(actionTableButton);
 
+	actionAScanButton = new QAction(QIcon("./Images/ButtonBitmaps/AScan.png"), "AScan View", 0);
+	actionAScanButton->setCheckable(true);
+	actionAScanButton->setChecked(globalSettings->bDisplayAScanViewWindow);
+	ui.mainToolBar->addAction(actionAScanButton);
+
 #ifdef USE_OPENCV_VIDEO
 	actionCameraButton = new QAction(QIcon("./Images/ButtonBitmaps/Camera.png"), "Camera View", 0);
 	actionCameraButton->setCheckable(true);
@@ -564,6 +578,7 @@ void AWLQtDemo::SetupToolBar()
 
 	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
 	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
+	connect(actionAScanButton, SIGNAL(toggled(bool )), this, SLOT(on_viewAScanViewActionToggled()));
 #ifdef USE_OPENCV_VIDEO
 	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
 #endif
@@ -2102,6 +2117,11 @@ void AWLQtDemo::on_viewTableViewActionToggled()
 	}
 
 	ui.gridDisplayLayout->update();
+}
+
+void AWLQtDemo::on_viewAScanViewActionToggled()
+{
+	m2DScan->ShowAScan (actionAScanButton->isChecked()) ;
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()

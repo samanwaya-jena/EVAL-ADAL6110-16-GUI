@@ -109,6 +109,7 @@ private slots:
 
 	void on_view2DActionToggled();
 	void on_viewTableViewActionToggled();
+	void on_viewAScanViewActionToggled();
 	void on_viewGraphActionToggled();
 #ifdef USE_OPENCV_VIDEO
 	void on_viewCameraActionToggled();
@@ -175,6 +176,7 @@ private:
 	QAction *actionSettingsButton;
 	QAction *action2DButton;
 	QAction *actionTableButton;
+	QAction *actionAScanButton;
 #ifdef USE_OPENCV_VIDEO
 	QAction *actionCameraButton;
 #endif

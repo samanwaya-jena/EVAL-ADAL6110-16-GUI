@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'awlqtdemo.ui'
+** Form generated from reading UI file 'awlqtdemoYDlCSA.ui'
 **
-** Created by: Qt User Interface Compiler version 5.9.4
+** Created by: Qt User Interface Compiler version 5.10.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_AWLQTDEMO_H
-#define UI_AWLQTDEMO_H
+#ifndef AWLQTDEMOYDLCSA_H
+#define AWLQTDEMOYDLCSA_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -36,11 +36,11 @@ QT_BEGIN_NAMESPACE
 
 class Ui_AWLQtDemoClass
 {
-
 public:
     QAction *actionQuitter;
     QAction *actionGraph;
     QAction *action2D;
+    QAction *actionAScan;
     QAction *actionCamera;
     QAction *actionTableView;
     QAction *actionSettings;
@@ -202,7 +202,7 @@ public:
         if (AWLQtDemoClass->objectName().isEmpty())
             AWLQtDemoClass->setObjectName(QStringLiteral("AWLQtDemoClass"));
         AWLQtDemoClass->setWindowModality(Qt::NonModal);
-        AWLQtDemoClass->resize(972, 309);
+        AWLQtDemoClass->resize(972, 311);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -1114,6 +1114,9 @@ public:
         action2D = new QAction(AWLQtDemoClass);
         action2D->setObjectName(QStringLiteral("action2D"));
         action2D->setCheckable(true);
+        actionAScan = new QAction(AWLQtDemoClass);
+        actionAScan->setObjectName(QStringLiteral("actionAScan"));
+        actionAScan->setCheckable(true);
         actionCamera = new QAction(AWLQtDemoClass);
         actionCamera->setObjectName(QStringLiteral("actionCamera"));
         actionCamera->setCheckable(true);
@@ -2633,7 +2636,7 @@ public:
         QObject::connect(playbackButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_playbackPushButton_clicked()));
         QObject::connect(stopButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_stopPushButton_clicked()));
         QObject::connect(calibrateButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_calibratePushButton_clicked()));
-        QObject::connect(registerFPGASetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerFPGASetPushButton_clicked()));
+        QObject::connect(registerFPGASetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(onRegisterFPGASetPushButton_clicked()));
         QObject::connect(registerFPGAGetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerFPGAGetPushButton_clicked()));
         QObject::connect(registerADCSetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerADCSetPushButton_clicked()));
         QObject::connect(registerADCGetPushButton, SIGNAL(clicked()), AWLQtDemoClass, SLOT(on_registerADCGetPushButton_clicked()));
@@ -2662,186 +2665,187 @@ public:
 
     void retranslateUi(QMainWindow *AWLQtDemoClass)
     {
-        AWLQtDemoClass->setWindowTitle(QApplication::translate("AWLQtDemoClass", "AWLQtDemo", Q_NULLPTR));
-        actionQuitter->setText(QApplication::translate("AWLQtDemoClass", "Quitter", Q_NULLPTR));
-        actionGraph->setText(QApplication::translate("AWLQtDemoClass", "Scope", Q_NULLPTR));
-        action2D->setText(QApplication::translate("AWLQtDemoClass", "2D", Q_NULLPTR));
-        actionCamera->setText(QApplication::translate("AWLQtDemoClass", "Camera", Q_NULLPTR));
-        actionTableView->setText(QApplication::translate("AWLQtDemoClass", "Table View", Q_NULLPTR));
-        actionSettings->setText(QApplication::translate("AWLQtDemoClass", "Settings", Q_NULLPTR));
-        internalCalibrationGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Internal Calibration", Q_NULLPTR));
-        calibrationChannelMaskGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Channel mask", Q_NULLPTR));
-        calibrationChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "7", Q_NULLPTR));
-        calibrationChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "6", Q_NULLPTR));
-        calibrationChannel5CheckBox->setText(QApplication::translate("AWLQtDemoClass", "5", Q_NULLPTR));
-        calibrationChannel2CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 2", Q_NULLPTR));
-        calibrationChannel3CheckBox->setText(QApplication::translate("AWLQtDemoClass", "3", Q_NULLPTR));
-        calibrationChannel1CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 1", Q_NULLPTR));
-        calibrationChannel4CheckBox->setText(QApplication::translate("AWLQtDemoClass", "4", Q_NULLPTR));
-        calibrationBetaLabel->setText(QApplication::translate("AWLQtDemoClass", "Beta:", Q_NULLPTR));
+        AWLQtDemoClass->setWindowTitle(QApplication::translate("AWLQtDemoClass", "AWLQtDemo", nullptr));
+        actionQuitter->setText(QApplication::translate("AWLQtDemoClass", "Quitter", nullptr));
+        actionGraph->setText(QApplication::translate("AWLQtDemoClass", "Scope", nullptr));
+        action2D->setText(QApplication::translate("AWLQtDemoClass", "2D", nullptr));
+        actionAScan->setText(QApplication::translate("AWLQtDemoClass", "AScan", nullptr));
+        actionCamera->setText(QApplication::translate("AWLQtDemoClass", "Camera", nullptr));
+        actionTableView->setText(QApplication::translate("AWLQtDemoClass", "Table View", nullptr));
+        actionSettings->setText(QApplication::translate("AWLQtDemoClass", "Settings", nullptr));
+        internalCalibrationGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Internal Calibration", nullptr));
+        calibrationChannelMaskGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Channel mask", nullptr));
+        calibrationChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "7", nullptr));
+        calibrationChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "6", nullptr));
+        calibrationChannel5CheckBox->setText(QApplication::translate("AWLQtDemoClass", "5", nullptr));
+        calibrationChannel2CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 2", nullptr));
+        calibrationChannel3CheckBox->setText(QApplication::translate("AWLQtDemoClass", "3", nullptr));
+        calibrationChannel1CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 1", nullptr));
+        calibrationChannel4CheckBox->setText(QApplication::translate("AWLQtDemoClass", "4", nullptr));
+        calibrationBetaLabel->setText(QApplication::translate("AWLQtDemoClass", "Beta:", nullptr));
         calibrationFrameQtySpinBox->setSuffix(QString());
-        calibrationFrameQtyLabel->setText(QApplication::translate("AWLQtDemoClass", "Frame qty:", Q_NULLPTR));
-        calibrateButton->setText(QApplication::translate("AWLQtDemoClass", "&Calibrate (Alt+C)", Q_NULLPTR));
-        externalCalibrationGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Sensor Range and position", Q_NULLPTR));
-        sensorPositionGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Sensor Position", Q_NULLPTR));
-        sensorHeightSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", Q_NULLPTR));
-        sensorHeightLabel->setText(QApplication::translate("AWLQtDemoClass", "Sensor height:", Q_NULLPTR));
-        sensorDepthSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", Q_NULLPTR));
-        sensorDepthLabel->setText(QApplication::translate("AWLQtDemoClass", "Sensor forward:", Q_NULLPTR));
-        receiverCalibrationGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Measurement Offsets", Q_NULLPTR));
-        measurementOffsetLabel->setText(QApplication::translate("AWLQtDemoClass", "Range offset:", Q_NULLPTR));
-        measurementOffsetSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", Q_NULLPTR));
-        sensorRangeGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Displayed Range", Q_NULLPTR));
-        sensorRangeMinLabel->setText(QApplication::translate("AWLQtDemoClass", "Range min:", Q_NULLPTR));
-        sensorRangeMaxLabel->setText(QApplication::translate("AWLQtDemoClass", "Range max:", Q_NULLPTR));
-        sensorRangeMinSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", Q_NULLPTR));
-        sensorRangeMaxSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", Q_NULLPTR));
-        targetHintGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Obstacle log hint", Q_NULLPTR));
-        targetHintAngleLabel->setText(QApplication::translate("AWLQtDemoClass", "Angle:", Q_NULLPTR));
-        targetHintAngleSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", " deg.", Q_NULLPTR));
-        targetHintDistanceLabel->setText(QApplication::translate("AWLQtDemoClass", "Distance:", Q_NULLPTR));
-        targetHintDistanceSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", Q_NULLPTR));
-        distanceLogFileCheckbox->setText(QApplication::translate("AWLQtDemoClass", "&Logging Enabled (Alt+L)", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(calibrationTab), QApplication::translate("AWLQtDemoClass", "Calibration", Q_NULLPTR));
-        recordPlayGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Record / Play", Q_NULLPTR));
-        recordButton->setText(QApplication::translate("AWLQtDemoClass", "Record", Q_NULLPTR));
-        playbackButton->setText(QApplication::translate("AWLQtDemoClass", "Playback", Q_NULLPTR));
-        channelMaskGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Channel mask", Q_NULLPTR));
-        recordChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "7", Q_NULLPTR));
-        recordChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "6", Q_NULLPTR));
-        recordChannel5CheckBox->setText(QApplication::translate("AWLQtDemoClass", "5", Q_NULLPTR));
-        recordChannel2CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 2", Q_NULLPTR));
-        recordChannel3CheckBox->setText(QApplication::translate("AWLQtDemoClass", "3", Q_NULLPTR));
-        recordChannel1CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 1", Q_NULLPTR));
-        recordChannel4CheckBox->setText(QApplication::translate("AWLQtDemoClass", "4", Q_NULLPTR));
-        frameRateLabel->setText(QApplication::translate("AWLQtDemoClass", "Frame rate:", Q_NULLPTR));
-        frameRateSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "Hz.", Q_NULLPTR));
-        stopButton->setText(QApplication::translate("AWLQtDemoClass", "Stop", Q_NULLPTR));
-        recordFileNameGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "File names", Q_NULLPTR));
-        label->setText(QApplication::translate("AWLQtDemoClass", "Record:", Q_NULLPTR));
-        label_2->setText(QApplication::translate("AWLQtDemoClass", "Playback:", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(controlTab), QApplication::translate("AWLQtDemoClass", "Control", Q_NULLPTR));
-        VersionLabel->setText(QApplication::translate("AWLQtDemoClass", "Version:", Q_NULLPTR));
-        TemperatureLabel->setText(QApplication::translate("AWLQtDemoClass", "Temp:", Q_NULLPTR));
-        TemperatureLabel_2->setText(QApplication::translate("AWLQtDemoClass", "<html><head/><body><p><span style=\" vertical-align:super;\">o</span>C</p></body></html>", Q_NULLPTR));
-        VoltageLabel->setText(QApplication::translate("AWLQtDemoClass", "Voltage:", Q_NULLPTR));
-        VoltageLabel_2->setText(QApplication::translate("AWLQtDemoClass", "volts", Q_NULLPTR));
-        bootGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Boot errors", Q_NULLPTR));
-        bootReceiverCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Receiver", Q_NULLPTR));
-        bootEmitter1CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 1", Q_NULLPTR));
-        bootAuxChecksumCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Aux. checksum", Q_NULLPTR));
-        bootEmitter2CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 2", Q_NULLPTR));
-        bootMainChecksumCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Main checksum", Q_NULLPTR));
-        bootMemoryCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Memory", Q_NULLPTR));
-        bootDSPCheckBox->setText(QApplication::translate("AWLQtDemoClass", "DSP", Q_NULLPTR));
-        bootChecksumCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Checksum", Q_NULLPTR));
-        statusGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Status", Q_NULLPTR));
-        statusSelfTestCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Self test", Q_NULLPTR));
-        statusShutdownCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Shutdown", Q_NULLPTR));
-        statusSensorBlockedCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Sensor blocked", Q_NULLPTR));
-        statusReducedPerformanceCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Reduced performance", Q_NULLPTR));
-        statusSaturationCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Saturation", Q_NULLPTR));
-        statusSaturationCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Saturation", Q_NULLPTR));
-        statusSensorBlockedCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Sensor blocked", Q_NULLPTR));
-        statusShutdownCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Shutdown", Q_NULLPTR));
-        statusReducedPerformanceCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Reduced performance", Q_NULLPTR));
-        statusSelfTestCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Self test", Q_NULLPTR));
-        hardwareGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Hardware errors", Q_NULLPTR));
-        hardwareReceiverCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Receiver", Q_NULLPTR));
-        hardwareEmitter1CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 1", Q_NULLPTR));
-        hardwareEmitter2CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 2", Q_NULLPTR));
-        hardwareMemoryCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Memory", Q_NULLPTR));
-        hardwareDSPCheckBox->setText(QApplication::translate("AWLQtDemoClass", "DSP", Q_NULLPTR));
-        receiverGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "ReceiverErrors", Q_NULLPTR));
-        receiverChannel3CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 3", Q_NULLPTR));
-        receiverChannel1CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 1", Q_NULLPTR));
-        receiverChannel2CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 2", Q_NULLPTR));
-        receiverChannel5CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 5", Q_NULLPTR));
-        receiverChannel4CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 4", Q_NULLPTR));
-        receiverChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 7", Q_NULLPTR));
-        receiverChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 6", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(statusTab), QApplication::translate("AWLQtDemoClass", "Status", Q_NULLPTR));
-        registerFPGAGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "AWL Registers", Q_NULLPTR));
-        registerFPGASetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        registerFPGAGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", Q_NULLPTR));
-        registerFPGASetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        registerFPGAAddressSetLabel->setText(QApplication::translate("AWLQtDemoClass", "AWL Register:", Q_NULLPTR));
-        registerFPGAValueSetLabel->setText(QApplication::translate("AWLQtDemoClass", "Value:", Q_NULLPTR));
-        registerFPGAValueSetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", Q_NULLPTR));
-        registerFPGAValueSetLineEdit->setText(QApplication::translate("AWLQtDemoClass", "FF", Q_NULLPTR));
-        registerFPGAGetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Confirm", Q_NULLPTR));
-        registerFPGAAddressGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", Q_NULLPTR));
-        registerFPGAValueGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", Q_NULLPTR));
-        registerADCGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "ADC Registers", Q_NULLPTR));
-        registerADCSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        registerADCGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", Q_NULLPTR));
-        registerADCSetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        registerADCAddressSetLabel->setText(QApplication::translate("AWLQtDemoClass", "ADC Register:", Q_NULLPTR));
-        registerADCValueSetLabel->setText(QApplication::translate("AWLQtDemoClass", "Value:", Q_NULLPTR));
-        registerADCValueSetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", Q_NULLPTR));
-        registerADCValueSetLineEdit->setText(QApplication::translate("AWLQtDemoClass", "FF", Q_NULLPTR));
-        registerADCGetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Confirm", Q_NULLPTR));
-        registerADCAddressGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", Q_NULLPTR));
-        registerADCValueGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(registersTab), QApplication::translate("AWLQtDemoClass", "Registers", Q_NULLPTR));
-        groupBox->setTitle(QApplication::translate("AWLQtDemoClass", "GPIOs", Q_NULLPTR));
-        registerGPIOGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", Q_NULLPTR));
-        registerGPIOSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(gpiosTab), QApplication::translate("AWLQtDemoClass", "GPIOs", Q_NULLPTR));
-        algoGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Algorithm parameters", Q_NULLPTR));
-        algoSelectGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Detection Algorithm", Q_NULLPTR));
+        calibrationFrameQtyLabel->setText(QApplication::translate("AWLQtDemoClass", "Frame qty:", nullptr));
+        calibrateButton->setText(QApplication::translate("AWLQtDemoClass", "&Calibrate (Alt+C)", nullptr));
+        externalCalibrationGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Sensor Range and position", nullptr));
+        sensorPositionGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Sensor Position", nullptr));
+        sensorHeightSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", nullptr));
+        sensorHeightLabel->setText(QApplication::translate("AWLQtDemoClass", "Sensor height:", nullptr));
+        sensorDepthSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", nullptr));
+        sensorDepthLabel->setText(QApplication::translate("AWLQtDemoClass", "Sensor forward:", nullptr));
+        receiverCalibrationGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Measurement Offsets", nullptr));
+        measurementOffsetLabel->setText(QApplication::translate("AWLQtDemoClass", "Range offset:", nullptr));
+        measurementOffsetSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", nullptr));
+        sensorRangeGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Displayed Range", nullptr));
+        sensorRangeMinLabel->setText(QApplication::translate("AWLQtDemoClass", "Range min:", nullptr));
+        sensorRangeMaxLabel->setText(QApplication::translate("AWLQtDemoClass", "Range max:", nullptr));
+        sensorRangeMinSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", nullptr));
+        sensorRangeMaxSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", nullptr));
+        targetHintGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Obstacle log hint", nullptr));
+        targetHintAngleLabel->setText(QApplication::translate("AWLQtDemoClass", "Angle:", nullptr));
+        targetHintAngleSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", " deg.", nullptr));
+        targetHintDistanceLabel->setText(QApplication::translate("AWLQtDemoClass", "Distance:", nullptr));
+        targetHintDistanceSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "m.", nullptr));
+        distanceLogFileCheckbox->setText(QApplication::translate("AWLQtDemoClass", "&Logging Enabled (Alt+L)", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(calibrationTab), QApplication::translate("AWLQtDemoClass", "Calibration", nullptr));
+        recordPlayGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Record / Play", nullptr));
+        recordButton->setText(QApplication::translate("AWLQtDemoClass", "Record", nullptr));
+        playbackButton->setText(QApplication::translate("AWLQtDemoClass", "Playback", nullptr));
+        channelMaskGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Channel mask", nullptr));
+        recordChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "7", nullptr));
+        recordChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "6", nullptr));
+        recordChannel5CheckBox->setText(QApplication::translate("AWLQtDemoClass", "5", nullptr));
+        recordChannel2CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 2", nullptr));
+        recordChannel3CheckBox->setText(QApplication::translate("AWLQtDemoClass", "3", nullptr));
+        recordChannel1CheckBox->setText(QApplication::translate("AWLQtDemoClass", " 1", nullptr));
+        recordChannel4CheckBox->setText(QApplication::translate("AWLQtDemoClass", "4", nullptr));
+        frameRateLabel->setText(QApplication::translate("AWLQtDemoClass", "Frame rate:", nullptr));
+        frameRateSpinBox->setSuffix(QApplication::translate("AWLQtDemoClass", "Hz.", nullptr));
+        stopButton->setText(QApplication::translate("AWLQtDemoClass", "Stop", nullptr));
+        recordFileNameGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "File names", nullptr));
+        label->setText(QApplication::translate("AWLQtDemoClass", "Record:", nullptr));
+        label_2->setText(QApplication::translate("AWLQtDemoClass", "Playback:", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(controlTab), QApplication::translate("AWLQtDemoClass", "Control", nullptr));
+        VersionLabel->setText(QApplication::translate("AWLQtDemoClass", "Version:", nullptr));
+        TemperatureLabel->setText(QApplication::translate("AWLQtDemoClass", "Temp:", nullptr));
+        TemperatureLabel_2->setText(QApplication::translate("AWLQtDemoClass", "<html><head/><body><p><span style=\" vertical-align:super;\">o</span>C</p></body></html>", nullptr));
+        VoltageLabel->setText(QApplication::translate("AWLQtDemoClass", "Voltage:", nullptr));
+        VoltageLabel_2->setText(QApplication::translate("AWLQtDemoClass", "volts", nullptr));
+        bootGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Boot errors", nullptr));
+        bootReceiverCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Receiver", nullptr));
+        bootEmitter1CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 1", nullptr));
+        bootAuxChecksumCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Aux. checksum", nullptr));
+        bootEmitter2CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 2", nullptr));
+        bootMainChecksumCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Main checksum", nullptr));
+        bootMemoryCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Memory", nullptr));
+        bootDSPCheckBox->setText(QApplication::translate("AWLQtDemoClass", "DSP", nullptr));
+        bootChecksumCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Checksum", nullptr));
+        statusGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Status", nullptr));
+        statusSelfTestCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Self test", nullptr));
+        statusShutdownCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Shutdown", nullptr));
+        statusSensorBlockedCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Sensor blocked", nullptr));
+        statusReducedPerformanceCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Reduced performance", nullptr));
+        statusSaturationCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Saturation", nullptr));
+        statusSaturationCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Saturation", nullptr));
+        statusSensorBlockedCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Sensor blocked", nullptr));
+        statusShutdownCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Shutdown", nullptr));
+        statusReducedPerformanceCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Reduced performance", nullptr));
+        statusSelfTestCheckBox_2->setText(QApplication::translate("AWLQtDemoClass", "Self test", nullptr));
+        hardwareGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Hardware errors", nullptr));
+        hardwareReceiverCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Receiver", nullptr));
+        hardwareEmitter1CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 1", nullptr));
+        hardwareEmitter2CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Emitter 2", nullptr));
+        hardwareMemoryCheckBox->setText(QApplication::translate("AWLQtDemoClass", "Memory", nullptr));
+        hardwareDSPCheckBox->setText(QApplication::translate("AWLQtDemoClass", "DSP", nullptr));
+        receiverGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "ReceiverErrors", nullptr));
+        receiverChannel3CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 3", nullptr));
+        receiverChannel1CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 1", nullptr));
+        receiverChannel2CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 2", nullptr));
+        receiverChannel5CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 5", nullptr));
+        receiverChannel4CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 4", nullptr));
+        receiverChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 7", nullptr));
+        receiverChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 6", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(statusTab), QApplication::translate("AWLQtDemoClass", "Status", nullptr));
+        registerFPGAGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "AWL Registers", nullptr));
+        registerFPGASetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        registerFPGAGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
+        registerFPGASetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        registerFPGAAddressSetLabel->setText(QApplication::translate("AWLQtDemoClass", "AWL Register:", nullptr));
+        registerFPGAValueSetLabel->setText(QApplication::translate("AWLQtDemoClass", "Value:", nullptr));
+        registerFPGAValueSetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
+        registerFPGAValueSetLineEdit->setText(QApplication::translate("AWLQtDemoClass", "FF", nullptr));
+        registerFPGAGetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Confirm", nullptr));
+        registerFPGAAddressGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
+        registerFPGAValueGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
+        registerADCGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "ADC Registers", nullptr));
+        registerADCSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        registerADCGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
+        registerADCSetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        registerADCAddressSetLabel->setText(QApplication::translate("AWLQtDemoClass", "ADC Register:", nullptr));
+        registerADCValueSetLabel->setText(QApplication::translate("AWLQtDemoClass", "Value:", nullptr));
+        registerADCValueSetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
+        registerADCValueSetLineEdit->setText(QApplication::translate("AWLQtDemoClass", "FF", nullptr));
+        registerADCGetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Confirm", nullptr));
+        registerADCAddressGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
+        registerADCValueGetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(registersTab), QApplication::translate("AWLQtDemoClass", "Registers", nullptr));
+        groupBox->setTitle(QApplication::translate("AWLQtDemoClass", "GPIOs", nullptr));
+        registerGPIOGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
+        registerGPIOSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(gpiosTab), QApplication::translate("AWLQtDemoClass", "GPIOs", nullptr));
+        algoGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Algorithm parameters", nullptr));
+        algoSelectGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Detection Algorithm", nullptr));
         algoSelectComboBox->setCurrentText(QString());
         QTableWidgetItem *___qtablewidgetitem = algoParametersTable->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QApplication::translate("AWLQtDemoClass", "Select", Q_NULLPTR));
+        ___qtablewidgetitem->setText(QApplication::translate("AWLQtDemoClass", "Select", nullptr));
         QTableWidgetItem *___qtablewidgetitem1 = algoParametersTable->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QApplication::translate("AWLQtDemoClass", "Description", Q_NULLPTR));
+        ___qtablewidgetitem1->setText(QApplication::translate("AWLQtDemoClass", "Description", nullptr));
         QTableWidgetItem *___qtablewidgetitem2 = algoParametersTable->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QApplication::translate("AWLQtDemoClass", "Value", Q_NULLPTR));
+        ___qtablewidgetitem2->setText(QApplication::translate("AWLQtDemoClass", "Value", nullptr));
         QTableWidgetItem *___qtablewidgetitem3 = algoParametersTable->horizontalHeaderItem(3);
-        ___qtablewidgetitem3->setText(QApplication::translate("AWLQtDemoClass", "Confirm", Q_NULLPTR));
+        ___qtablewidgetitem3->setText(QApplication::translate("AWLQtDemoClass", "Confirm", nullptr));
 
         const bool __sortingEnabled = algoParametersTable->isSortingEnabled();
         algoParametersTable->setSortingEnabled(false);
         algoParametersTable->setSortingEnabled(__sortingEnabled);
 
-        algoParametersSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        algoParametersGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", Q_NULLPTR));
-        globalParametersGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Global Parameters", Q_NULLPTR));
+        algoParametersSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        algoParametersGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
+        globalParametersGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Global Parameters", nullptr));
         QTableWidgetItem *___qtablewidgetitem4 = globalParametersTable->horizontalHeaderItem(0);
-        ___qtablewidgetitem4->setText(QApplication::translate("AWLQtDemoClass", "Select", Q_NULLPTR));
+        ___qtablewidgetitem4->setText(QApplication::translate("AWLQtDemoClass", "Select", nullptr));
         QTableWidgetItem *___qtablewidgetitem5 = globalParametersTable->horizontalHeaderItem(1);
-        ___qtablewidgetitem5->setText(QApplication::translate("AWLQtDemoClass", "Description", Q_NULLPTR));
+        ___qtablewidgetitem5->setText(QApplication::translate("AWLQtDemoClass", "Description", nullptr));
         QTableWidgetItem *___qtablewidgetitem6 = globalParametersTable->horizontalHeaderItem(2);
-        ___qtablewidgetitem6->setText(QApplication::translate("AWLQtDemoClass", "Value", Q_NULLPTR));
+        ___qtablewidgetitem6->setText(QApplication::translate("AWLQtDemoClass", "Value", nullptr));
         QTableWidgetItem *___qtablewidgetitem7 = globalParametersTable->horizontalHeaderItem(3);
-        ___qtablewidgetitem7->setText(QApplication::translate("AWLQtDemoClass", "Confirm", Q_NULLPTR));
+        ___qtablewidgetitem7->setText(QApplication::translate("AWLQtDemoClass", "Confirm", nullptr));
 
         const bool __sortingEnabled1 = globalParametersTable->isSortingEnabled();
         globalParametersTable->setSortingEnabled(false);
         globalParametersTable->setSortingEnabled(__sortingEnabled1);
 
-        globalParametersSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        globalParametersGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(AlgoTab), QApplication::translate("AWLQtDemoClass", "Algo Control", Q_NULLPTR));
-        trackerGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Tracker parameters", Q_NULLPTR));
-        trackerSelectGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Tracking Algorithm", Q_NULLPTR));
+        globalParametersSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        globalParametersGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(AlgoTab), QApplication::translate("AWLQtDemoClass", "Algo Control", nullptr));
+        trackerGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Tracker parameters", nullptr));
+        trackerSelectGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Tracking Algorithm", nullptr));
         trackerSelectComboBox->setCurrentText(QString());
         QTableWidgetItem *___qtablewidgetitem8 = trackerParametersTable->horizontalHeaderItem(0);
-        ___qtablewidgetitem8->setText(QApplication::translate("AWLQtDemoClass", "Select", Q_NULLPTR));
+        ___qtablewidgetitem8->setText(QApplication::translate("AWLQtDemoClass", "Select", nullptr));
         QTableWidgetItem *___qtablewidgetitem9 = trackerParametersTable->horizontalHeaderItem(1);
-        ___qtablewidgetitem9->setText(QApplication::translate("AWLQtDemoClass", "Description", Q_NULLPTR));
+        ___qtablewidgetitem9->setText(QApplication::translate("AWLQtDemoClass", "Description", nullptr));
         QTableWidgetItem *___qtablewidgetitem10 = trackerParametersTable->horizontalHeaderItem(2);
-        ___qtablewidgetitem10->setText(QApplication::translate("AWLQtDemoClass", "Value", Q_NULLPTR));
+        ___qtablewidgetitem10->setText(QApplication::translate("AWLQtDemoClass", "Value", nullptr));
         QTableWidgetItem *___qtablewidgetitem11 = trackerParametersTable->horizontalHeaderItem(3);
-        ___qtablewidgetitem11->setText(QApplication::translate("AWLQtDemoClass", "Confirm", Q_NULLPTR));
+        ___qtablewidgetitem11->setText(QApplication::translate("AWLQtDemoClass", "Confirm", nullptr));
 
         const bool __sortingEnabled2 = trackerParametersTable->isSortingEnabled();
         trackerParametersTable->setSortingEnabled(false);
         trackerParametersTable->setSortingEnabled(__sortingEnabled2);
 
-        trackerParametersSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
-        trackerParametersGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", Q_NULLPTR));
-        interfaceTabs->setTabText(interfaceTabs->indexOf(TrackerTab), QApplication::translate("AWLQtDemoClass", "Tracker Control", Q_NULLPTR));
+        trackerParametersSetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
+        trackerParametersGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
+        interfaceTabs->setTabText(interfaceTabs->indexOf(TrackerTab), QApplication::translate("AWLQtDemoClass", "Tracker Control", nullptr));
     } // retranslateUi
 
 };
@@ -2852,4 +2856,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // UI_AWLQTDEMO_H
+#endif // AWLQTDEMOYDLCSA_H

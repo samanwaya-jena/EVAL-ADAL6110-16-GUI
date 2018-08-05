@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>972</width>
-    <height>309</height>
+    <height>311</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -4646,6 +4646,14 @@ color: rgb(255,255,255);</string>
    </property>
    <property name="text">
     <string>2D</string>
+   </property>
+  </action>
+  <action name="actionAScan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>AScan</string>
    </property>
   </action>
   <action name="actionCamera">

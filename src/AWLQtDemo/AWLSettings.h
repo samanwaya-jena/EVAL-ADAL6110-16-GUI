@@ -142,6 +142,7 @@ public:
 	bool bDisplay3DWindow;
 	bool bDisplay2DWindow;
 	bool bDisplayTableViewWindow;
+	bool bDisplayAScanViewWindow;
 	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
 
