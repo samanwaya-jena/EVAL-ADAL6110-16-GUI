@@ -245,6 +245,10 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 					y2 = top + b32[i + sampleOffset] * yScaleFactor;
 					break;
 				}
+				if (x == 0) {
+					x1 = x2;
+					y1 = y2;
+				}
 				plotter->PlotAScan(x1, y1, x2, y2);
 				x1 = x2;
 				y1 = y2;

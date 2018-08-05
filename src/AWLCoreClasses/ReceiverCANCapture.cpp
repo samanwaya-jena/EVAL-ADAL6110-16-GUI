@@ -2115,22 +2115,23 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 	int channel = -1;
 	int msg_id = -1;
 	size_t sampleOffset;
-	size_t sampleCount;
+	static size_t sampleCount = 0;
 	size_t sampleSize;
 	bool sampleSigned;
 	bool transmit = false;
+	static int max_msg_id = 0x80;
 
 	uint16_t * rawData16;
 
 	rawData16 = (uint16_t *)rawData;
 
-	/*
+/*
 	printf ("ProcessRaw(%d) ", size);
 	for (int i = 0; i < size; i++) {
 		printf ("%02x ", rawData[i]);
 	}
 	printf ("\n");
-	*/
+*/
 
 	switch (provider) {
 		default:
@@ -2140,12 +2141,13 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			msg_id = rawData[0];
 			if (msg_id != 0xb0) return;
 			channel = rawData16[1];
-			if (channel >= maxRawBufferCount) return;
+			if (channel >= maxRawBufferCount) break;
 			sampleOffset = 12;
 			sampleSize = 2;
 			sampleSigned = true;
 			if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
 			rawBufferCount ++;
+			if (size > maxRawBufferSize) size = maxRawBufferSize;
 			memcpy (rawBuffers[channel], rawData, size);
 			sampleCount = size - sampleOffset;
 			transmit = true;
@@ -2153,30 +2155,34 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 		case rawFromPosixUDP:
 			msg_id = rawData[0];
 			channel = rawData16[1];
-			if (channel >= maxRawBufferCount) return;
+			if (channel >= maxRawBufferCount) break;
+			if (msg_id > 0xbf) return;
 			sampleOffset = 16;
 			sampleSize = 4;
 			sampleSigned = true;
 			switch (msg_id) {
 			default:
-				return;
+				break;
 			case 0x80:
 			case 0x81:
 				if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
 				rawBufferCount ++;
+				if (size > maxRawBufferSize) size = maxRawBufferSize;
 				memcpy (rawBuffers[channel], rawData, size);
-				sampleCount = size - sampleOffset;
-				return;
+				sampleCount = size / 4 - sampleOffset;
+				break;
 			case 0x82:
 			case 0x83:
 			case 0x84:
+				if (size > maxRawBufferSize / 4) size = maxRawBufferSize / 4;
 				memcpy (rawBuffers[channel] + size * (msg_id - 0x81), rawData, size);
-				sampleCount + size;
+				sampleCount += size / 4 - sampleOffset;
 				break;
 			}
-			if (msg_id == 0x80 || msg_id == 0x84) transmit = true;
-			transmit = true;
+			if (msg_id > max_msg_id) max_msg_id = msg_id;
+			if (msg_id == 0x80 || msg_id == max_msg_id) transmit = true;
 	}	
+	//printf("ascan %02x %02x %d %d %d\n", msg_id, max_msg_id, channel, size, sampleCount);
 
 	if (transmit) {
 
@@ -2189,7 +2195,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 		aScan->sampleOffset = sampleOffset;
 		aScan->sampleCount =  sampleCount;;
 		aScan->sampleSigned = sampleSigned;
-		//printf("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+		//printf("transmit ascan %d %d\n", aScan->channelID, aScan->sampleCount);
 
 		rawLock.unlock();
 	}
