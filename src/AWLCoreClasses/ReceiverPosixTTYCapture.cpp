@@ -182,13 +182,13 @@ void ReceiverPosixTTYCapture::ProcessFrame()
 						msg.id = 0x0a;
 						msg.len = 8;
 						data16[0] = fid;
-						data16[1] = 0x200;
+						data16[1] = 0;
 						ParseMessage(msg);
 
 						msg.id = 0x0b;
 						msg.len = 8;
 						data16[0] = fid;
-						data16[2] = 0x200;
+						data16[2] = 0;
 						ParseMessage(msg);
 
 						msg.id = 0x09;

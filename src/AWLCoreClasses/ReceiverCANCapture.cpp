@@ -2143,6 +2143,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			msg_id = rawData[0];
 			if (msg_id != 0xb0) return;
 			channel = rawData16[1];
+			channel &= 0xff;
 			if (channel >= maxRawBufferCount) break;
 			sampleOffset = 12;
 			sampleDrop = 0;
@@ -2160,6 +2161,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 		case rawFromPosixUDP:
 			msg_id = rawData[0];
 			channel = rawData16[1];
+			channel &= 0xff;
 			if (channel >= maxRawBufferCount) break;
 			if (msg_id > 0xbf) return;
 			sampleOffset = 16;
@@ -2180,6 +2182,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 			case 0x82:
 			case 0x83:
 			case 0x84:
+				if (channel < 0) return;
 				if (size > maxRawBufferSize / 4) size = maxRawBufferSize / 4;
 				memcpy (rawBuffers[channel] + size * (msg_id - 0x81), rawData, size);
 				sampleCount += size / 4 - sampleOffset;
