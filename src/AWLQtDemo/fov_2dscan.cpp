@@ -1612,7 +1612,7 @@ void FOV_2DScan::LabelAScan(int channel)
 	QPainter painter(this);
 	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(100, 100 + 50 * channel, "Ch " + QString::number(channel));
+	painter.drawText(100, 50 + 50 * channel, "Ch " + QString::number(channel));
 	//printf("pixel %d\n", channel);
 }
 
@@ -1622,7 +1622,7 @@ void FOV_2DScan::plotAScans()
 	if (!showAScan) return;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		aScan->Plot(100 + 50 * aScan->channelID, 100, width(), 50, this);
+		aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
 	}
 	update();
 }

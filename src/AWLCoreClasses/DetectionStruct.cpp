@@ -228,6 +228,7 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 	if (samples) {
 		x1 = left;
 		y1 = top;
+		//printf ("%d %d\n", sampleCount, width);
 		if (sampleCount > width) {
 
 			if (width) xScaleFactor = (sampleCount) / width;
@@ -271,7 +272,7 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 					y2 = top + b16[x + sampleOffset] * yScaleFactor;
 					break;
 				case 4:
-					y2 = top + b32[i + sampleOffset] * yScaleFactor;
+					y2 = top + b32[x + sampleOffset] * yScaleFactor;
 					break;
 				}
 				if (x == 0) {
