@@ -2138,7 +2138,37 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 	switch (provider) {
 		default:
 		case rawFromLibUSB:
-			return;
+      channel = 0;
+      sampleOffset = 0;
+      sampleSize = 2;
+      sampleSigned = true;
+      sampleCount = 100;
+
+      for (channel = 0; channel < 16; channel++)
+      {
+        if (!rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+
+        rawBufferCount++;
+        memcpy(rawBuffers[channel], rawData + channel * (100 * 2), 100 * 2);
+      }
+
+      {
+        boost::mutex::scoped_lock rawLock(GetMutex());
+
+        for (channel = 0; channel < 16; channel++)
+        {
+          AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel);
+          aScan->samples = rawBuffers[channel];
+          aScan->sampleSize = sampleSize;
+          aScan->rawProvider = provider;
+          aScan->sampleOffset = sampleOffset;
+          aScan->sampleCount = sampleCount - sampleDrop;
+          aScan->sampleSigned = sampleSigned;
+        }
+      }
+
+      break;
+
 		case rawFromPosixTTY:
 			msg_id = rawData[0];
 			if (msg_id != 0xb0) return;
