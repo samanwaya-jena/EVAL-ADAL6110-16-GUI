@@ -173,8 +173,13 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 	i32 = (int32_t*)samples;
 
 	*mean = 0.0;
-	*min = INFINITY;
-	*max = -INFINITY;
+	if (sampleSigned) {
+		*min = INFINITY;
+		*max = -INFINITY;
+	} else {
+		*min = INFINITY;
+		*max = 0;
+	}
 
 	for (i = sampleOffset; i < sampleCount ; i ++) {
 		switch (sampleSize) {
