@@ -39,7 +39,7 @@ public:
 	void start(ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
 private:
-	Ui::AWLPlotScanFrame *ui;
+	Ui::AWLPlotScanFrame ui;
 	void plotAScans(void);
 	void PlotAScan(int x1, int y1, int x2, int y2);
 

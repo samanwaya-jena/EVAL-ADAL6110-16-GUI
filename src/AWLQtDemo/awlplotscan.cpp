@@ -45,9 +45,9 @@ const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
 AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent)
 {
-	//ui.setupUi(this);
+	ui.setupUi(this);
 	QWidget window;
-	window.setFixedSize(200,200);
+	window.setFixedSize(400,400);
 	window.show();
 	printf ("PlotScan\n");
 
@@ -105,10 +105,10 @@ void AWLPlotScan::paintEvent(QPaintEvent *p)
 	QPainter painter(this);
 	painter.setPen(QPen(rgbRulerLight));
 	painter.setBrush(QBrush(rgbRulerMed));
-	painter.drawLine(0, 0, 100, 100);
+	painter.drawLine(0, 0, 200, 200);
 
 	plotAScans();
-	printf ("PlotScan paint\n");
+	printf ("PlotScan paintEvent\n");
 }
 
 void AWLPlotScan::closeEvent(QCloseEvent * event)

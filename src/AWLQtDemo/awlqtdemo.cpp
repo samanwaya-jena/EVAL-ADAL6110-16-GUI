@@ -495,7 +495,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
         //20180719-JYD  Restart the scope...... It accidentally started before the receivers were available and the time base is off....
 
-        //scopeWindow->start(receiverCaptures[0]);
+        scopeWindow->start(receiverCaptures[0]);
 	
 }
 
@@ -979,7 +979,7 @@ void AWLQtDemo::on_timerTimeout()
 		if (m2DScan) m2DScan->AScanDataChanged(aScanData);
 		//if (m2DScan) m2DScan->update();
 		//if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
-		//if (scopeWindow) scopeWindow->update();
+		if (scopeWindow) scopeWindow->update();
 		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 		//{
 			//printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
