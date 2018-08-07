@@ -39,6 +39,7 @@
 using namespace awl;
 const QColor rgbRulerLight(255, 255, 255, 128); // Transparent gray light
 const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
+const QColor rgbRulerText(255, 170, 0);
 
 
 
@@ -47,7 +48,7 @@ AWLPlotScan::AWLPlotScan(QWidget *parent) :
 {
 	ui.setupUi(this);
 	QWidget window;
-	window.setFixedSize(400,400);
+	window.setFixedSize(100,100);
 	window.show();
 	printf ("PlotScan\n");
 
@@ -82,9 +83,20 @@ void AWLPlotScan::stop()
      ;
 }	
 
+void AWLPlotScan::LabelAScan(int channel)
+{
+	QPainter painter(this);
+	if (!showAScan) return;
+	painter.setBrush(QBrush(rgbRulerMed));
+	painter.setPen(QPen(rgbRulerText));
+	painter.drawText(0, 50 + 50 * channel, "Ch " + QString::number(channel));
+	//printf("pixel %d\n", channel);
+}
+
 void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
 {
 	QPainter painter(this);
+	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerLight));
 	painter.setBrush(QBrush(rgbRulerMed));
 	painter.drawLine(x1, y1, x2, y2);
@@ -95,7 +107,7 @@ void AWLPlotScan::plotAScans()
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		aScan->Plot(100 + 50 * aScan->channelID, 100, width(), 50, this);
+		aScan->Plot(50 + 50 * aScan->channelID, 0, width(), 50, this);
 	}
 	update();
 }
@@ -105,10 +117,10 @@ void AWLPlotScan::paintEvent(QPaintEvent *p)
 	QPainter painter(this);
 	painter.setPen(QPen(rgbRulerLight));
 	painter.setBrush(QBrush(rgbRulerMed));
-	painter.drawLine(0, 0, 200, 200);
+	//painter.drawLine(0, 0, 200, 200);
 
 	plotAScans();
-	printf ("PlotScan paintEvent\n");
+	//printf ("PlotScan paintEvent\n");
 }
 
 void AWLPlotScan::closeEvent(QCloseEvent * event)

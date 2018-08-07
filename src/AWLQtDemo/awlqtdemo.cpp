@@ -976,9 +976,9 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		AScan::Vector aScanData;
 		bool bNewAScans = GetLatestAScans(aScanData);
-		if (m2DScan) m2DScan->AScanDataChanged(aScanData);
+		//if (m2DScan) m2DScan->AScanDataChanged(aScanData);
 		//if (m2DScan) m2DScan->update();
-		//if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
+		if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
 		if (scopeWindow) scopeWindow->update();
 		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 		//{
@@ -2121,7 +2121,8 @@ void AWLQtDemo::on_viewTableViewActionToggled()
 
 void AWLQtDemo::on_viewAScanViewActionToggled()
 {
-	m2DScan->ShowAScan (actionAScanButton->isChecked()) ;
+	//m2DScan->ShowAScan (actionAScanButton->isChecked()) ;
+	scopeWindow->ShowAScan (actionAScanButton->isChecked()) ;
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()
