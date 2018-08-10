@@ -89,7 +89,7 @@ void AWLPlotScan::LabelAScan(int channel)
 	if (!showAScan) return;
 	painter.setBrush(QBrush(rgbRulerMed));
 	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(0, 50 + 50 * channel, "Ch " + QString::number(channel));
+	painter.drawText(0, 50 + 50 * channel, "Ch " + QString::number(channel+1));
 	//printf("pixel %d\n", channel);
 }
 

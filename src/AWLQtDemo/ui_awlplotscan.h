@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'awlplotscankqpOBS.ui'
+** Form generated from reading UI file 'awlplotscan.ui'
 **
-** Created by: Qt User Interface Compiler version 5.10.1
+** Created by: Qt User Interface Compiler version 5.9.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef AWLPLOTSCANKQPOBS_H
-#define AWLPLOTSCANKQPOBS_H
+#ifndef UI_AWLPLOTSCAN_H
+#define UI_AWLPLOTSCAN_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -26,13 +26,13 @@ public:
     {
         if (AWLPlotScanFrame->objectName().isEmpty())
             AWLPlotScanFrame->setObjectName(QStringLiteral("AWLPlotScanFrame"));
-        AWLPlotScanFrame->resize(250, 300);
+        AWLPlotScanFrame->resize(250, 1000);
         QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         sizePolicy.setHorizontalStretch(1);
         sizePolicy.setVerticalStretch(2);
         sizePolicy.setHeightForWidth(AWLPlotScanFrame->sizePolicy().hasHeightForWidth());
         AWLPlotScanFrame->setSizePolicy(sizePolicy);
-        AWLPlotScanFrame->setMinimumSize(QSize(250, 300));
+        AWLPlotScanFrame->setMinimumSize(QSize(250, 600));
         AWLPlotScanFrame->setBaseSize(QSize(500, 600));
         QIcon icon;
         icon.addFile(QStringLiteral("AWLQtDemo.ico"), QSize(), QIcon::Normal, QIcon::Off);
@@ -48,7 +48,7 @@ public:
 
     void retranslateUi(QFrame *AWLPlotScanFrame)
     {
-        AWLPlotScanFrame->setWindowTitle(QApplication::translate("AWLPlotScanFrame", "Frame", nullptr));
+        AWLPlotScanFrame->setWindowTitle(QApplication::translate("AWLPlotScanFrame", "Frame", Q_NULLPTR));
     } // retranslateUi
 
 };
@@ -59,4 +59,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // AWLPLOTSCANKQPOBS_H
+#endif // UI_AWLPLOTSCAN_H
