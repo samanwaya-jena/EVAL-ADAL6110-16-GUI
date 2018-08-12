@@ -229,8 +229,10 @@ bool ReceiverCapture::CopyReceiverAScans(FrameID inFrameID,  AScan::Vector &outA
 	bool bFound = acquisitionSequence->FindSensorFrame(inFrameID, sensorFrame);
 	if (bFound) 
 	{ 
-		outAScans.clear();
-		outAScans = sensorFrame->aScans;
+		BOOST_FOREACH(AScan::Ptr &aScan, sensorFrame->aScans) {
+			outAScans.push_back(aScan);
+			//printf ("copy ascan %d\n", receiverID);
+		}
 	}
 
 	UnlockNews(inSubscriberID);

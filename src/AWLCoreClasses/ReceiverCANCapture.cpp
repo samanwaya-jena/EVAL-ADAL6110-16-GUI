@@ -2197,14 +2197,14 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
-		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel);
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, channel);
 		aScan->samples = rawBuffers[channel];
 		aScan->sampleSize = sampleSize;
 		aScan->rawProvider = provider;
 		aScan->sampleOffset = sampleOffset;
 		aScan->sampleCount =  sampleCount - sampleDrop;
 		aScan->sampleSigned = sampleSigned;
-		//printf("transmit ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+		//printf("transmit ascan %d %d\n", aScan->receiverID, aScan->channelID, aScan->sampleCount);
 
 		rawLock.unlock();
 	}

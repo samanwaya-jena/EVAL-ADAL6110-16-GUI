@@ -230,6 +230,7 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 			} else {
 				ProcessRaw(rawFromPosixUDP, buffer, ret);
 				//printf("raw %02x \n", buffer[0]);
+				//printf ("raw %d\n", receiverID);
 			}
 		}
 	}
