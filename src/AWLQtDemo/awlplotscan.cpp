@@ -89,14 +89,14 @@ void AWLPlotScan::stop()
      ;
 }	
 
-void AWLPlotScan::LabelAScan(int channel)
+void AWLPlotScan::LabelAScan(int receiver, int channel)
 {
 	QPainter painter(this);
 	if (!showAScan) return;
 	painter.setBrush(QBrush(rgbRulerMed));
 	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(0, 50 + 50 * channel, "Ch " + QString::number(channel+1));
-	//printf("pixel %d\n", channel);
+	painter.drawText(0, 50 + 50 * channel + 25 * receiver, "Ch " + QString::number(receiver) + "-" + QString::number(channel+1));
+	//printf("pixel %d-%d\n", receiver, channel);
 }
 
 void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
@@ -115,7 +115,7 @@ void AWLPlotScan::plotAScans()
 	printf("Receiver  %d\n", receiverCount);
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		aScan->Plot(50 + 50 * aScan->channelID, 0, width(), 50, this);
+		aScan->Plot(50 + 50 * aScan->channelID + 25 * aScan->receiverID, 0, width(), 50, this);
 	}
 	update();
 }

@@ -1607,12 +1607,12 @@ void FOV_2DScan::PlotAScan(int x1, int y1, int x2, int y2)
 	painter.drawLine(x1, y1, x2, y2);
 }
 
-void FOV_2DScan::LabelAScan(int channel)
+void FOV_2DScan::LabelAScan(int receiver, int channel)
 {
 	QPainter painter(this);
 	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(100, 50 + 50 * channel, "Ch " + QString::number(channel));
+	painter.drawText(100, 50 + 50 * channel, "Ch " + QString::number(receiver) + "-" + QString::number(channel));
 	//printf("pixel %d\n", channel);
 }
 

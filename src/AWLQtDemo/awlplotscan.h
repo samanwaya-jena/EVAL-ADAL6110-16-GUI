@@ -42,7 +42,7 @@ private:
 	Ui::AWLPlotScanFrame ui;
 	void plotAScans(void);
 	void PlotAScan(int x1, int y1, int x2, int y2);
-	void LabelAScan(int channel);
+	void LabelAScan(int receiver, int channel);
 
 signals:
 	void closed();

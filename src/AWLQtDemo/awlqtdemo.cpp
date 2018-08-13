@@ -975,16 +975,20 @@ void AWLQtDemo::on_timerTimeout()
 	if (bContinue)
 	{
 		AScan::Vector aScanData;
+		aScanData.clear();
 		bool bNewAScans = GetLatestAScans(aScanData);
 		//if (m2DScan) m2DScan->AScanDataChanged(aScanData);
 		//if (m2DScan) m2DScan->update();
 		if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
 		if (scopeWindow) scopeWindow->update();
-		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-		//{
-			//printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
-		//}
-		//printf ("\n");
+		/*
+		BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+		{
+			printf ("ascan %d %d %d\n", aScan->receiverID, aScan->channelID, aScan->sampleCount);
+		}
+		printf ("\n");
+		*/
+
 	}
 
 	if (bContinue) 
@@ -1059,8 +1063,16 @@ bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 		// Use the frame snapped by the main display timer as the current frame
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
 		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
+		// only data from last receiver survive
 		bNew = receiver->CopyReceiverAScans(lastDisplayedFrame, aScanData, subscriberID);
+		//printf ("receiver %d\n", receiverID);
 	}
+	/*
+	BOOST_FOREACH(AScan::Ptr aScan, aScanData) {
+		printf ("copied ascan %d-%d\n", aScan->receiverID, aScan->channelID);
+	}
+	*/
+
 	return(bNew);
 }
 

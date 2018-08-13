@@ -49,9 +49,8 @@ ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty,
 ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, 
                 inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers),
 canRate(inCANRate),
+sampleCount(0), max_msg_id(0x80), max_channel(0),
 closeCANReentryCount(0)
-
-
 {
 #ifdef FORCE_FRAME_RESYNC_PATCH
 	lastChannelMask.byteData = 0;
@@ -72,6 +71,7 @@ closeCANReentryCount(0)
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCapture(receiverID, propTree),
+sampleCount(0), max_msg_id(0x80), max_channel(0),
 closeCANReentryCount(0)
 
 {
@@ -2116,12 +2116,9 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 	int msg_id = -1;
 	size_t sampleOffset = 0;
 	size_t sampleDrop = 0;
-	static size_t sampleCount = 0;
 	size_t sampleSize = 1;
 	bool sampleSigned = false;
 	bool transmit = false;
-	static int max_msg_id = 0x80;
-	static int max_channel = 0;
 
 	uint16_t * rawData16;
 
@@ -2197,14 +2194,14 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
-		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel);
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, channel);
 		aScan->samples = rawBuffers[channel];
 		aScan->sampleSize = sampleSize;
 		aScan->rawProvider = provider;
 		aScan->sampleOffset = sampleOffset;
 		aScan->sampleCount =  sampleCount - sampleDrop;
 		aScan->sampleSigned = sampleSigned;
-		//printf("transmit ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+		//printf("transmit ascan %d %d\n", aScan->receiverID, aScan->channelID, aScan->sampleCount);
 
 		rawLock.unlock();
 	}
