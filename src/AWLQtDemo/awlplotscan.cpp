@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QEvent>
+#include <QScrollBar>
 
 #include <boost/foreach.hpp>
 
@@ -47,9 +48,14 @@ AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent)
 {
 	ui.setupUi(this);
-	QWidget window;
-	window.setFixedSize(100,100);
-	window.show();
+	//ui->scrollArea->setWidgetResizable(true);
+	//QGridLayout *gridLayout = new QGridLayout(ui->scrollAreaWidget);
+	//ui->frame->setFixedHeight(ui->scrollArea->height());
+	//gridLayout->addWidget(ui->frame,0,0,1,1);
+	//ui.AWLPlotScan->setVerticalScrollBarPolicy(QFrame::ScrollBarAsNeeded);
+	//QWidget window;
+	//window.setFixedSize(100,100);
+	//window.show();
 	printf ("PlotScan\n");
 
 
@@ -104,7 +110,9 @@ void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
 
 void AWLPlotScan::plotAScans()
 {
-
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	int receiverCount = globalSettings->receiverSettings.size();
+	printf("Receiver  %d\n", receiverCount);
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
 		aScan->Plot(50 + 50 * aScan->channelID, 0, width(), 50, this);
