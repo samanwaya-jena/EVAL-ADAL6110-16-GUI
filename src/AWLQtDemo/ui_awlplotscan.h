@@ -32,8 +32,8 @@ public:
         sizePolicy.setVerticalStretch(2);
         sizePolicy.setHeightForWidth(AWLPlotScanFrame->sizePolicy().hasHeightForWidth());
         AWLPlotScanFrame->setSizePolicy(sizePolicy);
-        AWLPlotScanFrame->setMinimumSize(QSize(250, 600));
-        AWLPlotScanFrame->setBaseSize(QSize(500, 600));
+        AWLPlotScanFrame->setMinimumSize(QSize(250, 1000));
+        AWLPlotScanFrame->setBaseSize(QSize(500, 1000));
         QIcon icon;
         icon.addFile(QStringLiteral("AWLQtDemo.ico"), QSize(), QIcon::Normal, QIcon::Off);
         AWLPlotScanFrame->setWindowIcon(icon);
