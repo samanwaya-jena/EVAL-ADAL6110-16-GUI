@@ -2220,6 +2220,22 @@
       </register>
 
       <register>
+        <index>R100</index>
+        <address>100</address>
+        <description>Wagner: Max Acc</description>
+      </register>
+      <register>
+        <index>R101</index>
+        <address>101</address>
+        <description>Wagner: Acc Shift</description>
+      </register>
+      <register>
+        <index>R102</index>
+        <address>102</address>
+        <description>Wagner: Algo Scaler</description>
+      </register>
+
+      <register>
         <index>R998</index>
         <address>998</address>
         <description>SAVE_CONFIG_TO_FLASH</description>
