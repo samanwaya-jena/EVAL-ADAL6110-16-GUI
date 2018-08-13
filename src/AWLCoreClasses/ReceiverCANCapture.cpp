@@ -2143,6 +2143,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
       sampleSize = 2;
       sampleSigned = true;
       sampleCount = 100;
+      sampleDrop = 1;
 
       for (channel = 0; channel < 16; channel++)
       {
