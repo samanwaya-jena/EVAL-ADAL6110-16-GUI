@@ -36,6 +36,7 @@
 #include "ReceiverCANCapture.h"
 #include "ReceiverLibUSBCapture.h"
 
+
 using namespace std;
 using namespace awl;
 
@@ -160,7 +161,9 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 {
   int ret = 0;
 
+#ifdef _WIN32
   QueryPerformanceFrequency(&frequency);
+#endif
 
 	ret = libusb_init(&context);
 
@@ -340,7 +343,7 @@ void ReceiverLibUSBCapture::DoOneThreadIteration()
     }
 
     if (!dwCount && !dwReadPending)
-      Sleep(10);
+      sleep(10);
 	}
 }
 
@@ -368,16 +371,21 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
   AWLCANMessage msg;
   msg.id = 88;
   msg.data[0] = (unsigned char) dwNumMsg;
-
+#ifdef _WIN32
   QueryPerformanceCounter(&t1);
+#endif
 
   ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(AWLCANMessage), &transferred, 0);
 
+#ifdef _WIN32
   QueryPerformanceCounter(&t2);
+#endif
 
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&canResp, dwNumMsg * sizeof(AWLCANMessage), &received, 0);
 
+#ifdef _WIN32
   QueryPerformanceCounter(&t3);
+#endif
 
   if (transferred != sizeof(AWLCANMessage))
     transferred = 0;
@@ -398,7 +406,7 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
 
   char str[256];
   sprintf(str, "%0.3f PollMsg(%d) %0.3f / %0.3f \n", elapsedTime1, dwNumMsg, elapsedTime2, elapsedTime3);
-  OutputDebugStringA(str);
+  //OutputDebugStringA(str);
 
   return(false);
 }
@@ -418,15 +426,21 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
   if (!handle)
     return false;
 
+#ifdef _WIN32
   QueryPerformanceCounter(&t1);
+#endif
 
   ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&inMsg, sizeof(AWLCANMessage), &transferred, 0);
 
+#ifdef _WIN32
   QueryPerformanceCounter(&t2);
+#endif
 
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&canResp, sizeof(AWLCANMessage), &received, 0);
 
+#ifdef _WIN32
   QueryPerformanceCounter(&t3);
+#endif
 
   if (transferred != sizeof(AWLCANMessage))
     transferred = 0;

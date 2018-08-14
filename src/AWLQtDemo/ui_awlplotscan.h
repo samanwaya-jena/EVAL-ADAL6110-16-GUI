@@ -26,14 +26,14 @@ public:
     {
         if (AWLPlotScanFrame->objectName().isEmpty())
             AWLPlotScanFrame->setObjectName(QStringLiteral("AWLPlotScanFrame"));
-        AWLPlotScanFrame->resize(250, 1000);
+        AWLPlotScanFrame->resize(250, 900);
         QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         sizePolicy.setHorizontalStretch(1);
         sizePolicy.setVerticalStretch(2);
         sizePolicy.setHeightForWidth(AWLPlotScanFrame->sizePolicy().hasHeightForWidth());
         AWLPlotScanFrame->setSizePolicy(sizePolicy);
-        AWLPlotScanFrame->setMinimumSize(QSize(250, 1000));
-        AWLPlotScanFrame->setBaseSize(QSize(500, 1000));
+        AWLPlotScanFrame->setMinimumSize(QSize(250, 900));
+        AWLPlotScanFrame->setBaseSize(QSize(500, 900));
         QIcon icon;
         icon.addFile(QStringLiteral("AWLQtDemo.ico"), QSize(), QIcon::Normal, QIcon::Off);
         AWLPlotScanFrame->setWindowIcon(icon);
