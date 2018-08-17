@@ -2110,6 +2110,44 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 #endif // FORCE_FRAME_RESYNC_PATCH
 
+int aChIdxADI[16] = {
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  15,
+  14,
+  13,
+  12,
+  11,
+  10,
+  9,
+  8
+};
+
+int aChIdxArray[16] = {
+  15,
+  0,
+  14,
+  1,
+  13,
+  2,
+  12,
+  3,
+  11,
+  4,
+  10,
+  5,
+  9,
+  6,
+  8,
+  7
+};
+
 void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size_t size)
 {
 	int channel = -1;
@@ -2147,10 +2185,16 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 
       for (channel = 0; channel < 16; channel++)
       {
-        if (!rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+        int chIdxArray = aChIdxArray[channel];
+
+        int chIdx = aChIdxADI[chIdxArray];
+
+        if (!rawBuffers[channel])
+          rawBuffers[channel] = new uint8_t[maxRawBufferSize];
 
         rawBufferCount++;
-        memcpy(rawBuffers[channel], rawData + channel * (100 * 2), 100 * 2);
+
+        memcpy(rawBuffers[channel], rawData + chIdx * (100 * 2), 100 * 2);
       }
 
       {
