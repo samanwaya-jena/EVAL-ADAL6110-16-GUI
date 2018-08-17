@@ -432,14 +432,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		mTableView->hide();
 	}
 
-	if (actionAScanButton->isChecked()) 
-	{
-		m2DScan->ShowAScan(true);
-	}
-	else
-	{
-		m2DScan->ShowAScan(false);
-	}
+	//if (actionAScanButton->isChecked()) 
+	//{
+	//	m2DScan->ShowAScan(true);
+	//}
+	//else
+	//{
+	//	m2DScan->ShowAScan(false);
+	//}
 
 #ifdef USE_OPENCV_VIDEO
 	// Camera views

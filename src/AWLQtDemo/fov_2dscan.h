@@ -39,7 +39,7 @@ typedef struct
 }ConfigSensor;
 
 
-class FOV_2DScan : public QFrame, public AScanPlotter
+class FOV_2DScan : public QFrame //, public AScanPlotter
 {
     Q_OBJECT
 public:
@@ -203,9 +203,10 @@ private:
 
 	void createAction();
 	void calculateResize();
-	void plotAScans(void);
-	void PlotAScan(int x1, int y1, int x2, int y2);
-	void LabelAScan(int channel);
+
+	//void plotAScans(void);
+	//void PlotAScan(int x1, int y1, int x2, int y2);
+	//void LabelAScan(int channel);
 };
 
 
