@@ -44,12 +44,12 @@
   </video>
   
   <receivers>
-    <receiverQty>2</receiverQty>
+    <receiverQty>1</receiverQty>
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>PosixUDP</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -177,7 +177,7 @@
       <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
-      <posixUDPServerPort>34567</posixUDPServerPort>
+      <posixUDPServerPort>23456</posixUDPServerPort>
 
       <!-- The PosixTTY TTY name -->
       <posixTTYName>/dev/ttyUSB0</posixTTYName>

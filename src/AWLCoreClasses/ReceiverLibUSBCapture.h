@@ -31,6 +31,32 @@
 #include "DetectionStruct.h"
 #include "ReceiverCANCapture.h"
 
+#ifdef __linux__ 
+typedef uint8_t BYTE;
+typedef uint32_t DWORD;
+typedef int32_t LONG;
+typedef int64_t LONGLONG;
+
+typedef union _LARGE_INTEGER {
+  struct {
+    DWORD LowPart;
+    LONG  HighPart;
+  };
+  struct {
+    DWORD LowPart;
+    LONG  HighPart;
+  } u;
+  LONGLONG QuadPart;
+} LARGE_INTEGER, *PLARGE_INTEGER;
+#elif _WIN32
+    // windows
+#else
+
+#endif
+
+
+
+
 using namespace std;
 
 namespace awl
