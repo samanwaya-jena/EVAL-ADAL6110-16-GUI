@@ -327,16 +327,16 @@ void ReceiverLibUSBCapture::DoOneThreadIteration()
 
     LidarQuery(&dwCount, &dwReadPending);
 
-    if (dwReadPending)
-    {
-      PollMessages(dwReadPending);
-    }
-
     if (dwCount)
     {
       ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
 
       ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, 1600 * 2);
+    }
+
+    if (dwReadPending)
+    {
+      PollMessages(dwReadPending);
     }
 
     if (!dwCount && !dwReadPending)
@@ -396,9 +396,9 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
 
   t0 = t1;
 
-  char str[256];
-  sprintf(str, "%0.3f PollMsg(%d) %0.3f / %0.3f \n", elapsedTime1, dwNumMsg, elapsedTime2, elapsedTime3);
-  OutputDebugStringA(str);
+  //char str[256];
+  //sprintf(str, "%0.3f PollMsg(%d) %0.3f / %0.3f \n", elapsedTime1, dwNumMsg, elapsedTime2, elapsedTime3);
+  //OutputDebugStringA(str);
 
   return(false);
 }
