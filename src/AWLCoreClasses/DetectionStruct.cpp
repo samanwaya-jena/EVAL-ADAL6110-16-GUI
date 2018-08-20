@@ -247,10 +247,10 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 				default:
 					return;
 				case 2:
-					y2 = top + b16[i + sampleOffset] * yScaleFactor;
+					y2 = top - b16[i + sampleOffset] * yScaleFactor;
 					break;
 				case 4:
-					y2 = top + b32[i + sampleOffset] * yScaleFactor;
+					y2 = top - b32[i + sampleOffset] * yScaleFactor;
 					break;
 				}
 				if (x == 0) {
@@ -274,10 +274,10 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 				default:
 					return;
 				case 2:
-					y2 = top + b16[x + sampleOffset] * yScaleFactor;
+					y2 = top - (b16[x + sampleOffset] * yScaleFactor);
 					break;
 				case 4:
-					y2 = top + b32[x + sampleOffset] * yScaleFactor;
+					y2 = top - (b32[x + sampleOffset] * yScaleFactor);
 					break;
 				}
 				if (x == 0) {
