@@ -248,7 +248,7 @@ public:
 	int	GetChannelID() {return(channelID);}
 	float GetScaleFactorForRange(int range);
 	void FindMinMaxMean(float *min, float *max, float *mean);
-	void Plot(int top, int left, int width, int height, AScanPlotter *plotter);
+	void Plot(int top, int left, int width, int height, AScanPlotter *plotter, float maxRange);
 
 public:
 	int receiverID;

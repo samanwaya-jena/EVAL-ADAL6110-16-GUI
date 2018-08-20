@@ -219,7 +219,7 @@ float AScan::GetScaleFactorForRange(int range)
 	else return 0.0;
 }
 
-void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter)
+void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter, float maxRange)
 {
 	int16_t *b16;
 	int32_t *b32;
@@ -237,7 +237,7 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 		if (sampleCount > width) {
 
 			if (width) xScaleFactor = (sampleCount) / width;
-			yScaleFactor = GetScaleFactorForRange(height);
+			yScaleFactor = (maxRange != 0.0F) ? (height / maxRange) : GetScaleFactorForRange(height);
 			b16 = (int16_t *)(samples);
 			b32 = (int32_t *)(samples);
 			for (int x = 0; x < width; x ++) {
@@ -264,7 +264,7 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 		} else {
 
 			if (sampleCount) xScaleFactor = width / sampleCount;
-			yScaleFactor = GetScaleFactorForRange(height);
+			yScaleFactor = (maxRange != 0.0F) ? (height / maxRange) : GetScaleFactorForRange(height);
 			b16 = (int16_t *)(samples);
 			b32 = (int32_t *)(samples);
 			for (int x = 0; x < sampleCount; x ++) {

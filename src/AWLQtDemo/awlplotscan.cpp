@@ -104,11 +104,34 @@ void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
 
 void AWLPlotScan::plotAScans()
 {
+  float minFinal  =  INFINITY;
+  float maxFinal  = -INFINITY;
+  float maxRange = 0.0F;
+
+  BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+  {
+    float minV, maxV, meanV;
+
+    aScan->FindMinMaxMean(&minV, &maxV, &meanV);
+
+    if (minV < minFinal)
+      minFinal = minV;
+
+    if (maxV > maxFinal)
+      maxFinal = maxV;
+  }
+
+  // maxRange will contain the peak absolute value for all ascans
+  maxRange = abs(maxFinal);
+
+  if (abs(minFinal) > maxRange)
+    maxRange = abs(minFinal);
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		aScan->Plot(50 + 50 * aScan->channelID, 0, width(), 50, this);
+		aScan->Plot(50 + 50 * aScan->channelID, 0, width(), 50, this, maxRange);
 	}
+
 	update();
 }
 
