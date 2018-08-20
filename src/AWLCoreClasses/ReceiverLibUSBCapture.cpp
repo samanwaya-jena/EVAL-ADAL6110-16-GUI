@@ -343,8 +343,10 @@ void ReceiverLibUSBCapture::DoOneThreadIteration()
     }
 
     if (!dwCount && !dwReadPending)
-      sleep(10);
-	}
+    {
+      boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    }
+  }
 }
 
 LARGE_INTEGER t0;
