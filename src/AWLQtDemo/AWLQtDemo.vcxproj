@@ -274,6 +274,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="..\AWLCoreClasses\AWLCANMessageDef.h" />
     <ClInclude Include="..\AWLCoreClasses\awlcoord.h" />
     <ClInclude Include="..\AWLCoreClasses\BlockingReader.h" />
     <ClInclude Include="..\AWLCoreClasses\CoordinateSystem.h" />
