@@ -229,7 +229,6 @@ int ReceiverLibUSBCapture::ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCoun
 typedef struct
 {
   short AcqFifo[GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH];
-  detection_type detections[GUARDIAN_NUM_CHANNEL * GUARDIAN_NUM_DET_PER_CH];
 } tDataFifo;
 
 tDataFifo dataFifo[8];
