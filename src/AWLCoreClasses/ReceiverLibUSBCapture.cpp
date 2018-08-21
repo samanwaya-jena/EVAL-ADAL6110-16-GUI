@@ -45,75 +45,6 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds ev
 										   // To see if the system reconnects
 
 
-enum _VERSION_STRINGS		/* version string info */
-{
-  FW_BUILD_DATE,			/* build date of firmware */
-  FW_BUILD_TIME,			/* build time of firmware */
-  FW_VERSION_NUMBER,		/* version number of firmware */
-  FW_TARGET_PROC,			/* target processor of firmware */
-  FW_APPLICATION_NAME,	/* application name of firmware */
-
-  NUM_VERSION_STRINGS		/* number of version strings */
-};
-
-#define	MAX_VERSION_STRING_LEN		32
-#define VERSION_STRING_BLOCK_SIZE	(NUM_VERSION_STRINGS*MAX_VERSION_STRING_LEN)
-
-enum _USB_COMMAND
-{
-  NO_COMMAND,				/* nothing doing here... */
-  GET_FW_VERSION,			/* get the firmware version */
-  QUERY_SUPPORT,			/* query for support */
-  QUERY_REPLY,			/* query reply */
-
-  QUERY_USB_PORT,         /* Which USB port connection is made */
-
-  LOOPBACK,				/* run loopback on the device */
-
-  MEMORY_READ,			/* read from specified memory on the device */
-  MEMORY_WRITE,			/* write to specified memory on the device */
-
-  LIDAR_QUERY,
-  LIDAR_GETDATA,
-
-  USBIO_START,			/* run USB IO on this device */
-  USBIO_STOP,				/* stop USB IO on this device */
-  USBIO_OPEN,				/* open file on host */
-  USBIO_CLOSE,			/* close file on host */
-  USBIO_READ,				/* read file on host */
-  USBIO_READ_REPLY,		/* read reply from host */
-  USBIO_WRITE,			/* write file on host */
-  USBIO_WRITE_REPLY,		/* write reply from host */
-  USBIO_SEEK_CUR,			/* seek from current position of file on host */
-  USBIO_SEEK_END,			/* seek from end of file on host */
-  USBIO_SEEK_SET,			/* seek from beginning of file on host */
-  USBIO_SEEK_REPLY,		/* seek reply from host */
-  USBIO_FILEPTR,			/* sending file pointer */
-
-  CUSTOM_COMMAND,			/* custom command */
-
-  REPEAT_OUT = 100,
-  REPEAT_IN
-};
-
-typedef struct _USBCB		/* USB command block */
-{
-  unsigned int u32_Command;		/* command to execute */
-  unsigned int u32_Data;		/* generic data field */
-  unsigned int u32_Count;		/* number of bytes to transfer */
-} USBCB, *PUSBCB;
-
-/* QUERY_SUPPORT command response */
-typedef struct
-{
-  unsigned long command;                              /* Query response function code */
-  unsigned long nbrCycles;
-  unsigned long nbrBytes;
-  unsigned long next_msg_length;                      /* Set to 0 */
-} ADI_Bulk_Loopback_Lidar_Query_Response;
-
-
-
 
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
@@ -155,7 +86,9 @@ ReceiverLibUSBCapture::~ReceiverLibUSBCapture()
 	Stop(); // Stop the thread
 }
 
+#ifdef _WIN32
 LARGE_INTEGER frequency;
+#endif
 
 bool  ReceiverLibUSBCapture::OpenCANPort()
 {
@@ -186,45 +119,29 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
   if (handle)
   {
-    BYTE versionStrings[NUM_VERSION_STRINGS][MAX_VERSION_STRING_LEN];
-    USBCB usbcb;
-    USBCB resp;
     int transferred = 0;
     int received = 0;
 
     boost::mutex::scoped_lock rawLock(mMutexUSB);
 
-    // send out a USBCB that tells the device we want to query for support
-    usbcb.u32_Command = GET_FW_VERSION;				// command
-    usbcb.u32_Count = VERSION_STRING_BLOCK_SIZE;							// doesn't matter
-    usbcb.u32_Data = 0;						// command to query for
+    AWLCANMessage msg;
+    msg.id = AWLCANMSG_ID_LIDARQUERY;
 
-    ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&usbcb, sizeof(usbcb), &transferred, 0);
+    AWLCANMessage resp;
 
-    ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&versionStrings, sizeof(versionStrings), &received, 0);
+    ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, 0);
 
-    if (transferred != sizeof(usbcb))
+    ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, 0);
+
+    if (transferred != sizeof(msg))
       transferred = 0;
-    if (received != sizeof(versionStrings))
+    if (received != sizeof(resp))
       received = 0;
 
     ret = 0;
   }
 
 return true;
-
-posixudp_exit:
-	{
-		handle = NULL;
-
-		std::string sErr = " Cannot open LibUSB";
-		fprintf(stderr, sErr.c_str());
-		
-		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
-		return(false);
-	}
-
-	bFrameInvalidated = false;
 }
 
 bool  ReceiverLibUSBCapture::CloseCANPort()
@@ -247,34 +164,32 @@ bool  ReceiverLibUSBCapture::CloseCANPort()
 
 int ReceiverLibUSBCapture::LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending)
 {
-  USBCB usbReq;
-  ADI_Bulk_Loopback_Lidar_Query_Response lidarQueryResp;
+  int ret = 0;
   int transferred = 0;
   int received = 0;
-  int ret;
 
   boost::mutex::scoped_lock rawLock(mMutexUSB);
 
   if (!handle) return 1;
 
-  // send out a USBCB that tells the device we want to query for support
-  usbReq.u32_Command = LIDAR_QUERY;				// command
-  usbReq.u32_Count = 0x0;							// doesn't matter
-  usbReq.u32_Data = 0;						// command to query for
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_LIDARQUERY;
 
-  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&usbReq, sizeof(usbReq), &transferred, 0);
+  AWLCANMessage resp;
 
-  ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&lidarQueryResp, sizeof(lidarQueryResp), &received, 0);
+  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, 0);
 
-  if (transferred != sizeof(usbReq))
+  ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, 0);
+
+  if (transferred != sizeof(msg))
     transferred = 0;
-  if (received != sizeof(lidarQueryResp))
+  if (received != sizeof(resp))
     received = 0;
 
-  if (received == sizeof(lidarQueryResp))
+  if (received == sizeof(resp))
   {
-    *pdwCount = lidarQueryResp.nbrCycles;
-    *pdwReadPending = lidarQueryResp.nbrBytes;
+    *pdwCount = *((uint32_t*)&resp.data[0]);
+    *pdwReadPending = *((uint32_t*)&resp.data[4]);
   }
   else
     received = 0;
@@ -285,25 +200,23 @@ int ReceiverLibUSBCapture::LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending)
 
 int ReceiverLibUSBCapture::ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCount)
 {
-  USBCB usbReq;
   int transferred = 0;
   int received = 0;
-  int ret;
+  int ret = 0;
 
   boost::mutex::scoped_lock rawLock(mMutexUSB);
 
   if (!handle) return 1;
 
-  // send packet telling we want to do a MEMORY_READ
-  usbReq.u32_Command = MEMORY_READ;		// command
-  usbReq.u32_Count = uiCount;			// number of bytes
-  usbReq.u32_Data = dwCount;	// start address
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_GETDATA;
+  msg.data[0] = (unsigned char) dwCount;
 
-  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&usbReq, sizeof(usbReq), &transferred, 0);
+  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, 0);
 
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)ptr, uiCount, &received, 0);
 
-  if (transferred != sizeof(usbReq))
+  if (transferred != sizeof(msg))
     transferred = 0;
   if (received != uiCount)
     received = 0;
@@ -371,8 +284,9 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
     dwNumMsg = 32;
 
   AWLCANMessage msg;
-  msg.id = 88;
+  msg.id = AWLCANMSG_ID_POLLMESSAGES;
   msg.data[0] = (unsigned char) dwNumMsg;
+
 #ifdef _WIN32
   QueryPerformanceCounter(&t1);
 #endif
