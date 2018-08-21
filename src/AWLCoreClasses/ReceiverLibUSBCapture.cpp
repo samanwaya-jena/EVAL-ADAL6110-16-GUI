@@ -124,6 +124,21 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
     boost::mutex::scoped_lock rawLock(mMutexUSB);
 
+    // DGG: Clear any outstanding data left in the USB buffers
+    do 
+    {
+      char tmp[256];
+      ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)tmp, sizeof(tmp), &received, 1);
+
+      //if (received)
+      //{
+      //  char str[256];
+      //  sprintf(str, "Init %d --> %d (%d) \n", ret, tmp[0], received);
+      //  OutputDebugStringA(str);
+      //}
+    }
+    while (ret == 0 && received > 0);
+
     AWLCANMessage msg;
     msg.id = AWLCANMSG_ID_LIDARQUERY;
 
@@ -141,7 +156,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
     ret = 0;
   }
 
-return true;
+  return (ret == 0);
 }
 
 bool  ReceiverLibUSBCapture::CloseCANPort()
@@ -336,10 +351,10 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
   LARGE_INTEGER t1, t2, t3;
   double elapsedTime1, elapsedTime2, elapsedTime3;
 
-  boost::mutex::scoped_lock rawLock(mMutexUSB);
-
   if (!handle)
     return false;
+
+  boost::mutex::scoped_lock rawLock(mMutexUSB);
 
 #ifdef _WIN32
   QueryPerformanceCounter(&t1);
@@ -399,6 +414,28 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
 #endif
 
 	return(false);
+}
+
+bool ReceiverLibUSBCapture::SendSoftwareReset()
+{
+  if (!handle)
+    return false;
+
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_COMMANDMESSAGE;
+  msg.len = AWLCANMSG_LEN;
+  msg.data[0] = 0xC0;   // Set Parameter
+  msg.data[1] = 0x03; // AWL_Register  
+  msg.data[2] = 997 >> 0;
+  msg.data[3] = 997 >> 8;
+  msg.data[4] = 0x00;
+  msg.data[5] = 0x00;
+  msg.data[6] = 0x00;
+  msg.data[7] = 0x00;
+
+  WriteMessage(msg);
+
+  return(true);
 }
 
 bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)

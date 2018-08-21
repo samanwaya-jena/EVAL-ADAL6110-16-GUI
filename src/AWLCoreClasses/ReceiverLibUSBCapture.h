@@ -144,6 +144,8 @@ protected:
 	virtual bool WriteMessage(const AWLCANMessage &inMsg);
   bool PollMessages(DWORD dwNumMsg);
 
+  bool SendSoftwareReset();
+
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
 	  * \returns Returns true otherwise.
