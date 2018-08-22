@@ -3,13 +3,13 @@
 
 // CAN Frame
 typedef struct {
-    unsigned long id;        // Message id
-    unsigned long timestamp; // timestamp in milliseconds	
-    unsigned char flags;     // [extended_id|1][RTR:1][reserver:6]
-    unsigned char len;       // Frame size (0.8)
-    unsigned char data[8]; // Databytes 0..7
-    unsigned char pad1; 
-    unsigned char pad2; 
+    uint32_t id;        // Message id
+    uint32_t timestamp; // timestamp in milliseconds
+    uint8_t  flags;     // [extended_id|1][RTR:1][reserver:6]
+    uint8_t  len;       // Frame size (0.8)
+    uint8_t  data[8];   // Databytes 0..7
+    uint8_t  pad1;      // Padding required so that sizeof(AWLCANMessage) be 20 on all platforms
+    uint8_t  pad2;      // ...
 } AWLCANMessage;
 
 
