@@ -810,27 +810,27 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 		             carWidthScreen, carLength*Ratio));
 
 	// Draw lane markings
-	QPen lanePen(rgbLaneMarkings);
-	lanePen.setStyle(Qt::DashLine);
-	lanePen.setWidth(2);
-	painter.setPen(lanePen);
-	int laneWidthScreen = (int) (laneWidth * Ratio); // Car width in displayUnits. 
+	if ( laneWidth >= 0.0 ) {
+		QPen lanePen(rgbLaneMarkings);
+		lanePen.setStyle(Qt::DashLine);
+		lanePen.setWidth(2);
+		painter.setPen(lanePen);
+		int laneWidthScreen = (int) (laneWidth * Ratio); // Car width in displayUnits. 
 
-	//Right line drawn first
-	int labelHeight = logoLabel->height();
-	int labelWidth = logoLabel->width();
-	int laneX = centerX + (laneWidthScreen / 2);
-	int laneYBottom = height();
-	int laneYTop = zeroY - (config.maxSensorsRange*Ratio);
+		//Right line drawn first
+		int labelHeight = logoLabel->height();
+		int labelWidth = logoLabel->width();
+		int laneX = centerX + (laneWidthScreen / 2);
+		int laneYBottom = height();
+		int laneYTop = zeroY - (config.maxSensorsRange*Ratio);
 
-	painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
+		painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
 
-	//Make sure left lane marking does not overwrite logoLabel
-	laneX = centerX - (laneWidthScreen / 2);
-	if (laneX < (labelWidth+logoLeftMargin+logoRightMargin)) laneYBottom -= labelHeight+logoTopMargin;
-
-	painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
-	
+		//Make sure left lane marking does not overwrite logoLabel
+		laneX = centerX - (laneWidthScreen / 2);
+		if (laneX < (labelWidth+logoLeftMargin+logoRightMargin)) laneYBottom -= labelHeight+logoTopMargin;
+		painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
+	}
     if (ShowPalette)
         drawPalette(&painter); 
 
