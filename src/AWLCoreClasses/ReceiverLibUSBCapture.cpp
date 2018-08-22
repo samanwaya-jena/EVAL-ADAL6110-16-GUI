@@ -122,6 +122,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
     int transferred = 0;
     int received = 0;
 
+
     boost::mutex::scoped_lock rawLock(mMutexUSB);
 
     // DGG: Clear any outstanding data left in the USB buffers
@@ -426,7 +427,7 @@ bool ReceiverLibUSBCapture::SendSoftwareReset()
   msg.len = AWLCANMSG_LEN;
   msg.data[0] = 0xC0;   // Set Parameter
   msg.data[1] = 0x03; // AWL_Register  
-  msg.data[2] = 997 >> 0;
+  msg.data[2] = (unsigned char) 997 >> 0;
   msg.data[3] = 997 >> 8;
   msg.data[4] = 0x00;
   msg.data[5] = 0x00;
