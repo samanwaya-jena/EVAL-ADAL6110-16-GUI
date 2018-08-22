@@ -1,6 +1,7 @@
 #ifndef AWLCANMESSAGEDEF_H
 #define AWLCANMESSAGEDEF_H
 
+
 // CAN Frame
 typedef struct {
     uint32_t id;        // Message id
@@ -17,7 +18,25 @@ typedef struct {
 #define AWLCANMSG_LEN 8
 
 // id
-#define AWLCANMSG_ID_COMMANDMESSAGE 80
+
+
+#define AWLCANMSG_ID_SENSORSTATUS                   1
+#define AWLCANMSG_ID_SENSORBOOT                     2
+#define AWLCANMSG_ID_COMPLETEDFRAME                 9
+#define AWLCANMSG_ID_OBSTACLETRACK                  10
+#define AWLCANMSG_ID_OBSTACLEVELOCITY               11
+#define AWLCANMSG_ID_OBSTACLESIZE                   12
+#define AWLCANMSG_ID_OBSTACLEANGULARPOSITION        13
+#define AWLCANMSG_ID_CHANNELDISTANCE1_FIRST         20
+#define AWLCANMSG_ID_CHANNELDISTANCE1_LAST          26
+#define AWLCANMSG_ID_CHANNELDISTANCE2_FIRST         30
+#define AWLCANMSG_ID_CHANNELDISTANCE2_LAST          36
+#define AWLCANMSG_ID_CHANNELINTENSITY1_FIRST        40
+#define AWLCANMSG_ID_CHANNELINTENSITY1_LAST         46
+#define AWLCANMSG_ID_CHANNELINTENSITY2_FIRST        50
+#define AWLCANMSG_ID_CHANNELINTENSITY2_LAST         56
+#define AWLCANMSG_ID_CHANNELDISTANCEANDINTENSITY    60
+#define AWLCANMSG_ID_COMMANDMESSAGE                 80
 
 // New command id for Wagner
 #define AWLCANMSG_ID_GETDATA        87

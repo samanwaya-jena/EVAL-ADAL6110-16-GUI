@@ -245,7 +245,7 @@ bool ReceiverPosixUDPCapture::WriteMessage(const AWLCANMessage &inMsg)
 
 	if (fd < 0) return(false);
 
-	if (inMsg.id != 80) {
+	if (inMsg.id != AWLCANMSG_ID_COMMANDMESSAGE) {
 		buf32 = (uint32_t*)buffer;
 		buf32[0] = inMsg.id;
 		offset = sizeof(uint32_t);
