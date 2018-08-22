@@ -315,6 +315,11 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
 
 #ifdef _WIN32
   QueryPerformanceCounter(&t3);
+  elapsedTime1 = 1000.0 * (t1.QuadPart - t0.QuadPart) / frequency.QuadPart;
+  elapsedTime2 = 1000.0 * (t2.QuadPart - t1.QuadPart) / frequency.QuadPart;
+  elapsedTime3 = 1000.0 * (t3.QuadPart - t2.QuadPart) / frequency.QuadPart;
+
+  t0 = t1;
 #endif
 
   if (transferred != sizeof(AWLCANMessage))
@@ -328,11 +333,6 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
       ParseMessage(canResp[i]);
   }
 
-  elapsedTime1 = 1000.0 * (t1.QuadPart - t0.QuadPart) / frequency.QuadPart;
-  elapsedTime2 = 1000.0 * (t2.QuadPart - t1.QuadPart) / frequency.QuadPart;
-  elapsedTime3 = 1000.0 * (t3.QuadPart - t2.QuadPart) / frequency.QuadPart;
-
-  t0 = t1;
 
   //char str[256];
   //sprintf(str, "%0.3f PollMsg(%d) %0.3f / %0.3f \n", elapsedTime1, dwNumMsg, elapsedTime2, elapsedTime3);
@@ -370,6 +370,11 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
 
 #ifdef _WIN32
   QueryPerformanceCounter(&t3);
+  elapsedTime1 = 1000.0 * (t1.QuadPart - t0.QuadPart) / frequency.QuadPart;
+  elapsedTime2 = 1000.0 * (t2.QuadPart - t1.QuadPart) / frequency.QuadPart;
+  elapsedTime3 = 1000.0 * (t3.QuadPart - t2.QuadPart) / frequency.QuadPart;
+
+  t0 = t1;
 #endif
 
   if (transferred != sizeof(AWLCANMessage))
@@ -380,11 +385,6 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
   if (canResp.id)
     ParseMessage(canResp);
 
-  elapsedTime1 = 1000.0 * (t1.QuadPart - t0.QuadPart) / frequency.QuadPart;
-  elapsedTime2 = 1000.0 * (t2.QuadPart - t1.QuadPart) / frequency.QuadPart;
-  elapsedTime3 = 1000.0 * (t3.QuadPart - t2.QuadPart) / frequency.QuadPart;
-
-  t0 = t1;
 
   //char str[256];
   //sprintf(str, "%0.3f WriteMsg %0.3f / %0.3f \n", elapsedTime1, elapsedTime2, elapsedTime3);
