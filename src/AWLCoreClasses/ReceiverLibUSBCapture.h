@@ -114,9 +114,24 @@ public:
       */
 	virtual ~ReceiverLibUSBCapture();
 
+  /** \brief Start the lidar Data Projection  thread
+  */
+  virtual void  Go();
+
+  /** \brief Stop the lidar data projection thread
+  */
+  virtual void  Stop();
+
 public:
 // Protected methods
 protected:
+
+  /** \brief Return the lidar data rendering thread status
+  * \return true if the lidar data rendering thread is stoppped.
+  */
+  void DoThreadLoop();
+
+  bool DoOneLoop();
 
 	/** \brief Do one iteration of the thread loop.
       */
@@ -135,8 +150,8 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
-  int LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending);
-  int ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCount);
+  bool LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending);
+  bool ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCount);
   /** \brief Synchronous write of a CAN message in the stream
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
@@ -172,6 +187,8 @@ protected:
 		int closeCANReentryCount;
 
     boost::mutex mMutexUSB;
+
+    bool m_bUSBOpened;
 };
 
 } // namespace AWL
