@@ -33,7 +33,8 @@ class TableView : public QFrame
     Q_OBJECT
 public:
 
-	typedef enum RealTimeColumn
+	//typedef
+  enum RealTimeColumn
 	{
 		eRealTimeReceiverIDColumn = 0,
 		eRealTimeChannelIDColumn = 1,

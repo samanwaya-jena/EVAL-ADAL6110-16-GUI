@@ -1477,7 +1477,7 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 			}
 			else
 			{
-				int floatValue = 0;
+				float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
@@ -1743,7 +1743,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 			}
 			else
 			{
-				int floatValue = 0;
+        float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
@@ -2032,7 +2032,7 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 			}
 			else
 			{
-				int floatValue = 0;
+        float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = *(uint32_t *)&floatValue;
 			}
