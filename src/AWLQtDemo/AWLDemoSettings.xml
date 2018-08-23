@@ -59,7 +59,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryAWL16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -2886,4 +2886,51 @@
     </displayColorLine1>
 
   </GeometryAWL16Array>
+  
+  <Geometry1x16Array>
+    <!-- For multi-line sensors define wraparound and number of sensors per line.
+           If sensor does not support wrap around, write a wierdly high number that 
+           exceeds sensor physical range -->
+    <lineWrapAround>-1</lineWrapAround>
+    <channelsPerLine>16</channelsPerLine>
+
+    <arraySize>
+      <x>16</x>
+      <y>1</y>
+    </arraySize>
+    <arrayFOV>
+      <x>28</x>
+      <y>4.1</y>
+    </arrayFOV>
+    <pixelSpacing>
+      <x>0.1</x>
+      <y>1.5</y>
+    </pixelSpacing>
+    <arrayOffset>
+      <x>0.0</x>
+      <y>0.0</y>
+    </arrayOffset>
+
+    <maxRange>25.0</maxRange>
+    
+    <displayColor>
+      <red>255</red>
+      <green>128</green>
+      <blue>128</blue>
+    </displayColor>
+
+    <displayColorLine0>
+      <red>192</red>
+      <green>192</green>
+      <blue>192</blue>
+    </displayColorLine0>
+
+    <displayColorLine1>
+      <red>255</red>
+      <green>0</green>
+      <blue>0</blue>
+    </displayColorLine1>
+
+  </Geometry1x16Array>
+  
 </config>
