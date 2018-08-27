@@ -40,10 +40,10 @@
 using namespace std;
 using namespace awl;
 
-const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh rate is 100Hz, this should not exceed 10ms
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
+#define MAX_POLL_CAN_MESSAGES 32
 
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
@@ -54,9 +54,7 @@ ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, int inReceiverChann
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
                    canRate1Mbps, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
 				   inParametersAlgos, inParametersTrackers),
-closeCANReentryCount(0),
-handle(NULL),
-m_bUSBOpened(false)
+handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();
 }
@@ -64,9 +62,7 @@ m_bUSBOpened(false)
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCANCapture(receiverID, propTree),
-closeCANReentryCount(0),
-handle(NULL),
-m_bUSBOpened(false)
+handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();
 
@@ -88,6 +84,7 @@ void ReceiverLibUSBCapture::Go()
   assert(!mThread);
 
   mWorkerRunning = true;
+
   startTime = boost::posix_time::microsec_clock::local_time();
 
   mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSBCapture::DoThreadLoop, this)));
@@ -162,8 +159,6 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
     if (ret || (received != sizeof(AWLCANMessage)))
       return false;
 
-    m_bUSBOpened = true;
-
     return true;
   }
 
@@ -172,21 +167,19 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
 bool  ReceiverLibUSBCapture::CloseCANPort()
 {
-	if (closeCANReentryCount > 0) return(false);
-
   boost::mutex::scoped_lock rawLock(mMutexUSB);
 
-	closeCANReentryCount++;
+  if (handle)
+  {
+    int ret = libusb_release_interface(handle, 0);
 
-	libusb_close(handle);
+    libusb_close(handle);
+    handle = NULL;
+  }
+
 	libusb_exit(NULL);
 
-	handle = NULL;
-
 	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
-	closeCANReentryCount--;
-
-  m_bUSBOpened = false;
 
 	return(true);
 }
@@ -271,7 +264,7 @@ bool ReceiverLibUSBCapture::DoOneLoop()
   {
     bRet = ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
 
-    ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, 1600 * 2);
+    ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
   }
 
   if (dwReadPending)
@@ -292,7 +285,7 @@ bool ReceiverLibUSBCapture::DoOneLoop()
 
 void ReceiverLibUSBCapture::DoOneThreadIteration()
 {
-  if (m_bUSBOpened)
+  if (handle)
   {
     bool bRet = DoOneLoop();
 
@@ -328,7 +321,7 @@ void ReceiverLibUSBCapture::DoThreadLoop()
 bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
 {
   AWLCANMessage canReq;
-  AWLCANMessage canResp[32];
+  AWLCANMessage canResp[MAX_POLL_CAN_MESSAGES];
   int transferred = 0;
   int received = 0;
   int ret;
@@ -338,8 +331,8 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
   if (!handle)
     return false;
 
-  if (dwNumMsg > 32)
-    dwNumMsg = 32;
+  if (dwNumMsg > MAX_POLL_CAN_MESSAGES)
+    dwNumMsg = MAX_POLL_CAN_MESSAGES;
 
   AWLCANMessage msg;
   msg.id = AWLCANMSG_ID_POLLMESSAGES;
@@ -399,10 +392,10 @@ bool ReceiverLibUSBCapture::SendSoftwareReset()
   AWLCANMessage msg;
   msg.id = AWLCANMSG_ID_COMMANDMESSAGE;
   msg.len = AWLCANMSG_LEN;
-  msg.data[0] = 0xC0;   // Set Parameter
-  msg.data[1] = 0x03; // AWL_Register  
-  msg.data[2] = (unsigned char) 997 >> 0;
-  msg.data[3] = 997 >> 8;
+  msg.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+  msg.data[1] = AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER;
+  msg.data[2] = (uint8_t) (997 >> 0);
+  msg.data[3] = (uint8_t) (997 >> 8);
   msg.data[4] = 0x00;
   msg.data[5] = 0x00;
   msg.data[6] = 0x00;
