@@ -88,7 +88,8 @@ bool AWLSettings::ReadSettings()
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
-
+		
+		
 		// Get the Channel configuration Node
 		std::string channelGeometryKey = "config." + receiverPtr->sReceiverChannelGeometry;
 		boost::property_tree::ptree &channelGeometryNode = propTree.get_child(channelGeometryKey);
