@@ -626,13 +626,13 @@ void ReceiverCANCapture::ParseControlMessage(AWLCANMessage &inMsg)
 
 	switch(commandID)
 	{
-	case 0xC0:
+	case AWLCANMSG_ID_CMD_SET_PARAMETER:
 		ParseParameterSet(inMsg);
 		break;
-	case 0xC1:
+	case AWLCANMSG_ID_CMD_QUERY_PARAMETER:
 		ParseParameterQuery(inMsg);
 		break;
-	case 0xC2:
+	case AWLCANMSG_ID_CMD_RESPONSE_PARAMETER:
 		ParseParameterResponse(inMsg);
 		break;
 	case 0xC3:
@@ -661,43 +661,43 @@ void ReceiverCANCapture::ParseParameterResponse(AWLCANMessage &inMsg)
 	unsigned char paramType = inMsg.data[1];
 
 	switch (paramType) {
-	case 0x01:
+	case AWLCANMSG_ID_CMD_PARAM_ALGO_SELECTED:
 		ParseParameterAlgoSelectResponse(inMsg);
 		break;
-	case 0x02:
+	case AWLCANMSG_ID_CMD_PARAM_ALGO_PARAMETER:
 		ParseParameterAlgoParameterResponse(inMsg);
 		break;
-	case 0x03:
+	case AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER:
 		ParseParameterFPGARegisterResponse(inMsg);
 		break;
-	case 0x04:
+	case AWLCANMSG_ID_CMD_PARAM_BIAS:
 		ParseParameterBiasResponse(inMsg);
 		break;
-	case 0x05:
+	case AWLCANMSG_ID_CMD_PARAM_ADC_REGISTER:
 		ParseParameterADCRegisterResponse(inMsg);
 		break;
-	case 0x06:
+	case AWLCANMSG_ID_CMD_PARAM_PRESET:
 		ParseParameterPresetResponse(inMsg);
 		break;
-	case 0x07:
+	case AWLCANMSG_ID_CMD_PARAM_GLOBAL_PARAMETER:
 		ParseParameterGlobalParameterResponse(inMsg);
 		break;
-	case 0x08:
+	case AWLCANMSG_ID_CMD_PARAM_GPIO_CONTROL:
 		ParseParameterGPIORegisterResponse(inMsg);
 		break;
-	case 0x11:
+	case AWLCANMSG_ID_CMD_PARAM_TRACKER_SELECTED:
 		ParseParameterTrackerSelectResponse(inMsg);
 		break;
-	case 0x12:
+	case AWLCANMSG_ID_CMD_PARAM_TRACKER_PARAMETER:
 		ParseParameterTrackerParameterResponse(inMsg);
 		break;	
-	case 0x20:
+	case AWLCANMSG_ID_CMD_PARAM_DATE_TIME:
 		ParseParameterDateTimeResponse(inMsg);
 		break;
-	case 0xD0:
+	case AWLCANMSG_ID_CMD_PARAM_RECORD_FILENAME:
 		ParseParameterRecordResponse(inMsg);
 		break;
-	case 0xD1:
+	case AWLCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME:
 		ParseParameterPlaybackResponse(inMsg);
 		break;
 	default:
@@ -711,43 +711,43 @@ void ReceiverCANCapture::ParseParameterError(AWLCANMessage &inMsg)
 	unsigned char paramType = inMsg.data[1];
 
 	switch (paramType) {
-	case 0x01:
+	case AWLCANMSG_ID_CMD_PARAM_ALGO_SELECTED:
 		ParseParameterAlgoSelectError(inMsg);
 		break;
-	case 0x02:
+	case AWLCANMSG_ID_CMD_PARAM_ALGO_PARAMETER:
 		ParseParameterAlgoParameterError(inMsg);
 		break;
-	case 0x03:
+	case AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER:
 		ParseParameterFPGARegisterError(inMsg);
 		break;
-	case 0x04:
+	case AWLCANMSG_ID_CMD_PARAM_BIAS:
 		ParseParameterBiasError(inMsg);
 		break;
-	case 0x05:
+	case AWLCANMSG_ID_CMD_PARAM_ADC_REGISTER:
 		ParseParameterADCRegisterError(inMsg);
 		break;
-	case 0x06:
+	case AWLCANMSG_ID_CMD_PARAM_PRESET:
 		ParseParameterPresetError(inMsg);
 		break;
-	case 0x07:
+	case AWLCANMSG_ID_CMD_PARAM_GLOBAL_PARAMETER:
 		ParseParameterGlobalParameterError(inMsg);
 		break;
-	case 0x08:
+	case AWLCANMSG_ID_CMD_PARAM_GPIO_CONTROL:
 		ParseParameterGPIORegisterError(inMsg);
 		break;
-	case 0x11:
+	case AWLCANMSG_ID_CMD_PARAM_TRACKER_SELECTED:
 		ParseParameterTrackerSelectError(inMsg);
 		break;
-	case 0x12:
+	case AWLCANMSG_ID_CMD_PARAM_TRACKER_PARAMETER:
 		ParseParameterTrackerParameterError(inMsg);
 		break;
-	case 0x20:
+	case AWLCANMSG_ID_CMD_PARAM_DATE_TIME:
 		ParseParameterDateTimeError(inMsg);
 		break;
-	case 0xD0:
+	case AWLCANMSG_ID_CMD_PARAM_RECORD_FILENAME:
 		ParseParameterRecordError(inMsg);
 		break;
-	case 0xD1:
+	case AWLCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME:
 		ParseParameterPlaybackError(inMsg);
 		break;
 	default:
@@ -1107,8 +1107,8 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // SET_PARAMETER
-	message.data[1] = 0x20;    // SET_DATE_TIME
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_DATE_TIME;
 
 	*((uint16_t*)&message.data[2]) = 0x0001; // SET_DATE
 	*((uint16_t*)&message.data[4]) = year-yearOffset;
@@ -1121,8 +1121,8 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // SET_PARAMETER
-	message.data[1] = 0x20;    // SET_DATE_TIME
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_DATE_TIME;
 
 	*((uint16_t*)&message.data[2]) = 0x0002; // SET_TIME
 	message.data[4] = (unsigned char) hours;
@@ -1153,8 +1153,8 @@ bool ReceiverCANCapture::SetPlaybackFileName(std::string inPlaybackFileName)
 		message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
 		message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-		message.data[0] = 0xC0;   // SET_PARAMETER
-		message.data[1] = 0xD1;    // PLAYBACK_FILENAME
+		message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+		message.data[1] = AWLCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME;
 
 		for(int offset = 0; (offset < nameBlockSize)  && bMessageOk; offset++)
 		{
@@ -1190,8 +1190,8 @@ bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 		message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
 		message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-		message.data[0] = 0xC0;   // SET_PARAMETER
-		message.data[1] = 0xD0;    // Record_FILENAME
+		message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+		message.data[1] = AWLCANMSG_ID_CMD_PARAM_RECORD_FILENAME;
 
 		for(int offset = 0; (offset < nameBlockSize)  && bMessageOk; offset++)
 		{
@@ -1220,7 +1220,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMas
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xD1;   // PLAYBACK_RAW
+    message.data[0] = AWLCANMSG_ID_CMD_PLAYBACK_RAW;
 	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops playback
 
 	message.data[2] = 0x00; // Not used
@@ -1245,7 +1245,7 @@ bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xD0;   // Record_RAW
+    message.data[0] = AWLCANMSG_ID_CMD_PARAM_RECORD_FILENAME;
 	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops record
 
 	message.data[2] = 0x00; // Not used
@@ -1271,7 +1271,7 @@ bool ReceiverCANCapture::StopPlayback()
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xD1;   // PLAYBACK_RAW
+    message.data[0] = AWLCANMSG_ID_CMD_PLAYBACK_RAW;
 	message.data[1] = 0x00;  // Mask at 0 stops the playback 
 
 	message.data[2] = 0x00; // Not used
@@ -1300,7 +1300,7 @@ bool ReceiverCANCapture::StopRecord()
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xD0;   // RECORD_RAW
+    message.data[0] = AWLCANMSG_ID_CMD_PARAM_RECORD_FILENAME;
 	message.data[1] = 0x00;  // Mask at 0 stops the recording 
 
 	message.data[2] = 0x00; // Not used
@@ -1327,7 +1327,7 @@ bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelM
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xDA;   // Record_Calibration
+    message.data[0] = AWLCANMSG_ID_CMD_RECORD_CALIBRATION;   // Record_Calibration
 	message.data[1] = channelMask.byteData;   
 
 	message.data[2] = frameQty; // Number of frames
@@ -1346,8 +1346,8 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x01; // Algo-select  
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_ALGO_SELECTED;
 
 	* (int16_t *) &message.data[2] = 0L; // Unused
 	* (int32_t *) &message.data[4] = algorithmID;
@@ -1372,8 +1372,8 @@ bool ReceiverCANCapture::SetTracker(uint16_t trackerID)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
 	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-	message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x11; // Tracker-select  
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_TRACKER_SELECTED;
 
 	*(int16_t *)&message.data[2] = 0L; // Unused
 	*(int32_t *)&message.data[4] = trackerID;
@@ -1398,8 +1398,8 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x03; // AWL_Register  
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
@@ -1441,8 +1441,8 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x05; // ADC_Register  
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_ADC_REGISTER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
@@ -1470,8 +1470,8 @@ bool ReceiverCANCapture::SetGPIORegister(uint16_t registerAddress, uint32_t regi
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x08; // GPIO_Control  
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_GPIO_CONTROL;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
@@ -1499,8 +1499,8 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x02; // ALGO_PARAMETER 
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_ALGO_PARAMETER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
@@ -1534,8 +1534,8 @@ bool ReceiverCANCapture::SetGlobalAlgoParameter(uint16_t registerAddress, uint32
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x07; // GLOBAL_PARAMETER 
+    message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_GLOBAL_PARAMETER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = registerValue;
@@ -1564,8 +1564,8 @@ bool ReceiverCANCapture::SetTrackerParameter(int trackerID, uint16_t registerAdd
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
 	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-	message.data[0] = 0xC0;   // Set Parameter
-	message.data[1] = 0x12; // TRACKER_PARAMETER 
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_TRACKER_PARAMETER;
 
 	*(int16_t *)&message.data[2] = registerAddress;
 	*(int32_t *)&message.data[4] = registerValue;
@@ -1593,7 +1593,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xE1;   // Transmit_cooked enable flags
+    message.data[0] = AWLCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
 
 	message.data[1] = channelMask.byteData; // Channel mask
 	message.data[2] = 0;  // Reserved
@@ -1605,7 +1605,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 
 	bool bMessageOk = WriteMessage(message);
 
-    message.data[0] = 0xE0;   // Transmit_raw enable flags
+    message.data[0] = AWLCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_raw enable flags
 
 	message.data[1] = channelMask.byteData; // Channel mask
 	message.data[2] = 0xFF;  // Reserved
@@ -1628,8 +1628,8 @@ bool ReceiverCANCapture::QueryAlgorithm()
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x01; // Algo-select  
+    message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_ALGO_SELECTED;
 
 	* (int16_t *) &message.data[2] = 0L;
 	* (int32_t *) &message.data[4] = 0L;
@@ -1653,8 +1653,8 @@ bool ReceiverCANCapture::QueryTracker()
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
 	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-	message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x11; // Tracker-select  
+	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_TRACKER_SELECTED;
 
 	*(int16_t *)&message.data[2] = 0L;
 	*(int32_t *)&message.data[4] = 0L;
@@ -1678,8 +1678,8 @@ bool ReceiverCANCapture::QueryFPGARegister(uint16_t registerAddress)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x03; // AWL_Register  
+    message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = 0L;
@@ -1706,8 +1706,8 @@ bool ReceiverCANCapture::QueryADCRegister(uint16_t registerAddress)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x05; // ADC_Register  
+    message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_ADC_REGISTER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = 0L;
@@ -1734,8 +1734,8 @@ bool ReceiverCANCapture::QueryGPIORegister(uint16_t registerAddress)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x08; // GPIO Control  
+    message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_GPIO_CONTROL;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = 0L;
@@ -1762,8 +1762,8 @@ bool ReceiverCANCapture::QueryAlgoParameter(int algoID, uint16_t registerAddress
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x02; // Algorithm parameter 
+    message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_ALGO_PARAMETER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = 0L;
@@ -1790,8 +1790,8 @@ bool ReceiverCANCapture::QueryGlobalAlgoParameter(uint16_t registerAddress)
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-    message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x07; // Global parameter 
+    message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_GLOBAL_PARAMETER;
 
 	* (int16_t *) &message.data[2] = registerAddress;
 	* (int32_t *) &message.data[4] = 0L;
@@ -1818,8 +1818,8 @@ bool ReceiverCANCapture::QueryTrackerParameter(int trackerID, uint16_t registerA
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
 
 	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
-	message.data[0] = 0xC1;   // Query Parameter
-	message.data[1] = 0x12; // Tracker parameter 
+	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_TRACKER_PARAMETER;
 
 	*(int16_t *)&message.data[2] = registerAddress;
 	*(int32_t *)&message.data[4] = 0L;

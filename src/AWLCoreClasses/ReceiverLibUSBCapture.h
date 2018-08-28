@@ -187,8 +187,6 @@ protected:
 		int closeCANReentryCount;
 
     boost::mutex mMutexUSB;
-
-    bool m_bUSBOpened;
 };
 
 } // namespace AWL
