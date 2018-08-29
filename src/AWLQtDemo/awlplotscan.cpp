@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QEvent>
+#include <QScrollBar>
 
 #include <boost/foreach.hpp>
 
@@ -52,8 +53,6 @@ AWLPlotScan::AWLPlotScan(QWidget *parent) :
 {
 	ui.setupUi(this);
 	QWidget window;
-	//window.setFixedSize(100,100);
-	//window.show();
 	printf ("PlotScan\n");
 
 
@@ -131,6 +130,9 @@ void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
 
 void AWLPlotScan::plotAScans()
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	int receiverCount = globalSettings->receiverSettings.size();
+	//printf("Receiver  %d\n", receiverCount);
   float minFinal  =  INFINITY;
   float maxFinal  = -INFINITY;
   float maxRange = 0.0F;

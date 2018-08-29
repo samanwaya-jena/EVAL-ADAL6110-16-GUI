@@ -46,12 +46,12 @@
   </video>
   
   <receivers>
-    <receiverQty>2</receiverQty>
+    <receiverQty>3</receiverQty>
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-       <receiverType>PosixUDP</receiverType>
+      <receiverType>PosixUDP</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -131,19 +131,19 @@
           <!-- positionFromBumper -->
           <forward>0</forward>
           <!-- lateral offet -->
-          <left>0.0</left>
+          <left>1.0</left>
           <!-- height -->
           <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>0.0</yaw>
+          <yaw>-15.0</yaw>
         </orientation>
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>10</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
 
@@ -153,8 +153,8 @@
     <receiver1>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>PosixUDP</receiverType>
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "PosixUDP" (case sensistive!) -->
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -234,23 +234,121 @@
           <!-- positionFromBumper -->
           <forward>0</forward>
           <!-- lateral offet -->
-          <left>0.0</left>
+          <left>-1.0</left>
           <!-- height -->
           <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>45.0</yaw>
+          <yaw>15.0</yaw>
         </orientation>
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>10</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver1>
 
+<receiver2>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
 
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_RevD</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>GeometryAWL16Array</receiverChannelGeometry>
+
+      <!-- The commPort is used only by EasySyncCAN recevivers -->  
+      <commPort>COM15</commPort>
+
+      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
+      <kvaserChannel>0</kvaserChannel>
+
+      <!-- The SocketCAN device path -->
+      <socketCANdevice>can0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>34567</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1611</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>30755</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>3000</libUsbTimeOut>
+
+      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+           Supported Values are:
+              		canRate1Mbps = 1000,
+		              canRate500kbps = 500,
+		              canRate250kbps = 250,
+		              canRate125kbps = 125,
+		              canRate100kbps = 100,
+		              canRate50kbps = 50,
+		              canRate10kps = 10
+            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
+           -->
+      <canBitRate>1000</canBitRate>
+
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
+
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>false</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0</forward>
+          <!-- lateral offet -->
+          <left>1.0</left>
+          <!-- height -->
+          <up>0.0</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>-10.0</yaw>
+        </orientation>
+      </sensorGeometry>
+
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>10</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver2>
 
 
 
@@ -2867,7 +2965,7 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>45.0</maxRange>
+    <maxRange>15.0</maxRange>
     
     <displayColor>
       <red>255</red>
@@ -2913,7 +3011,7 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>45.0</maxRange>
+    <maxRange>15.0</maxRange>
     
     <displayColor>
       <red>255</red>

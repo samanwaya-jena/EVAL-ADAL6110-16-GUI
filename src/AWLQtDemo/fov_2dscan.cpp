@@ -1112,23 +1112,31 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
     drawTextDetection(p, detection, textToDisplay, backColor, backPattern, lineColor, textColor, drawTarget, drawLegend);
 }
 
+
+
 void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor,
 	                                bool drawTarget, bool drawLegend)
 {
-	// Our detection Y axis is positive left, so we negate the lateral coordinate.
- 	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
-    QPoint start(-detection->relativeToVehicleCart.left * Ratio, 
-	             -(detection->relativeToVehicleCart.forward) * Ratio);
-	QRect tempRect;
-    QPolygon poly;
+	int receiverID = detection->GetReceiverID();
+	RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+	ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+	ChannelConfig channelConfig = receiverSettings.channelsConfig[detection->channelID];
+	RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, detection->channelID);
 
-    QRect rect = p->boundingRect(QRect(0,0,0,0), Qt::AlignCenter,  text);
-    rect.setSize(rect.size()+QSize(10,10));
+
+	// Window dimensions
 	int windowWidth = width();
 	int windowHeight = height();
+	const int lineWidth = fmax(0.15 * Ratio, 2);
 
-    rect.moveTo(start + QPoint((width()/2)-rect.width()/2, zeroY-rect.height()));
-	
+	// Our detection Y axis is positive left, so we negate the lateral coordinate.
+ 	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
+    QPoint detectionPoint(-detection->relativeToVehicleCart.left * Ratio, -(detection->relativeToVehicleCart.forward) * Ratio);
+	// Offset that position to fit within the widget coordinates
+	detectionPoint += QPoint(windowWidth/2, zeroY);
+	 	
+
+	// Set the basic drawing attributes for the next operations
 	QColor lineLineColor = lineColor;
 	lineLineColor.setAlpha(lineTransparency);
 	QColor lineBackColor(backColor); 
@@ -1137,92 +1145,130 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
     p->setPen(lineLineColor);
     p->setBrush(QBrush(lineBackColor, backPattern));
 
-    tempRect = rect;
-
-	if (lastRightTextHeight < tempRect.bottom()+3)
-	{
-		tempRect.moveCenter(QPoint(tempRect.center().x(), lastRightTextHeight - tempRect.height()));
-	}
-
-	tempRect.moveCenter(QPoint(width()-(tempRect.width()/2)-5, tempRect.bottom()-6));
-
+	// If required, draw the legend associated to the point
+	// This is an ellipse with desriptive text, and a line (polygon) between the point and the associated ellipse
 	if (drawLegend) 
 	{
 
-		// Next polygon draws a line between the target and the distance indicator
+		// legendRect is the rectangle used to display the associated text
+		QRect legendRect = p->boundingRect(QRect(0, 0, 0, 0), Qt::AlignCenter, text);
+		legendRect.setSize(legendRect.size() + QSize(10, 10));
+		legendRect.moveTo(detectionPoint + QPoint(-legendRect.width() / 2, -legendRect.height()));
+
+		if (lastRightTextHeight < legendRect.bottom() + 3)
+		{
+			legendRect.moveCenter(QPoint(legendRect.center().x(), lastRightTextHeight - legendRect.height()));
+		}
+
+		legendRect.moveCenter(QPoint(windowWidth - (legendRect.width() / 2) - 5, legendRect.bottom() - 6));
+
+		// Next polygon draws a broken line between the target and the distance indicator
 		p->setPen(lineLineColor);
 		p->setBrush(QBrush(lineBackColor, backPattern));
 
-		poly.append(QPoint(rect.center().x()-2,rect.center().y()+12));
-		poly.append(QPoint(tempRect.center().x()-51,tempRect.center().y()-1));
-		poly.append(QPoint(tempRect.center().x(),tempRect.center().y()-1));
-		poly.append(QPoint(tempRect.center().x(),tempRect.center().y()+1));
-		poly.append(QPoint(tempRect.center().x()-49,tempRect.center().y()+1));
+		QPolygon poly;
+		poly.append(QPoint(detectionPoint.x() - 2, detectionPoint.y() ));
+		poly.append(QPoint(legendRect.center().x() - 51, legendRect.center().y() - 1));
+		poly.append(QPoint(legendRect.center().x(), legendRect.center().y() - 1));
+		poly.append(QPoint(legendRect.center().x(), legendRect.center().y() + 1));
+		poly.append(QPoint(legendRect.center().x() - 49, legendRect.center().y() + 1));
 
-		poly.append(QPoint(rect.center().x()+2,rect.center().y()+14));
+		poly.append(QPoint(detectionPoint.x() + 2, detectionPoint.y() + 2));
 		p->drawPolygon(poly);
 
 		// Draw the ellipse around the distance indication text
 		p->setPen(lineColor);
 		p->setBrush(QBrush(backColor));
-		p->drawEllipse(QPoint(width()-(tempRect.width()/2)-5, tempRect.bottom()-tempRect.size().height()/2), tempRect.size().width()/2, tempRect.size().height()/2);
+		p->drawEllipse(QPoint(windowWidth-(legendRect.width()/2)-5, legendRect.bottom()-legendRect.size().height()/2), legendRect.size().width()/2, legendRect.size().height()/2);
 
 
 		// Write the distance text
-		lastRightTextHeight = tempRect.top();
+		lastRightTextHeight = legendRect.top();
 		rightQty++;
-
-
 		p->setPen(textColor);
-		p->drawText(tempRect, Qt::AlignCenter, text);
+		p->drawText(legendRect, Qt::AlignCenter, text);
 	}
 
+
+	// If required, draw a direction arrow (simple triangle), only if absolute value of velocity is greater than zero Velocity
 	if (drawTarget)
 	{
-	    int lineWidth = 4;
-		// Draw the ellipse that represents the target on the scan
- 		p->setPen(lineColor);
-		p->setBrush(QBrush(backColor, backPattern));
-
-		if (detection->velocity >= zeroVelocity)
-		{
-			// Moving away from sensor is an uparrow
-			QRect pieRect(rect.center().x() - 5, rect.bottom()-24-(lineWidth/2), 10, 24);
-			int startAngle = -55 * 16;
-			int spanAngle = -70 * 16;
-
-			p->drawPie(pieRect,startAngle, spanAngle);
-		}
-		else if (detection->velocity < -zeroVelocity)
-		{
-			// Moving towards sensor is a downarrow
-			QRect pieRect(rect.center().x() - 5, rect.bottom(), 10, 24);
-			int startAngle = 55 * 16;
-			int spanAngle = 70 * 16;
-
-			p->drawPie(pieRect, startAngle, spanAngle);
-		}
-
 		QPen thePen(lineColor);
 		thePen.setBrush(QBrush(backColor, backPattern));
+
+		// Angle of the channel within the drawing
+		float channelTiltAngle = RAD2DEG(receiverPosition.orientation.yaw) + RAD2DEG(channelPosition.orientation.yaw);
+
+
+		// Dimensions of the arrow 
+		const float arrowWidth = fmax(0.2 * Ratio, 5);
+		float arrowHeight = 0;
+		bool bDrawArrow = false;
+
+		// Up arrow or down arrow, depending on velocity.  No arrow if velocity is below zero velocity.
+		if (detection->velocity >= zeroVelocity)
+		{
+			arrowHeight = fmin(-(0.4 * Ratio), -7);
+			bDrawArrow = true;
+		}
+		else if (detection->velocity <= -zeroVelocity)
+		{
+			arrowHeight = fmax(0.4 * Ratio, 7);
+			bDrawArrow = true;
+		}
+
+
+		// If we need to draw the arrow, this is where it should happen.
+		if (bDrawArrow)
+		{
+			// Prepare some calculations to draw the arrows, tilted accoding to the channel orientation.
+			const float sinTilt = sin(-(receiverPosition.orientation.yaw + channelPosition.orientation.yaw));
+			const float cosTilt = cos(-(receiverPosition.orientation.yaw + channelPosition.orientation.yaw));
+
+			QPointF basePoint(detectionPoint.x(), detectionPoint.y());
+
+			p->setPen(lineColor);
+			p->setBrush(QBrush(backColor, backPattern));
+
+			// Rotate to tilt accordingly to the channel tilt. The equations for this is
+			// x' = x cos f - y sin f
+			// y' = y cos f + x sin f
+
+			QPolygon poly;
+			QPoint arrowPoint = QPoint(((-arrowWidth / 2) * cosTilt) - (0 * sinTilt), (0 * cosTilt) + ((-arrowWidth / 2) * sinTilt));
+			arrowPoint += detectionPoint;
+			poly.append(arrowPoint);
+
+			arrowPoint = QPoint((0 * cosTilt) - (arrowHeight * sinTilt), (arrowHeight * cosTilt) + (0 * sinTilt));
+			arrowPoint += detectionPoint;
+			poly.append(arrowPoint);
+
+
+			arrowPoint = QPoint((arrowWidth * cosTilt) - (0 * sinTilt), (0 * cosTilt) + (arrowWidth * sinTilt));
+			arrowPoint += detectionPoint;
+			poly.append(arrowPoint);
+
+			p->drawPolygon(poly);
+		}
+
+
+		// Finally, draw the detection arc
+
 		thePen.setWidth(lineWidth);
 		p->setPen(thePen);
-		int receiverID = detection->GetReceiverID();
-		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
-		ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
-		ChannelConfig channelConfig =receiverSettings.channelsConfig[detection->channelID];
-		RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, detection->channelID);
-
-		float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
-			               RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth/2);
 
 		// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
 		// All distances are relative to bumper, subtract the sensor depth  
 		// Angles are drawn from sensor position add the sensor depth
+
+		float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
 		drawArc(p, startAngle, -channelConfig.fovWidth, detection->distance,
 			-receiverPosition.position.left, -receiverPosition.position.forward);
 	}
 }
+
+
+
 
 void FOV_2DScan::drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor, int xOffset)
 {
@@ -1250,7 +1296,7 @@ void FOV_2DScan::drawArc(QPainter* p, float startAngle, float angularSpan, float
 {
 	// Left is the 
 	float left = zeroX - (radius * Ratio);
-
+	left += xOffset * Ratio;
 	// Bottom
 	float top = zeroY;
 	top -= radius * Ratio;
@@ -1267,6 +1313,7 @@ void FOV_2DScan::drawArc(QPainter* p, float startAngle, float angularSpan, float
 void FOV_2DScan::drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset)
 {
 	float left = zeroX - (radius * Ratio);
+	left += xOffset * Ratio;
 	// Bottom
 	float top = zeroY;
 
@@ -1760,4 +1807,3 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 
 	mainMenu.exec(globalPos);
 }
-
