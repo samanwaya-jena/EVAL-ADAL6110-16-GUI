@@ -21,15 +21,41 @@
 
 #include <libusb-1.0/libusb.h>
 
-#ifndef Q_MOC_RUN
-#include <boost/asio.hpp> 
-#include <boost/asio/serial_port.hpp> 
-#endif
+//#ifndef Q_MOC_RUN
+//#include <boost/asio.hpp>
+//#include <boost/asio/serial_port.hpp>
+//#endif
 
 #include "Publisher.h"
 #include "ThreadedWorker.h"
 #include "DetectionStruct.h"
 #include "ReceiverCANCapture.h"
+
+#ifdef __linux__ 
+typedef uint8_t BYTE;
+typedef uint32_t DWORD;
+typedef int32_t LONG;
+typedef int64_t LONGLONG;
+
+typedef union _LARGE_INTEGER {
+  struct {
+    DWORD LowPart;
+    LONG  HighPart;
+  };
+  struct {
+    DWORD LowPart;
+    LONG  HighPart;
+  } u;
+  LONGLONG QuadPart;
+} LARGE_INTEGER, *PLARGE_INTEGER;
+#elif _WIN32
+    // windows
+#else
+
+#endif
+
+
+
 
 using namespace std;
 
@@ -88,9 +114,24 @@ public:
       */
 	virtual ~ReceiverLibUSBCapture();
 
+  /** \brief Start the lidar Data Projection  thread
+  */
+  virtual void  Go();
+
+  /** \brief Stop the lidar data projection thread
+  */
+  virtual void  Stop();
+
 public:
 // Protected methods
 protected:
+
+  /** \brief Return the lidar data rendering thread status
+  * \return true if the lidar data rendering thread is stoppped.
+  */
+  void DoThreadLoop();
+
+  bool DoOneLoop();
 
 	/** \brief Do one iteration of the thread loop.
       */
@@ -109,11 +150,16 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
-	/** \brief Synchronous write of a CAN message in the stream 
+  bool LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending);
+  bool ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCount);
+  /** \brief Synchronous write of a CAN message in the stream
  	  * \param[in] outString  Message to send
 	  * \return true iof the function was successful. false otherwise.
       */
 	virtual bool WriteMessage(const AWLCANMessage &inMsg);
+  bool PollMessages(DWORD dwNumMsg);
+
+  bool SendSoftwareReset();
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
@@ -140,6 +186,7 @@ protected:
 		/** \brief counter in the close() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
 
+    boost::mutex mMutexUSB;
 };
 
 } // namespace AWL

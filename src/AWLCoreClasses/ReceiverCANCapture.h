@@ -23,6 +23,7 @@
 #include "ThreadedWorker.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
+#include "AWLCANMessageDef.h"
 
 using namespace std;
 
@@ -32,15 +33,6 @@ using namespace std;
 
 namespace awl
 {
-
-// CAN Frame
-typedef struct {
-    unsigned long id;        // Message id
-    unsigned long timestamp; // timestamp in milliseconds	
-    unsigned char flags;     // [extended_id|1][RTR:1][reserver:6]
-    unsigned char len;       // Frame size (0.8)
-    unsigned char data[8]; // Databytes 0..7
-} AWLCANMessage;
 
 /** \brief TheReceiverCANCapture class is a virtual base class that is a specialized implementation of the ReceiverCapture
    *        It implements the mechanics for acquisition of CAN data messages.
@@ -534,10 +526,6 @@ protected:
 		static const size_t maxRawBufferSize = 16384;
 		uint8_t * rawBuffers[maxRawBufferCount];
 		size_t rawBufferCount;
-
-		size_t sampleCount;
-		int max_msg_id;
-		int max_channel;
 
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/
