@@ -831,6 +831,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 		if (laneX < (labelWidth+logoLeftMargin+logoRightMargin)) laneYBottom -= labelHeight+logoTopMargin;
 		painter.drawLine(laneX, laneYBottom, laneX, laneYTop);
 	}
+
     if (ShowPalette)
         drawPalette(&painter); 
 
@@ -1607,24 +1608,24 @@ void FOV_2DScan::PlotAScan(int x1, int y1, int x2, int y2)
 	painter.drawLine(x1, y1, x2, y2);
 }
 
-void FOV_2DScan::LabelAScan(int channel)
+void FOV_2DScan::LabelAScan(int receiver, int channel)
 {
 	QPainter painter(this);
 	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(100, 50 + 50 * channel, "Ch " + QString::number(channel));
+	painter.drawText(100, 50 + 50 * channel, "Ch " + QString::number(receiver) + "-" + QString::number(channel));
 	//printf("pixel %d\n", channel);
 }
 
 void FOV_2DScan::plotAScans()
 {
-	//QPainter painter(this);
-	//if (!showAScan) return;
-	//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-	//{
-	//	aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
-	//}
-	//update();
+	QPainter painter(this);
+	if (!showAScan) return;
+	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+	{
+		aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
+	}
+	update();
 }
 #endif
 

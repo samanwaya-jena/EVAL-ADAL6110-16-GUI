@@ -451,7 +451,7 @@ void VideoViewer::DisplayCrossHairs(QImage &sourceFrame, QPainter &painter)
 
 		DrawHorizontalTicks(sourceFrame, painter, tickIndex * tickIncrement, tickLength, 1 + floor(tickWidth * displayScaleFactor));
 
-		CvPoint textPoint(0 /* videoCapture->calibration.frameWidthInPixels - 1*/, videoCapture->calibration.frameHeightInPixels - 1);
+		//CvPoint textPoint(0 /* videoCapture->calibration.frameWidthInPixels - 1*/, videoCapture->calibration.frameHeightInPixels - 1);
 	}
 
 

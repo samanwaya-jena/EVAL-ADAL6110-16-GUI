@@ -432,14 +432,16 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		mTableView->hide();
 	}
 
-	//if (actionAScanButton->isChecked()) 
-	//{
-	//	m2DScan->ShowAScan(true);
-	//}
-	//else
-	//{
-	//	m2DScan->ShowAScan(false);
-	//}
+	if (actionAScanButton->isChecked()) 
+	{
+		scopeWindow->ShowAScan(true);
+		//m2DScan->ShowAScan(true);
+	}
+	else
+	{
+		scopeWindow->ShowAScan(false);
+		//m2DScan->ShowAScan(false);
+	}
 
 #ifdef USE_OPENCV_VIDEO
 	// Camera views
@@ -975,16 +977,20 @@ void AWLQtDemo::on_timerTimeout()
 	if (bContinue)
 	{
 		AScan::Vector aScanData;
+		aScanData.clear();
 		bool bNewAScans = GetLatestAScans(aScanData);
 		//if (m2DScan) m2DScan->AScanDataChanged(aScanData);
 		//if (m2DScan) m2DScan->update();
 		if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
 		if (scopeWindow) scopeWindow->update();
-		//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-		//{
-			//printf ("ascan %d %d\n", aScan->channelID, aScan->sampleCount);
-		//}
-		//printf ("\n");
+		/*
+		BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+		{
+			printf ("ascan %d %d %d\n", aScan->receiverID, aScan->channelID, aScan->sampleCount);
+		}
+		printf ("\n");
+		*/
+
 	}
 
 	if (bContinue) 
@@ -1060,7 +1066,14 @@ bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
 		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
 		bNew = receiver->CopyReceiverAScans(lastDisplayedFrame, aScanData, subscriberID);
+		//printf ("receiver %d\n", receiverID);
 	}
+	/*
+	BOOST_FOREACH(AScan::Ptr aScan, aScanData) {
+		printf ("copied ascan %d-%d\n", aScan->receiverID, aScan->channelID);
+	}
+	*/
+
 	return(bNew);
 }
 
@@ -1743,7 +1756,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 			}
 			else
 			{
-        float floatValue = 0;
+				float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
@@ -2032,7 +2045,7 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 			}
 			else
 			{
-        float floatValue = 0;
+				float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = *(uint32_t *)&floatValue;
 			}

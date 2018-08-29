@@ -2202,7 +2202,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 
         for (channel = 0; channel < 16; channel++)
         {
-          AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel);
+          AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, channel);
           aScan->samples = rawBuffers[channel];
           aScan->sampleSize = sampleSize;
           aScan->rawProvider = provider;
@@ -2272,7 +2272,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
-		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, channel);
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, channel);
 		aScan->samples = rawBuffers[channel];
 		aScan->sampleSize = sampleSize;
 		aScan->rawProvider = provider;

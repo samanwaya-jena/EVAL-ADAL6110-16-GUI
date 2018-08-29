@@ -87,8 +87,8 @@ void AWLPlotScan::stop()
      ;
 }	
 
-void AWLPlotScan::LabelAScan(int channel)
-{	
+void AWLPlotScan::LabelAScan(int receiver, int channel)
+{
 	float maxRange, scale;
 	int step;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -113,12 +113,11 @@ void AWLPlotScan::LabelAScan(int channel)
 	painter.drawLine(scale*2/4, SCAN_GRID_ORIGIN , scale*2/4, height());
 	painter.drawLine(scale*3/4, SCAN_GRID_ORIGIN , scale*3/4, height());
 
-
 	painter.setBrush(QBrush(rgbRulerMed));
 	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(SCAN_POSX, SCAN_OFFSET_POSY + 50 * channel, "Ch " + QString::number(channel+1));
+	painter.drawText(SCAN_POSX, SCAN_OFFSET_POSY + 50 * channel, "Ch " + QString::number(receiver+1) + "." + QString::number(channel+1));
 	painter.drawLine(SCAN_POSX, SCAN_OFFSET_POSY + 50 * channel, width(), SCAN_OFFSET_POSY + 50 * channel);
-	//printf("pixel %d\n", channel);
+	//printf("pixel %d-%d\n", receiver, channel);
 }
 
 void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
@@ -158,7 +157,7 @@ void AWLPlotScan::plotAScans()
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
 		aScan->Plot(SCAN_OFFSET_POSY + 50 * aScan->channelID, 0, width(), 50, this, maxRange);
-
+		//aScan->Plot(50 + 50 * aScan->channelID + 25 * aScan->receiverID, 0, width(), 50, this);
 	}
 
 	update();

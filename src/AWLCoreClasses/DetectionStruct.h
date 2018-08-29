@@ -280,7 +280,7 @@ public:
 public:
 	virtual void ShowAScan(bool show);
 	virtual void PlotAScan(int x1, int y1, int x2, int y2);
-	virtual void LabelAScan(int channel = -1);
+	virtual void LabelAScan(int receiver = -1, int channel = -1);
 	void AScanDataChanged(const AScan::Vector& data);
 };
 
@@ -373,8 +373,8 @@ public:
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
 	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
 
-	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector, int channelID);
-	bool FindAScan(AScan::Vector &detectionVector, int inChannelID, AScan::Ptr &outAScan);
+	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector, int receiverID, int channelID);
+	bool FindAScan(AScan::Vector &detectionVector, int inReceiverID, int inChannelID, AScan::Ptr &outAScan);
 
 public:
 	int receiverID;

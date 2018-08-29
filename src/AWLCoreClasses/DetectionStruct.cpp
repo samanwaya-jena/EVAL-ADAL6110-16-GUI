@@ -145,11 +145,11 @@ bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChanne
 	return(false);
 }
 
-AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int channelID)
+AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int receiverID, int channelID)
 
 {
 	AScan::Ptr aScan;
-	bool bExists = FindAScan(aScanVector, channelID, aScan);
+	bool bExists = FindAScan(aScanVector, receiverID, channelID, aScan);
 	if (!bExists) 
 	{
 		aScan = AScan::Ptr(new AScan(receiverID, channelID));
@@ -228,7 +228,7 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 	int32_t x1, y1, x2, y2 = 0;
 	int i;
 
-	plotter->LabelAScan(channelID);
+	plotter->LabelAScan(receiverID, channelID);
 
 	if (samples) {
 		x1 = left;
@@ -304,23 +304,30 @@ void AScanPlotter::PlotAScan(int x1, int y1, int x2, int y2)
 	printf("%d %d, %d %d\n", x1, y1, x2, y2);
 }
 
-void AScanPlotter::LabelAScan(int channel)
+void AScanPlotter::LabelAScan(int receiver, int channel)
 {
-	printf("Ch %d\n", channel);
+	printf("Ch %d-%d\n", receiver, channel);
 }
 
 void AScanPlotter::AScanDataChanged(const AScan::Vector& data)
 {
 	aScanData = data;
+	AScan::Vector::iterator  aScanIterator = aScanData.begin();
+	while (aScanIterator != aScanData.end()) 
+	{
+		AScan::Ptr aScan = *aScanIterator;
+		//printf ("changed %d-%d\n", aScan->receiverID, aScan->channelID);
+		aScanIterator++;
+	}
 }
 
-bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inChannelID, AScan::Ptr &outAScan)
+bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inReceiverID, int inChannelID, AScan::Ptr &outAScan)
 {
 	AScan::Vector::iterator  aScanIterator = aScanVector.begin();
 	while (aScanIterator != aScanVector.end()) 
 	{
 		AScan::Ptr aScan = *aScanIterator;
-		if (aScan->channelID == inChannelID)
+		if (aScan->receiverID == inReceiverID && aScan->channelID == inChannelID)
 		{
 			outAScan = aScan;
 			return(true);

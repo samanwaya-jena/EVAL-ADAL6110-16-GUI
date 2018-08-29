@@ -252,3 +252,4 @@ protected:
 } // namespace AWL
 
 #endif //AWL_RECEIVER_SIMULATOR_CAPTURE_H
+
