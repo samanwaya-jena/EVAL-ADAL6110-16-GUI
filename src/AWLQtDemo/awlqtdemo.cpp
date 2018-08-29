@@ -568,6 +568,11 @@ void AWLQtDemo::SetupToolBar()
 	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui.mainToolBar->addWidget(spacerRightAligned);
 
+	actionAboutButton = new QAction(QIcon("./Images/ButtonBitmaps/About.png"), "About", 0);
+	actionAboutButton->setCheckable(true);
+	actionAboutButton->setChecked(globalSettings->bDisplayAboutWindow);
+	ui.mainToolBar->addAction(actionAboutButton);
+
 	actionResizeMaximizeIcon = new QIcon("./Images/ButtonBitmaps/Maximize.png");
 	actionResizeRestoreDownIcon = new QIcon("./Images/ButtonBitmaps/RestoreDown.png");
 	actionResizeButton = new QAction(*actionResizeRestoreDownIcon, actionResizeRestoreDownString, 0);
@@ -581,6 +586,7 @@ void AWLQtDemo::SetupToolBar()
 	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
 	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
 	connect(actionAScanButton, SIGNAL(toggled(bool )), this, SLOT(on_viewAScanViewActionToggled()));
+	connect(actionAboutButton, SIGNAL(triggered(bool )), this, SLOT(on_viewAboutActionTriggered()));
 #ifdef USE_OPENCV_VIDEO
 	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
 #endif
@@ -2136,6 +2142,11 @@ void AWLQtDemo::on_viewAScanViewActionToggled()
 {
 	//m2DScan->ShowAScan (actionAScanButton->isChecked()) ;
 	scopeWindow->ShowAScan (actionAScanButton->isChecked()) ;
+}
+
+void AWLQtDemo::on_viewAboutActionTriggered()
+{
+	QMessageBox::about(this, QString("About"), QString("Viva Donald Trump !!!"));
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()
