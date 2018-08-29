@@ -527,6 +527,10 @@ protected:
 		uint8_t * rawBuffers[maxRawBufferCount];
 		size_t rawBufferCount;
 
+		size_t sampleCount;
+		int max_msg_id;
+		int max_channel;
+
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/
 		awl::ChannelMask lastChannelMask;
