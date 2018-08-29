@@ -179,19 +179,19 @@ void ReceiverPosixTTYCapture::ProcessFrame()
 					uint16_t* data16 = (uint16_t*)msg.data;
 
 					if (pixel == max_pixel) {
-						msg.id = 0x0a;
+						msg.id = AWLCANMSG_ID_OBSTACLETRACK;
 						msg.len = 8;
 						data16[0] = fid;
 						data16[1] = 0;
 						ParseMessage(msg);
 
-						msg.id = 0x0b;
+						msg.id = AWLCANMSG_ID_OBSTACLEVELOCITY;
 						msg.len = 8;
 						data16[0] = fid;
 						data16[2] = 0;
 						ParseMessage(msg);
 
-						msg.id = 0x09;
+						msg.id = AWLCANMSG_ID_COMPLETEDFRAME;
 						msg.len = 8;
 						data16[0] = fid;
 						ParseMessage(msg);
@@ -279,7 +279,7 @@ bool ReceiverPosixTTYCapture::WriteMessage(const AWLCANMessage &inMsg)
 
 	if (fd < 0) return(false);
 
-	if (inMsg.id != 80) {
+	if (inMsg.id != AWLCANMSG_ID_COMMANDMESSAGE) {
 		buf32 = (uint32_t*)buffer;
 		buf32[0] = inMsg.id;
 		offset = sizeof(uint32_t);

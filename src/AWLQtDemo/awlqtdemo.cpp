@@ -434,11 +434,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	if (actionAScanButton->isChecked()) 
 	{
-		m2DScan->ShowAScan(true);
+		scopeWindow->ShowAScan(true);
+		//m2DScan->ShowAScan(true);
 	}
 	else
 	{
-		m2DScan->ShowAScan(false);
+		scopeWindow->ShowAScan(false);
+		//m2DScan->ShowAScan(false);
 	}
 
 #ifdef USE_OPENCV_VIDEO
@@ -1063,7 +1065,6 @@ bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 		// Use the frame snapped by the main display timer as the current frame
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
 		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
-		// only data from last receiver survive
 		bNew = receiver->CopyReceiverAScans(lastDisplayedFrame, aScanData, subscriberID);
 		//printf ("receiver %d\n", receiverID);
 	}
@@ -1489,7 +1490,7 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 			}
 			else
 			{
-				int floatValue = 0;
+				float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
@@ -1755,7 +1756,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 			}
 			else
 			{
-				int floatValue = 0;
+				float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
@@ -2044,7 +2045,7 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 			}
 			else
 			{
-				int floatValue = 0;
+				float floatValue = 0;
 				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
 				parameterValue = *(uint32_t *)&floatValue;
 			}

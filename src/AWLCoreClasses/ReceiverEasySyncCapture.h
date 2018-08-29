@@ -147,7 +147,7 @@ protected:
 	  * \param[in] startIndex  Index of the substring that we want to parse within the string.
  	  * \return true if the function was successful (the substring is a valid hex number) . False otherwise.
      */
-	bool GetStandardID(std::string &inResponse,  unsigned long &outID, int startIndex);
+	bool GetStandardID(std::string &inResponse, uint32_t &outID, int startIndex);
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.

@@ -17,9 +17,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <fcntl.h>
+//#include <sys/ioctl.h>
+//#include <unistd.h>
+//#include <fcntl.h>
 
 #include <string>
 #ifndef Q_MOC_RUN
@@ -36,12 +36,14 @@
 #include "ReceiverCANCapture.h"
 #include "ReceiverLibUSBCapture.h"
 
+
 using namespace std;
 using namespace awl;
 
-const int receiveTimeOutInMillisec = 500;  // Default is 1000. As AWL refresh rate is 100Hz, this should not exceed 10ms
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
+
+#define MAX_POLL_CAN_MESSAGES 32
 
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
@@ -52,25 +54,19 @@ ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, int inReceiverChann
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
                    canRate1Mbps, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
 				   inParametersAlgos, inParametersTrackers),
-closeCANReentryCount(0)
+handle(NULL)
 {
-
-	/*
-	#define USB_VENDOR_ID	    0x0483
-	#define USB_PRODUCT_ID	    0xFFFF 
-	#define USB_ENDPOINT_IN	    (LIBUSB_ENDPOINT_IN  | 1) 
-	#define USB_ENDPOINT_OUT	(LIBUSB_ENDPOINT_OUT | 2) 
-	#define USB_TIMEOUT	3000 
-	*/
+  reconnectTime = boost::posix_time::microsec_clock::local_time();
 }
 
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCANCapture(receiverID, propTree),
-closeCANReentryCount(0)
-
+handle(NULL)
 {
-	// Read the configuration from the configuration file
+  reconnectTime = boost::posix_time::microsec_clock::local_time();
+
+  // Read the configuration from the configuration file
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
 }
@@ -82,147 +78,331 @@ ReceiverLibUSBCapture::~ReceiverLibUSBCapture()
 	Stop(); // Stop the thread
 }
 
+
+void ReceiverLibUSBCapture::Go()
+{
+  assert(!mThread);
+
+  mWorkerRunning = true;
+
+  startTime = boost::posix_time::microsec_clock::local_time();
+
+  mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSBCapture::DoThreadLoop, this)));
+
+#ifdef _WINDOWS_
+  // Set the priority under windows.  This is the most critical display thread 
+  // for user interaction
+  HANDLE th = mThread->native_handle();
+  SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
+  //   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+#endif
+}
+
+void ReceiverLibUSBCapture::Stop()
+{
+  ReceiverCapture::Stop();
+}
+
 bool  ReceiverLibUSBCapture::OpenCANPort()
 {
+  int ret = 0;
 
-	libusb_init(&context);
-	libusb_set_debug(context, 3);
+  reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+
+  ret = libusb_init(&context);
+
+  if (ret)
+    return false;
+
+  //libusb_set_debug(context, 3);
 
     //Open Device with VendorID and ProductID
 	handle = libusb_open_device_with_vid_pid(context, usbVendorId, usbProductId);
 	if (!handle) {
 		perror("device not found");
-		return 1;
+		return false;
 	}
 
-	int r = 1;
 	//Claim Interface 0 from the device
-    r = libusb_claim_interface(handle, 0);
-	if (r < 0) {
-		fprintf(stderr, "usb_claim_interface error %d\n", r);
-		return 2;
-	}
-	printf("Interface claimed\n");
+  ret = libusb_claim_interface(handle, 0);
 
-return true;
-
-posixudp_exit:
-	{
-		handle = NULL;
-
-		std::string sErr = " Cannot open LibUSB";
-		fprintf(stderr, sErr.c_str());
-		
-		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
-		return(false);
+	if (ret) {
+		fprintf(stderr, "usb_claim_interface error %d\n", ret);
+		return false;
 	}
 
+  if (handle)
+  {
+    int transferred = 0;
+    int received = 0;
 
-	bFrameInvalidated = false;
+    boost::mutex::scoped_lock rawLock(mMutexUSB);
+
+    // DGG: Clear any outstanding data left in the USB buffers
+    do 
+    {
+      char tmp[256];
+      ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)tmp, sizeof(tmp), &received, 100);
+    }
+    while (ret == 0 && received > 0);
+
+    AWLCANMessage msg;
+    msg.id = AWLCANMSG_ID_LIDARQUERY;
+
+    AWLCANMessage resp;
+
+    ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, usbTimeOut);
+    if (ret || (transferred != sizeof(AWLCANMessage)))
+      return false;
+
+    ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, usbTimeOut);
+    if (ret || (received != sizeof(AWLCANMessage)))
+      return false;
+
+    return true;
+  }
+
+  return false;
 }
 
 bool  ReceiverLibUSBCapture::CloseCANPort()
-
 {
-	if (closeCANReentryCount > 0) return(false);
+  boost::mutex::scoped_lock rawLock(mMutexUSB);
 
-	closeCANReentryCount++;
+  if (handle)
+  {
+    int ret = libusb_release_interface(handle, 0);
 
-	libusb_close(handle);
+    libusb_close(handle);
+    handle = NULL;
+  }
+
 	libusb_exit(NULL);
 
-	handle = NULL;
-
 	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
-	    closeCANReentryCount--;
+
 	return(true);
 }
 
+bool ReceiverLibUSBCapture::LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending)
+{
+  int ret = 0;
+  int transferred = 0;
+  int received = 0;
+
+  boost::mutex::scoped_lock rawLock(mMutexUSB);
+
+  if (!handle)
+    return false;
+
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_LIDARQUERY;
+
+  AWLCANMessage resp;
+
+  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, usbTimeOut);
+  if (ret || (transferred != sizeof(AWLCANMessage)))
+    return false;
+
+  ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, usbTimeOut);
+  if (ret || (received != sizeof(AWLCANMessage)))
+    return false;
+
+  *pdwCount = *((uint32_t*)&resp.data[0]);
+  *pdwReadPending = *((uint32_t*)&resp.data[4]);
+
+  return true;
+}
+
+
+bool ReceiverLibUSBCapture::ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCount)
+{
+  int transferred = 0;
+  int received = 0;
+  int ret = 0;
+
+  boost::mutex::scoped_lock rawLock(mMutexUSB);
+
+  if (!handle)
+    return false;
+
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_GETDATA;
+  msg.data[0] = (unsigned char) dwCount;
+
+  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, usbTimeOut);
+  if (ret || (transferred != sizeof(AWLCANMessage)))
+    return false;
+
+  ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)ptr, uiCount, &received, usbTimeOut);
+  if (ret || (received != uiCount))
+    return false;
+
+  return true;
+}
+
+#include "algo.h"
+
+typedef struct
+{
+  short AcqFifo[GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH];
+} tDataFifo;
+
+tDataFifo dataFifo[8];
+
+bool ReceiverLibUSBCapture::DoOneLoop()
+{
+  DWORD dwCount = 0;
+  DWORD dwReadPending = 0;
+
+  bool bRet = LidarQuery(&dwCount, &dwReadPending);
+
+  if (!bRet)
+    return false;
+
+  if (dwCount)
+  {
+    bRet = ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
+
+    ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
+  }
+
+  if (dwReadPending)
+  {
+    bRet = PollMessages(dwReadPending);
+  }
+
+  if (!dwCount && !dwReadPending)
+  {
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+  }
+
+  if (!bRet)
+    return false;
+
+  return bRet;
+}
 
 void ReceiverLibUSBCapture::DoOneThreadIteration()
-
 {
-	uint8_t buffer[256];
-	uint32_t *buf32;
-	size_t size = sizeof(buffer);
-	int ret;
+  if (handle)
+  {
+    bool bRet = DoOneLoop();
 
-	buf32 = (uint32_t*)buffer;
+    if (!bRet)
+    {
+      CloseCANPort();
+    }
+  }
+  else
+  {
+    if (boost::posix_time::microsec_clock::local_time() > reconnectTime)
+    {
+      if (OpenCANPort())
+      {
+        WriteCurrentDateTime();
+        SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+        // Update all the info (eventually) from the status of the machine
+        QueryAlgorithm();
+        QueryTracker();
+      }
+    }
+  }
+}
 
-	AWLCANMessage msg;
-	int nread;
+void ReceiverLibUSBCapture::DoThreadLoop()
+{
+  while (!WasStopped())
+  {
+    DoOneThreadIteration();
+  } // while (!WasStoppped)
+}
 
-	if (handle) {
+bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
+{
+  AWLCANMessage canReq;
+  AWLCANMessage canResp[MAX_POLL_CAN_MESSAGES];
+  int transferred = 0;
+  int received = 0;
+  int ret;
 
-		ret = libusb_bulk_transfer(handle, usbEndPointIn, buffer, size, &nread, usbTimeOut);
-		if (ret){
-			//printf("ERROR in bulk read: %d\n", ret);
-		}
-		else{
-			//printf("%d receive %d bytes from device: %s\n", ++counter, nread, receiveBuf);
-			//printf("%s", receiveBuf);  //Use this for benchmarking purposes
-			//	if (buffer.can_id == MSG_CONTROL_GROUP) {
-			//process_cmd(awl, buffer.can_id, buffer.data, buffer.can_dlc);
-			msg.id  = buf32[0];
-			msg.len = ret - sizeof(uint32_t);
-			for (int i = 0; i < 8 && i < msg.len; i ++) {
-				msg.data[i] = buffer[sizeof(uint32_t)+i];
-			}
-			ParseMessage(msg);
-		}
-	}
+  boost::mutex::scoped_lock rawLock(mMutexUSB);
+
+  if (!handle)
+    return false;
+
+  if (dwNumMsg > MAX_POLL_CAN_MESSAGES)
+    dwNumMsg = MAX_POLL_CAN_MESSAGES;
+
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_POLLMESSAGES;
+  msg.data[0] = (unsigned char) dwNumMsg;
+
+  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(AWLCANMessage), &transferred, usbTimeOut);
+  if (ret || (transferred != sizeof(AWLCANMessage)))
+    return false;
+
+  ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&canResp, dwNumMsg * sizeof(AWLCANMessage), &received, usbTimeOut);
+  if (ret || (received != dwNumMsg * sizeof(AWLCANMessage)))
+    return false;
+
+  for (DWORD i=0; i<dwNumMsg; i++)
+  {
+    if (canResp[i].id)
+      ParseMessage(canResp[i]);
+  }
+
+  return true;
 }
 
 bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
 {
-	uint8_t buffer[256];
-	uint32_t* buf32;
-	size_t size = sizeof(buffer);
-	size_t offset = 0;
-	int ret;
-	int n;
+  AWLCANMessage canResp;
+  int transferred = 0;
+  int received = 0;
+  int ret;
 
-	if (handle < 0) return(false);
+  LARGE_INTEGER t1, t2, t3;
+  double elapsedTime1, elapsedTime2, elapsedTime3;
 
-	if (inMsg.id != 80) {
-		buf32 = (uint32_t*)buffer;
-		buf32[0] = inMsg.id;
-		offset = sizeof(uint32_t);
-	}
+  if (!handle)
+    return false;
 
-	for (int i = 0; i < 8 && i < inMsg.len; i++) {
-		buffer[offset + i] = inMsg.data[i];
-	}
+  boost::mutex::scoped_lock rawLock(mMutexUSB);
 
-	size = offset + inMsg.len;
+  ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&inMsg, sizeof(AWLCANMessage), &transferred, usbTimeOut);
+  if (ret || (transferred != sizeof(AWLCANMessage)))
+    return false;
 
-	ret = libusb_bulk_transfer(handle, usbEndPointOut, buffer, size, &n, usbTimeOut);
+  ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&canResp, sizeof(AWLCANMessage), &received, usbTimeOut);
+  if (ret || (received != sizeof(AWLCANMessage)))
+    return false;
 
-	switch(ret){
-		case 0:
-			printf("send %d bytes to device\n", n);
-			return true;
-		case LIBUSB_ERROR_TIMEOUT:
-			printf("ERROR in bulk write: %d Timeout\n", ret);
-			break;
-		case LIBUSB_ERROR_PIPE:
-			printf("ERROR in bulk write: %d Pipe\n", ret);
-			break;
-		case LIBUSB_ERROR_OVERFLOW:
-			printf("ERROR in bulk write: %d Overflow\n", ret);
-			break;
-		case LIBUSB_ERROR_NO_DEVICE:
-			printf("ERROR in bulk write: %d No Device\n", ret);
-			break;
-		default:
-			printf("ERROR in bulk write: %d\n", ret);
-			break;
+  if (canResp.id)
+    ParseMessage(canResp);
 
-	}
-	return(false);
+	return false;
 }
 
+bool ReceiverLibUSBCapture::SendSoftwareReset()
+{
+  if (!handle)
+    return false;
 
+  AWLCANMessage msg;
+  msg.id = AWLCANMSG_ID_COMMANDMESSAGE;
+  msg.len = AWLCANMSG_LEN;
+  msg.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+  msg.data[1] = AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER;
+  msg.data[2] = (uint8_t) (997 >> 0);
+  msg.data[3] = (uint8_t) (997 >> 8);
+  msg.data[4] = 0x00;
+  msg.data[5] = 0x00;
+  msg.data[6] = 0x00;
+  msg.data[7] = 0x00;
+
+  return WriteMessage(msg);
+}
 
 bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
@@ -235,13 +415,6 @@ bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters
 
-	/*
-	#define USB_VENDOR_ID	    0x0483
-	#define USB_PRODUCT_ID	    0xFFFF 
-	#define USB_ENDPOINT_IN	    (LIBUSB_ENDPOINT_IN  | 1) 
-	#define USB_ENDPOINT_OUT	(LIBUSB_ENDPOINT_OUT | 2) 
-	#define USB_TIMEOUT	3000 
-	*/
 	usbVendorId =  receiverNode.get<int>("libUsbVendorId");
 	usbProductId =  receiverNode.get<int>("libUsbProductId");
 	usbEndPointIn =  receiverNode.get<int>("libUsbEndPointIn");
@@ -250,4 +423,3 @@ bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 
 	return(true);
 }
-

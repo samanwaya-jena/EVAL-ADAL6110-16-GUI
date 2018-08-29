@@ -273,7 +273,7 @@ bool ReceiverEasySyncCapture::GetDataByte(std::string &inResponse, uint8_t &outB
 	return(true);
 }
 
-bool ReceiverEasySyncCapture::GetStandardID(std::string &inResponse,  unsigned long &outID, int startIndex)
+bool ReceiverEasySyncCapture::GetStandardID(std::string &inResponse, uint32_t &outID, int startIndex)
 
 {
 	uint8_t highByte;
@@ -289,7 +289,7 @@ bool ReceiverEasySyncCapture::GetStandardID(std::string &inResponse,  unsigned l
 		return(false);
 	}
 
-	outID = (highByte * (unsigned long)256) + lowByte; 
+	outID = (highByte * (uint32_t)256) + lowByte;
 
 	return(true);
 }
