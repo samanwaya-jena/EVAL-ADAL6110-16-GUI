@@ -2146,7 +2146,7 @@ void AWLQtDemo::on_viewAScanViewActionToggled()
 
 void AWLQtDemo::on_viewAboutActionTriggered()
 {
-	QMessageBox::about(this, QString("About"), QString("Viva Donald Trump !!!"));
+	QMessageBox::about(this, QString("About"), QString("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel nibh a dolor porta iaculis eu sit amet lorem. Vestibulum eu odio at urna scelerisque euismod id in quam. Phasellus eget diam eget risus mattis aliquam cursus id ante. Cras est neque, blandit vitae tempor nec, maximus vitae ex. Donec tincidunt nibh erat, quis iaculis diam rutrum sit amet. Curabitur a efficitur felis, nec convallis velit. Ut id quam ex. Pellentesque non purus consequat, ultricies est eget, feugiat velit. Nullam placerat fermentum ante in auctor. Phasellus turpis mauris, feugiat vel dignissim vel, vulputate convallis lorem. Aenean diam turpis, molestie gravida nisi non, convallis lobortis sapien. Ut feugiat diam ac tellus vehicula ullamcorper eu ut massa. Etiam eu arcu ut tortor feugiat sodales at quis eros. Viva Donald Trump."));
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()
