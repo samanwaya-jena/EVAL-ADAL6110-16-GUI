@@ -49,13 +49,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-<<<<<<< HEAD
-      <receiverType>SocketCAN</receiverType>
-
-
-=======
-       <receiverType>PosixUDP</receiverType>
->>>>>>> b9e4491fdb5c7a69bc0e8b7fe937589b6d49920f
+      <receiverType>PosixUDP</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -80,7 +74,7 @@
       <posixUDPServerAddress>127.0.0.1</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
-      <posixUDPServerPort>34567</posixUDPServerPort>
+      <posixUDPServerPort>23456</posixUDPServerPort>
 
       <!-- The PosixTTY TTY name -->
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
@@ -157,8 +151,8 @@
     <receiver1>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "PosixUDP" (case sensistive!) -->
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -258,7 +252,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+      <receiverType>LibUSB</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -289,13 +283,13 @@
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
 
       <!-- The LibUSB Vendor id -->
-      <libUsbVendorId>0x1111</libUsbVendorId>
+      <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>0xffff</libUsbProductId>
+      <libUsbProductId>30755</libUsbProductId>
       <!-- The LibUSB input end point -->
-      <libUsbEndPointIn>1</libUsbEndPointIn>
+      <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
       <libUsbTimeOut>3000</libUsbTimeOut>
 
@@ -338,14 +332,14 @@
           <!-- positionFromBumper -->
           <forward>0</forward>
           <!-- lateral offet -->
-          <left>0</left>
+          <left>1.0</left>
           <!-- height -->
           <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>0.0</yaw>
+          <yaw>-10.0</yaw>
         </orientation>
       </sensorGeometry>
 
@@ -2187,9 +2181,6 @@
         <description>CH7_CONTROL_2</description>
       </register>
 
-<<<<<<< HEAD
-    <maxRange>10.0</maxRange>
-=======
       <!-- Channel 8 -->
       <register>
         <index>R45</index>
@@ -2972,8 +2963,7 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>45.0</maxRange>
->>>>>>> b9e4491fdb5c7a69bc0e8b7fe937589b6d49920f
+    <maxRange>15.0</maxRange>
     
     <displayColor>
       <red>255</red>
@@ -3019,7 +3009,7 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>45.0</maxRange>
+    <maxRange>15.0</maxRange>
     
     <displayColor>
       <red>255</red>
