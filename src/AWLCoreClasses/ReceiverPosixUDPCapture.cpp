@@ -138,7 +138,7 @@ bool  ReceiverPosixUDPCapture::OpenCANPort()
 	udp_cli_addr->sin_addr.s_addr = htonl(INADDR_ANY);
 	udp_cli_addr->sin_port = htons(0);
 
-	printf("UDP Using interface %s\n", serverAddress.c_str());
+	printf("UDP Using interface %s port %d\n", serverAddress.c_str(), serverUDPPort);
 
 	ret = bind(fd, (struct sockaddr*)udp_cli_addr, sizeof(sockaddr_in));
 	if (ret < 0) {
