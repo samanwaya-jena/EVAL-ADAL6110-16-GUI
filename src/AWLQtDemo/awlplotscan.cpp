@@ -112,7 +112,7 @@ void AWLPlotScan::plotAScans()
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	int receiverCount = globalSettings->receiverSettings.size();
-	printf("Receiver  %d\n", receiverCount);
+	//printf("Receiver  %d\n", receiverCount);
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
 		aScan->Plot(50 + 50 * aScan->channelID + 25 * aScan->receiverID, 0, width(), 50, this);
