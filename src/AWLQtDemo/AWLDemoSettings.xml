@@ -44,7 +44,7 @@
   </video>
   
   <receivers>
-    <receiverQty>2</receiverQty>
+    <receiverQty>1</receiverQty>
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
@@ -255,7 +255,7 @@
     </receivers>
 
   <cameras>
-    <cameraQty>1</cameraQty>
+    <cameraQty>0</cameraQty>
 
     <camera0>
       <!-- cameraName:
