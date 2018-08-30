@@ -1127,7 +1127,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	// Window dimensions
 	int windowWidth = width();
 	int windowHeight = height();
-	const int lineWidth = fmax(0.15 * Ratio, 2);
+	const int lineWidth = max(0.15 * Ratio, 2.0);
 
 	// Our detection Y axis is positive left, so we negate the lateral coordinate.
  	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
@@ -1201,19 +1201,19 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 
 
 		// Dimensions of the arrow 
-		const float arrowWidth = fmax(0.2 * Ratio, 5);
+		const float arrowWidth = max(0.2 * Ratio, 5.0);
 		float arrowHeight = 0;
 		bool bDrawArrow = false;
 
 		// Up arrow or down arrow, depending on velocity.  No arrow if velocity is below zero velocity.
 		if (detection->velocity >= zeroVelocity)
 		{
-			arrowHeight = fmin(-(0.4 * Ratio), -7);
+			arrowHeight = min(-(0.4 * Ratio), -7.0);
 			bDrawArrow = true;
 		}
 		else if (detection->velocity <= -zeroVelocity)
 		{
-			arrowHeight = fmax(0.4 * Ratio, 7);
+			arrowHeight = max(0.4 * Ratio, 7.0);
 			bDrawArrow = true;
 		}
 
