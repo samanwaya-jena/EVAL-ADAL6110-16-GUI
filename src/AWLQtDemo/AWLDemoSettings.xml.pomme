@@ -6,10 +6,21 @@
 	       screen are displayed. -->
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
+    <displayAScanViewWindow>false</displayAScanViewWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>true</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
+    <displayAboutWindow>false</displayAboutWindow>
+
+    <TabSettingCalibration>true</TabSettingCalibration>
+    <TabSettingControl>true</TabSettingControl>
+    <TabSettingStatus>true</TabSettingStatus>
+    <TabSettingRegisters>true</TabSettingRegisters>
+    <TabSettingGPIOs>true</TabSettingGPIOs>
+    <TabSettingAlgoControl>true</TabSettingAlgoControl>
+    <TabSettingTrackerControl>true</TabSettingTrackerControl>
+
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s

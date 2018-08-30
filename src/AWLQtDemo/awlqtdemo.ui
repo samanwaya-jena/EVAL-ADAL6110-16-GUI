@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>972</width>
-    <height>311</height>
+    <height>319</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1215,7 +1215,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -3551,7 +3551,7 @@ background-color: #202020;
            </rect>
           </property>
           <property name="title">
-           <string>AWL Registers</string>
+           <string>Registers</string>
           </property>
           <widget class="QPushButton" name="registerFPGASetPushButton">
            <property name="geometry">
@@ -3612,7 +3612,7 @@ background-color: #202020;
              </rect>
             </property>
             <property name="text">
-             <string>AWL Register:</string>
+             <string>Register:</string>
             </property>
            </widget>
            <widget class="QLabel" name="registerFPGAValueSetLabel">

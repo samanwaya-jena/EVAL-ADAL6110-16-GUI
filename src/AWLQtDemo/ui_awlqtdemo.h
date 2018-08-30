@@ -2765,11 +2765,11 @@ public:
         receiverChannel7CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 7", nullptr));
         receiverChannel6CheckBox->setText(QApplication::translate("AWLQtDemoClass", "Channel 6", nullptr));
         interfaceTabs->setTabText(interfaceTabs->indexOf(statusTab), QApplication::translate("AWLQtDemoClass", "Status", nullptr));
-        registerFPGAGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "AWL Registers", nullptr));
+        registerFPGAGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Registers", nullptr));
         registerFPGASetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
         registerFPGAGetPushButton->setText(QApplication::translate("AWLQtDemoClass", "Get", nullptr));
         registerFPGASetGroupBox->setTitle(QApplication::translate("AWLQtDemoClass", "Set", nullptr));
-        registerFPGAAddressSetLabel->setText(QApplication::translate("AWLQtDemoClass", "AWL Register:", nullptr));
+        registerFPGAAddressSetLabel->setText(QApplication::translate("AWLQtDemoClass", "Register:", nullptr));
         registerFPGAValueSetLabel->setText(QApplication::translate("AWLQtDemoClass", "Value:", nullptr));
         registerFPGAValueSetLineEdit->setInputMask(QApplication::translate("AWLQtDemoClass", "hhhhhhhH", nullptr));
         registerFPGAValueSetLineEdit->setText(QApplication::translate("AWLQtDemoClass", "FF", nullptr));
