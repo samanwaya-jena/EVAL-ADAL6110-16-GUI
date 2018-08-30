@@ -30,7 +30,12 @@ namespace awl
 {
 
 //const float NAN = std::numeric_limits<float>::quiet_NaN ();
+#ifdef _MSC_VER
+#define NAN std::numeric_limits<float>::quiet_NaN()
+#define isNAN(val) _isnan(val)
+#else
 #define isNAN(val) (val == NAN)
+#endif
 
 typedef uint16_t TrackID;
 typedef uint32_t FrameID;
