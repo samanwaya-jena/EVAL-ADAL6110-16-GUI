@@ -2112,6 +2112,7 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 #endif // FORCE_FRAME_RESYNC_PATCH
 
+// Channel index in the data cycle returned by the ADI chip
 int aChIdxADI[16] = {
   0,
   1,
@@ -2131,6 +2132,7 @@ int aChIdxADI[16] = {
   8
 };
 
+// Channel index of the Guardian 16rcvr Array
 int aChIdxArray[16] = {
   15,
   0,

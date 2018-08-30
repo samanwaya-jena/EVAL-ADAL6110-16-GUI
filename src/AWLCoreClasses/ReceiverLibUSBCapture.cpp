@@ -54,6 +54,7 @@ ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, int inReceiverChann
 ReceiverCANCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, 
                    canRate1Mbps, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,  inRegistersFPGA, inRegistersADC, inRegistersGPIO, 
 				   inParametersAlgos, inParametersTrackers),
+context(NULL),
 handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();
@@ -62,6 +63,7 @@ handle(NULL)
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCANCapture(receiverID, propTree),
+context(NULL),
 handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();

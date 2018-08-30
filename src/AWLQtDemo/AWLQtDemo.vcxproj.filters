@@ -188,6 +188,24 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverLibUSBCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixTTYCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixUDPCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="awlplotscan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_awlplotscan.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_awlplotscan.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -229,16 +247,16 @@
     <CustomBuild Include="VideoViewer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="awlplotscan.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="awlplotscan.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_awlqtdemo.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FusedCloudViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sensor.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VideoCapture.h">
       <Filter>Header Files</Filter>
@@ -253,9 +271,6 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="AWLSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_TableView.h">
@@ -308,6 +323,12 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_FOV_2DScan.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_awlplotscan.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\AWLCANMessageDef.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

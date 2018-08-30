@@ -410,7 +410,9 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 	{
 		int column = channelIndex % columns;
 		int row = channelIndex / columns;
-		std::string sColorKey = std::string("displayColorLine") + std::to_string(row);
+		char channelKeyString[32];
+		sprintf(channelKeyString, "displayColorLine%d", row);
+		std::string sColorKey = channelKeyString;
 		GetColor(channelGeometryNode.get_child(sColorKey), displayColorRed, displayColorGreen, displayColorBlue);
 
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];

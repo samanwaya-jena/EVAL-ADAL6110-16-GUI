@@ -170,7 +170,7 @@ protected:
 
 // Protected variables
 protected:
-		libusb_context *context = NULL;
+		libusb_context *context;
 
 		libusb_device_handle *handle;
 

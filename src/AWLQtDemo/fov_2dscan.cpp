@@ -563,9 +563,9 @@ void FOV_2DScan::slotConfigChanged()
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
-		config.maxSensorsRange = fmax(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
+		config.maxSensorsRange = max(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
 
-		config.spareDepth = fmin (config.spareDepth, -receiverPosition.position.forward);
+		config.spareDepth = min(config.spareDepth, -receiverPosition.position.forward);
 		
 		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelQty; channelID++)
@@ -576,8 +576,8 @@ void FOV_2DScan::slotConfigChanged()
 
 			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) +
 				RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
-			config.maxAngularSpan = fmax(config.maxAngularSpan, fabs(startAngle));
-			config.maxAngularSpan = fmax(config.maxAngularSpan, fabs(startAngle - channelConfig.fovWidth));
+			config.maxAngularSpan = max(config.maxAngularSpan, fabs(startAngle));
+			config.maxAngularSpan = max(config.maxAngularSpan, fabs(startAngle - channelConfig.fovWidth));
 		}
 	}
 
@@ -1666,13 +1666,13 @@ void FOV_2DScan::LabelAScan(int receiver, int channel)
 
 void FOV_2DScan::plotAScans()
 {
-	QPainter painter(this);
-	if (!showAScan) return;
-	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-	{
-		aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
-	}
-	update();
+	//QPainter painter(this);
+	//if (!showAScan) return;
+	//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+	//{
+	//	aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
+	//}
+	//update();
 }
 #endif
 
