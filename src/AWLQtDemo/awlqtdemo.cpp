@@ -391,72 +391,35 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	SetupDisplayGrid();
 
 	// Show hide the windows according to menu
-	// Scope
-	if (ui.actionGraph->isChecked()) 
-	 {
-		 scopeWindow->show();
-	 }
-	else 
-	{
-		scopeWindow->hide();
-	}
+	// 
+	
+	if (!globalSettings->bTabSettingCalibration) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.calibrationTab));
+        }
+        if (!globalSettings->bTabSettingControl) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.controlTab));
+        }
+        if (!globalSettings->bTabSettingStatus) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.statusTab));
+        }
+        if (!globalSettings->bTabSettingRegisters) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.registersTab));
+        }
+        if (!globalSettings->bTabSettingGPIOs) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.gpiosTab));
+        }
+        if (!globalSettings->bTabSettingAlgoControl) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.AlgoTab));
+        }
+	if (!globalSettings->bTabSettingTrackerControl) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.controlTab));
+        }
 
-	// Interface parameters
-	if (actionSettingsButton->isChecked()) 
-	{   
-		ui.interfaceTabs->show();
-	}
-	else
-	{
-		ui.interfaceTabs->hide();
-	}
-
-	// 2D View
-	if (action2DButton->isChecked())
-	{
-		m2DScan->show();
-	}
-	else
-	{		
-		m2DScan->hide();
-	}
-
-
-	// Table view
-	if (actionTableButton->isChecked()) 
-	{
-		mTableView->show();
-	}
-	else
-	{
-		mTableView->hide();
-	}
-
-	if (actionAScanButton->isChecked()) 
-	{
-		scopeWindow->ShowAScan(true);
-		//m2DScan->ShowAScan(true);
-	}
-	else
-	{
-		scopeWindow->ShowAScan(false);
-		//m2DScan->ShowAScan(false);
-	}
-
-#ifdef USE_OPENCV_VIDEO
-	// Camera views
-	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		if (actionCameraButton->isChecked())
-		{
-			videoViewers[videoViewerID]->show();
-		}
-		else 
-		{
-			videoViewers[videoViewerID]->hide();
-		}
-	}
-#endif
+	on_view2DActionToggled();
+        on_viewTableViewActionToggled();
+        on_viewAScanViewActionToggled();
+        on_viewCameraActionToggled();
+        on_viewSettingsActionToggled();
 
 
 	// Position the main widget on the top left corner

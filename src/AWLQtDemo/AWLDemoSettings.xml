@@ -18,8 +18,8 @@
     <TabSettingStatus>true</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>true</TabSettingGPIOs>
-    <TabSettingAlgoControl>false</TabSettingAlgoControl>
-    <TabSettingTrackerControl>false</TabSettingTrackerControl>
+    <TabSettingAlgoControl>true</TabSettingAlgoControl>
+    <TabSettingTrackerControl>true</TabSettingTrackerControl>
 
 
     <!-- velocity units: display velocity in km/h or m/s
