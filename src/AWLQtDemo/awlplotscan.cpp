@@ -104,8 +104,8 @@ void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
 
 void AWLPlotScan::plotAScans()
 {
-  float minFinal  =  INFINITY;
-  float maxFinal  = -INFINITY;
+  float minFinal  =  FLT_MAX;
+  float maxFinal  = -FLT_MAX;
   float maxRange = 0.0F;
 
   BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)

@@ -174,10 +174,10 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 
 	*mean = 0.0;
 	if (sampleSigned) {
-		*min = INFINITY;
-		*max = -INFINITY;
+		*min = FLT_MAX;
+		*max = -FLT_MAX;
 	} else {
-		*min = INFINITY;
+		*min = FLT_MAX;
 		*max = 0;
 	}
 
