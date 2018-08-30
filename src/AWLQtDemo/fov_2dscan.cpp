@@ -1666,13 +1666,13 @@ void FOV_2DScan::LabelAScan(int receiver, int channel)
 
 void FOV_2DScan::plotAScans()
 {
-	//QPainter painter(this);
-	//if (!showAScan) return;
-	//BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-	//{
-	//	aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
-	//}
-	//update();
+	QPainter painter(this);
+	if (!showAScan) return;
+	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+	{
+		aScan->Plot(50 + 50 * aScan->channelID, 100, width(), 50, this);
+	}
+	update();
 }
 #endif
 
