@@ -122,14 +122,22 @@ bool AWLSettings::ReadSettings()
 	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile");
 
 	// Other settings
-	bDisplaySettingsWindow = propTree.get<bool>("config.layout.displaySettingsWindow");
-	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow");
-	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow");
-	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow");;
-	bDisplayAScanViewWindow = propTree.get<bool>("config.layout.displayAScanViewWindow");;
-	bDisplayScopeWindow = propTree.get<bool>("config.layout.displayScopeWindow");
-	bDisplayCameraWindow = propTree.get<bool>("config.layout.displayCameraWindow");
-	bDisplayAboutWindow = propTree.get<bool>("config.layout.displayAboutWindow");;
+	bDisplaySettingsWindow = propTree.get<bool>("config.layout.displaySettingsWindow",false);
+	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow",false);
+	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow",false);
+	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow",false);
+	bDisplayAScanViewWindow = propTree.get<bool>("config.layout.displayAScanViewWindow",false);
+	bDisplayScopeWindow = propTree.get<bool>("config.layout.displayScopeWindow",false);
+	bDisplayCameraWindow = propTree.get<bool>("config.layout.displayCameraWindow",false);
+	bDisplayAboutWindow = propTree.get<bool>("config.layout.displayAboutWindow",false);
+
+        bTabSettingCalibration = propTree.get<bool>("config.layout.TabSettingCalibration",false);
+        bTabSettingControl = propTree.get<bool>("config.layout.TabSettingControl",false);
+        bTabSettingStatus = propTree.get<bool>("config.layout.TabSettingStatus",false);
+        bTabSettingRegisters = propTree.get<bool>("config.layout.TabSettingRegisters",false);
+        bTabSettingGPIOs = propTree.get<bool>("config.layout.TabSettingGPIOs",false);
+        bTabSettingAlgoControl = propTree.get<bool>("config.layout.TabSettingAlgoControl",false);
+        bTabSettingTrackerControl = propTree.get<bool>("config.layout.TabSettingTrackerControl",false);
 
 	velocityUnits = (VelocityUnits) propTree.get<int>("config.layout.velocityUnits");
 

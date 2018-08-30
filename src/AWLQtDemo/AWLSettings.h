@@ -147,6 +147,15 @@ public:
 	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
 
+        bool bTabSettingCalibration;
+        bool bTabSettingControl;
+        bool bTabSettingStatus;
+        bool bTabSettingRegisters;
+        bool bTabSettingGPIOs;
+        bool bTabSettingAlgoControl;
+        bool bTabSettingTrackerControl;
+
+
 	bool bDisplayScopeDistance;
 	bool bDisplayScopeVelocity;
 	std::string sDisplayShowSize;
