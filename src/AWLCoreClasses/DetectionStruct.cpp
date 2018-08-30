@@ -24,6 +24,8 @@
 #define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
 #include <math.h>
 
+#include <float.h>
+
 using namespace std;
 using namespace awl;
 
