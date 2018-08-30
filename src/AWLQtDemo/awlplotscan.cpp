@@ -93,9 +93,9 @@ void AWLPlotScan::LabelAScan(int receiver, int channel)
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	maxRange = globalSettings->receiverSettings[0].channelsConfig[0].maxRange / 4;
 	if ( maxRange < 10.0 ) {
-		step = round((int)(maxRange)/5)*5;
+		step = ((int)((maxRange+2.5)/5)) * 5;
 	} else {
-		step = round((int)(maxRange)/10)*10;
+		step = ((int)((maxRange+5)/10)) * 10;
 	}
 	
 	scale =  width() * ( (float) step / maxRange );
