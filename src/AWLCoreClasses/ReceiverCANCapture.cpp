@@ -1885,6 +1885,8 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 		return (false);
 	}
 
+	registersFPGALabel = configurationNodePtr->get<std::string>("registersFPGA.<xmlattr>.label", "");
+
 	BOOST_FOREACH(ptree::value_type &registersFPGANode, configurationNodePtr->get_child("registersFPGA"))
 	{
 		if( registersFPGANode.first == "register" ) {
@@ -1903,6 +1905,8 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
  
  
 	// Read all ADC Registers default descriptions
+
+	registersADCLabel = configurationNodePtr->get<std::string>("registersADC.<xmlattr>.label", "");
 
 	BOOST_FOREACH(ptree::value_type &registersADCNode, configurationNodePtr->get_child("registersADC"))
 	{

@@ -2207,6 +2207,9 @@ void AWLQtDemo::on_viewGraphClose()
 
 void AWLQtDemo::FillFPGAList(AWLSettings *settingsPtr)
 {
+	if (!receiverCaptures[0]->registersFPGALabel.empty())
+		ui.registerFPGAGroupBox->setTitle(receiverCaptures[0]->registersFPGALabel.c_str());
+
 	for (int i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++) 
 	{
 		QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
@@ -2279,6 +2282,9 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 {
+	if (!receiverCaptures[0]->registersADCLabel.empty())
+		ui.registerADCGroupBox->setTitle(receiverCaptures[0]->registersADCLabel.c_str());
+
 	for (int i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
 	{
 		QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();

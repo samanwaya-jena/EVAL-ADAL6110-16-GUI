@@ -758,6 +758,7 @@ public:
 	 *           However, they should not fail and can be called safely.
       */
 	RegisterSet registersFPGA;
+	string registersFPGALabel;
 
 	/** \brief ADC Registers description
 	 *  \remarks The ADC register set should be initialized with a representation of the ADC registers of the receiver model used.
@@ -766,7 +767,8 @@ public:
 	 *           However, they should not fail and can be called safely.
       */	
 	RegisterSet registersADC;
-	
+	string registersADCLabel;
+
 	/** \brief GPIO Registers description 
 	 *  \remarks The GPIO register set should be initialized with a representation of the GPIO registers of the receiver model used.
 	 *           Usually, these are extracted from a config file.  If the register set is not initialized, some of the communication
