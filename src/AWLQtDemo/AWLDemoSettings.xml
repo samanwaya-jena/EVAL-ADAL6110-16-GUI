@@ -838,41 +838,31 @@
       </register>
       
       <register>
-        <index>R100</index>
-        <address>100</address>
+        <index>1</index>
+        <address>1</address>
         <description>Wagner: Max Acc</description>
       </register>
       <register>
-        <index>R101</index>
-        <address>101</address>
+        <index>2</index>
+        <address>2</address>
         <description>Wagner: Acc Shift</description>
-      </register>
-      <register>
-        <index>R102</index>
-        <address>102</address>
-        <description>Wagner: Algo Scaler</description>
       </register>
 
       <register>
-        <index>R998</index>
-        <address>998</address>
+        <index>254</index>
+        <address>254</address>
         <description>SAVE_CONFIG_TO_FLASH</description>
       </register>
 
       <register>
-        <index>R999</index>
-        <address>999</address>
+        <index>255</index>
+        <address>255</address>
         <description>RESET_FACTORY_DEFAULT</description>
       </register>
 
     </registersADC>
 
     <GPIOs>
-      <register>
-        <index>67</index>
-        <address>67</address>
-        <description>ADC Reset</description>
-      </register>
     </GPIOs>
 
     <algos>
