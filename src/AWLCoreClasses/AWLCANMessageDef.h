@@ -2,24 +2,22 @@
 #define AWLCANMESSAGEDEF_H
 
 
+// len
+#define AWLCANMSG_LEN 8
+
 // CAN Frame
 typedef struct {
     uint32_t id;        // Message id
     uint32_t timestamp; // timestamp in milliseconds
     uint8_t  flags;     // [extended_id|1][RTR:1][reserver:6]
     uint8_t  len;       // Frame size (0.8)
-    uint8_t  data[8];   // Databytes 0..7
+    uint8_t  data[AWLCANMSG_LEN];   // Databytes 0..7
     uint8_t  pad1;      // Padding required so that sizeof(AWLCANMessage) be 20 on all platforms
     uint8_t  pad2;      // ...
 } AWLCANMessage;
 
 
-// len
-#define AWLCANMSG_LEN 8
-
 // id
-
-
 #define AWLCANMSG_ID_SENSORSTATUS                   1
 #define AWLCANMSG_ID_SENSORBOOT                     2
 #define AWLCANMSG_ID_COMPLETEDFRAME                 9
