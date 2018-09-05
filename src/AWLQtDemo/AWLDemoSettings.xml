@@ -6,6 +6,7 @@
 	       screen are displayed. -->
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
+    <displayAScanViewWindow>true</displayAScanViewWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>true</displayScopeWindow>
@@ -40,7 +41,7 @@
          "Normal" = Show normal
          Defaults to "Normal"
          -->
-    <displayShowSize>Normal</displayShowSize>
+    <displayShowSize>FullScreen</displayShowSize>
   </layout>
 
   <debug>
@@ -90,13 +91,13 @@
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
 
       <!-- The LibUSB Vendor id -->
-      <libUsbVendorId>1611</libUsbVendorId>
+      <libUsbVendorId>1419</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>30755</libUsbProductId>
+      <libUsbProductId>80</libUsbProductId>
       <!-- The LibUSB input end point -->
       <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <libUsbEndPointOut>2</libUsbEndPointOut>
       <!-- The LibUSB time out -->
       <libUsbTimeOut>1000</libUsbTimeOut>
 
@@ -831,7 +832,7 @@
 
     <registersADC label="CPU Registers">
     
-      <register>
+      <!--register>
         <index>0</index>
         <address>0</address>
         <description>Software Reset</description>
@@ -858,7 +859,7 @@
         <index>255</index>
         <address>255</address>
         <description>RESET_FACTORY_DEFAULT</description>
-      </register>
+      </register-->
 
     </registersADC>
 
@@ -899,7 +900,7 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>45.0</maxRange>
+    <maxRange>20.0</maxRange>
     
     <displayColor>
       <red>255</red>
