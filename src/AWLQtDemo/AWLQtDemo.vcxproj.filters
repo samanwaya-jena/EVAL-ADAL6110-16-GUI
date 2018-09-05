@@ -346,9 +346,6 @@
     <None Include="..\InstallableDLLs\qwt.dll">
       <Filter>Installable DLLs</Filter>
     </None>
-    <None Include="..\InstallableDLLs\canlib32.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
     <None Include="..\InstallableDLLs\Qt5Core.dll">
       <Filter>Installable DLLs</Filter>
     </None>
@@ -374,12 +371,6 @@
       <Filter>Installable Files\Installable Plugins</Filter>
     </None>
     <None Include="..\InstallableDLLs\CopyDLLDependencies.BAT">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\m3api.dll">
-      <Filter>Installable DLLs</Filter>
-    </None>
-    <None Include="..\InstallableDLLs\xiapi32.dll">
       <Filter>Installable DLLs</Filter>
     </None>
     <None Include="AWLDemoSettings.xml">

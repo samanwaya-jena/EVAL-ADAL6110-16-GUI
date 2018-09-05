@@ -341,13 +341,22 @@
 		<col def="S0">ISDotNetInstallerArgsUninstall</col>
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>AWLQtDemo.Content_Files</td><td>{618F93A4-C0C0-4F38-974F-CADE213DEE66}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.content_files</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>AWLQtDemo.Content_Files1</td><td>{505A0F8E-B10C-41D4-98CF-8C5108004A08}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.content_files</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>AWLQtDemo.Primary_Output</td><td>{3E42059C-41E9-4C92-8A0D-2ABDEE55B327}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>AWLQtDemo.Primary_Output1</td><td>{24DD9D19-8552-4E7B-BCD4-2C1E47417BE2}</td><td>INSTALLDIR</td><td>2</td><td/><td>awlqtdemo.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{C9B08C6D-4CBE-44CF-950F-94C91A1050BF}</td><td>PLATFORMS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{F6605B90-1F13-4053-99AF-580A9EAB0BA6}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT10</td><td>{387172D7-FA61-428B-BBB1-AC651CC98B28}</td><td>BUTTONBITMAPS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT11</td><td>{89D99CFB-6678-415A-A147-682494539359}</td><td>LOGOS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT12</td><td>{106AC0CA-ACD0-4701-9FAA-87A150673738}</td><td>WIDGETS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{16DA04AB-932E-4F5C-B0DC-1A1E72CA1A51}</td><td>LocalAppDataFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{1E4BE838-A7BD-4BA7-A5E0-55C3B9CD11B9}</td><td>PHANTOM_INTELLIGENCE1</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{11556798-45F5-41A3-B259-08EAF801B132}</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{A3EADC98-7060-472E-9FFA-366766013E34}</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT6</td><td>{ED5C3BC4-C78D-49C5-9AB9-BE1122FA821F}</td><td>IMAGES</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT7</td><td>{675703E6-A218-42E9-B997-D99DA6304AE8}</td><td>BUTTONBITMAPS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT8</td><td>{96B426EF-A30D-4C90-9307-12975A068C82}</td><td>LOGOS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT9</td><td>{098F9694-BF02-462B-8212-1851150A6D5A}</td><td>WIDGETS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>qwindows.dll</td><td>{4064B559-D1E1-4838-8FC9-3715F5D0F512}</td><td>PLATFORMS</td><td>2</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
@@ -1058,21 +1067,37 @@
 	<table name="CreateFolder">
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
+		<row><td>BUTTONBITMAPS</td><td>ISX_DEFAULTCOMPONENT10</td></row>
+		<row><td>BUTTONBITMAPS</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>IMAGES</td><td>ISX_DEFAULTCOMPONENT6</td></row>
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Content_Files</td></row>
+		<row><td>INSTALLDIR</td><td>AWLQtDemo.Content_Files1</td></row>
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Primary_Output</td></row>
+		<row><td>INSTALLDIR</td><td>AWLQtDemo.Primary_Output1</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT10</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT11</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT12</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT2</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT5</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT6</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT8</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT9</td></row>
 		<row><td>INSTALLDIR</td><td>qwindows.dll</td></row>
+		<row><td>LOGOS</td><td>ISX_DEFAULTCOMPONENT11</td></row>
+		<row><td>LOGOS</td><td>ISX_DEFAULTCOMPONENT8</td></row>
 		<row><td>LocalAppDataFolder</td><td>ISX_DEFAULTCOMPONENT2</td></row>
 		<row><td>PHANTOM_INTELLIGENCE1</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>PLATFORMS</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>PLATFORMS</td><td>qwindows.dll</td></row>
+		<row><td>WIDGETS</td><td>ISX_DEFAULTCOMPONENT12</td></row>
+		<row><td>WIDGETS</td><td>ISX_DEFAULTCOMPONENT9</td></row>
 	</table>
 
 	<table name="CustomAction">
@@ -1088,6 +1113,7 @@
 		<row><td>ISSelfRegisterCosting</td><td>1</td><td>ISSELFREG.DLL</td><td>ISSelfRegisterCosting</td><td/><td/></row>
 		<row><td>ISSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISSelfRegisterFiles</td><td/><td/></row>
 		<row><td>ISSelfRegisterFinalize</td><td>1</td><td>ISSELFREG.DLL</td><td>ISSelfRegisterFinalize</td><td/><td/></row>
+		<row><td>ISSetAllUsers</td><td>257</td><td>SetAllUsers.dll</td><td>SetAllUsers</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISUnSelfRegisterFiles</td><td/><td/></row>
 		<row><td>LaunchProgramFileFromSetupCompleteSuccess</td><td>1</td><td>NewBinary19</td><td>LaunchProgram</td><td/><td/></row>
 		<row><td>SetARPINSTALLLOCATION</td><td>51</td><td>ARPINSTALLLOCATION</td><td>[INSTALLDIR]</td><td/><td/></row>
@@ -1155,6 +1181,7 @@
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
 		<row><td>AdminToolsFolder</td><td>TARGETDIR</td><td>.:Admint~1|AdminTools</td><td/><td>0</td><td/></row>
 		<row><td>AppDataFolder</td><td>TARGETDIR</td><td>.:APPLIC~1|Application Data</td><td/><td>0</td><td/></row>
+		<row><td>BUTTONBITMAPS</td><td>IMAGES</td><td>BUTTON~1|ButtonBitmaps</td><td/><td>0</td><td/></row>
 		<row><td>CommonAppDataFolder</td><td>TARGETDIR</td><td>.:Common~1|CommonAppData</td><td/><td>0</td><td/></row>
 		<row><td>CommonFiles64Folder</td><td>TARGETDIR</td><td>.:Common64</td><td/><td>0</td><td/></row>
 		<row><td>CommonFilesFolder</td><td>TARGETDIR</td><td>.:Common</td><td/><td>0</td><td/></row>
@@ -1163,20 +1190,26 @@
 		<row><td>FavoritesFolder</td><td>TARGETDIR</td><td>.:FAVORI~1|Favorites</td><td/><td>0</td><td/></row>
 		<row><td>FontsFolder</td><td>TARGETDIR</td><td>.:Fonts</td><td/><td>0</td><td/></row>
 		<row><td>GlobalAssemblyCache</td><td>TARGETDIR</td><td>.:Global~1|GlobalAssemblyCache</td><td/><td>0</td><td/></row>
-		<row><td>INSTALLDIR</td><td>MY_PRODUCT_NAME</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>IMAGES</td><td>INSTALLDIR</td><td>Images</td><td/><td>0</td><td/></row>
+		<row><td>INSTALLDIR</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO1</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
 		<row><td>ISMyCompanyDir</td><td>ProgramFilesFolder</td><td>MYCOMP~1|My Company Name</td><td/><td>0</td><td/></row>
 		<row><td>ISMyProductDir</td><td>ISMyCompanyDir</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
 		<row><td>ISYourDataBaseDir</td><td>INSTALLDIR</td><td>Database</td><td/><td>0</td><td/></row>
+		<row><td>LOGOS</td><td>IMAGES</td><td>Logos</td><td/><td>0</td><td/></row>
 		<row><td>LocalAppDataFolder</td><td>TARGETDIR</td><td>.:LocalA~1|LocalAppData</td><td/><td>0</td><td/></row>
 		<row><td>MY_PRODUCT_NAME</td><td>PHANTOM_INTELLIGENCE</td><td>PHANTO~1|Phantom Intelligence Lidar Demo</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_1</td><td>TARGETDIR</td><td>NEW_FOLDER_1</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_11</td><td>TARGETDIR</td><td>NEW_FOLDER_11</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_12</td><td>TARGETDIR</td><td>NEW_FOLDER_12</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
+		<row><td>PHANTOM</td><td>WindowsVolume</td><td>Phantom</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM_INTELLIGENCE</td><td>ProgramFilesFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM_INTELLIGENCE1</td><td>LocalAppDataFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
+		<row><td>PHANTOM_INTELLIGENCE2</td><td>WindowsVolume</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>PHANTOM_INTELLIGENCE1</td><td>PHANTO~1|Phantom Intelligence Lidar Demo</td><td/><td>0</td><td/></row>
+		<row><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO1</td><td>PHANTOM_INTELLIGENCE2</td><td>PHANTO~1|Phantom Intelligence LiDAR Demo</td><td/><td>0</td><td/></row>
 		<row><td>PLATFORMS</td><td>INSTALLDIR</td><td>PLATFO~1|Platforms</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
 		<row><td>PrimaryVolumePath</td><td>TARGETDIR</td><td>.:Primar~1|PrimaryVolumePath</td><td/><td>0</td><td/></row>
@@ -1195,6 +1228,7 @@
 		<row><td>TempFolder</td><td>TARGETDIR</td><td>.:Temp</td><td/><td>0</td><td/></row>
 		<row><td>TemplateFolder</td><td>TARGETDIR</td><td>.:ShellNew</td><td/><td>0</td><td/></row>
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
+		<row><td>WIDGETS</td><td>IMAGES</td><td>Widgets</td><td/><td>0</td><td/></row>
 		<row><td>WindowsFolder</td><td>TARGETDIR</td><td>.:Windows</td><td/><td>0</td><td/></row>
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
 		<row><td>phanto_1_phantom_intelligence_inc.</td><td>ProgramMenuFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>1</td><td/></row>
@@ -1890,13 +1924,22 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>AWLQtDemo.Content_Files</td></row>
+		<row><td>AlwaysInstall</td><td>AWLQtDemo.Content_Files1</td></row>
 		<row><td>AlwaysInstall</td><td>AWLQtDemo.Primary_Output</td></row>
+		<row><td>AlwaysInstall</td><td>AWLQtDemo.Primary_Output1</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT10</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT11</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT12</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT6</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT8</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT9</td></row>
 		<row><td>AlwaysInstall</td><td>qwindows.dll</td></row>
 	</table>
 
@@ -1912,9 +1955,57 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
-		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
+		<row><td>about.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>About.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\About.png</td><td>1</td><td/></row>
+		<row><td>about.xcf</td><td>ISX_DEFAULTCOMPONENT10</td><td>About.xcf</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\About.xcf</td><td>1</td><td/></row>
+		<row><td>ascan.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>AScan.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\AScan.png</td><td>1</td><td/></row>
+		<row><td>awlqtdemo.content_files</td><td>AWLQtDemo.Content_Files1</td><td>AWLQtDemo.Content Files</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|ContentFiles</td><td>3</td><td/></row>
+		<row><td>awlqtdemo.ico</td><td>ISX_DEFAULTCOMPONENT11</td><td>AWLQTD~1.ICO|AWLQtDemo.ico</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Logos\AWLQtDemo.ico</td><td>1</td><td/></row>
+		<row><td>awlqtdemo.primary_output</td><td>AWLQtDemo.Primary_Output1</td><td>AWLQtDemo.Primary Output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AWLQtDemo&gt;|Built</td><td>3</td><td/></row>
+		<row><td>camera.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Camera.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Camera.png</td><td>1</td><td/></row>
+		<row><td>checkbox_checked.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>CHECKB~1.PNG|checkbox_checked.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\checkbox_checked.png</td><td>1</td><td/></row>
+		<row><td>checkbox_checked_hover.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>CHECKB~1.PNG|checkbox_checked_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\checkbox_checked_hover.png</td><td>1</td><td/></row>
+		<row><td>checkbox_checked_pressed.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>CHECKB~1.PNG|checkbox_checked_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\checkbox_checked_pressed.png</td><td>1</td><td/></row>
+		<row><td>checkbox_unchecked.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>CHECKB~1.PNG|checkbox_unchecked.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\checkbox_unchecked.png</td><td>1</td><td/></row>
+		<row><td>checkbox_unchecked_hover.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>CHECKB~1.PNG|checkbox_unchecked_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\checkbox_unchecked_hover.png</td><td>1</td><td/></row>
+		<row><td>checkbox_unchecked_pressed.p</td><td>ISX_DEFAULTCOMPONENT12</td><td>CHECKB~1.PNG|checkbox_unchecked_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\checkbox_unchecked_pressed.png</td><td>1</td><td/></row>
+		<row><td>down_arrow.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>DOWN_A~1.PNG|down_arrow.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\down_arrow.png</td><td>1</td><td/></row>
+		<row><td>down_arrow_dark.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>DOWN_A~1.PNG|down_arrow_dark.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\down_arrow_dark.png</td><td>1</td><td/></row>
+		<row><td>down_arrow_disabled.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>DOWN_A~1.PNG|down_arrow_disabled.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\down_arrow_disabled.png</td><td>1</td><td/></row>
+		<row><td>frame.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>frame.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\frame.png</td><td>1</td><td/></row>
+		<row><td>grid.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Grid.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Grid.png</td><td>1</td><td/></row>
+		<row><td>maximize.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Maximize.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Maximize.png</td><td>1</td><td/></row>
+		<row><td>pagefold.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>pagefold.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\pagefold.png</td><td>1</td><td/></row>
+		<row><td>phantom_black_logo.png</td><td>ISX_DEFAULTCOMPONENT11</td><td>PHANTO~1.PNG|Phantom-Black-logo.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Logos\Phantom-Black-logo.png</td><td>1</td><td/></row>
+		<row><td>pushbutton.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>PUSHBU~1.PNG|pushbutton.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\pushbutton.png</td><td>1</td><td/></row>
+		<row><td>pushbutton_hover.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>PUSHBU~1.PNG|pushbutton_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\pushbutton_hover.png</td><td>1</td><td/></row>
+		<row><td>pushbutton_pressed.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>PUSHBU~1.PNG|pushbutton_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\pushbutton_pressed.png</td><td>1</td><td/></row>
+		<row><td>quit.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Quit.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Quit.png</td><td>1</td><td/></row>
 		<row><td>qwindows.dll</td><td>qwindows.dll</td><td>qwindows.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;VSSolutionFolder&gt;\InstallableDLLs\platforms\qwindows.dll</td><td>1</td><td/></row>
+		<row><td>radiobutton_checked.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>RADIOB~1.PNG|radiobutton_checked.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\radiobutton_checked.png</td><td>1</td><td/></row>
+		<row><td>radiobutton_checked_hover.pn</td><td>ISX_DEFAULTCOMPONENT12</td><td>RADIOB~1.PNG|radiobutton_checked_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\radiobutton_checked_hover.png</td><td>1</td><td/></row>
+		<row><td>radiobutton_checked_pressed.</td><td>ISX_DEFAULTCOMPONENT12</td><td>RADIOB~1.PNG|radiobutton_checked_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\radiobutton_checked_pressed.png</td><td>1</td><td/></row>
+		<row><td>radiobutton_unchecked.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>RADIOB~1.PNG|radiobutton_unchecked.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\radiobutton_unchecked.png</td><td>1</td><td/></row>
+		<row><td>radiobutton_unchecked_hover.</td><td>ISX_DEFAULTCOMPONENT12</td><td>RADIOB~1.PNG|radiobutton_unchecked_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\radiobutton_unchecked_hover.png</td><td>1</td><td/></row>
+		<row><td>radiobutton_unchecked_presse</td><td>ISX_DEFAULTCOMPONENT12</td><td>RADIOB~1.PNG|radiobutton_unchecked_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\radiobutton_unchecked_pressed.png</td><td>1</td><td/></row>
+		<row><td>restoredown.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>RESTOR~1.PNG|RestoreDown.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\RestoreDown.png</td><td>1</td><td/></row>
+		<row><td>scan.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Scan.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Scan.png</td><td>1</td><td/></row>
+		<row><td>scope.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Scope.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Scope.png</td><td>1</td><td/></row>
+		<row><td>settings.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Settings.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Settings.png</td><td>1</td><td/></row>
+		<row><td>sizegrip.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>sizegrip.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\sizegrip.png</td><td>1</td><td/></row>
+		<row><td>smartlablogowithnametransapa</td><td>ISX_DEFAULTCOMPONENT11</td><td>SMARTL~1.PNG|SmartLabLogoWithNameTransaparent.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Logos\SmartLabLogoWithNameTransaparent.png</td><td>1</td><td/></row>
+		<row><td>spindown.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>spindown.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spindown.png</td><td>1</td><td/></row>
+		<row><td>spindown_hover.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>SPINDO~1.PNG|spindown_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spindown_hover.png</td><td>1</td><td/></row>
+		<row><td>spindown_off.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>SPINDO~1.PNG|spindown_off.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spindown_off.png</td><td>1</td><td/></row>
+		<row><td>spindown_pressed.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>SPINDO~1.PNG|spindown_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spindown_pressed.png</td><td>1</td><td/></row>
+		<row><td>spinup.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>spinup.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spinup.png</td><td>1</td><td/></row>
+		<row><td>spinup_hover.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>SPINUP~1.PNG|spinup_hover.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spinup_hover.png</td><td>1</td><td/></row>
+		<row><td>spinup_off.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>SPINUP~1.PNG|spinup_off.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spinup_off.png</td><td>1</td><td/></row>
+		<row><td>spinup_pressed.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>SPINUP~1.PNG|spinup_pressed.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\spinup_pressed.png</td><td>1</td><td/></row>
+		<row><td>sungwoo.ico</td><td>ISX_DEFAULTCOMPONENT11</td><td>Sungwoo.ico</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Logos\Sungwoo.ico</td><td>1</td><td/></row>
+		<row><td>sungwoologoicontransparent.p</td><td>ISX_DEFAULTCOMPONENT11</td><td>SUNGWO~1.PNG|SungwooLogoIconTransparent.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Logos\SungwooLogoIconTransparent.png</td><td>1</td><td/></row>
+		<row><td>up_arrow.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>up_arrow.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\up_arrow.png</td><td>1</td><td/></row>
+		<row><td>up_arrow_dark.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>UP_ARR~1.PNG|up_arrow_dark.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\up_arrow_dark.png</td><td>1</td><td/></row>
+		<row><td>up_arrow_disabled.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>UP_ARR~1.PNG|up_arrow_disabled.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\up_arrow_disabled.png</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2057,13 +2148,22 @@
 		<col def="S0">HTTPLocation</col>
 		<col def="S0">Miscellaneous</col>
 		<row><td>AWLQtDemo.Content_Files</td><td/><td/><td>_7633623A_7B97_42BE_852E_723762E3A0BA_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>AWLQtDemo.Content_Files1</td><td/><td/><td>_68E50597_0AB5_472B_9639_69AE5FE3DC78_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>AWLQtDemo.Primary_Output</td><td/><td/><td>_7C3E389E_2425_4CCB_9BC5_0284BBA3A098_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>AWLQtDemo.Primary_Output1</td><td/><td/><td>_291DA580_9A97_43A0_B103_EE8E29B49368_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_B40D58BA_AB05_408C_8E78_C83F5AD1DF9A_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_A1AF27C7_FEC5_45EA_AF09_B6E57D541B9A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT10</td><td/><td/><td>_C9C0C66B_4D5A_45BA_8245_5E909ACB9B9B_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT11</td><td/><td/><td>_4E6DB475_8C34_40CF_8BA2_3D4B3B4132C8_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT12</td><td/><td/><td>_7ECD3F76_EE51_486C_B99C_DE345CA24089_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_089CF326_5658_400B_899F_2C860D2CB728_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_0BABE13E_BDA6_4F12_91C5_4698CC6D2F81_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_6FC8516D_468B_4D88_8BBB_BC62180D8031_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_6E5153BD_60D8_498C_8E0C_C05EC0DBA96F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT6</td><td/><td/><td>_2DEBDA17_A848_4E5C_82AA_F09B05F02D07_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT7</td><td/><td/><td>_77D87614_E980_45CF_A94B_E96A42D79BF5_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT8</td><td/><td/><td>_EDF80F4D_FAE3_4BBA_BD35_5FD57E7718B4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT9</td><td/><td/><td>_5E8C0820_CBF8_46DC_822D_166798D39221_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>qwindows.dll</td><td/><td/><td>_11152F14_A57E_4071_B28A_56E2086E7A27_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
@@ -2143,8 +2243,7 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s255">ISMergeModule_</col>
 		<col key="yes" def="i2">Language_</col>
-		<row><td>AlwaysInstall</td><td>Microsoft_VC120_CRT_x86.194841A2_D0F2_3B96_9F71_05BA91BEA0FA</td><td>0</td></row>
-		<row><td>AlwaysInstall</td><td>Microsoft_VC120_MFC_x86.194841A2_D0F2_3B96_9F71_05BA91BEA0FA</td><td>0</td></row>
+		<row><td>AlwaysInstall</td><td>Microsoft_VC100_CRT_x86.DF495DFD_79F6_34DF_BB1E_E58DB5BDCF2C</td><td>0</td></row>
 	</table>
 
 	<table name="ISFeatureSetupPrerequisites">
@@ -2267,8 +2366,7 @@
 		<col def="s255">Name</col>
 		<col def="S255">Destination</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>Microsoft_VC120_CRT_x86.194841A2_D0F2_3B96_9F71_05BA91BEA0FA</td><td>0</td><td>Visual C++ 12.0 CRT (x86)</td><td/><td/></row>
-		<row><td>Microsoft_VC120_MFC_x86.194841A2_D0F2_3B96_9F71_05BA91BEA0FA</td><td>0</td><td>Visual C++ 12.0 MFC (x86)</td><td/><td/></row>
+		<row><td>Microsoft_VC100_CRT_x86.DF495DFD_79F6_34DF_BB1E_E58DB5BDCF2C</td><td>0</td><td>Visual C++ 10.0 CRT (x86)</td><td/><td/></row>
 	</table>
 
 	<table name="ISMergeModuleCfgValues">
@@ -3907,6 +4005,7 @@
 		<row><td>_B0AFC0DB3A4D45DF9FC365B9BE884CAB.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_B8EC275C72F9465396B65A119DD1E55E.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_BCC08169023740BF9B3F8AA2B7FA584D.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
+		<row><td>_Built1_5B0F90347B684893A3956790EA966008.exe</td><td/><td>&lt;VSSolutionFolder&gt;\AWLQtDemo\Images\Logos\AWLQtDemo.ico</td><td>0</td></row>
 		<row><td>_C20C28C33F7B44E6840AA41D03B98107.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Debug\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_C5E0FB68B4454056B3A6D57D6FF0E921.exe</td><td/><td>C:\Users\Jean-Yves\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
 		<row><td>_C786EE3F46254A179CF956DF24772CD8.exe</td><td/><td>C:\Users\jeany\Documents\Bitbucket\awlcutedemo\src\Win32\Release\AWLQtDemo.exe</td><td>0</td></row>
@@ -3959,6 +4058,7 @@
 		<row><td>ISSelfRegisterCosting</td><td/><td>2201</td><td/><td/></row>
 		<row><td>ISSelfRegisterFiles</td><td/><td>5601</td><td/><td/></row>
 		<row><td>ISSelfRegisterFinalize</td><td/><td>6601</td><td/><td/></row>
+		<row><td>ISSetAllUsers</td><td>Not Installed</td><td>10</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td/><td>2202</td><td/><td/></row>
 		<row><td>InstallFiles</td><td/><td>4000</td><td>InstallFiles</td><td/></row>
 		<row><td>InstallFinalize</td><td/><td>6600</td><td>InstallFinalize</td><td/></row>
@@ -4046,7 +4146,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{E3C6A8F5-0244-4B65-A213-4AFF4F9122DE}</td></row>
 		<row><td>ISUSSignature</td><td>{6C8A8729-1CA7-4303-B96D-879FBA99B81E}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewSystemSearch,viewRelease,viewProject,viewUpgradePaths,viewUpdateService,viewAppFiles,viewObjects,viewCustomActions,viewFileExtensions,viewISToday,viewLearnMore,viewUI,viewShortcuts,viewRegistry,viewIniFiles,viewEnvironmentVariables,viewVRoots,viewTextMessages</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewSystemSearch,viewRelease,viewProject,viewUpgradePaths,viewUpdateService,viewAppFiles,viewObjects,viewCustomActions,viewFileExtensions,viewISToday,viewLearnMore,viewUI,viewShortcuts,viewRegistry,viewIniFiles,viewEnvironmentVariables,viewVRoots,viewTextMessages,viewServices</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4076,6 +4176,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>FileCost</td><td/><td>900</td><td>FileCost</td><td/></row>
 		<row><td>FindRelatedProducts</td><td/><td>430</td><td>FindRelatedProducts</td><td/></row>
 		<row><td>ISPreventDowngrade</td><td>ISFOUNDNEWERPRODUCTVERSION</td><td>450</td><td>ISPreventDowngrade</td><td/></row>
+		<row><td>ISSetAllUsers</td><td>Not Installed</td><td>10</td><td/><td/></row>
 		<row><td>InstallWelcome</td><td>Not Installed</td><td>1210</td><td>InstallWelcome</td><td/></row>
 		<row><td>IsolateComponents</td><td/><td>950</td><td>IsolateComponents</td><td/></row>
 		<row><td>LaunchConditions</td><td>Not Installed</td><td>410</td><td>LaunchConditions</td><td/></row>
@@ -4423,9 +4524,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]AWLQtDemo.Primary Output</td><td/></row>
-		<row><td>ProductCode</td><td>{86009853-CFB8-4C70-8107-80C48FA22E72}</td><td/></row>
+		<row><td>ProductCode</td><td>{19650490-659A-46FB-A02D-552C97E118E9}</td><td/></row>
 		<row><td>ProductName</td><td>Phantom Intelligence LiDAR Demo</td><td/></row>
-		<row><td>ProductVersion</td><td>1.2.0000</td><td/></row>
+		<row><td>ProductVersion</td><td>1.3.0001</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4438,7 +4539,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>SERIALNUMBER</td><td/><td/></row>
 		<row><td>SERIALNUMVALSUCCESSRETVAL</td><td>1</td><td/></row>
 		<row><td>SHOWLAUNCHPROGRAM</td><td>-1</td><td/></row>
-		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR</td><td/></row>
+		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;ISACTIONPROP2</td><td/></row>
 		<row><td>SelectedSetupType</td><td>##IDS__DisplayName_Typical##</td><td/></row>
 		<row><td>SetupType</td><td>Typical</td><td/></row>
 		<row><td>UpgradeCode</td><td>{AA3E21D7-F063-45A0-A09A-1E08E4E4294B}</td><td/></row>
@@ -4589,7 +4690,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td>_Built1_5B0F90347B684893A3956790EA966008.exe</td><td>0</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>_Built11</td><td>phanto_1_phantom_intelligence_inc.</td><td>##ID_STRING8##</td><td>AWLQtDemo.Primary_Output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
@@ -4713,6 +4814,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
+		<row><td>{AA3E21D7-F063-45A0-A09A-1E08E4E4294B}</td><td>1.2.0000</td><td>1.2.0000</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP2</td><td>v1.2.0000</td></row>
 	</table>
 
 	<table name="Verb">

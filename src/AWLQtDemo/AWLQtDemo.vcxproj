@@ -87,7 +87,7 @@
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\release;$(BOOST_DIR)\lib\x86;$(QWTDir)\lib;$(ProgramFiles)\Kvaser\Canlib\lib\MS;$(XIMEA_DIR)\API\x86;$(LIBUSB_DIR)/MS32/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>libusb-1.0.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;qwt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libusb-1.0.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;qwt.lib;opencv_world310.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <EntryPointSymbol>
@@ -374,13 +374,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Links\Downloads.lnk" />
-    <None Include="..\InstallableDLLs\canlib32.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="..\InstallableDLLs\CopyDLLDependencies.BAT" />
-    <None Include="..\InstallableDLLs\m3api.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="..\InstallableDLLs\opencv_world310.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -406,9 +400,6 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="..\InstallableDLLs\qwt.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="..\InstallableDLLs\xiapi32.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="AWLDemoSettings.xml">
