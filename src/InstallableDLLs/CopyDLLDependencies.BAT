@@ -22,3 +22,4 @@ del *d.dll
 COPY "%XIMEA_DIR%"\API\x86\m3api.dll"
 COPY "%XIMEA_DIR%"\API\x86\xiapi32.dll"
 COPY "C:\Program Files (x86)\Kvaser\Canlib\Bin\canlib32.dll"
+COPY "%LIBUSB_DIR%"\MS32\dll\libusb-1.0.dll"

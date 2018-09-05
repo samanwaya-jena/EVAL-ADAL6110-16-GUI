@@ -375,6 +375,9 @@
   <ItemGroup>
     <None Include="..\..\..\..\..\Links\Downloads.lnk" />
     <None Include="..\InstallableDLLs\CopyDLLDependencies.BAT" />
+    <None Include="..\InstallableDLLs\libusb-1.0.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\InstallableDLLs\opencv_world310.dll">
       <DeploymentContent>true</DeploymentContent>
     </None>

@@ -376,6 +376,9 @@
     <None Include="AWLDemoSettings.xml">
       <Filter>Installable Files</Filter>
     </None>
+    <None Include="..\InstallableDLLs\libusb-1.0.dll">
+      <Filter>Installable DLLs</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\Widgets\checkbox_checked.png">
