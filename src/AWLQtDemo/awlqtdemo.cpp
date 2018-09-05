@@ -2109,7 +2109,11 @@ void AWLQtDemo::on_viewAScanViewActionToggled()
 
 void AWLQtDemo::on_viewAboutActionTriggered()
 {
-	QMessageBox::about(this, QString("About"), QString("QtDemo 0.1\n\nCopyright @ 2018 Phantom Intelligence inc."));
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle("About");
+	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
+	msgBox.setText("QtDemo 1.3.1<br><br>Copyright @ 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+	msgBox.exec();
 }
 
 void AWLQtDemo::on_viewSettingsActionToggled()
