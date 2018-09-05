@@ -431,7 +431,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
 
 	if (globalSettings->sDisplayShowSize == std::string("FullScreen"))
+	{
+		showMaximized();
 		showFullScreen();
+	}
 	else if (globalSettings->sDisplayShowSize == std::string("Maximized"))
 		showMaximized();
 	else if (globalSettings->sDisplayShowSize == std::string("Minimized"))
