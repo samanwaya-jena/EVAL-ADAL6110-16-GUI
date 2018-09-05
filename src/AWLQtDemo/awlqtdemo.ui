@@ -3785,7 +3785,7 @@ background-color: #202020;
              </rect>
             </property>
             <property name="text">
-             <string>ADC Register:</string>
+             <string>Register:</string>
             </property>
            </widget>
            <widget class="QLabel" name="registerADCValueSetLabel">
