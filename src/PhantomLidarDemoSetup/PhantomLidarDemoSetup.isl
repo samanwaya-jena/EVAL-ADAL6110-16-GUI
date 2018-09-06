@@ -349,7 +349,17 @@
 		<row><td>ISX_DEFAULTCOMPONENT10</td><td>{387172D7-FA61-428B-BBB1-AC651CC98B28}</td><td>BUTTONBITMAPS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT11</td><td>{89D99CFB-6678-415A-A147-682494539359}</td><td>LOGOS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT12</td><td>{106AC0CA-ACD0-4701-9FAA-87A150673738}</td><td>WIDGETS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT13</td><td>{385A8DF1-60E7-4688-8AE2-52291B595518}</td><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT14</td><td>{53C142B1-A560-4E9D-B156-B00BCCD344DB}</td><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT15</td><td>{71E4D162-F08B-4DC0-8E79-82DE6DDA4187}</td><td>X86</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT16</td><td>{90882889-A314-4BF1-9C74-CF9FA0B66997}</td><td>X64</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT17</td><td>{B1E22CE0-2EA2-4F49-9F68-3831390B12A3}</td><td>DRIVERS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT18</td><td>{1AF3C81F-EE04-48D0-AADA-943EA30DF4E5}</td><td>DEMO_DRIVER</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT19</td><td>{F36AF806-61B3-4F43-99C8-9A34BF4FA975}</td><td>DEMO_DRIVER</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{16DA04AB-932E-4F5C-B0DC-1A1E72CA1A51}</td><td>LocalAppDataFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT20</td><td>{BA62C914-78BB-4DDC-85EF-49BE8C6BBFFE}</td><td>AMD64</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT21</td><td>{99A9AC4A-D744-47FE-BBC1-8A5FF6CDF9CE}</td><td>X861</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT22</td><td>{E79B7F6E-22AE-463A-BD4E-C18946445962}</td><td>IA64</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{1E4BE838-A7BD-4BA7-A5E0-55C3B9CD11B9}</td><td>PHANTOM_INTELLIGENCE1</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{11556798-45F5-41A3-B259-08EAF801B132}</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{A3EADC98-7060-472E-9FFA-366766013E34}</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -357,7 +367,21 @@
 		<row><td>ISX_DEFAULTCOMPONENT7</td><td>{675703E6-A218-42E9-B997-D99DA6304AE8}</td><td>BUTTONBITMAPS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT8</td><td>{96B426EF-A30D-4C90-9307-12975A068C82}</td><td>LOGOS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT9</td><td>{098F9694-BF02-462B-8212-1851150A6D5A}</td><td>WIDGETS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WUDFUpdate_01009.dll</td><td>{2BE376AB-E083-4FA8-8EC3-090A5FA2C54F}</td><td>X64</td><td>2</td><td/><td>wudfupdate_01009.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WUDFUpdate_01009.dll1</td><td>{ADC9942D-E413-485A-A91B-4C830D5EBDCE}</td><td>X86</td><td>2</td><td/><td>wudfupdate_01009.dll1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WdfCoInstaller01009.dll</td><td>{9EADE6F6-3D44-41C5-A4B2-C7DD58CD4E3F}</td><td>X64</td><td>2</td><td/><td>wdfcoinstaller01009.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WdfCoInstaller01009.dll1</td><td>{5119889F-9869-42DF-8A5E-43E34A6B7055}</td><td>X86</td><td>2</td><td/><td>wdfcoinstaller01009.dll1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WdfCoInstaller01009.dll2</td><td>{6D57C468-FD2E-41E5-BF7D-38E458AA2369}</td><td>AMD64</td><td>2</td><td/><td>wdfcoinstaller01009.dll2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WdfCoInstaller01009.dll3</td><td>{B19CDD66-6C82-40BB-A8F8-5A1B92DA49C0}</td><td>IA64</td><td>2</td><td/><td>wdfcoinstaller01009.dll3</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WdfCoInstaller01009.dll4</td><td>{1CA9753E-3D71-4435-8CCE-F19A1686F035}</td><td>X861</td><td>2</td><td/><td>wdfcoinstaller01009.dll4</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>dpinst.exe</td><td>{3C425A96-0DBB-4167-94D3-AF02305EE8D1}</td><td>DEMO_DRIVER</td><td>2</td><td/><td>dpinst.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>dpinst.exe1</td><td>{7AAD809C-C10C-4D74-8AB3-696CD0C774F7}</td><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>2</td><td/><td>dpinst.exe1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>qwindows.dll</td><td>{4064B559-D1E1-4838-8FC9-3715F5D0F512}</td><td>PLATFORMS</td><td>2</td><td/><td>qwindows.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>winusbcoinstaller2.dll</td><td>{EAED774C-5CBC-414B-A0FD-A48895A6755C}</td><td>X64</td><td>2</td><td/><td>winusbcoinstaller2.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>winusbcoinstaller2.dll1</td><td>{BD5424A8-4893-41F8-97FB-A73A9EF0E5DA}</td><td>X86</td><td>2</td><td/><td>winusbcoinstaller2.dll1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>winusbcoinstaller2.dll2</td><td>{34DBDCD8-0EA7-44EA-A36D-EF0ED6E417F5}</td><td>AMD64</td><td>2</td><td/><td>winusbcoinstaller2.dll2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>winusbcoinstaller2.dll3</td><td>{302B0A99-700F-4181-A96A-AFE3B88710A5}</td><td>IA64</td><td>2</td><td/><td>winusbcoinstaller2.dll3</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>winusbcoinstaller2.dll4</td><td>{A1D620B1-8686-4CDD-942A-FB543CDA8A4A}</td><td>X861</td><td>2</td><td/><td>winusbcoinstaller2.dll4</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -1026,10 +1050,10 @@
 		<row><td>SetupCompleteError</td><td>Finish</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>1</td></row>
 		<row><td>SetupCompleteError</td><td>Finish</td><td>DoAction</td><td>ShowMsiLog</td><td>MsiLogFileLocation And (ISSHOWMSILOG="1")</td><td>3</td></row>
 		<row><td>SetupCompleteError</td><td>Finish</td><td>EndDialog</td><td>Exit</td><td>1</td><td>2</td></row>
-		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>1</td></row>
-		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>LaunchProgramFileFromSetupCompleteSuccess</td><td>LAUNCHPROGRAM And PROGRAMFILETOLAUNCHATEND &lt;&gt; "" And NOT Installed</td><td>2</td></row>
-		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>ShowMsiLog</td><td>MsiLogFileLocation And (ISSHOWMSILOG="1") And NOT ISENABLEDWUSFINISHDIALOG</td><td>7</td></row>
-		<row><td>SetupCompleteSuccess</td><td>OK</td><td>EndDialog</td><td>Exit</td><td>1</td><td>3</td></row>
+		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>3</td></row>
+		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>LaunchProgramFileFromSetupCompleteSuccess</td><td>LAUNCHPROGRAM And PROGRAMFILETOLAUNCHATEND &lt;&gt; "" And NOT Installed</td><td>4</td></row>
+		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>ShowMsiLog</td><td>MsiLogFileLocation And (ISSHOWMSILOG="1") And NOT ISENABLEDWUSFINISHDIALOG</td><td>9</td></row>
+		<row><td>SetupCompleteSuccess</td><td>OK</td><td>EndDialog</td><td>Exit</td><td>1</td><td>5</td></row>
 		<row><td>SetupError</td><td>A</td><td>EndDialog</td><td>ErrorAbort</td><td>1</td><td>0</td></row>
 		<row><td>SetupError</td><td>C</td><td>EndDialog</td><td>ErrorCancel</td><td>1</td><td>0</td></row>
 		<row><td>SetupError</td><td>I</td><td>EndDialog</td><td>ErrorIgnore</td><td>1</td><td>0</td></row>
@@ -1067,8 +1091,18 @@
 	<table name="CreateFolder">
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
+		<row><td>AMD64</td><td>ISX_DEFAULTCOMPONENT20</td></row>
+		<row><td>AMD64</td><td>WdfCoInstaller01009.dll2</td></row>
+		<row><td>AMD64</td><td>winusbcoinstaller2.dll2</td></row>
 		<row><td>BUTTONBITMAPS</td><td>ISX_DEFAULTCOMPONENT10</td></row>
 		<row><td>BUTTONBITMAPS</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>DEMO_DRIVER</td><td>ISX_DEFAULTCOMPONENT18</td></row>
+		<row><td>DEMO_DRIVER</td><td>ISX_DEFAULTCOMPONENT19</td></row>
+		<row><td>DEMO_DRIVER</td><td>dpinst.exe</td></row>
+		<row><td>DRIVERS</td><td>ISX_DEFAULTCOMPONENT17</td></row>
+		<row><td>IA64</td><td>ISX_DEFAULTCOMPONENT22</td></row>
+		<row><td>IA64</td><td>WdfCoInstaller01009.dll3</td></row>
+		<row><td>IA64</td><td>winusbcoinstaller2.dll3</td></row>
 		<row><td>IMAGES</td><td>ISX_DEFAULTCOMPONENT6</td></row>
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Content_Files</td></row>
 		<row><td>INSTALLDIR</td><td>AWLQtDemo.Content_Files1</td></row>
@@ -1079,7 +1113,17 @@
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT10</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT11</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT12</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT13</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT14</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT15</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT16</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT17</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT18</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT19</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT20</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT21</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT22</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT5</td></row>
@@ -1087,7 +1131,21 @@
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT7</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT8</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT9</td></row>
+		<row><td>INSTALLDIR</td><td>WUDFUpdate_01009.dll</td></row>
+		<row><td>INSTALLDIR</td><td>WUDFUpdate_01009.dll1</td></row>
+		<row><td>INSTALLDIR</td><td>WdfCoInstaller01009.dll</td></row>
+		<row><td>INSTALLDIR</td><td>WdfCoInstaller01009.dll1</td></row>
+		<row><td>INSTALLDIR</td><td>WdfCoInstaller01009.dll2</td></row>
+		<row><td>INSTALLDIR</td><td>WdfCoInstaller01009.dll3</td></row>
+		<row><td>INSTALLDIR</td><td>WdfCoInstaller01009.dll4</td></row>
+		<row><td>INSTALLDIR</td><td>dpinst.exe</td></row>
+		<row><td>INSTALLDIR</td><td>dpinst.exe1</td></row>
 		<row><td>INSTALLDIR</td><td>qwindows.dll</td></row>
+		<row><td>INSTALLDIR</td><td>winusbcoinstaller2.dll</td></row>
+		<row><td>INSTALLDIR</td><td>winusbcoinstaller2.dll1</td></row>
+		<row><td>INSTALLDIR</td><td>winusbcoinstaller2.dll2</td></row>
+		<row><td>INSTALLDIR</td><td>winusbcoinstaller2.dll3</td></row>
+		<row><td>INSTALLDIR</td><td>winusbcoinstaller2.dll4</td></row>
 		<row><td>LOGOS</td><td>ISX_DEFAULTCOMPONENT11</td></row>
 		<row><td>LOGOS</td><td>ISX_DEFAULTCOMPONENT8</td></row>
 		<row><td>LocalAppDataFolder</td><td>ISX_DEFAULTCOMPONENT2</td></row>
@@ -1098,6 +1156,20 @@
 		<row><td>PLATFORMS</td><td>qwindows.dll</td></row>
 		<row><td>WIDGETS</td><td>ISX_DEFAULTCOMPONENT12</td></row>
 		<row><td>WIDGETS</td><td>ISX_DEFAULTCOMPONENT9</td></row>
+		<row><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>ISX_DEFAULTCOMPONENT13</td></row>
+		<row><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>ISX_DEFAULTCOMPONENT14</td></row>
+		<row><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>dpinst.exe1</td></row>
+		<row><td>X64</td><td>ISX_DEFAULTCOMPONENT16</td></row>
+		<row><td>X64</td><td>WUDFUpdate_01009.dll</td></row>
+		<row><td>X64</td><td>WdfCoInstaller01009.dll</td></row>
+		<row><td>X64</td><td>winusbcoinstaller2.dll</td></row>
+		<row><td>X86</td><td>ISX_DEFAULTCOMPONENT15</td></row>
+		<row><td>X86</td><td>WUDFUpdate_01009.dll1</td></row>
+		<row><td>X86</td><td>WdfCoInstaller01009.dll1</td></row>
+		<row><td>X86</td><td>winusbcoinstaller2.dll1</td></row>
+		<row><td>X861</td><td>ISX_DEFAULTCOMPONENT21</td></row>
+		<row><td>X861</td><td>WdfCoInstaller01009.dll4</td></row>
+		<row><td>X861</td><td>winusbcoinstaller2.dll4</td></row>
 	</table>
 
 	<table name="CustomAction">
@@ -1115,6 +1187,7 @@
 		<row><td>ISSelfRegisterFinalize</td><td>1</td><td>ISSELFREG.DLL</td><td>ISSelfRegisterFinalize</td><td/><td/></row>
 		<row><td>ISSetAllUsers</td><td>257</td><td>SetAllUsers.dll</td><td>SetAllUsers</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISUnSelfRegisterFiles</td><td/><td/></row>
+		<row><td>InstallDrivers1</td><td>3154</td><td>dpinst.exe1</td><td/><td/><td/></row>
 		<row><td>LaunchProgramFileFromSetupCompleteSuccess</td><td>1</td><td>NewBinary19</td><td>LaunchProgram</td><td/><td/></row>
 		<row><td>SetARPINSTALLLOCATION</td><td>51</td><td>ARPINSTALLLOCATION</td><td>[INSTALLDIR]</td><td/><td/></row>
 		<row><td>SetAllUsersProfileNT</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%SystemRoot]\Profiles\All Users</td><td/><td/></row>
@@ -1179,6 +1252,7 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S255">ISFolderName</col>
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
+		<row><td>AMD64</td><td>DEMO_DRIVER</td><td>amd64</td><td/><td>0</td><td/></row>
 		<row><td>AdminToolsFolder</td><td>TARGETDIR</td><td>.:Admint~1|AdminTools</td><td/><td>0</td><td/></row>
 		<row><td>AppDataFolder</td><td>TARGETDIR</td><td>.:APPLIC~1|Application Data</td><td/><td>0</td><td/></row>
 		<row><td>BUTTONBITMAPS</td><td>IMAGES</td><td>BUTTON~1|ButtonBitmaps</td><td/><td>0</td><td/></row>
@@ -1186,10 +1260,13 @@
 		<row><td>CommonFiles64Folder</td><td>TARGETDIR</td><td>.:Common64</td><td/><td>0</td><td/></row>
 		<row><td>CommonFilesFolder</td><td>TARGETDIR</td><td>.:Common</td><td/><td>0</td><td/></row>
 		<row><td>DATABASEDIR</td><td>ISYourDataBaseDir</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>DEMO_DRIVER</td><td>DRIVERS</td><td>DEMO_D~1|Demo_Driver</td><td/><td>0</td><td/></row>
+		<row><td>DRIVERS</td><td>INSTALLDIR</td><td>Drivers</td><td/><td>0</td><td/></row>
 		<row><td>DesktopFolder</td><td>TARGETDIR</td><td>.:Desktop</td><td/><td>3</td><td/></row>
 		<row><td>FavoritesFolder</td><td>TARGETDIR</td><td>.:FAVORI~1|Favorites</td><td/><td>0</td><td/></row>
 		<row><td>FontsFolder</td><td>TARGETDIR</td><td>.:Fonts</td><td/><td>0</td><td/></row>
 		<row><td>GlobalAssemblyCache</td><td>TARGETDIR</td><td>.:Global~1|GlobalAssemblyCache</td><td/><td>0</td><td/></row>
+		<row><td>IA64</td><td>DEMO_DRIVER</td><td>ia64</td><td/><td>0</td><td/></row>
 		<row><td>IMAGES</td><td>INSTALLDIR</td><td>Images</td><td/><td>0</td><td/></row>
 		<row><td>INSTALLDIR</td><td>PHANTOM_INTELLIGENCE_LIDAR_DEMO1</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
@@ -1200,9 +1277,16 @@
 		<row><td>LocalAppDataFolder</td><td>TARGETDIR</td><td>.:LocalA~1|LocalAppData</td><td/><td>0</td><td/></row>
 		<row><td>MY_PRODUCT_NAME</td><td>PHANTOM_INTELLIGENCE</td><td>PHANTO~1|Phantom Intelligence Lidar Demo</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY1</td><td>TARGETDIR</td><td>NEW_DIRECTORY1</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY2</td><td>TARGETDIR</td><td>NEW_DIRECTORY2</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY3</td><td>TARGETDIR</td><td>NEW_DIRECTORY3</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_1</td><td>TARGETDIR</td><td>NEW_FOLDER_1</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_11</td><td>TARGETDIR</td><td>NEW_FOLDER_11</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_12</td><td>TARGETDIR</td><td>NEW_FOLDER_12</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_13</td><td>TARGETDIR</td><td>NEW_FOLDER_13</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_14</td><td>TARGETDIR</td><td>NEW_FOLDER_14</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_15</td><td>TARGETDIR</td><td>NEW_FOLDER_15</td><td/><td>0</td><td/></row>
+		<row><td>NEW_FOLDER_16</td><td>TARGETDIR</td><td>NEW_FOLDER_16</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM</td><td>WindowsVolume</td><td>Phantom</td><td/><td>0</td><td/></row>
 		<row><td>PHANTOM_INTELLIGENCE</td><td>ProgramFilesFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>0</td><td/></row>
@@ -1218,6 +1302,8 @@
 		<row><td>ProgramFilesFolder</td><td>TARGETDIR</td><td>.:PROGRA~1|program files</td><td/><td>0</td><td/></row>
 		<row><td>ProgramMenuFolder</td><td>TARGETDIR</td><td>.:Programs</td><td/><td>3</td><td/></row>
 		<row><td>RecentFolder</td><td>TARGETDIR</td><td>.:Recent</td><td/><td>0</td><td/></row>
+		<row><td>SYSTEM32</td><td>WindowsFolder</td><td>System32</td><td/><td>0</td><td/></row>
+		<row><td>SYSTEM321</td><td>WINDOWS</td><td>System32</td><td/><td>0</td><td/></row>
 		<row><td>SendToFolder</td><td>TARGETDIR</td><td>.:SendTo</td><td/><td>3</td><td/></row>
 		<row><td>StartMenuFolder</td><td>TARGETDIR</td><td>.:STARTM~1|Start Menu</td><td/><td>3</td><td/></row>
 		<row><td>StartupFolder</td><td>TARGETDIR</td><td>.:StartUp</td><td/><td>3</td><td/></row>
@@ -1229,8 +1315,13 @@
 		<row><td>TemplateFolder</td><td>TARGETDIR</td><td>.:ShellNew</td><td/><td>0</td><td/></row>
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WIDGETS</td><td>IMAGES</td><td>Widgets</td><td/><td>0</td><td/></row>
+		<row><td>WINDOWS</td><td>WindowsVolume</td><td>Windows</td><td/><td>0</td><td/></row>
+		<row><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>DRIVERS</td><td>WINUSB~1|WinUSB_Signed_Package_Driver</td><td/><td>0</td><td/></row>
 		<row><td>WindowsFolder</td><td>TARGETDIR</td><td>.:Windows</td><td/><td>0</td><td/></row>
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
+		<row><td>X64</td><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>x64</td><td/><td>0</td><td/></row>
+		<row><td>X86</td><td>WINUSB_SIGNED_PACKAGE_DRIVER</td><td>x86</td><td/><td>0</td><td/></row>
+		<row><td>X861</td><td>DEMO_DRIVER</td><td>x86</td><td/><td>0</td><td/></row>
 		<row><td>phanto_1_phantom_intelligence_inc.</td><td>ProgramMenuFolder</td><td>PHANTO~1|Phantom Intelligence</td><td/><td>1</td><td/></row>
 	</table>
 
@@ -1932,7 +2023,17 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT10</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT11</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT12</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT13</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT14</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT15</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT16</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT17</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT18</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT19</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT20</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT21</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT22</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
@@ -1940,7 +2041,21 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT7</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT8</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT9</td></row>
+		<row><td>AlwaysInstall</td><td>WUDFUpdate_01009.dll</td></row>
+		<row><td>AlwaysInstall</td><td>WUDFUpdate_01009.dll1</td></row>
+		<row><td>AlwaysInstall</td><td>WdfCoInstaller01009.dll</td></row>
+		<row><td>AlwaysInstall</td><td>WdfCoInstaller01009.dll1</td></row>
+		<row><td>AlwaysInstall</td><td>WdfCoInstaller01009.dll2</td></row>
+		<row><td>AlwaysInstall</td><td>WdfCoInstaller01009.dll3</td></row>
+		<row><td>AlwaysInstall</td><td>WdfCoInstaller01009.dll4</td></row>
+		<row><td>AlwaysInstall</td><td>dpinst.exe</td></row>
+		<row><td>AlwaysInstall</td><td>dpinst.exe1</td></row>
 		<row><td>AlwaysInstall</td><td>qwindows.dll</td></row>
+		<row><td>AlwaysInstall</td><td>winusbcoinstaller2.dll</td></row>
+		<row><td>AlwaysInstall</td><td>winusbcoinstaller2.dll1</td></row>
+		<row><td>AlwaysInstall</td><td>winusbcoinstaller2.dll2</td></row>
+		<row><td>AlwaysInstall</td><td>winusbcoinstaller2.dll3</td></row>
+		<row><td>AlwaysInstall</td><td>winusbcoinstaller2.dll4</td></row>
 	</table>
 
 	<table name="File">
@@ -1971,6 +2086,9 @@
 		<row><td>down_arrow.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>DOWN_A~1.PNG|down_arrow.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\down_arrow.png</td><td>1</td><td/></row>
 		<row><td>down_arrow_dark.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>DOWN_A~1.PNG|down_arrow_dark.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\down_arrow_dark.png</td><td>1</td><td/></row>
 		<row><td>down_arrow_disabled.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>DOWN_A~1.PNG|down_arrow_disabled.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\down_arrow_disabled.png</td><td>1</td><td/></row>
+		<row><td>dpinst.exe</td><td>dpinst.exe</td><td>dpinst.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\dpinst.exe</td><td>1</td><td/></row>
+		<row><td>dpinst.exe1</td><td>dpinst.exe1</td><td>dpinst.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\dpinst.exe</td><td>1</td><td/></row>
+		<row><td>driver.inf</td><td>ISX_DEFAULTCOMPONENT13</td><td>driver.inf</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\driver.inf</td><td>1</td><td/></row>
 		<row><td>frame.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>frame.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\frame.png</td><td>1</td><td/></row>
 		<row><td>grid.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Grid.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Grid.png</td><td>1</td><td/></row>
 		<row><td>maximize.png</td><td>ISX_DEFAULTCOMPONENT10</td><td>Maximize.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\ButtonBitmaps\Maximize.png</td><td>1</td><td/></row>
@@ -2006,6 +2124,22 @@
 		<row><td>up_arrow.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>up_arrow.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\up_arrow.png</td><td>1</td><td/></row>
 		<row><td>up_arrow_dark.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>UP_ARR~1.PNG|up_arrow_dark.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\up_arrow_dark.png</td><td>1</td><td/></row>
 		<row><td>up_arrow_disabled.png</td><td>ISX_DEFAULTCOMPONENT12</td><td>UP_ARR~1.PNG|up_arrow_disabled.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\AWLQtDemo\Images\Widgets\up_arrow_disabled.png</td><td>1</td><td/></row>
+		<row><td>wdfcoinstaller01009.dll</td><td>WdfCoInstaller01009.dll</td><td>WDFCOI~1.DLL|WdfCoInstaller01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\x64\WdfCoInstaller01009.dll</td><td>1</td><td/></row>
+		<row><td>wdfcoinstaller01009.dll1</td><td>WdfCoInstaller01009.dll1</td><td>WDFCOI~1.DLL|WdfCoInstaller01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\x86\WdfCoInstaller01009.dll</td><td>1</td><td/></row>
+		<row><td>wdfcoinstaller01009.dll2</td><td>WdfCoInstaller01009.dll2</td><td>WDFCOI~1.DLL|WdfCoInstaller01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\amd64\WdfCoInstaller01009.dll</td><td>1</td><td/></row>
+		<row><td>wdfcoinstaller01009.dll3</td><td>WdfCoInstaller01009.dll3</td><td>WDFCOI~1.DLL|WdfCoInstaller01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\ia64\WdfCoInstaller01009.dll</td><td>1</td><td/></row>
+		<row><td>wdfcoinstaller01009.dll4</td><td>WdfCoInstaller01009.dll4</td><td>WDFCOI~1.DLL|WdfCoInstaller01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\x86\WdfCoInstaller01009.dll</td><td>1</td><td/></row>
+		<row><td>winusb_adi.cat</td><td>ISX_DEFAULTCOMPONENT19</td><td>WINUSB~1.CAT|winusb_adi.cat</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\winusb_adi.cat</td><td>1</td><td/></row>
+		<row><td>winusb_adi.inf</td><td>ISX_DEFAULTCOMPONENT19</td><td>WINUSB~1.INF|WinUSB_adi.inf</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\WinUSB_adi.inf</td><td>1</td><td/></row>
+		<row><td>winusbcoinstaller2.dll</td><td>winusbcoinstaller2.dll</td><td>WINUSB~1.DLL|winusbcoinstaller2.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\x64\winusbcoinstaller2.dll</td><td>1</td><td/></row>
+		<row><td>winusbcoinstaller2.dll1</td><td>winusbcoinstaller2.dll1</td><td>WINUSB~1.DLL|winusbcoinstaller2.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\x86\winusbcoinstaller2.dll</td><td>1</td><td/></row>
+		<row><td>winusbcoinstaller2.dll2</td><td>winusbcoinstaller2.dll2</td><td>WINUSB~1.DLL|winusbcoinstaller2.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\amd64\winusbcoinstaller2.dll</td><td>1</td><td/></row>
+		<row><td>winusbcoinstaller2.dll3</td><td>winusbcoinstaller2.dll3</td><td>WINUSB~1.DLL|winusbcoinstaller2.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\ia64\winusbcoinstaller2.dll</td><td>1</td><td/></row>
+		<row><td>winusbcoinstaller2.dll4</td><td>winusbcoinstaller2.dll4</td><td>WINUSB~1.DLL|winusbcoinstaller2.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\Demo_Driver\x86\winusbcoinstaller2.dll</td><td>1</td><td/></row>
+		<row><td>winusbx64.cat</td><td>ISX_DEFAULTCOMPONENT13</td><td>WINUSB~1.CAT|winusbx64.cat</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\winusbx64.cat</td><td>1</td><td/></row>
+		<row><td>winusbx86.cat</td><td>ISX_DEFAULTCOMPONENT13</td><td>WINUSB~1.CAT|winusbx86.cat</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\winusbx86.cat</td><td>1</td><td/></row>
+		<row><td>wudfupdate_01009.dll</td><td>WUDFUpdate_01009.dll</td><td>WUDFUP~1.DLL|WUDFUpdate_01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\x64\WUDFUpdate_01009.dll</td><td>1</td><td/></row>
+		<row><td>wudfupdate_01009.dll1</td><td>WUDFUpdate_01009.dll1</td><td>WUDFUP~1.DLL|WUDFUpdate_01009.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\PhantomIntelligence\awlcutedemo\src\Drivers\WinUSB_Signed_Package_Driver\x86\WUDFUpdate_01009.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2156,7 +2290,17 @@
 		<row><td>ISX_DEFAULTCOMPONENT10</td><td/><td/><td>_C9C0C66B_4D5A_45BA_8245_5E909ACB9B9B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT11</td><td/><td/><td>_4E6DB475_8C34_40CF_8BA2_3D4B3B4132C8_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT12</td><td/><td/><td>_7ECD3F76_EE51_486C_B99C_DE345CA24089_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT13</td><td/><td/><td>_52E63E8D_A5C5_4CB6_834B_E846641DD01C_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT14</td><td/><td/><td>_4185BA70_6CD6_4280_AD29_80446551BE86_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT15</td><td/><td/><td>_80C381E8_2CEC_4A39_8CC3_43740887D41A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT16</td><td/><td/><td>_1F2B2C2B_83B1_4E95_B3B3_D589E1969B36_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT17</td><td/><td/><td>_6725CF3D_5A8D_4527_9221_C2797C87AD19_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT18</td><td/><td/><td>_A6C49274_2C4C_4D22_9C72_868CFA5D9627_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT19</td><td/><td/><td>_54423A4C_723B_4B4E_A178_8B06A34056D5_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_089CF326_5658_400B_899F_2C860D2CB728_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT20</td><td/><td/><td>_157CDD33_BBC1_426A_9AC7_487362143A26_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT21</td><td/><td/><td>_609EBDE0_D330_4CC9_A521_789CCA908950_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT22</td><td/><td/><td>_5B5A313F_5271_48FB_AFE5_6C91F59EF9C3_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_0BABE13E_BDA6_4F12_91C5_4698CC6D2F81_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_6FC8516D_468B_4D88_8BBB_BC62180D8031_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_6E5153BD_60D8_498C_8E0C_C05EC0DBA96F_FILTER</td><td/><td/><td/><td/></row>
@@ -2164,7 +2308,21 @@
 		<row><td>ISX_DEFAULTCOMPONENT7</td><td/><td/><td>_77D87614_E980_45CF_A94B_E96A42D79BF5_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT8</td><td/><td/><td>_EDF80F4D_FAE3_4BBA_BD35_5FD57E7718B4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT9</td><td/><td/><td>_5E8C0820_CBF8_46DC_822D_166798D39221_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WUDFUpdate_01009.dll</td><td/><td/><td>_798EC9D9_AB75_4239_BF09_1D9AE6286895_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WUDFUpdate_01009.dll1</td><td/><td/><td>_6CF2FCFC_924C_4C9A_BE24_A0643957F199_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WdfCoInstaller01009.dll</td><td/><td/><td>_F211B8E2_C081_4CFD_AE5B_14C973D67018_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WdfCoInstaller01009.dll1</td><td/><td/><td>_FF5A1159_9853_47C6_BC40_91F0CFC6FDC1_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WdfCoInstaller01009.dll2</td><td/><td/><td>_9624A854_213A_4F94_A49D_BDC9F39760F2_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WdfCoInstaller01009.dll3</td><td/><td/><td>_A54F97A7_AF0D_44BF_A31E_698604E01D8A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WdfCoInstaller01009.dll4</td><td/><td/><td>_BD0EDA71_2F84_40ED_9DFE_ADABEEFADBE1_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>dpinst.exe</td><td/><td/><td>_F305F6BB_1F90_464E_B7B6_E95F8943E218_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>dpinst.exe1</td><td/><td/><td>_E1184465_748C_40AC_B9FE_78249DF590C4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>qwindows.dll</td><td/><td/><td>_11152F14_A57E_4071_B28A_56E2086E7A27_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>winusbcoinstaller2.dll</td><td/><td/><td>_96EF7B01_8F4A_4CCC_AD96_D41386FE373D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>winusbcoinstaller2.dll1</td><td/><td/><td>_9B928DDC_7EB7_44B0_B1F2_3F2C0E3B110C_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>winusbcoinstaller2.dll2</td><td/><td/><td>_02DDFE5C_9DFF_4C32_AF37_B629665C52E7_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>winusbcoinstaller2.dll3</td><td/><td/><td>_0FDD8D1A_2AEE_4165_A3B7_2DAAD5C57DB4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>winusbcoinstaller2.dll4</td><td/><td/><td>_545ECC8D_82CA_44A5_B292_4D29C023137F_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2757,7 +2915,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1705288533</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>749105356</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40CLIENT</td><td>1033</td><td>Microsoft .NET Framework 4.0 Client Package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>413428877</td></row>
@@ -3862,9 +4020,9 @@
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>1445185105</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>1445187153</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>1705288533</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>1705288533</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>1705288533</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>http://www.PhantomIntelligence.com</td><td>0</td><td/><td>749105356</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>Phantom Intelligence</td><td>0</td><td/><td>749105356</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>support@phantomintelligence.com</td><td>0</td><td/><td>749105356</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1982032800</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td>Phantom Intelligence LiDAR</td><td>0</td><td/><td>413432653</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>Phantom Intelligence LiDAR Demo</td><td>0</td><td/><td>413415855</td></row>
@@ -4060,6 +4218,7 @@
 		<row><td>ISSelfRegisterFinalize</td><td/><td>6601</td><td/><td/></row>
 		<row><td>ISSetAllUsers</td><td>Not Installed</td><td>10</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td/><td>2202</td><td/><td/></row>
+		<row><td>InstallDrivers1</td><td>Not Installed</td><td>6405</td><td/><td/></row>
 		<row><td>InstallFiles</td><td/><td>4000</td><td>InstallFiles</td><td/></row>
 		<row><td>InstallFinalize</td><td/><td>6600</td><td>InstallFinalize</td><td/></row>
 		<row><td>InstallInitialize</td><td/><td>1501</td><td>InstallInitialize</td><td/></row>
