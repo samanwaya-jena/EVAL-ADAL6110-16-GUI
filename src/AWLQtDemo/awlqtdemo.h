@@ -162,6 +162,8 @@ protected:
 
 	void ChangeRangeMax(int channelID, double range);
 
+  //void  DoThreadLoop();
+
 private:
 	Ui::AWLQtDemoClass ui;
 	QTimer *myTimer;

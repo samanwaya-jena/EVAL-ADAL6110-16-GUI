@@ -470,6 +470,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.statusBar->setStyleSheet("QStatusBar{padding-left:20px;background:rgba(0,0,0,255);color:lightgray;font-weight:bold;font-size:20px;}");
 	ui.statusBar->showMessage(tr("Initialization ..."));
 
+	// For debugging ...
+	//boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&AWLQtDemo::DoThreadLoop, this)));
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -2507,3 +2509,26 @@ void AWLQtDemo::closeEvent(QCloseEvent * event)
 	qApp->closeAllWindows();
 }	
 
+#if 0
+void AWLQtDemo::DoThreadLoop()
+{
+	int dgg = 0;
+	char str[256];
+	int nbrPrevFrame = 0;
+	int nbrPrevRaw = 0;
+
+	while (true)
+	{
+		int nbrFrame = receiverCaptures[0]->m_nbrCompletedFrameCumul;
+		int nbrRaw = receiverCaptures[0]->m_nbrRawCumul;
+
+		sprintf(str, "frame: %5d (%3d) - Raw: %5d (%3d)\n", nbrFrame, nbrFrame - nbrPrevFrame, nbrRaw, nbrRaw - nbrPrevRaw);
+		OutputDebugStringA(str);
+
+		nbrPrevFrame = nbrFrame;
+		nbrPrevRaw = nbrRaw;
+
+		Sleep(1000);
+	}
+}
+#endif
