@@ -4683,9 +4683,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]AWLQtDemo.Primary Output</td><td/></row>
-		<row><td>ProductCode</td><td>{19650490-659A-46FB-A02D-552C97E118E9}</td><td/></row>
+		<row><td>ProductCode</td><td>{379AF424-DD84-4635-96C7-882AC8506EE5}</td><td/></row>
 		<row><td>ProductName</td><td>Phantom Intelligence LiDAR Demo</td><td/></row>
-		<row><td>ProductVersion</td><td>1.3.0001</td><td/></row>
+		<row><td>ProductVersion</td><td>1.3.0002</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4973,7 +4973,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AA3E21D7-F063-45A0-A09A-1E08E4E4294B}</td><td>1.2.0000</td><td>1.2.0000</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP2</td><td>v1.2.0000</td></row>
+		<row><td>{AA3E21D7-F063-45A0-A09A-1E08E4E4294B}</td><td>1.2.0000</td><td>1.3.0001</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP2</td><td>v1.2.0000</td></row>
 	</table>
 
 	<table name="Verb">
