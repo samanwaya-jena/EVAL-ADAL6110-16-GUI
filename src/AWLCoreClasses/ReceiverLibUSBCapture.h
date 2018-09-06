@@ -122,6 +122,8 @@ public:
   */
   virtual void  Stop();
 
+  virtual bool IsConnected();
+
 public:
 // Protected methods
 protected:

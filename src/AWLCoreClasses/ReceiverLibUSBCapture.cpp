@@ -105,6 +105,11 @@ void ReceiverLibUSBCapture::Stop()
   ReceiverCapture::Stop();
 }
 
+bool ReceiverLibUSBCapture::IsConnected()
+{
+  return (handle != NULL);
+}
+
 bool  ReceiverLibUSBCapture::OpenCANPort()
 {
   int ret = 0;
@@ -160,6 +165,8 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
     ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, usbTimeOut);
     if (ret || (received != sizeof(AWLCANMessage)))
       return false;
+
+    m_FrameRate = 0;
 
     return true;
   }

@@ -2170,6 +2170,8 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 
 	rawData16 = (uint16_t *)rawData;
 
+	++m_nbrRawCumul;
+
 /*
 	printf ("ProcessRaw(%d) ", size);
 	for (int i = 0; i < size; i++) {

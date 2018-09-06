@@ -421,6 +421,10 @@ public:
       */
 	int  GetFrameQty();
 
+  int  GetFrameRate();
+
+  virtual bool IsConnected() { return true; }
+
 	/** \brief Return the number of receiver channels used for video projection
       * \return int indicating the number of channels.
       */
@@ -927,6 +931,18 @@ protected:
 
 	/** \brief  Log file. */
 	ofstream logFile;
+
+  int m_FrameRate;
+  int m_nbrCompletedFrame;
+
+  private:
+
+    double m_FrameRateMS;
+
+  public:
+    int m_nbrCompletedFrameCumul;
+    int m_nbrRawCumul;
+
 };
 
 

@@ -465,6 +465,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
         scopeWindow->start(receiverCaptures[0]);
 	
+	// Set size of statusbar & font
+	ui.statusBar->setFixedHeight(30);
+	ui.statusBar->setStyleSheet("QStatusBar{padding-left:20px;background:rgba(0,0,0,255);color:lightgray;font-weight:bold;font-size:20px;}");
+	ui.statusBar->showMessage(tr("Initialization ..."));
+
 }
 
 AWLQtDemo::~AWLQtDemo()
@@ -964,6 +969,17 @@ void AWLQtDemo::on_timerTimeout()
 		*/
 
 	}
+
+  {
+    bool bConnected = receiverCaptures[0]->IsConnected();
+    int frameRate = receiverCaptures[0]->GetFrameRate();
+    QString str;
+    if (bConnected)
+      str.sprintf("Connected   |   Framerate: %3d Hz", frameRate);
+    else
+      str.sprintf("Not connected");
+    ui.statusBar->showMessage(str);
+  }
 
 	if (bContinue) 
 	{

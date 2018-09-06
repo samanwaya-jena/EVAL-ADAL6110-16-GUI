@@ -70,7 +70,12 @@ sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
-targetHintAngle(0.0)
+targetHintAngle(0.0),
+m_FrameRate(-1),
+m_FrameRateMS(0.0),
+m_nbrCompletedFrame(0),
+m_nbrCompletedFrameCumul(0),
+m_nbrRawCumul(0)
 
 {
 	// Initialize default status values
@@ -104,8 +109,12 @@ sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
-targetHintAngle(0.0)
-
+targetHintAngle(0.0),
+m_FrameRate(-1),
+m_FrameRateMS(0.0),
+m_nbrCompletedFrame(0),
+m_nbrCompletedFrameCumul(0),
+m_nbrRawCumul(0)
 
 {
 	// Read the configuration from the configuration file
@@ -187,6 +196,11 @@ int ReceiverCapture::GetFrameQty()
 
 {
 	return acquisitionSequence->sensorFrames.size();
+}
+
+int ReceiverCapture::GetFrameRate()
+{
+  return m_FrameRate;
 }
 
 
@@ -356,6 +370,16 @@ void ReceiverCapture::ProcessCompletedFrame()
 
 	// timestamp the currentFrame
 	double elapsed = GetElapsed();
+
+  ++m_nbrCompletedFrame;
+  ++m_nbrCompletedFrameCumul;
+
+  if (elapsed - m_FrameRateMS > 1000.0)
+  {
+    m_FrameRate = m_nbrCompletedFrame;
+    m_nbrCompletedFrame = 0;
+    m_FrameRateMS = elapsed;
+  }
 
 	currentFrame->timeStamp = elapsed;
 
