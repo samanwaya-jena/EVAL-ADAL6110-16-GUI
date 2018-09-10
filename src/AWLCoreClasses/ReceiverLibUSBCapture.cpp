@@ -166,6 +166,10 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
     if (ret || (received != sizeof(AWLCANMessage)))
       return false;
 
+		rawLock.unlock();
+
+		SendSoftwareReset();
+
     m_FrameRate = 0;
 
     return true;
@@ -402,9 +406,9 @@ bool ReceiverLibUSBCapture::SendSoftwareReset()
   msg.id = AWLCANMSG_ID_COMMANDMESSAGE;
   msg.len = AWLCANMSG_LEN;
   msg.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
-  msg.data[1] = AWLCANMSG_ID_CMD_PARAM_AWL_REGISTER;
-  msg.data[2] = (uint8_t) (997 >> 0);
-  msg.data[3] = (uint8_t) (997 >> 8);
+  msg.data[1] = AWLCANMSG_ID_CMD_PARAM_ADC_REGISTER;
+  msg.data[2] = 0x00;
+  msg.data[3] = 0x00;
   msg.data[4] = 0x00;
   msg.data[5] = 0x00;
   msg.data[6] = 0x00;
