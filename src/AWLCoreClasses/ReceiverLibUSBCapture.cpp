@@ -15,6 +15,28 @@
 	limitations under the License.
 */
 
+//#define USE_TCP
+
+#ifdef USE_TCP
+#undef UNICODE
+
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+// Need to link with Ws2_32.lib
+#pragma comment (lib, "Ws2_32.lib")
+// #pragma comment (lib, "Mswsock.lib")
+
+#define DEFAULT_BUFLEN 512
+#define DEFAULT_PORT "27011"
+#endif //USE_TCP
+
+
 #include <stdio.h>
 #include <string.h>
 //#include <sys/ioctl.h>
@@ -116,6 +138,69 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
   reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 
+#ifdef USE_TCP
+	SOCKET ConnectSocket = INVALID_SOCKET;
+	WSADATA wsaData;
+	struct addrinfo *result = NULL,
+		*ptr = NULL,
+		hints;
+	char *sendbuf = "this is a test";
+	char recvbuf[DEFAULT_BUFLEN];
+	int iResult;
+	int recvbuflen = DEFAULT_BUFLEN;
+
+	// Initialize Winsock
+	iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+	if (iResult != 0) {
+		printf("WSAStartup failed with error: %d\n", iResult);
+		return 1;
+	}
+
+	ZeroMemory( &hints, sizeof(hints) );
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+
+	// Resolve the server address and port
+	iResult = getaddrinfo("localhost", DEFAULT_PORT, &hints, &result);
+	if ( iResult != 0 ) {
+		printf("getaddrinfo failed with error: %d\n", iResult);
+		WSACleanup();
+		return 1;
+	}
+
+	// Attempt to connect to an address until one succeeds
+	for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
+
+		// Create a SOCKET for connecting to server
+		ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, 
+			ptr->ai_protocol);
+		if (ConnectSocket == INVALID_SOCKET) {
+			printf("socket failed with error: %ld\n", WSAGetLastError());
+			WSACleanup();
+			return 1;
+		}
+
+		// Connect to server.
+		iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		if (iResult == SOCKET_ERROR) {
+			closesocket(ConnectSocket);
+			ConnectSocket = INVALID_SOCKET;
+			continue;
+		}
+		break;
+	}
+
+	freeaddrinfo(result);
+
+	if (ConnectSocket == INVALID_SOCKET) {
+		printf("Unable to connect to server!\n");
+		WSACleanup();
+		return 1;
+	}
+
+	handle = (libusb_device_handle *) ConnectSocket;
+#else //USE_TCP
   ret = libusb_init(&context);
 
   if (ret)
@@ -137,6 +222,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 		fprintf(stderr, "usb_claim_interface error %d\n", ret);
 		return false;
 	}
+#endif //USE_TCP
 
   if (handle)
   {
@@ -145,6 +231,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
     boost::mutex::scoped_lock rawLock(mMutexUSB);
 
+#ifndef USE_TCP
     // DGG: Clear any outstanding data left in the USB buffers
     do 
     {
@@ -152,12 +239,22 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
       ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)tmp, sizeof(tmp), &received, 100);
     }
     while (ret == 0 && received > 0);
+#endif //USE_TCP
 
     AWLCANMessage msg;
     msg.id = AWLCANMSG_ID_LIDARQUERY;
 
     AWLCANMessage resp;
 
+#ifdef USE_TCP
+		transferred = send((SOCKET) handle, (char*) &msg, sizeof(msg), 0);
+		if (transferred != sizeof(AWLCANMessage))
+			return false;
+
+		received = recv((SOCKET) handle, (char*) &resp, sizeof(resp), 0);
+		if (received != sizeof(AWLCANMessage))
+			return false;
+#else //USE_TCP
     ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, usbTimeOut);
     if (ret || (transferred != sizeof(AWLCANMessage)))
       return false;
@@ -165,6 +262,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
     ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, usbTimeOut);
     if (ret || (received != sizeof(AWLCANMessage)))
       return false;
+#endif //USE_TCP
 
 		rawLock.unlock();
 
@@ -184,13 +282,26 @@ bool  ReceiverLibUSBCapture::CloseCANPort()
 
   if (handle)
   {
+#ifdef USE_TCP
+		// shutdown the connection since no more data will be sent
+		shutdown((SOCKET) handle, SD_SEND);
+
+		// cleanup
+		closesocket((SOCKET) handle);
+#else //USE_TCP
     int ret = libusb_release_interface(handle, 0);
 
     libusb_close(handle);
+#endif //USE_TCP
+
     handle = NULL;
   }
 
+#ifdef USE_TCP
+	WSACleanup();
+#else //USE_TCP
 	libusb_exit(NULL);
+#endif //USE_TCP
 
 	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 
@@ -213,6 +324,15 @@ bool ReceiverLibUSBCapture::LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending)
 
   AWLCANMessage resp;
 
+#ifdef USE_TCP
+	transferred = send((SOCKET) handle, (char*) &msg, sizeof(msg), 0);
+  if (transferred != sizeof(AWLCANMessage))
+    return false;
+
+  received = recv((SOCKET) handle, (char*) &resp, sizeof(resp), 0);
+  if (received != sizeof(AWLCANMessage))
+    return false;
+#else //USE_TCP
   ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, usbTimeOut);
   if (ret || (transferred != sizeof(AWLCANMessage)))
     return false;
@@ -220,6 +340,7 @@ bool ReceiverLibUSBCapture::LidarQuery(DWORD * pdwCount, DWORD * pdwReadPending)
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&resp, sizeof(resp), &received, usbTimeOut);
   if (ret || (received != sizeof(AWLCANMessage)))
     return false;
+#endif //USE_TCP
 
   *pdwCount = *((uint32_t*)&resp.data[0]);
   *pdwReadPending = *((uint32_t*)&resp.data[4]);
@@ -243,6 +364,15 @@ bool ReceiverLibUSBCapture::ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCou
   msg.id = AWLCANMSG_ID_GETDATA;
   msg.data[0] = (unsigned char) dwCount;
 
+#ifdef USE_TCP
+  transferred = send((SOCKET) handle, (char*) &msg, sizeof(msg), 0);
+  if (transferred != sizeof(AWLCANMessage))
+    return false;
+
+  received = recv((SOCKET) handle, (char*) ptr, uiCount, 0);
+  if (received != uiCount)
+    return false;
+#else //USE_TCP
   ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(msg), &transferred, usbTimeOut);
   if (ret || (transferred != sizeof(AWLCANMessage)))
     return false;
@@ -250,6 +380,7 @@ bool ReceiverLibUSBCapture::ReadDataFromUSB(char * ptr, int uiCount, DWORD dwCou
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)ptr, uiCount, &received, usbTimeOut);
   if (ret || (received != uiCount))
     return false;
+#endif //USE_TCP
 
   return true;
 }
@@ -351,6 +482,15 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
   msg.id = AWLCANMSG_ID_POLLMESSAGES;
   msg.data[0] = (unsigned char) dwNumMsg;
 
+#ifdef USE_TCP
+  transferred = send((SOCKET) handle, (char*) &msg, sizeof(msg), 0);
+  if (transferred != sizeof(AWLCANMessage))
+    return false;
+
+  received = recv((SOCKET) handle, (char*) &canResp, dwNumMsg * sizeof(AWLCANMessage), 0);
+  if (received != dwNumMsg * sizeof(AWLCANMessage))
+    return false;
+#else //USE_TCP
   ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&msg, sizeof(AWLCANMessage), &transferred, usbTimeOut);
   if (ret || (transferred != sizeof(AWLCANMessage)))
     return false;
@@ -358,6 +498,7 @@ bool ReceiverLibUSBCapture::PollMessages(DWORD dwNumMsg)
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&canResp, dwNumMsg * sizeof(AWLCANMessage), &received, usbTimeOut);
   if (ret || (received != dwNumMsg * sizeof(AWLCANMessage)))
     return false;
+#endif //USE_TCP
 
   for (DWORD i=0; i<dwNumMsg; i++)
   {
@@ -383,6 +524,15 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
 
   boost::mutex::scoped_lock rawLock(mMutexUSB);
 
+#ifdef USE_TCP
+  transferred = send((SOCKET) handle, (char*) &inMsg, sizeof(AWLCANMessage), 0);
+  if (transferred != sizeof(AWLCANMessage))
+    return false;
+
+  received = recv((SOCKET) handle, (char*) &canResp, sizeof(AWLCANMessage), 0);
+  if (received != sizeof(AWLCANMessage))
+    return false;
+#else //USE_TCP
   ret = libusb_bulk_transfer(handle, usbEndPointOut, (unsigned char *)&inMsg, sizeof(AWLCANMessage), &transferred, usbTimeOut);
   if (ret || (transferred != sizeof(AWLCANMessage)))
     return false;
@@ -390,6 +540,7 @@ bool ReceiverLibUSBCapture::WriteMessage(const AWLCANMessage &inMsg)
   ret = libusb_bulk_transfer(handle, usbEndPointIn, (unsigned char *)&canResp, sizeof(AWLCANMessage), &received, usbTimeOut);
   if (ret || (received != sizeof(AWLCANMessage)))
     return false;
+#endif //USE_TCP
 
   if (canResp.id)
     ParseMessage(canResp);
