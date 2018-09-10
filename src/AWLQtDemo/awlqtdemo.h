@@ -90,6 +90,8 @@ private slots:
 	void on_registerADCGetPushButton_clicked();
 	void on_registerGPIOSetPushButton_clicked();
 	void on_registerGPIOGetPushButton_clicked();
+  void on_registerFPGASaveToFlash_clicked();
+  void on_registerFPGARestoreFactoryDefaults_clicked();
 
 	void on_algoSelectComboBox_indexChanged(int newIndex);
 
