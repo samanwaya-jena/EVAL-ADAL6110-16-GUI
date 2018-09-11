@@ -418,7 +418,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	on_view2DActionToggled();
         on_viewTableViewActionToggled();
         on_viewAScanViewActionToggled();
+#ifdef USE_OPENCV_VIDEO
         on_viewCameraActionToggled();
+#endif
         on_viewSettingsActionToggled();
 
 
