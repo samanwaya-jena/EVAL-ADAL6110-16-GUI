@@ -388,7 +388,7 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 	float offsetX;
 	float offsetY;
 
-	float maxRange;
+	float maxRange, maxAscanRange;
 	uint8_t displayColorRed;
 	uint8_t displayColorGreen;
 	uint8_t displayColorBlue;
@@ -404,6 +404,7 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 	Get2DPoint(channelGeometryNode.get_child("arrayOffset"), offsetX, offsetY);
 
 	maxRange = channelGeometryNode.get<float>("maxRange");
+  maxAscanRange = channelGeometryNode.get<float>("maxAscanRange");
 
 	GetColor(channelGeometryNode.get_child("displayColor"), displayColorRed, displayColorGreen, displayColorBlue);
 
@@ -430,6 +431,7 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 		channelConfigPtr->fovHeight = pixelHeight;
 
 		channelConfigPtr->maxRange = maxRange;
+    channelConfigPtr->maxAscanRange = maxAscanRange;
 		channelConfigPtr->displayColorRed = displayColorRed;
 		channelConfigPtr->displayColorGreen = displayColorGreen;
 		channelConfigPtr->displayColorBlue = displayColorBlue;

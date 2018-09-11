@@ -901,6 +901,8 @@
     </arrayOffset>
 
     <maxRange>20.0</maxRange>
+
+    <maxAscanRange>48.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>

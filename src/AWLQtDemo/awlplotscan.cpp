@@ -91,7 +91,7 @@ void AWLPlotScan::LabelAScan(int receiver, int channel)
 	float maxRange, scale;
 	int step;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	maxRange = globalSettings->receiverSettings[0].channelsConfig[0].maxRange / 4;
+	maxRange = globalSettings->receiverSettings[0].channelsConfig[0].maxAscanRange / 5;
 	if ( maxRange < 10.0 ) {
 		step = ((int)((maxRange+2.5)/5)) * 5;
 	} else {
@@ -104,13 +104,17 @@ void AWLPlotScan::LabelAScan(int receiver, int channel)
 	if (!showAScan) return;
 	painter.setPen(QPen(rgbRulerMed));
 	painter.setBrush(QBrush(rgbRulerMed));
-	painter.drawText(scale/4, 10, QString::number(step) + "m");
-	painter.drawText(scale*2/4, 10, QString::number(step*2) + "m");
-	painter.drawText(scale*3/4, 10, QString::number(step*3) + "m");
-	//painter.drawLine(0, SCAN_GRID_ORIGIN , width(), 15);
-	painter.drawLine(scale/4, SCAN_GRID_ORIGIN , scale/4, height());
-	painter.drawLine(scale*2/4, SCAN_GRID_ORIGIN , scale*2/4, height());
-	painter.drawLine(scale*3/4, SCAN_GRID_ORIGIN , scale*3/4, height());
+
+	painter.drawText(scale*1/5, 10, QString::number(step*1) + "m");
+	painter.drawText(scale*2/5, 10, QString::number(step*2) + "m");
+	painter.drawText(scale*3/5, 10, QString::number(step*3) + "m");
+  painter.drawText(scale*4/5, 10, QString::number(step*4) + "m");
+
+  //painter.drawLine(0, SCAN_GRID_ORIGIN , width(), 15);
+	painter.drawLine(scale*1/5, SCAN_GRID_ORIGIN , scale*1/5, 17 * SCAN_OFFSET_POSY);
+	painter.drawLine(scale*2/5, SCAN_GRID_ORIGIN , scale*2/5, 17 * SCAN_OFFSET_POSY);
+	painter.drawLine(scale*3/5, SCAN_GRID_ORIGIN , scale*3/5, 17 * SCAN_OFFSET_POSY);
+  painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * SCAN_OFFSET_POSY);
 
 	painter.setBrush(QBrush(rgbRulerMed));
 	painter.setPen(QPen(rgbRulerText));

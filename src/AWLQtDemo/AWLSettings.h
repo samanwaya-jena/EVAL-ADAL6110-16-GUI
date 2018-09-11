@@ -39,6 +39,7 @@ namespace awl
 		float fovHeight;
 
 		float maxRange;
+    float maxAscanRange;
 		uint8_t displayColorRed;
 		uint8_t displayColorGreen;
 		uint8_t displayColorBlue;
