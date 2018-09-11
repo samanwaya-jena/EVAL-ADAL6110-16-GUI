@@ -200,9 +200,18 @@ int ReceiverCapture::GetFrameQty()
 
 int ReceiverCapture::GetFrameRate()
 {
+  // timestamp the currentFrame
+  double elapsed = GetElapsed();
+
+  if (elapsed - m_FrameRateMS > 1000.0)
+  {
+    m_FrameRate = m_nbrCompletedFrame;
+    m_nbrCompletedFrame = 0;
+    m_FrameRateMS = elapsed;
+  }
+
   return m_FrameRate;
 }
-
 
 bool ReceiverCapture::CopyReceiverFrame(FrameID inFrameID,  SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID)
 {
@@ -373,13 +382,6 @@ void ReceiverCapture::ProcessCompletedFrame()
 
   ++m_nbrCompletedFrame;
   ++m_nbrCompletedFrameCumul;
-
-  if (elapsed - m_FrameRateMS > 1000.0)
-  {
-    m_FrameRate = m_nbrCompletedFrame;
-    m_nbrCompletedFrame = 0;
-    m_FrameRateMS = elapsed;
-  }
 
 	currentFrame->timeStamp = elapsed;
 
