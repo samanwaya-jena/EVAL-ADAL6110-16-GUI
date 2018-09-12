@@ -1417,9 +1417,9 @@ bool ReceiverCANCapture::SetFPGARegister(uint16_t registerAddress, uint32_t regi
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		registersFPGA[index].pendingUpdates = updateStatusPendingUpdate;
-		bMessageOk = WriteMessage(message);
 	}
 	
+  bMessageOk = WriteMessage(message);
 
 #if 0
 	// wait for the reception thread to receive the acknowledge;
@@ -1459,8 +1459,9 @@ bool ReceiverCANCapture::SetADCRegister(uint16_t registerAddress, uint32_t regis
 		// counter to 1.  This makes display more robust in case we 
 		// fall out of sync.
 		registersADC[index].pendingUpdates = updateStatusPendingUpdate;
-		bMessageOk = WriteMessage(message);
 	}
+
+  bMessageOk = WriteMessage(message);
 
 	return(bMessageOk);
 }

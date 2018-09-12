@@ -2364,6 +2364,40 @@ void AWLQtDemo::on_registerFPGARestoreFactoryDefaults_clicked()
   }
 }
 
+void AWLQtDemo::on_registerADCSaveToFlash_clicked()
+{
+  QMessageBox::StandardButton reply;
+
+  reply = QMessageBox::question(this, "Warning", "Save current configuration to Flash. Are you sure?",
+    QMessageBox::Yes | QMessageBox::No);
+
+  if (reply == QMessageBox::Yes)
+  {
+    // Send the command to the device
+    if (receiverCaptures[0])
+    {
+      receiverCaptures[0]->SetADCRegister(0x3FFE, 0);
+    }
+  }
+}
+
+void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
+{
+  QMessageBox::StandardButton reply;
+
+  reply = QMessageBox::question(this, "Warning", "Restore factory default configuration. Are you sure?",
+    QMessageBox::Yes | QMessageBox::No);
+
+  if (reply == QMessageBox::Yes)
+  {
+    // Send the command to the device
+    if (receiverCaptures[0])
+    {
+      receiverCaptures[0]->SetADCRegister(0x3FFF, 0);
+    }
+  }
+}
+
 void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 {
 	if (!receiverCaptures[0]->registersADCLabel.empty())

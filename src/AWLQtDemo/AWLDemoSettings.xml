@@ -832,7 +832,7 @@
 
     <registersADC label="CPU Registers">
     
-      <!--register>
+      <register>
         <index>0</index>
         <address>0</address>
         <description>Software Reset</description>
@@ -849,7 +849,7 @@
         <description>Wagner: Acc Shift</description>
       </register>
 
-      <register>
+      <!--register>
         <index>254</index>
         <address>254</address>
         <description>SAVE_CONFIG_TO_FLASH</description>
