@@ -92,8 +92,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	actionResizeButton(NULL),
 	actionQuitButton(NULL),
 	actionResizeMaximizeIcon(NULL),
-	actionResizeRestoreDownIcon(NULL)
+	actionResizeRestoreDownIcon(NULL),
+	m_bConnected(false),
+	m_frameRate(1)
 {
+	labelConnected = new QLabel("Initializing...");
+	labelFramerate = new QLabel();
+
 	QMessageBox msgBox(this);
 
 	ui.setupUi(this);
@@ -470,7 +475,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Set size of statusbar & font
 	ui.statusBar->setFixedHeight(30);
 	ui.statusBar->setStyleSheet("QStatusBar{padding-left:20px;background:rgba(0,0,0,255);color:lightgray;font-weight:bold;font-size:20px;}");
-	ui.statusBar->showMessage(tr("Initialization ..."));
+	//ui.statusBar->showMessage(tr("Initialization ..."));
+
+	labelConnected->setStyleSheet("QLabel{padding-left:20px;background:rgba(0,0,0,255);color:lightgray;font-weight:bold;font-size:20px;}");
+	labelFramerate->setStyleSheet("QLabel{padding-left:20px;background:rgba(0,0,0,255);color:lightgray;font-weight:bold;font-size:20px;}");
+
+	ui.statusBar->addWidget(labelConnected);
+	ui.statusBar->addWidget(labelFramerate);
 
 	// For debugging ...
 	//boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&AWLQtDemo::DoThreadLoop, this)));
@@ -977,12 +988,24 @@ void AWLQtDemo::on_timerTimeout()
   {
     bool bConnected = receiverCaptures[0]->IsConnected();
     int frameRate = receiverCaptures[0]->GetFrameRate();
-    QString str;
-    if (bConnected)
-      str.sprintf("Connected   |   Framerate: %3d Hz", frameRate);
-    else
-      str.sprintf("Not connected");
-    ui.statusBar->showMessage(str);
+
+		{
+			QString str;
+			if (bConnected)
+				str = "Connected";
+			else
+				str = "Not connected";
+			labelConnected->setText(str);
+
+			if (bConnected)
+				str.sprintf("Framerate: %3d Hz", frameRate);
+			else
+				str = "";
+			labelFramerate->setText(str);
+
+			//ui.statusBar->showMessage(str);
+		}
+
   }
 
 	if (bContinue) 
