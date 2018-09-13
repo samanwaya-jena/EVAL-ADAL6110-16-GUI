@@ -59,7 +59,7 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
       <receiverType>LibUSB</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
@@ -100,6 +100,9 @@
       <libUsbEndPointOut>2</libUsbEndPointOut>
       <!-- The LibUSB time out -->
       <libUsbTimeOut>1000</libUsbTimeOut>
+
+      <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerPort>27011</TCPServerPort>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:

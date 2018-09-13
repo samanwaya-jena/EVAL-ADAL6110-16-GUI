@@ -38,6 +38,9 @@
 #ifdef USE_LIBUSB
 #include "ReceiverLibUSBCapture.h"
 #endif
+#ifdef USE_TCP
+#include "ReceiverTCPCapture.h"
+#endif
 #ifdef USE_CAN_KVASER
 #include "ReceiverKvaserCapture.h"
 #endif
@@ -213,6 +216,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixTTYCapture(receiverID, globalSettings->GetPropTree()));
 		}
 		else 
+#endif
+#ifdef USE_TCP
+    if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("TCP"))
+    {
+      // PosixTTY Capture is used if defined in the ini file
+      receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverTCPCapture(receiverID, globalSettings->GetPropTree()));
+    }
+    else
 #endif
 #ifdef USE_LIBUSB
 		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "LibUSB"))
