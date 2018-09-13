@@ -109,6 +109,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverLibUSBCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverPosixTTYCapture.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -119,6 +120,7 @@
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\ReceiverTCPCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\Subscription.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp" />
     <ClCompile Include="..\AWLQtScope\awlqtscope.cpp" />

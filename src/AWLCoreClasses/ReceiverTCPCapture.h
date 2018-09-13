@@ -1,5 +1,5 @@
-#ifndef AWL_RECEIVER_LIBUSB_CAPTURE_H
-#define AWL_RECEIVER_LIBUSB_CAPTURE_H
+#ifndef AWL_RECEIVER_TCP_CAPTURE_H
+#define AWL_RECEIVER_TCP_CAPTURE_H
 
 /*
 	Copyright 2014, 2015 Phantom Intelligence Inc.
@@ -17,8 +17,6 @@
 	limitations under the License.
 */
 
-#include <libusb-1.0/libusb.h>
-
 #include "ReceiverPolledCapture.h"
 
 
@@ -27,10 +25,10 @@ using namespace std;
 namespace awl
 {
 
-/** \brief ReceiverLibUSBCapture class is a specialized implementation of the ReceiverCapture
+/** \brief ReceiverTCPCapture class is a specialized implementation of the ReceiverCapture
    *        used to acquire data from AWL LIDAR modules	through the LibUSB CAN bus interface.
   */
-class ReceiverLibUSBCapture: public ReceiverPolledCapture
+class ReceiverTCPCapture: public ReceiverPolledCapture
 {
 // Public types
 public:
@@ -38,11 +36,11 @@ public:
 // public Methods
 public:
 
-	ReceiverLibUSBCapture(int receiverID,  boost::property_tree::ptree  &propTree);
+	ReceiverTCPCapture(int receiverID,  boost::property_tree::ptree  &propTree);
 
-	/** \brief ReceiverLibUSBCapture Destructor.  Insures that all threads are stopped before destruction.
+	/** \brief ReceiverTCPCapture Destructor.  Insures that all threads are stopped before destruction.
       */
-	virtual ~ReceiverLibUSBCapture();
+	virtual ~ReceiverTCPCapture();
 
 protected:
 
@@ -70,16 +68,12 @@ protected:
 
 // Protected variables
 protected:
-		libusb_context *context;
 
-		int usbVendorId;
-		int usbProductId;
-		int usbEndPointIn;
-		int usbEndPointOut;
-		int usbTimeOut;
+  string TCPServerAddress;
+  string TCPServerPort;
 
 };
 
 } // namespace AWL
 
-#endif //AWL_RECEIVER_LIBUSB_CAPTURE_H
+#endif //AWL_RECEIVER_TCP_CAPTURE_H

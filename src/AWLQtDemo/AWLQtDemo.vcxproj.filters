@@ -206,6 +206,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_awlplotscan.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverTCPCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
