@@ -60,24 +60,38 @@ ReceiverTCPCapture::~ReceiverTCPCapture()
 
 int ReceiverTCPCapture::ReadBytes(uint8_t * pData, int num)
 {
+  int numRem = num;
   int received;
 
-  received = recv((SOCKET)handle, (char*)pData, num, 0);
-  if (received != num)
-    return -1;
+  while (numRem)
+  {
+    received = recv((SOCKET)handle, (char*)pData, numRem, 0);
+    if (received <= 0)
+      return -1;
 
-  return received;
+    pData += received;
+    numRem -= received;
+  }
+
+  return num;
 }
 
 int ReceiverTCPCapture::WriteBytes(uint8_t * pData, int num)
 {
+  int numRem = num;
   int transferred;
 
-  transferred = send((SOCKET)handle, (char*)pData, num, 0);
-  if (transferred != num)
-    return -1;
+  while (numRem)
+  {
+    transferred = send((SOCKET)handle, (char*)pData, numRem, 0);
+    if (transferred <= 0)
+      return -1;
 
-  return transferred;
+    pData += transferred;
+    numRem -= transferred;
+  }
+
+  return num;
 }
 
 bool  ReceiverTCPCapture::OpenCANPort()
