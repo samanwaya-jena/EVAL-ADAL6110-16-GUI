@@ -77,7 +77,12 @@ TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixTTYCapture.cpp )
 # Comment next 2 lines to disable LibUSB support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_LIBUSB )
 TARGET_LINK_LIBRARIES( LinuxCute /usr/lib64/libusb-1.0.so.0 )
+TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPolledCapture.cpp )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverLibUSBCapture.cpp )
+
+# Comment next 2 lines to disable TCP support
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_TCP )
+#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverTCPCapture.cpp )
 
 # Comment next 4 lines to disable OpenCV Video (and OpenCV in general)
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
