@@ -590,6 +590,8 @@ void AWLQtDemo::SetupToolBar()
 	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
 	connect(actionResizeButton, SIGNAL(toggled(bool )), this, SLOT(on_resizeActionToggled()));
 	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
+
+  connect(ui.checkBoxAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAdvanceModeToggled()));
 }
 
 void AWLQtDemo::SetupDisplayGrid()
@@ -2231,6 +2233,12 @@ void AWLQtDemo::on_viewCameraActionToggled()
 }
 #endif
 
+void AWLQtDemo::on_checkBoxAdvanceModeToggled()
+{
+  AWLSettings *settings = AWLSettings::GetGlobalSettings();
+  FillFPGAList(settings);
+}
+
 void AWLQtDemo::on_resizeActionToggled()
 {
 	if (actionResizeButton->isChecked()) 
@@ -2268,17 +2276,25 @@ void AWLQtDemo::on_viewGraphClose()
 
 void AWLQtDemo::FillFPGAList(AWLSettings *settingsPtr)
 {
+  bool bAdvancedModeChecked = ui.checkBoxAdvanceMode->isChecked();
+
 	if (!receiverCaptures[0]->registersFPGALabel.empty())
 		ui.registerFPGAGroupBox->setTitle(receiverCaptures[0]->registersFPGALabel.c_str());
 
+  ui.registerFPGAAddressSetComboBox->clear();
+
 	for (int i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++) 
 	{
-		QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
-		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
-		ui.registerFPGAAddressSetComboBox->addItem(sLabel);
+    if (!bAdvancedModeChecked && receiverCaptures[0]->registersFPGA[i].bAdvanced)
+      ; // Skip advanced register
+    else
+    {
+      QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
+      sLabel += ": ";
+      sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
+      ui.registerFPGAAddressSetComboBox->addItem(sLabel);
+    }
 	}
-
 }
 
 

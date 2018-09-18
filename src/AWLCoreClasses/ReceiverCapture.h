@@ -226,6 +226,10 @@ eUpdateStatus;
 
 typedef struct RegisterSetting 
 {
+  /** \brief Flag indicating whether the register is an advanced register
+  */
+  bool bAdvanced;
+
 	/** \brief String used to describe the index. 
 	  *        This string corresponds to the index identifier in the device, typically used in the user manual.
 	 * \remarks Can be alphanumeric or numeric or hex string (ex: "R0", "0x1A", "09")..

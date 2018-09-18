@@ -1891,12 +1891,15 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 	BOOST_FOREACH(ptree::value_type &registersFPGANode, configurationNodePtr->get_child("registersFPGA"))
 	{
 		if( registersFPGANode.first == "register" ) {
+      int iAdvanced;
 			boost::property_tree::ptree &registerNode = registersFPGANode.second;
 
             RegisterSetting registerFPGA;
             registerFPGA.sIndex = registerNode.get<std::string>("index");
             registerFPGA.address = registerNode.get<uint16_t>("address");
 		    registerFPGA.sDescription = registerNode.get<std::string>("description");
+        iAdvanced = registerNode.get<int>("advanced", 0);
+        registerFPGA.bAdvanced = (iAdvanced != 0);
 			registerFPGA.value = 0L;
 			registerFPGA.pendingUpdates = updateStatusUpToDate;
 
@@ -1919,6 +1922,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
             registerADC.sIndex = registerNode.get<std::string>("index");
             registerADC.address  = registerNode.get<uint16_t>("address");
 		    registerADC.sDescription = registerNode.get<std::string>("description");
+        registerADC.bAdvanced = false;
 			registerADC.value = 0L;
 			registerADC.pendingUpdates = updateStatusUpToDate;
 
@@ -1938,6 +1942,7 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
             registerGPIO.sIndex = gpioNode.get<std::string>("index");
             registerGPIO.address  = gpioNode.get<uint16_t>("address");
 		    registerGPIO.sDescription = gpioNode.get<std::string>("description");
+        registerGPIO.bAdvanced = false;
 			registerGPIO.value = 0L;
 			registerGPIO.pendingUpdates = updateStatusUpToDate;
 
