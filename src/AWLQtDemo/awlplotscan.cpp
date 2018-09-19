@@ -128,13 +128,82 @@ void AWLPlotScan::LabelAScan()
   painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * SCAN_OFFSET_POSY);
 }
 
-void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
+QPoint pts[100];
+
+void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange)
 {
-	QPainter painter(this);
-	if (!showAScan) return;
-	painter.setPen(QPen(rgbRulerLight));
-	painter.setBrush(QBrush(rgbRulerMed));
-	painter.drawLine(x1, y1, x2, y2);
+  int16_t *b16;
+  int32_t *b32;
+  float xScaleFactor = 0.0;
+  float yScaleFactor = 0.0;
+  int32_t x1, y1;
+  int i;
+
+  QPainter painter(this);
+  if (!showAScan) return;
+  painter.setPen(QPen(rgbRulerLight));
+  painter.setBrush(QBrush(rgbRulerMed));
+
+  if (pAscan->samples) {
+    x1 = left;
+    y1 = top;
+    //printf ("%d %d\n", sampleCount, width);
+    if (pAscan->sampleCount > width) {
+      if (width)
+        xScaleFactor = (float)pAscan->sampleCount / (float)width;
+
+      yScaleFactor = height / maxRange;
+
+      b16 = (int16_t *)(pAscan->samples);
+      b32 = (int32_t *)(pAscan->samples);
+      for (int x = 0; x < width; x++) {
+        x1 = left + x;
+        i = x * xScaleFactor;
+        switch (pAscan->sampleSize) {
+        default:
+          return;
+        case 2:
+          y1 = top - b16[i + pAscan->sampleOffset] * yScaleFactor;
+          break;
+        case 4:
+          y1 = top - b32[i + pAscan->sampleOffset] * yScaleFactor;
+          break;
+        }
+        pts[x].setX(x1);
+        pts[x].setY(y1);
+      }
+
+      painter.drawPolyline(pts, width);
+    }
+    else {
+      if (pAscan->sampleCount)
+        xScaleFactor = (float)width / (float)pAscan->sampleCount;
+
+      yScaleFactor = height / maxRange;
+
+      b16 = (int16_t *)(pAscan->samples);
+      b32 = (int32_t *)(pAscan->samples);
+
+      for (int x = 0; x < pAscan->sampleCount; x++) {
+        i = x * xScaleFactor;
+        x1 = left + i;
+        switch (pAscan->sampleSize) {
+        default:
+          return;
+        case 2:
+          y1 = top - (b16[x + pAscan->sampleOffset] * yScaleFactor);
+          break;
+        case 4:
+          y1 = top - (b32[x + pAscan->sampleOffset] * yScaleFactor);
+          break;
+        }
+        pts[x].setX(x1);
+        pts[x].setY(y1);
+      }
+
+      painter.drawPolyline(pts, pAscan->sampleCount);
+    }
+  }
 }
 
 void AWLPlotScan::plotAScans()
@@ -180,7 +249,7 @@ void AWLPlotScan::plotAScans()
 	{
     if (m_chMask & (1 << i))
     {
-      aScan->Plot(fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, this, maxRange);
+      PlotAScan(aScan, fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, maxRange);
 
       QPainter painter(this);
       painter.setBrush(QBrush(rgbRulerMed));

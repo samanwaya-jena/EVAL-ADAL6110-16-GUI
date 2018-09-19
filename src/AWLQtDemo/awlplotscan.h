@@ -33,7 +33,7 @@
 namespace awl
 {
 
-class AWLPlotScan : public QFrame, public AScanPlotter
+class AWLPlotScan : public QFrame
 {
 	Q_OBJECT
 public:
@@ -42,11 +42,15 @@ public:
 	void start(ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
   void setChannelMask(uint32_t chMask);
+  void AScanDataChanged(const AScan::Vector& data) { aScanData = data; }
+  void ShowAScan(bool show) { showAScan = show; }
 
 private:
+  bool showAScan;
+  AScan::Vector aScanData;
 	Ui::AWLPlotScanFrame ui;
 	void plotAScans(void);
-	void PlotAScan(int x1, int y1, int x2, int y2);
+  void PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
 	void LabelAScan();
 
 signals:
