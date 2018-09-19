@@ -4966,6 +4966,48 @@ color: rgb(255,255,255);</string>
            </property>
           </widget>
          </widget>
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>10</y>
+            <width>131</width>
+            <height>121</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>Ascan scaling</string>
+          </property>
+          <widget class="QCheckBox" name="checkBoxAutoScale">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>40</y>
+             <width>70</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>AutoScale</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="comboBoxMaxRange">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>70</y>
+             <width>81</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </widget>
         </widget>
        </widget>
       </item>
@@ -5583,6 +5625,22 @@ color: rgb(255,255,255);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBoxMaxRange</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_comboBoxMaxRange_indexChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>332</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>485</x>
+     <y>159</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_colorImageRadioButton_setChecked(bool)</slot>
@@ -5631,5 +5689,6 @@ color: rgb(255,255,255);</string>
   <slot>on_trackerSelectComboBox_indexChanged(int)</slot>
   <slot>on_trackerParametersSetPushButton_clicked()</slot>
   <slot>on_trackerParametersGetPushButton_clicked()</slot>
+  <slot>on_comboBoxMaxRange_indexChanged(int)</slot>
  </slots>
 </ui>

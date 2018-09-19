@@ -383,6 +383,15 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.checkBox_15, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
   connect(ui.checkBox_16, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
 
+  // AutoScale
+  connect(ui.checkBoxAutoScale, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAutoScaleToggled()));
+
+  ui.comboBoxMaxRange->setDisabled(true);
+  ui.comboBoxMaxRange->clear();
+  ui.comboBoxMaxRange->addItem("100%");
+  ui.comboBoxMaxRange->addItem("75%");
+  ui.comboBoxMaxRange->addItem("50%");
+  ui.comboBoxMaxRange->addItem("25%");
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -2314,6 +2323,41 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
   if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
   if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
   scopeWindow->setChannelMask(mask);
+}
+
+void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
+{
+  if (!ui.checkBoxAutoScale->isChecked())
+  {
+    switch (newIndex)
+    {
+    case 0: scopeWindow->SetMaxRange(32767.0F); break;
+    case 1: scopeWindow->SetMaxRange(32767.0F * 0.75F); break;
+    case 2: scopeWindow->SetMaxRange(32767.0F * 0.50F); break;
+    default:scopeWindow->SetMaxRange(32767.0F * 0.25F); break;
+    }
+  }
+}
+
+void AWLQtDemo::on_checkBoxAutoScaleToggled()
+{
+  if (ui.checkBoxAutoScale->isChecked())
+  {
+    ui.comboBoxMaxRange->setDisabled(true);
+    scopeWindow->SetMaxRange(0.0F);
+  }
+  else
+  {
+    ui.comboBoxMaxRange->setDisabled(false);
+    int sel = ui.comboBoxMaxRange->currentIndex();
+    switch (sel)
+    {
+    case 0: scopeWindow->SetMaxRange(32767.0F); break;
+    case 1: scopeWindow->SetMaxRange(32767.0F * 0.75F); break;
+    case 2: scopeWindow->SetMaxRange(32767.0F * 0.50F); break;
+    default:scopeWindow->SetMaxRange(32767.0F * 0.25F); break;
+    }
+  }
 }
 
 void AWLQtDemo::on_resizeActionToggled()

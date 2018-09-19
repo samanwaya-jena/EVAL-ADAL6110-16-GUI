@@ -43,7 +43,6 @@ const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
 const QColor rgbRulerText(255, 170, 0);
 const int SCAN_POSX = 0;
 const int SCAN_POSY = 0;
-const int SCAN_OFFSET_POSY = 50;
 const int SCAN_GRID_ORIGIN = 15;
 
 
@@ -60,7 +59,8 @@ uint32_t numberOfSetBits(uint32_t i)
 
 AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent),
-  m_chMask(0xFFFF)
+  m_chMask(0xFFFF),
+  m_maxRange(0.0F)
 #ifdef USE_FPS_AWLPLOTSCAN
   , nFrames(0)
   ,FPS(0)
@@ -122,10 +122,10 @@ void AWLPlotScan::LabelAScan()
   painter.drawText(scale*4/5, 10, QString::number(step*4) + "m");
 
   //painter.drawLine(0, SCAN_GRID_ORIGIN , width(), 15);
-	painter.drawLine(scale*1/5, SCAN_GRID_ORIGIN , scale*1/5, 17 * SCAN_OFFSET_POSY);
-	painter.drawLine(scale*2/5, SCAN_GRID_ORIGIN , scale*2/5, 17 * SCAN_OFFSET_POSY);
-	painter.drawLine(scale*3/5, SCAN_GRID_ORIGIN , scale*3/5, 17 * SCAN_OFFSET_POSY);
-  painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * SCAN_OFFSET_POSY);
+	painter.drawLine(scale*1/5, SCAN_GRID_ORIGIN , scale*1/5, 17 * fAscanHeight);
+	painter.drawLine(scale*2/5, SCAN_GRID_ORIGIN , scale*2/5, 17 * fAscanHeight);
+	painter.drawLine(scale*3/5, SCAN_GRID_ORIGIN , scale*3/5, 17 * fAscanHeight);
+  painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * fAscanHeight);
 }
 
 QPoint pts[100];
@@ -224,24 +224,31 @@ void AWLPlotScan::plotAScans()
 
   if (!showAScan) return;
 
-  BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+  if (m_maxRange)
   {
-    float minV, maxV, meanV;
-
-    aScan->FindMinMaxMean(&minV, &maxV, &meanV);
-
-    if (minV < minFinal)
-      minFinal = minV;
-
-    if (maxV > maxFinal)
-      maxFinal = maxV;
+    maxRange = m_maxRange;
   }
+  else
+  {
+    BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
+    {
+      float minV, maxV, meanV;
 
-  // maxRange will contain the peak absolute value for all ascans
-  maxRange = abs(maxFinal);
+      aScan->FindMinMaxMean(&minV, &maxV, &meanV);
 
-  if (abs(minFinal) > maxRange)
-    maxRange = abs(minFinal);
+      if (minV < minFinal)
+        minFinal = minV;
+
+      if (maxV > maxFinal)
+        maxFinal = maxV;
+    }
+
+    // maxRange will contain the peak absolute value for all ascans
+    maxRange = abs(maxFinal);
+
+    if (abs(minFinal) > maxRange)
+      maxRange = abs(minFinal);
+  }
 
   LabelAScan();
 

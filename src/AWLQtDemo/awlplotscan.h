@@ -44,6 +44,7 @@ public:
   void setChannelMask(uint32_t chMask);
   void AScanDataChanged(const AScan::Vector& data) { aScanData = data; }
   void ShowAScan(bool show) { showAScan = show; }
+  void SetMaxRange(float maxRange) { m_maxRange = maxRange; }
 
   QSize sizeHint() const;
   QSize minimumSizeHint() const;
@@ -63,6 +64,8 @@ protected :
    void paintEvent(QPaintEvent *p);
 	void closeEvent(QCloseEvent * event);
 	void resizeEvent(QResizeEvent * event);
+
+  float m_maxRange;
 
   uint32_t m_chMask;
   uint32_t m_nbrCh;
