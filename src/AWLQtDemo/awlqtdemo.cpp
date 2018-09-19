@@ -592,6 +592,23 @@ void AWLQtDemo::SetupToolBar()
 	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
 
   connect(ui.checkBoxAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAdvanceModeToggled()));
+
+  connect(ui.checkBox_1, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_2, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_3, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_4, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_5, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_6, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_7, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_8, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_9, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_10, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_11, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_12, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_13, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_14, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_15, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_16, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
 }
 
 void AWLQtDemo::SetupDisplayGrid()
@@ -2237,6 +2254,73 @@ void AWLQtDemo::on_checkBoxAdvanceModeToggled()
 {
   AWLSettings *settings = AWLSettings::GetGlobalSettings();
   FillFPGAList(settings);
+}
+
+
+void AWLQtDemo::on_pushButtonSelectAllAscan_clicked()
+{
+  ui.checkBox_1->setChecked(true);
+  ui.checkBox_2->setChecked(true);
+  ui.checkBox_3->setChecked(true);
+  ui.checkBox_4->setChecked(true);
+  ui.checkBox_5->setChecked(true);
+  ui.checkBox_6->setChecked(true);
+  ui.checkBox_7->setChecked(true);
+  ui.checkBox_8->setChecked(true);
+  ui.checkBox_9->setChecked(true);
+  ui.checkBox_10->setChecked(true);
+  ui.checkBox_11->setChecked(true);
+  ui.checkBox_12->setChecked(true);
+  ui.checkBox_13->setChecked(true);
+  ui.checkBox_14->setChecked(true);
+  ui.checkBox_15->setChecked(true);
+  ui.checkBox_16->setChecked(true);
+
+  scopeWindow->setChannelMask(0xFFFF);
+}
+
+void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
+{
+  ui.checkBox_1->setChecked(false);
+  ui.checkBox_2->setChecked(false);
+  ui.checkBox_3->setChecked(false);
+  ui.checkBox_4->setChecked(false);
+  ui.checkBox_5->setChecked(false);
+  ui.checkBox_6->setChecked(false);
+  ui.checkBox_7->setChecked(false);
+  ui.checkBox_8->setChecked(false);
+  ui.checkBox_9->setChecked(false);
+  ui.checkBox_10->setChecked(false);
+  ui.checkBox_11->setChecked(false);
+  ui.checkBox_12->setChecked(false);
+  ui.checkBox_13->setChecked(false);
+  ui.checkBox_14->setChecked(false);
+  ui.checkBox_15->setChecked(false);
+  ui.checkBox_16->setChecked(false);
+
+  scopeWindow->setChannelMask(0);
+}
+
+void AWLQtDemo::on_checkBoxAscanSelToggled()
+{
+  uint32_t mask = 0;
+  if (ui.checkBox_1->isChecked()) mask |= 1 << 0;
+  if (ui.checkBox_2->isChecked()) mask |= 1 << 1;
+  if (ui.checkBox_3->isChecked()) mask |= 1 << 2;
+  if (ui.checkBox_4->isChecked()) mask |= 1 << 3;
+  if (ui.checkBox_5->isChecked()) mask |= 1 << 4;
+  if (ui.checkBox_6->isChecked()) mask |= 1 << 5;
+  if (ui.checkBox_7->isChecked()) mask |= 1 << 6;
+  if (ui.checkBox_8->isChecked()) mask |= 1 << 7;
+  if (ui.checkBox_9->isChecked()) mask |= 1 << 8;
+  if (ui.checkBox_10->isChecked()) mask |= 1 << 9;
+  if (ui.checkBox_11->isChecked()) mask |= 1 << 10;
+  if (ui.checkBox_12->isChecked()) mask |= 1 << 11;
+  if (ui.checkBox_13->isChecked()) mask |= 1 << 12;
+  if (ui.checkBox_14->isChecked()) mask |= 1 << 13;
+  if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
+  if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
+  scopeWindow->setChannelMask(mask);
 }
 
 void AWLQtDemo::on_resizeActionToggled()

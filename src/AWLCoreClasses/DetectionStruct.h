@@ -284,8 +284,7 @@ public:
 	bool showAScan;
 public:
 	virtual void ShowAScan(bool show);
-	virtual void PlotAScan(int x1, int y1, int x2, int y2);
-	virtual void LabelAScan(int receiver = -1, int channel = -1);
+	virtual void PlotAScan(int x1, int y1, int x2, int y2)=0;
 	void AScanDataChanged(const AScan::Vector& data);
 };
 

@@ -111,6 +111,11 @@ private slots:
 
   void on_checkBoxAdvanceModeToggled();
 
+  void on_checkBoxAscanSelToggled();
+
+  void on_pushButtonSelectAllAscan_clicked();
+  void on_pushButtonSelectNoneAscan_clicked();
+
 	void on_viewSettingsActionToggled();
 
 	void on_view2DActionToggled();

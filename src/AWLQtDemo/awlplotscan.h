@@ -38,11 +38,13 @@ public:
 	~AWLPlotScan();
 	void start(ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
+  void setChannelMask(uint32_t chMask);
+
 private:
 	Ui::AWLPlotScanFrame ui;
 	void plotAScans(void);
 	void PlotAScan(int x1, int y1, int x2, int y2);
-	void LabelAScan(int receiver, int channel);
+	void LabelAScan();
 
 signals:
 	void closed();
@@ -50,6 +52,9 @@ protected :
    void paintEvent(QPaintEvent *p);
 	void closeEvent(QCloseEvent * event);
 	void resizeEvent(QResizeEvent * event);
+
+  uint32_t m_chMask;
+  uint32_t m_nbrCh;
 };
 
 } // namespace awl

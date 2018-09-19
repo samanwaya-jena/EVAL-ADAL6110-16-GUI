@@ -44,37 +44,31 @@ const QColor rgbRulerText(255, 170, 0);
 const int SCAN_POSX = 0;
 const int SCAN_POSY = 0;
 const int SCAN_OFFSET_POSY = 50;
-const int SCAN_SIGNAL_MAX_HEIGHT = 50;
 const int SCAN_GRID_ORIGIN = 15;
 
 
-AWLPlotScan::AWLPlotScan(QWidget *parent) :
-    QFrame(parent)
+uint32_t numberOfSetBits(uint32_t i)
 {
-	ui.setupUi(this);
-	QWidget window;
-	printf ("PlotScan\n");
-
-
+  // Java: use >>> instead of >>
+  // C or C++: use uint32_t
+  i = i - ((i >> 1) & 0x55555555);
+  i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+  return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
 }
+
+
+
+AWLPlotScan::AWLPlotScan(QWidget *parent) :
+    QFrame(parent),
+  m_chMask(0xFFFF)
+{
+  m_nbrCh = numberOfSetBits(m_chMask);
+	ui.setupUi(this);
+}
+
 void AWLPlotScan::start(ReceiverCapture::Ptr inReceiverCapture)
 {
-	/*
-        d_receiverCapture = inReceiverCapture;
-        d_receiverCaptureSubscriberID = d_receiverCapture->Subscribe();
-
-        for (int i = 0; i < d_plot.size(); i++)
-        {
-                d_plot[i]->start(d_receiverCapture, i);
-        }
-
-        if (d_timerId == 0) d_timerId = startTimer( timerInterval );
-	*/
-	printf ("PlotScan start\n");
 }
-
-
-
 
 AWLPlotScan::~AWLPlotScan()
 {
@@ -84,10 +78,18 @@ AWLPlotScan::~AWLPlotScan()
 void AWLPlotScan::stop()
 {
      ;
-}	
+}
 
-void AWLPlotScan::LabelAScan(int receiver, int channel)
+void AWLPlotScan::setChannelMask(uint32_t chMask)
 {
+  m_chMask = chMask;
+  m_nbrCh = numberOfSetBits(m_chMask);
+}
+
+void AWLPlotScan::LabelAScan()
+{
+  float fAscanHeight = 850.0 / (m_nbrCh + 1);
+
 	float maxRange, scale;
 	int step;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
@@ -115,12 +117,6 @@ void AWLPlotScan::LabelAScan(int receiver, int channel)
 	painter.drawLine(scale*2/5, SCAN_GRID_ORIGIN , scale*2/5, 17 * SCAN_OFFSET_POSY);
 	painter.drawLine(scale*3/5, SCAN_GRID_ORIGIN , scale*3/5, 17 * SCAN_OFFSET_POSY);
   painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * SCAN_OFFSET_POSY);
-
-	painter.setBrush(QBrush(rgbRulerMed));
-	painter.setPen(QPen(rgbRulerText));
-	painter.drawText(SCAN_POSX, SCAN_OFFSET_POSY + 50 * channel, "Ch " + QString::number(receiver+1) + "." + QString::number(channel+1));
-	painter.drawLine(SCAN_POSX, SCAN_OFFSET_POSY + 50 * channel, width(), SCAN_OFFSET_POSY + 50 * channel);
-	//printf("pixel %d-%d\n", receiver, channel);
 }
 
 void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
@@ -134,9 +130,14 @@ void AWLPlotScan::PlotAScan(int x1, int y1, int x2, int y2)
 
 void AWLPlotScan::plotAScans()
 {
+  int i = 0;
+  int chIdx = 0;
   float minFinal  =  FLT_MAX;
   float maxFinal  = -FLT_MAX;
   float maxRange = 0.0F;
+  float fAscanHeight = 850.0 / (m_nbrCh + 1);
+
+  if (!showAScan) return;
 
   BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
   {
@@ -157,10 +158,24 @@ void AWLPlotScan::plotAScans()
   if (abs(minFinal) > maxRange)
     maxRange = abs(minFinal);
 
+  LabelAScan();
+
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-		aScan->Plot(SCAN_OFFSET_POSY + 50 * aScan->channelID, 0, width(), 50, this, maxRange);
-		//aScan->Plot(50 + 50 * aScan->channelID + 25 * aScan->receiverID, 0, width(), 50, this);
+    if (m_chMask & (1 << i))
+    {
+      aScan->Plot(fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, this, maxRange);
+
+      QPainter painter(this);
+      painter.setBrush(QBrush(rgbRulerMed));
+      painter.setPen(QPen(rgbRulerText));
+      painter.drawText(SCAN_POSX, fAscanHeight * (chIdx + 1), "Ch " + QString::number(aScan->receiverID + 1) + "." + QString::number(aScan->channelID + 1));
+      painter.drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
+
+      ++chIdx;
+    }
+
+    ++i;
 	}
 
 	update();
@@ -168,13 +183,7 @@ void AWLPlotScan::plotAScans()
 
 void AWLPlotScan::paintEvent(QPaintEvent *p)
 {
-	QPainter painter(this);
-	painter.setPen(QPen(rgbRulerLight));
-	painter.setBrush(QBrush(rgbRulerMed));
-	//painter.drawLine(0, 0, 200, 200);
-
 	plotAScans();
-	//printf ("PlotScan paintEvent\n");
 }
 
 void AWLPlotScan::closeEvent(QCloseEvent * event)

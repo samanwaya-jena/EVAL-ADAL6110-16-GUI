@@ -230,7 +230,7 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 	int32_t x1, y1, x2, y2 = 0;
 	int i;
 
-	plotter->LabelAScan(receiverID, channelID);
+	//plotter->LabelAScan(receiverID, channelID);
 
 	if (samples) {
 		x1 = left;
@@ -297,19 +297,19 @@ void AScan::Plot(int top, int left, int width, int height, AScanPlotter *plotter
 void AScanPlotter::ShowAScan(bool show)
 {
 	showAScan = show;
-	if (showAScan) printf ("show ascan\n");
-	else printf ("hide ascan\n");
+	//if (showAScan) printf ("show ascan\n");
+	//else printf ("hide ascan\n");
 }
 
-void AScanPlotter::PlotAScan(int x1, int y1, int x2, int y2)
-{
-	printf("%d %d, %d %d\n", x1, y1, x2, y2);
-}
-
-void AScanPlotter::LabelAScan(int receiver, int channel)
-{
-	printf("Ch %d-%d\n", receiver, channel);
-}
+//void AScanPlotter::PlotAScan(int x1, int y1, int x2, int y2)
+//{
+//	printf("%d %d, %d %d\n", x1, y1, x2, y2);
+//}
+//
+//void AScanPlotter::LabelAScan(int receiver, int channel)
+//{
+//	printf("Ch %d-%d\n", receiver, channel);
+//}
 
 void AScanPlotter::AScanDataChanged(const AScan::Vector& data)
 {
