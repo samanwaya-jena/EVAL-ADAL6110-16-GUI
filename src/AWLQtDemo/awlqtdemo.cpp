@@ -362,6 +362,27 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	int selectedTrackerID = receiverCaptures[0]->parametersTrackers.defaultAlgo;
 	ui.trackerSelectComboBox->setCurrentIndex(ui.trackerSelectComboBox->findData(selectedTrackerID));
 
+  // AdvancedMode
+  connect(ui.checkBoxAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAdvanceModeToggled()));
+
+  // Ascan selection
+  connect(ui.checkBox_1, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_2, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_3, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_4, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_5, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_6, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_7, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_8, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_9, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_10, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_11, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_12, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_13, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_14, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_15, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+  connect(ui.checkBox_16, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -590,25 +611,6 @@ void AWLQtDemo::SetupToolBar()
 	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
 	connect(actionResizeButton, SIGNAL(toggled(bool )), this, SLOT(on_resizeActionToggled()));
 	connect(actionQuitButton, SIGNAL(triggered(bool )), qApp, SLOT(closeAllWindows()));
-
-  connect(ui.checkBoxAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAdvanceModeToggled()));
-
-  connect(ui.checkBox_1, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_2, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_3, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_4, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_5, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_6, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_7, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_8, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_9, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_10, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_11, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_12, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_13, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_14, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_15, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
-  connect(ui.checkBox_16, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
 }
 
 void AWLQtDemo::SetupDisplayGrid()
