@@ -263,7 +263,6 @@ void AWLPlotScan::plotAScans()
     ++i;
 	}
 
-	update();
 #ifdef USE_FPS_AWLPLOTSCAN
   boost::chrono::duration<double> elapsed = t1 - m_timeFPS;
 

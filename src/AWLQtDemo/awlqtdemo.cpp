@@ -994,25 +994,16 @@ void AWLQtDemo::on_timerTimeout()
 
 		// Update the table views only if there is new data
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
-	}
 
-	if (bContinue)
-	{
-		AScan::Vector aScanData;
-		aScanData.clear();
-		bool bNewAScans = GetLatestAScans(aScanData);
-		//if (m2DScan) m2DScan->AScanDataChanged(aScanData);
-		//if (m2DScan) m2DScan->update();
-		if (scopeWindow) scopeWindow->AScanDataChanged(aScanData);
-		if (scopeWindow) scopeWindow->update();
-		/*
-		BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
-		{
-			printf ("ascan %d %d %d\n", aScan->receiverID, aScan->channelID, aScan->sampleCount);
-		}
-		printf ("\n");
-		*/
+    if (scopeWindow && bNewDetections)
+    {
+      AScan::Vector aScanData;
+      aScanData.clear();
 
+      bool bNewAScans = GetLatestAScans(aScanData);
+      scopeWindow->AScanDataChanged(aScanData);
+      scopeWindow->update();
+    }
 	}
 
   {
