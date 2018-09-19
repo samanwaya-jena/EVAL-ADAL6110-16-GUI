@@ -45,6 +45,10 @@ public:
   void AScanDataChanged(const AScan::Vector& data) { aScanData = data; }
   void ShowAScan(bool show) { showAScan = show; }
 
+  QSize sizeHint() const;
+  QSize minimumSizeHint() const;
+  QSize maximumSizeHint() const;
+
 private:
   bool showAScan;
   AScan::Vector aScanData;

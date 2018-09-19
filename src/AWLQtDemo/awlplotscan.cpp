@@ -97,7 +97,7 @@ void AWLPlotScan::setChannelMask(uint32_t chMask)
 
 void AWLPlotScan::LabelAScan()
 {
-  float fAscanHeight = 850.0 / (m_nbrCh + 1);
+  float fAscanHeight = float(height()) / (m_nbrCh + 1);
 
 	float maxRange, scale;
 	int step;
@@ -220,7 +220,7 @@ void AWLPlotScan::plotAScans()
   float minFinal  =  FLT_MAX;
   float maxFinal  = -FLT_MAX;
   float maxRange = 0.0F;
-  float fAscanHeight = 850.0 / (m_nbrCh + 1);
+  float fAscanHeight = float(height()) / (m_nbrCh + 1);
 
   if (!showAScan) return;
 
@@ -295,4 +295,20 @@ void AWLPlotScan::resizeEvent(QResizeEvent * event)
 	update();
 }
 
+QSize AWLPlotScan::sizeHint() const
+{
+  return (maximumSizeHint());
+}
 
+QSize AWLPlotScan::minimumSizeHint() const
+{
+  return(QSize(230, 300));
+}
+
+QSize AWLPlotScan::maximumSizeHint() const
+{
+  QRect scr = QApplication::desktop()->availableGeometry();
+  float maxHeight = scr.height() * 1;
+  float maxWidth = scr.width()*0.4;
+  return(QSize((int)maxWidth, (int)maxHeight));
+}
