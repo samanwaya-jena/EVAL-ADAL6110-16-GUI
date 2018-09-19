@@ -61,9 +61,18 @@ uint32_t numberOfSetBits(uint32_t i)
 AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent),
   m_chMask(0xFFFF)
+#ifdef USE_FPS_AWLPLOTSCAN
+  , nFrames(0)
+  ,FPS(0)
+#endif //USE_FPS_AWLPLOTSCAN
 {
   m_nbrCh = numberOfSetBits(m_chMask);
 	ui.setupUi(this);
+
+#ifdef USE_FPS_AWLPLOTSCAN
+  m_timeFPS = boost::chrono::high_resolution_clock::now();
+#endif //USE_FPS_AWLPLOTSCAN
+
 }
 
 void AWLPlotScan::start(ReceiverCapture::Ptr inReceiverCapture)
@@ -132,6 +141,13 @@ void AWLPlotScan::plotAScans()
 {
   int i = 0;
   int chIdx = 0;
+
+  if (!showAScan) return;
+
+#ifdef USE_FPS_AWLPLOTSCAN
+  ++nFrames;
+#endif //USE_FPS_AWLPLOTSCAN
+
   float minFinal  =  FLT_MAX;
   float maxFinal  = -FLT_MAX;
   float maxRange = 0.0F;
@@ -179,6 +195,22 @@ void AWLPlotScan::plotAScans()
 	}
 
 	update();
+#ifdef USE_FPS_AWLPLOTSCAN
+  boost::chrono::duration<double> elapsed = t1 - m_timeFPS;
+
+  if (elapsed.count() > 1.0)
+  {
+    FPS = nFrames;
+    nFrames = 0;
+    m_timeFPS = t1;
+  }
+
+  QPainter painter(this);
+  painter.setPen(QPen(rgbRulerLight));
+  painter.setBrush(QBrush(rgbRulerMed));
+  painter.drawText(10, 10, QString::number(FPS) + " FPS");
+#endif //USE_FPS_AWLPLOTSCAN
+
 }
 
 void AWLPlotScan::paintEvent(QPaintEvent *p)

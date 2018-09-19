@@ -23,9 +23,12 @@
 #include <QPainter>
 #include <QAction>
 #include <QActionGroup>
+#include "boost/chrono/system_clocks.hpp"
 #include "ReceiverCapture.h"
 #include "ui_awlplotscan.h"
 #include "DetectionStruct.h"
+
+//#define USE_FPS_AWLPLOTSCAN
 
 namespace awl
 {
@@ -55,6 +58,13 @@ protected :
 
   uint32_t m_chMask;
   uint32_t m_nbrCh;
+
+#ifdef USE_FPS_AWLPLOTSCAN
+  // FPS
+  boost::chrono::time_point<boost::chrono::high_resolution_clock> m_timeFPS;
+  int nFrames;
+  int FPS;
+#endif //USE_FPS_AWLPLOTSCAN
 };
 
 } // namespace awl

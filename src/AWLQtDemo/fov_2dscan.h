@@ -22,9 +22,11 @@
 #include <QPainter>
 #include <QAction>
 #include <QActionGroup>
-
+#include "boost/chrono/system_clocks.hpp"
 #include "ui_fov_2dscan.h"
 #include "DetectionStruct.h"
+
+//#define USE_FPS_FOV_2DSCAN
 
 namespace awl
 {
@@ -180,6 +182,12 @@ private:
 	QAction* displayZoomMode360Action;
 	QAction* displayZoomModeAutoAction;
 
+#ifdef USE_FPS_FOV_2DSCAN
+  // FPS
+  boost::chrono::time_point<boost::chrono::high_resolution_clock> m_timeFPS;
+  int nFrames;
+  int FPS;
+#endif //USE_FPS_FOV_2DSCAN
 
 	void drawArc(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset = 0, float yOffset = 0);
     void drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset);

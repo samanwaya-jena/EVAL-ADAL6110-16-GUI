@@ -165,6 +165,7 @@ const int transitionLightness= 65;  // Lightness at which we start to write in l
 const QColor rgbBackground(0, 0, 0, 255); // Black
 const QColor rgbRuler(192, 192, 192, 128); // Transparent gray dark
 const QColor rgbRulerLight(255, 255, 255, 128); // Transparent gray light
+const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
 const QColor rgbRulerText(255, 170, 0);
 const QColor rgbBumper(32, 32, 32, 196); // Transparent gray
 const QColor rgbLaneMarkings(192, 192 , 255, 196);  // Light blue
@@ -202,6 +203,10 @@ const int rightInPixels = 200;
 
 FOV_2DScan::FOV_2DScan(QWidget *parent) :
     QFrame(parent)
+#ifdef USE_FPS_FOV_2DSCAN
+  ,nFrames(0)
+  ,FPS(0)
+#endif //USE_FPS_FOV_2DSCAN
 {
 	ui.setupUi(this);
 	setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -238,6 +243,10 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 
 	createAction();
 	calculateResize();
+
+#ifdef USE_FPS_FOV_2DSCAN
+  m_timeFPS = boost::chrono::high_resolution_clock::now();
+#endif //USE_FPS_FOV_2DSCAN
 }
 
 void FOV_2DScan::createAction()
@@ -694,6 +703,12 @@ void FOV_2DScan::calculateResize()
 
 void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 {
+#ifdef USE_FPS_FOV_2DSCAN
+  ++nFrames;
+
+  // Record time
+  auto t1 = boost::chrono::high_resolution_clock::now();
+#endif
 
     QPainter painter(this);
 	int maxWidth = width();
@@ -888,6 +903,20 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 		}
 	} // BOOST_FOREACH(const Detection::Ptr
 
+#ifdef USE_FPS_FOV_2DSCAN
+  boost::chrono::duration<double> elapsed = t1 - m_timeFPS;
+
+  if (elapsed.count() > 1.0)
+  {
+    FPS = nFrames;
+    nFrames = 0;
+    m_timeFPS = t1;
+  }
+
+  painter.setPen(QPen(rgbRulerLight));
+  painter.setBrush(QBrush(rgbRulerMed));
+  painter.drawText(10, 10, QString::number(FPS) + " FPS");
+#endif //USE_FPS_FOV_2DSCAN
 }
 
 void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
