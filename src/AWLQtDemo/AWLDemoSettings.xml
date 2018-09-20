@@ -129,7 +129,7 @@
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
 		       be configured for track mode operation -->
-      <msgEnableObstacle>false</msgEnableObstacle>
+      <msgEnableObstacle>true</msgEnableObstacle>
       <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
       <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
