@@ -65,6 +65,9 @@ protected :
 	void closeEvent(QCloseEvent * event);
 	void resizeEvent(QResizeEvent * event);
 
+  QPoint * m_pPts;
+  int m_numPts;
+
   float m_maxRange;
 
   uint32_t m_chMask;

@@ -60,7 +60,9 @@ uint32_t numberOfSetBits(uint32_t i)
 AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent),
   m_chMask(0xFFFF),
-  m_maxRange(0.0F)
+  m_maxRange(0.0F),
+  m_numPts(0),
+  m_pPts(NULL)
 #ifdef USE_FPS_AWLPLOTSCAN
   , nFrames(0)
   ,FPS(0)
@@ -128,8 +130,6 @@ void AWLPlotScan::LabelAScan()
   painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * fAscanHeight);
 }
 
-QPoint pts[100];
-
 void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange)
 {
   int16_t *b16;
@@ -149,6 +149,12 @@ void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int
     y1 = top;
     //printf ("%d %d\n", sampleCount, width);
     if (pAscan->sampleCount > width) {
+      if (width > m_numPts)
+      {
+        m_numPts = width;
+        m_pPts = (QPoint*) malloc(m_numPts * sizeof(QPoint));
+      }
+
       if (width)
         xScaleFactor = (float)pAscan->sampleCount / (float)width;
 
@@ -169,13 +175,19 @@ void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int
           y1 = top - b32[i + pAscan->sampleOffset] * yScaleFactor;
           break;
         }
-        pts[x].setX(x1);
-        pts[x].setY(y1);
+        m_pPts[x].setX(x1);
+        m_pPts[x].setY(y1);
       }
 
-      painter.drawPolyline(pts, width);
+      painter.drawPolyline(m_pPts, width);
     }
     else {
+      if (pAscan->sampleCount > m_numPts)
+      {
+        m_numPts = pAscan->sampleCount;
+        m_pPts = (QPoint*)malloc(m_numPts * sizeof(QPoint));
+      }
+
       if (pAscan->sampleCount)
         xScaleFactor = (float)width / (float)pAscan->sampleCount;
 
@@ -197,11 +209,11 @@ void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int
           y1 = top - (b32[x + pAscan->sampleOffset] * yScaleFactor);
           break;
         }
-        pts[x].setX(x1);
-        pts[x].setY(y1);
+        m_pPts[x].setX(x1);
+        m_pPts[x].setY(y1);
       }
 
-      painter.drawPolyline(pts, pAscan->sampleCount);
+      painter.drawPolyline(m_pPts, pAscan->sampleCount);
     }
   }
 }
