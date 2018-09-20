@@ -15,14 +15,24 @@
 	limitations under the License.
 */
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <winsock2.h>
+#endif //WIN32
+
 #include <stdio.h>
 #include <string.h>
+
+#ifndef WIN32
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h>
+#endif //WIN32
 
 #include <string>
+
 #ifndef Q_MOC_RUN
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp> 
@@ -36,6 +46,11 @@
 #include "DetectionStruct.h"
 #include "ReceiverCANCapture.h"
 #include "ReceiverPosixUDPCapture.h"
+
+
+#ifdef WIN32
+#define close closesocket
+#endif //WIN32
 
 
 using namespace std;
@@ -123,10 +138,12 @@ bool  ReceiverPosixUDPCapture::OpenCANPort()
 		goto posixudp_exit;
 	}
 
+#ifndef WIN32
 	ret = fcntl(fd, F_GETFL, 0);
 	if (ret >= 0) {
 		ret = fcntl(fd, F_SETFL, ret | O_NONBLOCK);
 	}
+#endif //WIN32
 
 	memset(udp_srv_addr, 0, sizeof(sockaddr_in));
 	udp_srv_addr->sin_family = AF_INET;
@@ -140,7 +157,7 @@ bool  ReceiverPosixUDPCapture::OpenCANPort()
 
 	printf("UDP Using interface %s port %d\n", serverAddress.c_str(), serverUDPPort);
 
-	ret = bind(fd, (struct sockaddr*)udp_cli_addr, sizeof(sockaddr_in));
+	ret = ::bind(fd, (struct sockaddr*)udp_cli_addr, (int) sizeof(sockaddr_in));
 	if (ret < 0) {
 		perror("UDP bind");
 		close(fd);
@@ -211,7 +228,7 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 
 	if (fd >= 0)
 	{
-		ret = recvfrom(fd, (void*)buffer, size, 0, 0, 0);
+		ret = recvfrom(fd, (char*)buffer, size, 0, 0, 0);
 
 		if (ret < 0)
 		{
