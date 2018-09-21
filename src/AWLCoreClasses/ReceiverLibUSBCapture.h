@@ -58,6 +58,11 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
+	/** \brief Return True if the device is connected (that is if the communications driver has established connection.
+	* \return true if connected, false otherwise.
+	*/
+	virtual bool IsConnected() { return (handle != NULL); }
+
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
 	  * \returns Returns true otherwise.
