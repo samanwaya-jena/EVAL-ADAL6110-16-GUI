@@ -31,9 +31,11 @@ namespace awl
 
 //const float NAN = std::numeric_limits<float>::quiet_NaN ();
 #ifdef _MSC_VER
+#ifndef NAN
 #define NAN std::numeric_limits<float>::quiet_NaN()
+#endif // IFNDEF
 #define isNAN(val) _isnan(val)
-#else
+#else //_MSC_VER not defined
 #define isNAN(val) (val == NAN)
 #endif
 
