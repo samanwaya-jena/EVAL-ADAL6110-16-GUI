@@ -74,7 +74,7 @@ bool AWLSettings::ReadSettings()
 	receiverSettings.resize(receiverQty);
 	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
-		char receiverKeyString[32];
+		char receiverKeyString[128];
 		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverIndex);
 		std::string receiverKey = receiverKeyString;
 
