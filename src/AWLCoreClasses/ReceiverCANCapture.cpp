@@ -466,25 +466,42 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d", inMsg.id, dataPtr[0], dataPtr[1], dataPtr[2]);
 }
 
+#define PATCH_CHANNEL_REORDER 0
+
+#if PATCH_CHANNEL_REORDER
+
+// Patch because LiBUSB Sensor sends channels ou of order
+int channelReorder[16] = { 14, 12, 10, 8, 6, 4, 2, 0, 15, 13, 11, 9, 7, 5, 3, 1 };
+
+
+
+#endif
+
 void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 {
 	boost::mutex::scoped_lock rawLock(GetMutex());
 
-	uint16_t trackID =  *(uint16_t *) &inMsg.data[0];
+	uint16_t trackID = *(uint16_t *)&inMsg.data[0];
 
 	Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, trackID);
 
 	track->firstTimeStamp = currentFrame->timeStamp;
 	track->timeStamp = currentFrame->timeStamp;
 
-	track->trackChannels.byteData = *(uint8_t *) &inMsg.data[2];
+	track->trackChannels.byteData = *(uint8_t *)&inMsg.data[2];
 	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
-#if 1
+	uint16_t originalChannel = track->trackMainChannel;
+#if PATCH_CHANNEL_REORDER
+	track->trackMainChannel = channelReorder[track->trackMainChannel];
+
+#endif
+
+
 	// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
 	// Other versions send trackMainChannel. For AWL-7 track main channel is 0.
 	// Rebuild trackMainChannel from AWL 7 data.
-	if (track->trackChannels.byteData  && !track->trackMainChannel)
+	if (this->receiverChannelQty == 7)
 	{
 		track->trackMainChannel = 0;
 		uint8_t channelMask = 0x01;
@@ -498,10 +515,9 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 			channelMask <<= 1;
 		}
 	}
-#endif
+
 	// Decode rest of message
-	uint16_t trackType = *(uint16_t *) &inMsg.data[3];
-	track->probability = *(uint8_t *) &inMsg.data[5];
+	track->probability = *(uint8_t *)&inMsg.data[5];
 
 	uint16_t intensity = (*(uint16_t *)&inMsg.data[6]);
 	track->intensity = ConvertIntensityToSNR(intensity);
