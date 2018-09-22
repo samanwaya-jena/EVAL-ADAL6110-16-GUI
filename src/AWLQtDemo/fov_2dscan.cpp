@@ -1142,7 +1142,7 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 
 
 void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor,
-	                                bool drawTarget, bool drawLegend)
+	bool drawTarget, bool drawLegend)
 {
 	int receiverID = detection->GetReceiverID();
 	RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
@@ -1154,27 +1154,29 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	// Window dimensions
 	int windowWidth = width();
 	int windowHeight = height();
-	const int lineWidth = max(0.15 * Ratio, 2.0);
+
+	// Linewith is between 2 and 5 pixels, depening on screen size
+	const int  lineWidth = fmin(fmax(0.15 * Ratio, 3), 6);
+
 
 	// Our detection Y axis is positive left, so we negate the lateral coordinate.
- 	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
-    QPoint detectionPoint(-detection->relativeToVehicleCart.left * Ratio, -(detection->relativeToVehicleCart.forward) * Ratio);
+	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
+	QPoint detectionPoint(-detection->relativeToVehicleCart.left * Ratio, -(detection->relativeToVehicleCart.forward) * Ratio);
 	// Offset that position to fit within the widget coordinates
-	detectionPoint += QPoint(windowWidth/2, zeroY);
-	 	
+	detectionPoint += QPoint(windowWidth / 2, zeroY);
 
 	// Set the basic drawing attributes for the next operations
 	QColor lineLineColor = lineColor;
 	lineLineColor.setAlpha(lineTransparency);
-	QColor lineBackColor(backColor); 
+	QColor lineBackColor(backColor);
 	lineBackColor.setAlpha(lineTransparency);
 
-    p->setPen(lineLineColor);
-    p->setBrush(QBrush(lineBackColor, backPattern));
+	p->setPen(lineLineColor);
+	p->setBrush(QBrush(lineBackColor, backPattern));
 
 	// If required, draw the legend associated to the point
 	// This is an ellipse with desriptive text, and a line (polygon) between the point and the associated ellipse
-	if (drawLegend) 
+	if (drawLegend)
 	{
 
 		// legendRect is the rectangle used to display the associated text
@@ -1194,7 +1196,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		p->setBrush(QBrush(lineBackColor, backPattern));
 
 		QPolygon poly;
-		poly.append(QPoint(detectionPoint.x() - 2, detectionPoint.y() ));
+		poly.append(QPoint(detectionPoint.x() - 2, detectionPoint.y()));
 		poly.append(QPoint(legendRect.center().x() - 51, legendRect.center().y() - 1));
 		poly.append(QPoint(legendRect.center().x(), legendRect.center().y() - 1));
 		poly.append(QPoint(legendRect.center().x(), legendRect.center().y() + 1));
@@ -1206,7 +1208,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		// Draw the ellipse around the distance indication text
 		p->setPen(lineColor);
 		p->setBrush(QBrush(backColor));
-		p->drawEllipse(QPoint(windowWidth-(legendRect.width()/2)-5, legendRect.bottom()-legendRect.size().height()/2), legendRect.size().width()/2, legendRect.size().height()/2);
+		p->drawEllipse(QPoint(windowWidth - (legendRect.width() / 2) - 5, legendRect.bottom() - legendRect.size().height() / 2), legendRect.size().width() / 2, legendRect.size().height() / 2);
 
 
 		// Write the distance text
@@ -1228,19 +1230,19 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 
 
 		// Dimensions of the arrow 
-		const float arrowWidth = max(0.2 * Ratio, 5.0);
+		const int arrowWidth = 2 * lineWidth;
 		float arrowHeight = 0;
 		bool bDrawArrow = false;
 
 		// Up arrow or down arrow, depending on velocity.  No arrow if velocity is below zero velocity.
 		if (detection->velocity >= zeroVelocity)
 		{
-			arrowHeight = min(-(0.4 * Ratio), -7.0);
+			arrowHeight = -2 * arrowWidth;
 			bDrawArrow = true;
 		}
 		else if (detection->velocity <= -zeroVelocity)
 		{
-			arrowHeight = max(0.4 * Ratio, 7.0);
+			arrowHeight = -2 * arrowWidth;
 			bDrawArrow = true;
 		}
 
