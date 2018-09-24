@@ -27,7 +27,7 @@
 	       1: Units are in km/h -->
     <velocityUnits>1</velocityUnits>
 
-    <!-- displayed logo: empty string means no logo -->
+    <!-- displayed logo: empy string means no logo -->
     <logoFileName>./Images/Logos/Phantom-Black-logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
@@ -60,7 +60,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>PosixUDP</receiverType>
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -121,7 +121,7 @@
 		       processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>255</channelMask>
-;
+
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -140,14 +140,14 @@
           <!-- positionFromBumper -->
           <forward>0</forward>
           <!-- lateral offet -->
-          <left>1.0</left>
+          <left>0.5</left>
           <!-- height -->
           <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>-15.0</yaw>
+          <yaw>-18.0</yaw>
         </orientation>
       </sensorGeometry>
 
@@ -179,10 +179,10 @@
       <commPort>COM15</commPort>
 
       <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
-      <kvaserChannel>0</kvaserChannel>
+      <kvaserChannel>1</kvaserChannel>
 
       <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
+      <socketCANdevice>can2</socketCANdevice>
 
       <!-- The PosixUDP server address -->
       <posixUDPServerAddress>127.0.0.1</posixUDPServerAddress>
@@ -224,7 +224,7 @@
 		       processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>255</channelMask>
-;
+
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -243,14 +243,14 @@
           <!-- positionFromBumper -->
           <forward>0</forward>
           <!-- lateral offet -->
-          <left>-1.0</left>
+          <left>-0.5</left>
           <!-- height -->
           <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>15.0</yaw>
+          <yaw>18.0</yaw>
         </orientation>
       </sensorGeometry>
 
@@ -263,7 +263,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -279,10 +279,10 @@
       <commPort>COM15</commPort>
 
       <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
-      <kvaserChannel>0</kvaserChannel>
+      <kvaserChannel>2</kvaserChannel>
 
       <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
+      <socketCANdevice>can1</socketCANdevice>
 
       <!-- The PosixUDP server address -->
       <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
@@ -324,7 +324,7 @@
 		       processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>255</channelMask>
-;
+
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -343,14 +343,14 @@
           <!-- positionFromBumper -->
           <forward>0</forward>
           <!-- lateral offet -->
-          <left>1.0</left>
+          <left>0</left>
           <!-- height -->
           <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>-10.0</yaw>
+          <yaw>0.0</yaw>
         </orientation>
       </sensorGeometry>
 
@@ -2974,7 +2974,8 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>15.0</maxRange>
+    <maxRange>10.0</maxRange>
+    <maxAscanRange>10.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>
@@ -3020,7 +3021,8 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>15.0</maxRange>
+    <maxRange>10.0</maxRange>
+    <maxAscanRange>10.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>

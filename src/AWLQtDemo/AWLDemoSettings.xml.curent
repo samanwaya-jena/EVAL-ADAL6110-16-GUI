@@ -11,6 +11,16 @@
     <displayScopeWindow>true</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
+        <!-- Tells which settings tabs are displayed -->
+    <TabSettingCalibration>true</TabSettingCalibration>
+    <TabSettingControl>false</TabSettingControl>
+    <TabSettingStatus>true</TabSettingStatus>
+    <TabSettingRegisters>true</TabSettingRegisters>
+    <TabSettingGPIOs>false</TabSettingGPIOs>
+    <TabSettingAlgoControl>true</TabSettingAlgoControl>
+    <TabSettingTrackerControl>false</TabSettingTrackerControl>
+
+
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
 	       1: Units are in km/h -->
@@ -71,10 +81,10 @@
       <socketCANdevice>can0</socketCANdevice>
 
       <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>127.0.0.1</posixUDPServerAddress>
+      <posixUDPServerAddress>192.168.44.88</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
-      <posixUDPServerPort>34567</posixUDPServerPort>
+      <posixUDPServerPort>23456</posixUDPServerPort>
 
       <!-- The PosixTTY TTY name -->
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
@@ -141,7 +151,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>130</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
     
@@ -1972,7 +1982,8 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>25.0</maxRange>
+    <maxRange>130.0</maxRange>
+    <maxAscanRange>100.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>
