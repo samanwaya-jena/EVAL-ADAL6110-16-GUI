@@ -65,8 +65,11 @@ const QColor rgbEnhanceBlue(0, 0, 255, 128);
 const QColor rgbEnhanceGreen(0, 255, 0, 128);
 const QColor rgbEnhanceYellow(128 ,128, 0, 128);
 const QColor rgbEnhanceRed(255, 0, 0, 128);
-const QColor rgbOpaqueGreen(0, 255, 0, 255);
+const QColor rgbEnhanceCyan(0, 255, 255, 128); 
+const QColor rgbEnhancePurple(255, 0, 255, 128); 
 const QColor rgbEnhanceBlack(0, 0, 0, 128);
+const QColor rgbOpaqueGreen(0, 255, 0, 255);
+
 
 VideoViewer::VideoViewer(std::string inCameraName, VideoCapture::Ptr inVideoCapture, QWidget *parentWidget):
 QFrame(parentWidget),
@@ -232,11 +235,13 @@ void VideoViewer::slotImageChanged()
 	qtEnhancedFrame = qtCameraFrame;
 
 	QPainter painter(&qtEnhancedFrame);
-	DisplayReceiverValues(qtCameraFrame, painter, detectionData);
 	if (bDisplayCrosshair)
 	{
 		DisplayCrossHairs(qtCameraFrame, painter);
 	}
+
+
+	DisplayReceiverValues(qtCameraFrame, painter, detectionData);
 
 	if (bDisplayTime)
 	{
@@ -424,6 +429,11 @@ void VideoViewer::DisplayTarget(QImage &sourceFrame, QPainter &painter, const De
 
 void VideoViewer::DisplayCrossHairs(QImage &sourceFrame, QPainter &painter)
 {
+	// Display Camera squares
+	DrawChannelOutlines(sourceFrame, painter);
+
+	// Display ticks
+
 	float tickIncrement = 2.5; // 1 tick every 2.5 degrees.
 	
 	// Draw horizontal ticks
@@ -542,6 +552,38 @@ void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  flo
 	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 }
 
+
+void VideoViewer::DrawChannelOutlines(QImage &sourceFrame, QPainter &painter)
+
+{
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
+	int receiverQty = globalSettings->receiverSettings.size();
+	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	{
+		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
+		for (int channelID = 0; channelID < channelQty; channelID++)
+		{
+			Detection::Ptr detection = Detection::Ptr(new Detection(receiverID, channelID, 0));
+			detection->distance = 10.0;
+			detection->channelID = channelID;
+			detection->distance = 10.0;
+
+			detection->intensity = 99.0;
+			detection->velocity = 99.0;
+			detection->acceleration = 0.0;
+			detection->probability = 0.0;
+
+			detection->timeStamp = 0;
+			detection->firstTimeStamp = 0;  // TBD
+			detection->trackID = 0;
+			detection->timeToCollision = 0;;
+			detection->decelerationToStop = 0;;
+			detection->threatLevel = AlertCondition::eThreatOutlineOnly;
+			DisplayTarget(sourceFrame, painter, detection);
+		}
+	}
+}
+
 void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &colorEnhance, int &iThickness)
 
 {
@@ -558,39 +600,48 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &co
 
 	switch (threatLevel) 
 	{
+
+	case AlertCondition::eThreatOutlineOnly:
+	{
+		colorEnhance = rgbEnhancePurple; // Try any contrasting color!
+		iThickness = 2;
+	}
+	break;
+
 	case AlertCondition::eThreatNone:
-		{
-			colorEnhance = rgbEnhanceBlue;  // Blue
-			iThickness = 5;
-		}
-		break;
+	{
+		colorEnhance = rgbEnhanceBlue;  // Blue
+		iThickness = 5;
+	}
+	break;
+
 	case AlertCondition::eThreatLow:
-		{
-			colorEnhance = rgbEnhanceGreen; // Green
-			iThickness = 5;
-		}
-		break;
+	{
+		colorEnhance = rgbEnhanceGreen; // Green
+		iThickness = 5;
+	}
+	break;
 
 	case AlertCondition::eThreatWarn:
-		{
-			colorEnhance = rgbEnhanceYellow; // Yellow
-			iThickness = 15;
-			if (bFlash) iThickness = 5;	
-		}
-		break;
+	{
+		colorEnhance = rgbEnhanceYellow; // Yellow
+		iThickness = 15;
+		if (bFlash) iThickness = 5;
+	}
+	break;
 
 	case AlertCondition::eThreatCritical:
-		{
-			colorEnhance = rgbEnhanceRed;  // Red
-			iThickness = 15;
-			if (bFlash) iThickness = 5;
-		}
-		break;
+	{
+		colorEnhance = rgbEnhanceRed;  // Red
+		iThickness = 15;
+		if (bFlash) iThickness = 5;
+	}
+	break;
 
 	default:
-		{
-			colorEnhance = Qt::black;
-		}
+	{
+		colorEnhance = Qt::black;
+	}
 
 	} // case
 }
