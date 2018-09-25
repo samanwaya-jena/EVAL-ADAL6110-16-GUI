@@ -1156,7 +1156,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	int windowHeight = height();
 
 	// Linewith is between 2 and 5 pixels, depening on screen size
-	const int  lineWidth = fmin(fmax(0.15 * Ratio, 3), 6);
+	const int  lineWidth = min(max(0.15F * Ratio, 3.0F), 6.0F);
 
 
 	// Our detection Y axis is positive left, so we negate the lateral coordinate.
