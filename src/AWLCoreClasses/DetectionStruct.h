@@ -84,7 +84,8 @@ public:
 		eThreatNone = 0,  // No threat level assigned
 		eThreatLow = 1,   // target detected, threat level low
 		eThreatWarn = 2,  // Target may have collision course, but not acertained yet
-		eThreatCritical = 3 // target is within collision range
+		eThreatCritical = 3, // target is within collision range
+		eThreatOutlineOnly = 4
 	}
 	ThreatLevel;
 
