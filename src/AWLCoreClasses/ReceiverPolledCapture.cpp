@@ -262,7 +262,7 @@ bool ReceiverPolledCapture::WriteMessage(const AWLCANMessage &inMsg)
   if (canResp.id)
     ParseMessage(canResp);
 
-	return false;
+	return true;
 }
 
 bool ReceiverPolledCapture::SendSoftwareReset()
