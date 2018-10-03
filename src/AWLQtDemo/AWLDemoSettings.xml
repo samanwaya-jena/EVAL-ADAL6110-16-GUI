@@ -895,11 +895,6 @@
         <address>1</address>
         <description>Wagner: Max Acc</description>
       </register>
-      <register>
-        <index>2</index>
-        <address>2</address>
-        <description>Wagner: Acc Shift</description>
-      </register>
 
       <!--register>
         <index>254</index>
