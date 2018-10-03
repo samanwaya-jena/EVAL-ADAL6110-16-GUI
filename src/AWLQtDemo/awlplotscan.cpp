@@ -97,7 +97,7 @@ void AWLPlotScan::setChannelMask(uint32_t chMask)
   m_nbrCh = numberOfSetBits(m_chMask);
 }
 
-void AWLPlotScan::LabelAScan()
+void AWLPlotScan::LabelAScan(QPainter* p)
 {
   float fAscanHeight = float(height()) / (m_nbrCh + 1);
 
@@ -113,24 +113,22 @@ void AWLPlotScan::LabelAScan()
 	
 	scale =  width() * ( (float) step / maxRange );
 
-	QPainter painter(this);
-	if (!showAScan) return;
-	painter.setPen(QPen(rgbRulerMed));
-	painter.setBrush(QBrush(rgbRulerMed));
+	p->setPen(QPen(rgbRulerMed));
+	p->setBrush(QBrush(rgbRulerMed));
 
-	painter.drawText(scale*1/5, 10, QString::number(step*1) + "m");
-	painter.drawText(scale*2/5, 10, QString::number(step*2) + "m");
-	painter.drawText(scale*3/5, 10, QString::number(step*3) + "m");
-  painter.drawText(scale*4/5, 10, QString::number(step*4) + "m");
+	p->drawText(scale*1/5, 10, QString::number(step*1) + "m");
+	p->drawText(scale*2/5, 10, QString::number(step*2) + "m");
+	p->drawText(scale*3/5, 10, QString::number(step*3) + "m");
+  p->drawText(scale*4/5, 10, QString::number(step*4) + "m");
 
-  //painter.drawLine(0, SCAN_GRID_ORIGIN , width(), 15);
-	painter.drawLine(scale*1/5, SCAN_GRID_ORIGIN , scale*1/5, 17 * fAscanHeight);
-	painter.drawLine(scale*2/5, SCAN_GRID_ORIGIN , scale*2/5, 17 * fAscanHeight);
-	painter.drawLine(scale*3/5, SCAN_GRID_ORIGIN , scale*3/5, 17 * fAscanHeight);
-  painter.drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * fAscanHeight);
+  //p->drawLine(0, SCAN_GRID_ORIGIN , width(), 15);
+	p->drawLine(scale*1/5, SCAN_GRID_ORIGIN , scale*1/5, 17 * fAscanHeight);
+	p->drawLine(scale*2/5, SCAN_GRID_ORIGIN , scale*2/5, 17 * fAscanHeight);
+	p->drawLine(scale*3/5, SCAN_GRID_ORIGIN , scale*3/5, 17 * fAscanHeight);
+  p->drawLine(scale*4/5, SCAN_GRID_ORIGIN,  scale*4/5, 17 * fAscanHeight);
 }
 
-void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange)
+void AWLPlotScan::PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange)
 {
   int16_t *b16;
   int32_t *b32;
@@ -139,10 +137,8 @@ void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int
   int32_t x1, y1;
   int i;
 
-  QPainter painter(this);
-  if (!showAScan) return;
-  painter.setPen(QPen(rgbRulerLight));
-  painter.setBrush(QBrush(rgbRulerMed));
+  p->setPen(QPen(rgbRulerLight));
+  p->setBrush(QBrush(rgbRulerMed));
 
   if (pAscan->samples) {
     x1 = left;
@@ -179,7 +175,7 @@ void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int
         m_pPts[x].setY(y1);
       }
 
-      painter.drawPolyline(m_pPts, width);
+      p->drawPolyline(m_pPts, width);
     }
     else {
       if (pAscan->sampleCount > m_numPts)
@@ -213,12 +209,21 @@ void AWLPlotScan::PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int
         m_pPts[x].setY(y1);
       }
 
-      painter.drawPolyline(m_pPts, pAscan->sampleCount);
+      p->drawPolyline(m_pPts, pAscan->sampleCount);
     }
   }
 }
 
-void AWLPlotScan::plotAScans()
+void AWLPlotScan::AScanDataChanged(const AScan::Vector& data)
+{
+  if (data.size() > 0)
+  {
+    aScanData = data;
+    update();
+  }
+}
+
+void AWLPlotScan::plotAScans(QPainter* p)
 {
   int i = 0;
   int chIdx = 0;
@@ -233,8 +238,6 @@ void AWLPlotScan::plotAScans()
   float maxFinal  = -FLT_MAX;
   float maxRange = 0.0F;
   float fAscanHeight = float(height()) / (m_nbrCh + 1);
-
-  if (!showAScan) return;
 
   if (m_maxRange)
   {
@@ -262,19 +265,18 @@ void AWLPlotScan::plotAScans()
       maxRange = abs(minFinal);
   }
 
-  LabelAScan();
+  LabelAScan(p);
 
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
     if (m_chMask & (1 << i))
     {
-      PlotAScan(aScan, fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, maxRange);
+      PlotAScan(p, aScan, fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, maxRange);
 
-      QPainter painter(this);
-      painter.setBrush(QBrush(rgbRulerMed));
-      painter.setPen(QPen(rgbRulerText));
-      painter.drawText(SCAN_POSX, fAscanHeight * (chIdx + 1), "Ch " + QString::number(aScan->receiverID + 1) + "." + QString::number(aScan->channelID + 1));
-      painter.drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
+      p->setBrush(QBrush(rgbRulerMed));
+      p->setPen(QPen(rgbRulerText));
+      p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1), "Ch " + QString::number(aScan->receiverID + 1) + "." + QString::number(aScan->channelID + 1));
+      p->drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
 
       ++chIdx;
     }
@@ -292,21 +294,23 @@ void AWLPlotScan::plotAScans()
     m_timeFPS = t1;
   }
 
-  QPainter painter(this);
-  painter.setPen(QPen(rgbRulerLight));
-  painter.setBrush(QBrush(rgbRulerMed));
-  painter.drawText(10, 10, QString::number(FPS) + " FPS");
+  p->setPen(QPen(rgbRulerLight));
+  p->setBrush(QBrush(rgbRulerMed));
+  p->drawText(10, 10, QString::number(FPS) + " FPS");
 #endif //USE_FPS_AWLPLOTSCAN
 
 }
 
 void AWLPlotScan::paintEvent(QPaintEvent *p)
 {
-	plotAScans();
+  QPainter painter(this);
+
+  plotAScans(&painter);
 }
 
 void AWLPlotScan::closeEvent(QCloseEvent * event)
 {
+  emit closed();
 }
 
 void AWLPlotScan::resizeEvent(QResizeEvent * event)

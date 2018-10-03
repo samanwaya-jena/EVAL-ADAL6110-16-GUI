@@ -1013,7 +1013,7 @@ void AWLQtDemo::on_timerTimeout()
 
       bool bNewAScans = GetLatestAScans(aScanData);
       scopeWindow->AScanDataChanged(aScanData);
-      scopeWindow->update();
+      //scopeWindow->update();
     }
 	}
 
