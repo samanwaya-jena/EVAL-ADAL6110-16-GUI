@@ -524,6 +524,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.statusBar->addWidget(labelConnected);
 	ui.statusBar->addWidget(labelFramerate);
 
+	// Just hide the frameRate control for now.
+	ui.frameRateLabel->setVisible(false);
+	ui.frameRateSpinBox->setVisible(false);
+
 	// For debugging ...
 	//boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&AWLQtDemo::DoThreadLoop, this)));
 }
