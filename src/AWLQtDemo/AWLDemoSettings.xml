@@ -136,7 +136,7 @@
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
       <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-
+      <msgEnableRaw>false</msgEnableRaw>
  
       <sensorGeometry>
         <position>

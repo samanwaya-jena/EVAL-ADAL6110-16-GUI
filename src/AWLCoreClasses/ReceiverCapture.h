@@ -52,7 +52,7 @@ typedef union
 {
 	uint8_t byteData;
 	struct  {
-		bool unused_0				: 1;
+		bool raw					: 1;
 		bool obstacle				: 1;
 		bool distance_1_4			: 1;
 		bool distance_5_8			: 1;
