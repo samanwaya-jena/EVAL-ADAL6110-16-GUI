@@ -245,17 +245,23 @@ void AWLPlotScan::plotAScans(QPainter* p)
   }
   else
   {
+    i = 0;
     BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
     {
-      float minV, maxV, meanV;
+      if (m_chMask & (1 << i))
+      {
+        float minV, maxV, meanV;
 
-      aScan->FindMinMaxMean(&minV, &maxV, &meanV);
+        aScan->FindMinMaxMean(&minV, &maxV, &meanV);
 
-      if (minV < minFinal)
-        minFinal = minV;
+        if (minV < minFinal)
+          minFinal = minV;
 
-      if (maxV > maxFinal)
-        maxFinal = maxV;
+        if (maxV > maxFinal)
+          maxFinal = maxV;
+      }
+
+      ++i;
     }
 
     // maxRange will contain the peak absolute value for all ascans
@@ -267,6 +273,7 @@ void AWLPlotScan::plotAScans(QPainter* p)
 
   LabelAScan(p);
 
+  i = 0;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
     if (m_chMask & (1 << i))
