@@ -71,7 +71,7 @@ sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
 targetHintAngle(0.0),
-m_FrameRate(-1),
+m_FrameRate(0),
 m_FrameRateMS(0.0),
 m_nbrCompletedFrame(0),
 m_nbrCompletedFrameCumul(0),
@@ -110,7 +110,7 @@ sReceiverRegisterSet(sDefaultReceiverRegisterSet),
 sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
 targetHintDistance(0.0),
 targetHintAngle(0.0),
-m_FrameRate(-1),
+m_FrameRate(0),
 m_FrameRateMS(0.0),
 m_nbrCompletedFrame(0),
 m_nbrCompletedFrameCumul(0),
@@ -637,6 +637,7 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 		if (receiverNode.get<bool>("msgEnableIntensity_5_8")) receiverStatus.messageMask.bitFieldData.intensity_5_8 = 1;
 		if (receiverNode.get<bool>("msgEnableDistanceIntensity")) receiverStatus.messageMask.bitFieldData.distance_intensity = 1;
 		if (receiverNode.get<bool>("msgEnableObstacleCompact")) receiverStatus.messageMask.bitFieldData.obstacle_compact = 1;
+		if (receiverNode.get<bool>("msgEnableRaw", false)) receiverStatus.messageMask.bitFieldData.raw = 1;
 
 		return(true);
 

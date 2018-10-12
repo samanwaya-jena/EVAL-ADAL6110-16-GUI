@@ -1624,17 +1624,20 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 
 	bool bMessageOk = WriteMessage(message);
 
-    message.data[0] = AWLCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_raw enable flags
+	if (bMessageOk && messageMask.bitFieldData.raw)
+	{
+		message.data[0] = AWLCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_raw enable flags
 
-	message.data[1] = channelMask.byteData; // Channel mask
-	message.data[2] = 0xFF;  // Reserved
-	message.data[3] = 0;
-	message.data[4] = 0;
-	message.data[5] = 0;  // Reserved
-	message.data[6] = 0;  // Reserved
-	message.data[7] = 0;  // Reserved
+		message.data[1] = channelMask.byteData; // Channel mask
+		message.data[2] = 0xFF;  // Reserved
+		message.data[3] = 0;
+		message.data[4] = 0;
+		message.data[5] = 0;  // Reserved
+		message.data[6] = 0;  // Reserved
+		message.data[7] = 0;  // Reserved
 
-	bMessageOk = WriteMessage(message);
+		bMessageOk = WriteMessage(message);
+	}
 
 	// The message has no confirmation built in
    return(bMessageOk);

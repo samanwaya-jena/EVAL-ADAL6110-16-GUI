@@ -32,6 +32,8 @@ ReceiverCANCapture(receiverID, propTree),
 handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();
+
+  m_pFile = NULL;
 }
 
 ReceiverPolledCapture::~ReceiverPolledCapture()
@@ -148,6 +150,34 @@ bool ReceiverPolledCapture::DoOneLoop()
   {
     bRet = ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
 
+    if (m_pFile)
+    {
+			boost::mutex::scoped_lock rawLock(m_Mutex);
+
+			if (m_pFile) // Check again for m_pFile now that we have the mutex
+			{
+				int cycle, ch, i, j;
+
+				for (cycle = 0; cycle < dwCount; cycle++)
+				{
+					for (ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
+					{
+						short * pData = &dataFifo[cycle].AcqFifo[ch * GUARDIAN_SAMPLING_LENGTH];
+						for (i = 0; i < GUARDIAN_SAMPLING_LENGTH; i++)
+						{
+							char str[128];
+							if (ch == (GUARDIAN_NUM_CHANNEL - 1) && i == (GUARDIAN_SAMPLING_LENGTH - 1))
+								sprintf(str, "%d\n", *pData++);
+							else
+								sprintf(str, "%d,", *pData++);
+							fwrite(str, strlen(str), 1, m_pFile);
+						}
+					}
+				}
+				fflush(m_pFile);
+			}
+    }
+
     ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
   }
 
@@ -262,7 +292,7 @@ bool ReceiverPolledCapture::WriteMessage(const AWLCANMessage &inMsg)
   if (canResp.id)
     ParseMessage(canResp);
 
-	return false;
+	return true;
 }
 
 bool ReceiverPolledCapture::SendSoftwareReset()
@@ -283,4 +313,38 @@ bool ReceiverPolledCapture::SendSoftwareReset()
   msg.data[7] = 0x00;
 
   return WriteMessage(msg);
+}
+
+bool ReceiverPolledCapture::SetRecordFileName(std::string inRecordFileName)
+{
+	receiverStatus.sRecordFileName = inRecordFileName;
+	return true;
+}
+
+bool ReceiverPolledCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
+{
+	boost::mutex::scoped_lock rawLock(m_Mutex);
+
+	if (!m_pFile && !receiverStatus.sRecordFileName.empty())
+	{
+		m_pFile = fopen(receiverStatus.sRecordFileName.c_str(), "a");
+		receiverStatus.bInRecord = true;
+	}
+
+	return true;
+}
+
+bool ReceiverPolledCapture::StopRecord()
+{
+	boost::mutex::scoped_lock rawLock(m_Mutex);
+
+	if (m_pFile)
+	{
+		fclose(m_pFile);
+		m_pFile = NULL;
+	}
+
+	receiverStatus.bInRecord = false;
+
+	return true;
 }

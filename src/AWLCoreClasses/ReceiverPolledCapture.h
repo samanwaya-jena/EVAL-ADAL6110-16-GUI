@@ -42,6 +42,11 @@ public:
   virtual void  Stop();
   virtual bool IsConnected();
 
+	// For LibUSB, recording is supported ONLY on the host PC software
+	virtual bool SetRecordFileName(std::string inRecordFileName);
+	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
+	virtual bool StopRecord();
+
 protected:
 
   void DoThreadLoop();
@@ -68,6 +73,7 @@ protected:
 
     boost::mutex m_Mutex;
 
+    FILE * m_pFile;
 };
 
 } // namespace AWL

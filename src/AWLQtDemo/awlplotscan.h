@@ -42,7 +42,7 @@ public:
 	void start(ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
   void setChannelMask(uint32_t chMask);
-  void AScanDataChanged(const AScan::Vector& data) { aScanData = data; }
+  void AScanDataChanged(const AScan::Vector& data);
   void ShowAScan(bool show) { showAScan = show; }
   void SetMaxRange(float maxRange) { m_maxRange = maxRange; }
 
@@ -54,9 +54,9 @@ private:
   bool showAScan;
   AScan::Vector aScanData;
 	Ui::AWLPlotScanFrame ui;
-	void plotAScans(void);
-  void PlotAScan(AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
-	void LabelAScan();
+	void plotAScans(QPainter* p);
+  void PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
+	void LabelAScan(QPainter* p);
 
 signals:
 	void closed();

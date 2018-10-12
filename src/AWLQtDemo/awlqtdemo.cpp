@@ -524,6 +524,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.statusBar->addWidget(labelConnected);
 	ui.statusBar->addWidget(labelFramerate);
 
+	// Just hide the frameRate control for now.
+	ui.frameRateLabel->setVisible(false);
+	ui.frameRateSpinBox->setVisible(false);
+
 	// For debugging ...
 	//boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&AWLQtDemo::DoThreadLoop, this)));
 }
@@ -1013,7 +1017,7 @@ void AWLQtDemo::on_timerTimeout()
 
       bool bNewAScans = GetLatestAScans(aScanData);
       scopeWindow->AScanDataChanged(aScanData);
-      scopeWindow->update();
+      //scopeWindow->update();
     }
 	}
 
@@ -2190,7 +2194,7 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-	msgBox.setText("QtDemo 1.3.5<br><br>Copyright @ 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+	msgBox.setText("QtDemo 1.3.7<br><br>Copyright @ 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
 	msgBox.exec();
 }
 
