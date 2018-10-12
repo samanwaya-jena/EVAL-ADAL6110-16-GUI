@@ -4683,9 +4683,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]AWLQtDemo.Primary Output</td><td/></row>
-		<row><td>ProductCode</td><td>{48366480-C29A-46F3-95C7-A506AFD11AD8}</td><td/></row>
+		<row><td>ProductCode</td><td>{808E8A77-2A3B-4B29-86EC-E19DE7F92CD1}</td><td/></row>
 		<row><td>ProductName</td><td>Phantom Intelligence LiDAR Demo</td><td/></row>
-		<row><td>ProductVersion</td><td>1.3.0003</td><td/></row>
+		<row><td>ProductVersion</td><td>1.3.0005</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>

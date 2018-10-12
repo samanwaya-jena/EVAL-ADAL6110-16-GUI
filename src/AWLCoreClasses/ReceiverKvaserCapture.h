@@ -105,6 +105,10 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
+	/** \brief Return True if the device is connected (that is if the communications driver has established connection.
+	* \return true if connected, false otherwise.
+	*/
+	virtual bool IsConnected() { return (kvaserHandle>=0); }
 
 	/** \brief Synchronous write of a CAN message in the stream 
  	  * \param[in] outString  Message to send

@@ -59,7 +59,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>PosixUDP</receiverType>
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -151,7 +151,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>130</displayedRangeMax>
+      <displayedRangeMax>30</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
     
@@ -1982,8 +1982,8 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>130.0</maxRange>
-    <maxAscanRange>100.0</maxAscanRange>
+    <maxRange>15.0</maxRange>
+    <maxAscanRange>10.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>

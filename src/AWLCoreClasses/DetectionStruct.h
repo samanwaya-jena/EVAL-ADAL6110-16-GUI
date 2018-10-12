@@ -31,9 +31,11 @@ namespace awl
 
 //const float NAN = std::numeric_limits<float>::quiet_NaN ();
 #ifdef _MSC_VER
+#ifndef NAN
 #define NAN std::numeric_limits<float>::quiet_NaN()
+#endif // IFNDEF
 #define isNAN(val) _isnan(val)
-#else
+#else //_MSC_VER not defined
 #define isNAN(val) (val == NAN)
 #endif
 
@@ -82,7 +84,8 @@ public:
 		eThreatNone = 0,  // No threat level assigned
 		eThreatLow = 1,   // target detected, threat level low
 		eThreatWarn = 2,  // Target may have collision course, but not acertained yet
-		eThreatCritical = 3 // target is within collision range
+		eThreatCritical = 3, // target is within collision range
+		eThreatOutlineOnly = 4 // target is within collision range
 	}
 	ThreatLevel;
 
@@ -94,6 +97,7 @@ public:
 		eAlertAcceleration = 4,    // Alert based on accel range;
 		eAlertDecelerationToStop = 5, // Alert based on deceleration to stop
 		eAlertTTC = 6		// Alert based on time to collision;
+
 	}
 	AlertType;
 

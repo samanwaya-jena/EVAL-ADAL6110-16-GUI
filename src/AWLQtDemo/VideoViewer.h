@@ -143,6 +143,7 @@ protected:
 
 	void DrawHorizontalTicks(QImage &sourceFrame, QPainter& painter, float tickAngle, float tickLength, int thickness);
 	void DrawVerticalTicks(QImage &sourceFrame,  QPainter& painter, float tickAngle, float tickLength, int thickness);
+	void DrawChannelOutlines(QImage &sourceFrame, QPainter &painter);
 	void DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, const QString &text);
 protected:
 	/** \brief Copy of the last Camera image in OpenCV */

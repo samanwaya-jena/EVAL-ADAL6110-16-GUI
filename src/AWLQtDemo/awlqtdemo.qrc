@@ -39,8 +39,11 @@
     <file>Images/Logos/Phantom-Black-logo.png</file>
     <file>Images/Logos/Sungwoo.ico</file>
     <file>Images/Logos/SungwooLogoIconTransparent.png</file>
+    <file>Images/Logos/Plastic_Omnium_Phantom.png</file>
   </qresource>
   <qresource prefix="ButtonBitmaps">
+    <file>Images/ButtonBitmaps/About.png</file>
+    <file>Images/ButtonBitmaps/AScan.png</file>
     <file>Images/ButtonBitmaps/Camera.png</file>
     <file>Images/ButtonBitmaps/Grid.png</file>
     <file>Images/ButtonBitmaps/RestoreDown.png</file>

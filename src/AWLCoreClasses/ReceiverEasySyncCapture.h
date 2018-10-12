@@ -116,6 +116,12 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
+	/** \brief Return True if the device is connected (that is if the communications driver has established connection.
+	* \return true if connected, false otherwise.
+	*/
+	virtual bool IsConnected() { return (port && reader && port->is_open()); }
+
+
 	/** \brief Synchronous write of a sting in the stream 
  	  * \param[in] inString  Message to send
       */
