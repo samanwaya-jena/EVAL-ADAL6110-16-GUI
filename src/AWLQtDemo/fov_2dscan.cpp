@@ -1242,7 +1242,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		}
 		else if (detection->velocity <= -zeroVelocity)
 		{
-			arrowHeight = -2 * arrowWidth;
+			arrowHeight = 2 * arrowWidth;
 			bDrawArrow = true;
 		}
 
