@@ -2141,8 +2141,8 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 #endif // FORCE_FRAME_RESYNC_PATCH
 
-// Channel index in the data cycle returned by the ADI chip
-int aChIdxADI[16] = {
+// Channel index in the data cycle returned by the Wagner chip
+int aChIdxWagner[16] = {
   0,
   1,
   2,
@@ -2219,7 +2219,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
       {
         int chIdxArray = aChIdxArray[channel];
 
-        int chIdx = aChIdxADI[chIdxArray];
+        int chIdx = aChIdxWagner[chIdxArray];
 
         if (!rawBuffers[channel])
           rawBuffers[channel] = new uint8_t[maxRawBufferSize];
