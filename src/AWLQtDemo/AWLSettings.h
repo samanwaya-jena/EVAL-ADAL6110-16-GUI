@@ -77,6 +77,7 @@ typedef struct CameraSettings
 	{
 	// Camera
 	std::string sCameraName;
+	std::string sCameraAPI;
 	bool cameraFlip;
 
 	CameraCalibration calibration;
@@ -136,7 +137,6 @@ public:
 
 	// Camera configuration
 	CameraSettingsVector cameraSettings;
-
 
 	// Layout
 	bool bDisplaySettingsWindow;

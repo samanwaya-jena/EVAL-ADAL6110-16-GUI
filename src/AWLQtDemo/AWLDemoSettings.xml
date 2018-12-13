@@ -59,7 +59,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>SocketCAN</receiverType>
+      <receiverType>Simulator</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -81,7 +81,7 @@
       <socketCANdevice>can0</socketCANdevice>
 
       <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.88</posixUDPServerAddress>
+      <posixUDPServerAddress>192.168.44.65</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
       <posixUDPServerPort>23456</posixUDPServerPort>
@@ -132,7 +132,7 @@
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
       <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
+      <msgEnableRaw>true</msgEnableRaw>
  
       <sensorGeometry>
         <position>
@@ -162,6 +162,35 @@
     <cameraQty>1</cameraQty>
 
     <camera0>
+	<cameraName>MARS</cameraName>
+
+	    <cameraAPI>AP</cameraAPI>
+
+      <cameraFlip>false</cameraFlip>
+
+      <position>
+        <!-- positionFromBumper -->
+        <forward>0</forward>
+        <!-- lateral offet -->
+        <left>0</left>
+        <!-- height -->
+        <up>0</up>
+      </position>
+      <orientation>
+        <pitch>0.0</pitch>
+        <roll>0.0</roll>
+        <yaw>0.0</yaw>
+      </orientation>
+
+      <fov>
+        <x>45.0</x>
+        <y>34.0</y>
+      </fov>
+      <radialCorrectionK1>-.04</radialCorrectionK1>
+      <radialCorrectionK2>0.0</radialCorrectionK2>
+    </camera0>
+
+    <camera1>
       <!-- cameraName:
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
@@ -251,7 +280,7 @@
       </fov>
       <radialCorrectionK1>-.04</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
-    </camera0>
+    </camera1>
 
     <cameraWebcamSample>
       <!-- cameraName:
@@ -388,7 +417,7 @@
 	     0: Hide all distances
 	     1: Show all distances 
      -->
-    <displayDistances>0</displayDistances>
+    <displayDistances>1</displayDistances>
 
 
     <!-- displayZoom
