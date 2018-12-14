@@ -254,14 +254,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 		printf ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI.c_str());
 		if ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI == std::string( "AP")) {
-			apVideoCaptures.push_back(APVideoCapture::Ptr(new APVideoCapture(apCameraID, argc, argv,globalSettings->GetPropTree())));
+			apVideoCaptures.push_back(APVideoCapture::Ptr(new APVideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
 			APVideoViewer *viewer =  new APVideoViewer(cameraName.toStdString(), apVideoCaptures[apCameraID]);
 			apVideoViewers.push_back(APVideoViewer::Ptr(viewer));
 			apCameraID ++;
 		} else {
-			videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(opencvCameraID, argc, argv,globalSettings->GetPropTree())));
+			videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
 			VideoViewer *viewer =  new VideoViewer(cameraName.toStdString(), videoCaptures[opencvCameraID]);
@@ -580,7 +580,7 @@ void AWLQtDemo::SetupToolBar()
 {
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
+printf(get_current_dir_name());
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
 	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.png"), "2Z View", 0);
@@ -686,7 +686,7 @@ void AWLQtDemo::SetupDisplayGrid()
         videoViewerQty = apVideoCaptures.size();
 	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
-		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID, 2, Qt::AlignTop);
+		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID + videoCaptures.size(), 2, Qt::AlignTop);
 	}
 #endif
 

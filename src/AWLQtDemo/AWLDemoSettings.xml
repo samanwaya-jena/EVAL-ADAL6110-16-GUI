@@ -159,7 +159,7 @@
     </receivers>
 
   <cameras>
-    <cameraQty>1</cameraQty>
+    <cameraQty>2</cameraQty>
 
     <camera0>
 	<cameraName>MARS</cameraName>
