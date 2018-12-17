@@ -138,6 +138,10 @@ void APVideoCapture::DoThreadLoop()
 	}
 
   	boost::mutex::scoped_lock threadLock(GetMutex());
+
+	ap_Destroy(apbase);
+	ap_Finalize();
+
 	/*
 	if (ap_CheckSensorState(apbase, 0)) 
 	{
