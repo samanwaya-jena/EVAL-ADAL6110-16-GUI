@@ -321,7 +321,7 @@ QSize APVideoViewer::maximumSizeHint() const
 
 	// Video should never occupy more than half of the screen;
 
-	float maxWidth = window()->width() / 3;  // Must be float to force float division later in code
+	float maxWidth = window()->width() / 2;  // Must be float to force float division later in code
 	if (size.width() > maxWidth)
 	{
 		float sizeRatio = maxWidth  / size.width();

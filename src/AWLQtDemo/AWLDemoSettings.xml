@@ -59,7 +59,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>Simulator</receiverType>
+      <receiverType>SocketCAN</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -132,7 +132,7 @@
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
       <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>true</msgEnableRaw>
+      <msgEnableRaw>false</msgEnableRaw>
  
       <sensorGeometry>
         <position>
