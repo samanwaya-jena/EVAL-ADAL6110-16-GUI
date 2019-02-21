@@ -253,6 +253,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		cameraName.append(QString().sprintf(" %02d", cameraID));
 
 		printf ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI.c_str());
+#if defined (USE_AP_VIDEO)
 		if ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI == std::string( "AP")) {
 			apVideoCaptures.push_back(APVideoCapture::Ptr(new APVideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	// Create the video viewer to display the camera image
@@ -261,13 +262,16 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			apVideoViewers.push_back(APVideoViewer::Ptr(viewer));
 			apCameraID ++;
 		} else {
+#endif
 			videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
 	// Create the video viewer to display the camera image
 	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
 			VideoViewer *viewer =  new VideoViewer(cameraName.toStdString(), videoCaptures[opencvCameraID]);
 			videoViewers.push_back(VideoViewer::Ptr(viewer));
 			opencvCameraID ++;
+#if defined (USE_AP_VIDEO)
 		}
+#endif
 	}
 #endif
 

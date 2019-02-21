@@ -27,7 +27,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>Images/Logos/powered-by-on-created-by-pi.gif</logoFileName>
+    <logoFileName></logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
