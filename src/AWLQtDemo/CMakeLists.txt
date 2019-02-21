@@ -91,12 +91,12 @@ FIND_PACKAGE(OpenCV REQUIRED)
 TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
 TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
 
-# Comment next 4 lines to disable AP Video
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_AP_VIDEO )
-file(GLOB AP_LIBRARIES "../AP/lib/*")
-TARGET_SOURCES( LinuxCute PUBLIC APVideoCapture.cpp  APVideoViewer.cpp )
-TARGET_LINK_LIBRARIES( LinuxCute ${AP_LIBRARIES} )
-INCLUDE_DIRECTORIES(../AP/include)
+# Comment next 5 lines to disable AP Video
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_AP_VIDEO )
+#file(GLOB AP_LIBRARIES "../AP/lib/*")
+#TARGET_SOURCES( LinuxCute PUBLIC APVideoCapture.cpp  APVideoViewer.cpp )
+#TARGET_LINK_LIBRARIES( LinuxCute ${AP_LIBRARIES} )
+#INCLUDE_DIRECTORIES(../AP/include)
 
 # Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
 message ("QT5_LIB")
