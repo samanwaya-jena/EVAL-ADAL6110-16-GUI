@@ -278,7 +278,7 @@ QSize VideoViewer::maximumSizeHint() const
 	// Video should never occupy more than half of the screen;
 
 	float maxWidth = window()->width() / 3;  // Must be float to force float division later in code
-	if (size.width() > maxWidth) 
+	if (size.width() > maxWidth)
 	{
 		float sizeRatio = maxWidth  / size.width();
 		size.setHeight(size.height() * sizeRatio);

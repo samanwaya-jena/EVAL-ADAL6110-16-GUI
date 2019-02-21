@@ -1129,8 +1129,8 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 	message.data[1] = AWLCANMSG_ID_CMD_PARAM_DATE_TIME;
 
 	*((uint16_t*)&message.data[2]) = 0x0001; // SET_DATE
-	*((uint16_t*)&message.data[4]) = year-yearOffset;
-	message.data[6] = (unsigned char) month-monthOffset;
+	*((uint16_t*)&message.data[4]) = year;
+	message.data[6] = (unsigned char) month;
 	message.data[7] = (unsigned char) day;
 
 	bMessageOk = bMessageOk && WriteMessage(message);
