@@ -99,12 +99,15 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	m_bConnected(false),
 	m_frameRate(1)
 {
+
 	labelConnected = new QLabel("Initializing...");
 	labelFramerate = new QLabel();
 
 	QMessageBox msgBox(this);
 
 	ui.setupUi(this);
+	//setStyleSheet("background-color:rgb(30,64,86)");
+	//setAutoFillBackground( true );
 
 	// Set the basic paths
 	QCoreApplication::setOrganizationName("Phantom Intelligence");
