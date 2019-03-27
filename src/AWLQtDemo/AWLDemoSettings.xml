@@ -6,18 +6,19 @@
 	       screen are displayed. -->
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
+    <displayAScanViewWindow>true</displayAScanViewWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayScopeWindow>true</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
-        <!-- Tells which settings tabs are displayed -->
+    <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
-    <TabSettingControl>false</TabSettingControl>
+    <TabSettingControl>true</TabSettingControl>
     <TabSettingStatus>true</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>false</TabSettingGPIOs>
-    <TabSettingAlgoControl>true</TabSettingAlgoControl>
+    <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
 
 
@@ -40,7 +41,7 @@
          "Normal" = Show normal
          Defaults to "Normal"
          -->
-    <displayShowSize>Normal</displayShowSize>
+    <displayShowSize>FullScreen</displayShowSize>
   </layout>
 
   <debug>
@@ -58,18 +59,18 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB" or "Simulator" (case sensistive!) -->
-      <receiverType>SocketCAN</receiverType>
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
-      <receiverRegisterSet>registerDescription_RevD</receiverRegisterSet>
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryAWL16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -81,7 +82,7 @@
       <socketCANdevice>can0</socketCANdevice>
 
       <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.88</posixUDPServerAddress>
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
       <posixUDPServerPort>23456</posixUDPServerPort>
@@ -90,15 +91,18 @@
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
 
       <!-- The LibUSB Vendor id -->
-      <libUsbVendorId>0x1111</libUsbVendorId>
+      <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>0xffff</libUsbProductId>
+      <libUsbProductId>30755</libUsbProductId>
       <!-- The LibUSB input end point -->
-      <libUsbEndPointIn>1</libUsbEndPointIn>
+      <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>3000</libUsbTimeOut>
+      <libUsbTimeOut>1000</libUsbTimeOut>
+
+      <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerPort>27011</TCPServerPort>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -125,7 +129,7 @@
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
 		       be configured for track mode operation -->
-      <msgEnableObstacle>false</msgEnableObstacle>
+      <msgEnableObstacle>true</msgEnableObstacle>
       <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
       <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
@@ -137,11 +141,11 @@
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0</forward>
+          <forward>0.06</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0.0</up>
+          <up>0.08</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -151,10 +155,219 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>30</displayedRangeMax>
+      <displayedRangeMax>25</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
-    
+
+
+<receiver1>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
+
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+
+      <!-- The commPort is used only by EasySyncCAN recevivers -->  
+      <commPort>COM15</commPort>
+
+      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
+      <kvaserChannel>0</kvaserChannel>
+
+      <!-- The SocketCAN device path -->
+      <socketCANdevice>can0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1611</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>30755</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
+
+      <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerPort>27011</TCPServerPort>
+
+      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+           Supported Values are:
+              		canRate1Mbps = 1000,
+		              canRate500kbps = 500,
+		              canRate250kbps = 250,
+		              canRate125kbps = 125,
+		              canRate100kbps = 100,
+		              canRate50kbps = 50,
+		              canRate10kps = 10
+            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
+           -->
+      <canBitRate>1000</canBitRate>
+
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
+
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>true</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+      <msgEnableRaw>false</msgEnableRaw>
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0.04</forward>
+          <!-- lateral offet -->
+          <left>-0.06</left>
+          <!-- height -->
+          <up>0.025</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>30.0</yaw>
+        </orientation>
+      </sensorGeometry>
+
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>25</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver1>
+
+<receiver2>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
+
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+
+      <!-- The commPort is used only by EasySyncCAN recevivers -->  
+      <commPort>COM15</commPort>
+
+      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
+      <kvaserChannel>0</kvaserChannel>
+
+      <!-- The SocketCAN device path -->
+      <socketCANdevice>can0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1611</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>30755</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
+
+      <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerPort>27011</TCPServerPort>
+
+      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+           Supported Values are:
+              		canRate1Mbps = 1000,
+		              canRate500kbps = 500,
+		              canRate250kbps = 250,
+		              canRate125kbps = 125,
+		              canRate100kbps = 100,
+		              canRate50kbps = 50,
+		              canRate10kps = 10
+            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
+           -->
+      <canBitRate>1000</canBitRate>
+
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
+
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>true</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+      <msgEnableRaw>false</msgEnableRaw>
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0.04</forward>
+          <!-- lateral offet -->
+          <left>0.06</left>
+          <!-- height -->
+          <up>0.025</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>-30.0</yaw>
+        </orientation>
+      </sensorGeometry>
+
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>25</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver2>
+
+
+
 
     </receivers>
 
@@ -168,7 +381,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>v4l2src device=/dev/video0 ! videoscale ! videorate ! video/x-raw, width=640, height=360, framerate=30/1 ! videoconvert ! appsink</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -177,11 +390,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0</forward>
+        <forward>0.03</forward>
         <!-- lateral offet -->
         <left>0</left>
         <!-- height -->
-        <up>0</up>
+        <up>0.13</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -246,10 +459,10 @@
 
       <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
       <fov>
-        <x>45.0</x>
-        <y>34.0</y>
+        <x>82.1</x>
+        <y>52.2</y>
       </fov>
-      <radialCorrectionK1>-.04</radialCorrectionK1>
+      <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
 
@@ -303,7 +516,8 @@
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
-       for cameras that need to be fixed upside down. -->
+ 
+     for cameras that need to be fixed upside down. -->
       <cameraFlip>true</cameraFlip>
 
       <position>
@@ -345,7 +559,7 @@
     <!-- Car width in meters -->
     <carHeight>1.44</carHeight>
     <!-- LaneWidth in meters 3.7 -->
-    <laneWidth>0</laneWidth>
+    <laneWidth>-1</laneWidth>
     <!--Lane width in meters -->
 
     <!-- velocity for colorCoding in m/s -->
@@ -508,156 +722,370 @@
   </dynamicTesting>
 
 
-  <registerDescription_RevC>
-    <!-- Registers for Revision C of AWL
-  Revision C is default for AWL-->
-    <registersFPGA>
+
+
+
+  <registerDescription_ADI>
+  
+    <!-- Registers for Wagner evaluation board based on ADI Gordon -->
+    <registersFPGA label="ADAL6110-16 Registers">
+
       <register>
         <index>R0</index>
         <address>0</address>
-        <description>Version - Date</description>
+        <description>DEVICE</description>
       </register>
-
       <register>
         <index>R1</index>
-        <address>4</address>
-        <description>Underflow - Overflow</description>
+        <address>1</address>
+        <description>CONTROL_0</description>
       </register>
-
+      <register>
+        <index>R2</index>
+        <address>2</address>
+        <description>CONTROL_1</description>
+      </register>
       <register>
         <index>R3</index>
-        <address>12</address>
-        <description>MIO Control/Gains</description>
+        <address>3</address>
+        <description>SRAM_READ</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R4</index>
-        <address>16</address>
-        <description>ASCAN Timing Register</description>
+        <address>4</address>
+        <description>FLASH_DELAY</description>
       </register>
-
-      <register>
-        <index>R5</index>
-        <address>20</address>
-        <description>ASCAN Frequency Register</description>
-      </register>
-
-      <register>
-        <index>R6</index>
-        <address>24</address>
-        <description>Debug Mode - Ramp Test - Soft Reset - Input Clock</description>
-      </register>
-
       <register>
         <index>R7</index>
-        <address>28</address>
-        <description>Dead zone</description>
+        <address>7</address>
+        <description>TIMING</description>
       </register>
 
-      <register>
-        <index>R8</index>
-        <address>32</address>
-        <description>SYS - LIDAR Module Enable</description>
-      </register>
-
-      <register>
-        <index>R9</index>
-        <address>36</address>
-        <description>Pulse Width - Mode - LZ Enable</description>
-      </register>
-
-      <register>
-        <index>R10</index>
-        <address>40</address>
-        <description>ACC-  ChannelMask</description>
-      </register>
-
-      <register>
-        <index>R11</index>
-        <address>44</address>
-        <description>FIR Tap A</description>
-      </register>
-
-      <register>
-        <index>R12</index>
-        <address>48</address>
-        <description>FIR Tap B</description>
-      </register>
-
+      <!-- Channel 0 -->
       <register>
         <index>R13</index>
-        <address>52</address>
-        <description>DDR Base Address</description>
+        <address>13</address>
+        <description>CH0_CONTROL_0</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R14</index>
-        <address>56</address>
-        <description>SR Channel Enable</description>
+        <address>14</address>
+        <description>CH0_CONTROL_1</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R15</index>
-        <address>60</address>
-        <description>LR Channel Enable</description>
+        <address>15</address>
+        <description>CH0_CONTROL_2</description>
+        <advanced>1</advanced>
       </register>
 
-      <register>
-        <index>R16</index>
-        <address>64</address>
-        <description>IRQ Status</description>
-      </register>
-
+      <!-- Channel 1 -->
       <register>
         <index>R17</index>
-        <address>68</address>
-        <description>IRQ Enable</description>
+        <address>17</address>
+        <description>CH1_CONTROL_0</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R18</index>
-        <address>72</address>
-        <description>IRQ Reset</description>
+        <address>18</address>
+        <description>CH1_CONTROL_1</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R19</index>
-        <address>76</address>
-        <description>Laser frequency</description>
+        <address>19</address>
+        <description>CH1_CONTROL_2</description>
+        <advanced>1</advanced>
       </register>
 
+      <!-- Channel 2 -->
+      <register>
+        <index>R21</index>
+        <address>21</address>
+        <description>CH2_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R22</index>
+        <address>22</address>
+        <description>CH2_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R23</index>
+        <address>23</address>
+        <description>CH2_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 3 -->
+      <register>
+        <index>R25</index>
+        <address>25</address>
+        <description>CH3_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R26</index>
+        <address>26</address>
+        <description>CH3_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
       <register>
         <index>R27</index>
-        <address>108</address>
-        <description>DDR Input Delay</description>
+        <address>27</address>
+        <description>CH3_CONTROL_2</description>
+        <advanced>1</advanced>
       </register>
 
-      <register>
-        <index>R28</index>
-        <address>112</address>
-        <description>SERDES Sync.</description>
-      </register>
-
+      <!-- Channel 4 -->
       <register>
         <index>R29</index>
-        <address>116</address>
-        <description>Tx AXI Error</description>
+        <address>29</address>
+        <description>CH4_CONTROL_0</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R30</index>
-        <address>120</address>
-        <description>Debug Mode - Debug LED</description>
+        <address>30</address>
+        <description>CH4_CONTROL_1</description>
+        <advanced>1</advanced>
       </register>
-
       <register>
         <index>R31</index>
-        <address>124</address>
-        <description>Channel Enable</description>
+        <address>31</address>
+        <description>CH4_CONTROL_2</description>
+        <advanced>1</advanced>
       </register>
+
+      <!-- Channel 5 -->
+      <register>
+        <index>R33</index>
+        <address>33</address>
+        <description>CH5_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R34</index>
+        <address>34</address>
+        <description>CH5_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R35</index>
+        <address>35</address>
+        <description>CH5_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 6 -->
+      <register>
+        <index>R37</index>
+        <address>37</address>
+        <description>CH6_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R38</index>
+        <address>38</address>
+        <description>CH6_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R39</index>
+        <address>39</address>
+        <description>CH6_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 7 -->
+      <register>
+        <index>R41</index>
+        <address>41</address>
+        <description>CH7_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R42</index>
+        <address>42</address>
+        <description>CH7_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R43</index>
+        <address>43</address>
+        <description>CH7_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 8 -->
+      <register>
+        <index>R45</index>
+        <address>45</address>
+        <description>CH8_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R46</index>
+        <address>46</address>
+        <description>CH8_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R47</index>
+        <address>47</address>
+        <description>CH8_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 9 -->
+      <register>
+        <index>R49</index>
+        <address>49</address>
+        <description>CH9_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R50</index>
+        <address>50</address>
+        <description>CH9_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R51</index>
+        <address>51</address>
+        <description>CH9_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 10 -->
+      <register>
+        <index>R53</index>
+        <address>53</address>
+        <description>CH10_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R54</index>
+        <address>54</address>
+        <description>CH10_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R55</index>
+        <address>55</address>
+        <description>CH10_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 11 -->
+      <register>
+        <index>R57</index>
+        <address>57</address>
+        <description>CH11_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R58</index>
+        <address>58</address>
+        <description>CH11_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R59</index>
+        <address>59</address>
+        <description>CH11_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 12 -->
+      <register>
+        <index>R61</index>
+        <address>61</address>
+        <description>CH12_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R62</index>
+        <address>62</address>
+        <description>CH12_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R63</index>
+        <address>63</address>
+        <description>CH12_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 13 -->
+      <register>
+        <index>R65</index>
+        <address>65</address>
+        <description>CH13_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R66</index>
+        <address>66</address>
+        <description>CH13_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R67</index>
+        <address>67</address>
+        <description>CH13_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 14 -->
+      <register>
+        <index>R69</index>
+        <address>69</address>
+        <description>CH14_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R70</index>
+        <address>70</address>
+        <description>CH14_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R71</index>
+        <address>71</address>
+        <description>CH14_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
+      <!-- Channel 15 -->
+      <register>
+        <index>R73</index>
+        <address>73</address>
+        <description>CH15_CONTROL_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R74</index>
+        <address>74</address>
+        <description>CH15_CONTROL_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R75</index>
+        <address>75</address>
+        <description>CH15_CONTROL_2</description>
+        <advanced>1</advanced>
+      </register>
+
     </registersFPGA>
 
-    <registersADC>
+    <registersADC label="CPU Registers">
+    
       <register>
         <index>0</index>
         <address>0</address>
@@ -667,1307 +1095,46 @@
       <register>
         <index>1</index>
         <address>1</address>
-        <description>Init Register 1</description>
+        <description>Wagner: Max Acc</description>
       </register>
 
- 
-      <register>
-        <index>0x0F</index>
-        <address>15</address>
-        <description>Power-Down Modes</description>
-      </register>
-
-      <register>
-        <index>0x11</index>
-        <address>17</address>
-        <description>LVDS Drive Program</description>
+      <!--register>
+        <index>254</index>
+        <address>254</address>
+        <description>SAVE_CONFIG_TO_FLASH</description>
       </register>
 
       <register>
-        <index>0x12</index>
-        <address>18</address>
-        <description>LVDS Internal Termination</description>
-      </register>
-
-      <register>
-        <index>0x14</index>
-        <address>20</address>
-        <description>Low-freq noise supression mode</description>
-      </register>
-
-      <register>
-        <index>0x24</index>
-        <address>36</address>
-        <description>Analog Input Invert</description>
-      </register>
-
-      <register>
-        <index>0x25</index>
-        <address>37</address>
-        <description>LVDS Test Patterns A</description>
-      </register>
-
-      <register>
-        <index>0x26</index>
-        <address>38</address>
-        <description>LVDS Test Patterns B</description>
-      </register>
-
-      <register>
-        <index>0x27</index>
-        <address>39</address>
-        <description>LVDS Test Patterns C</description>
-      </register>
-
-      <register>
-        <index>0x2A</index>
-        <address>42</address>
-        <description>Programmable Gain A</description>
-      </register>
-
-      <register>
-        <index>0x2B</index>
-        <address>43</address>
-        <description>Programmable Gain B</description>
-      </register>
-
-      <register>
-        <index>0x42</index>
-        <address>66</address>
-        <description>Clock, Reference, Data out mode A</description>
-      </register>
-
-      <register>
-        <index>0x45</index>
-        <address>69</address>
-        <description>LVDS Test Patterns Deskew-Sync</description>
-      </register>
-
-      <register>
-        <index>0x46</index>
-        <address>70</address>
-        <description>Clock, Reference, Data out mode B</description>
-      </register>
-
-      <register>
-        <index>0xE2</index>
-        <address>226</address>
-        <description>Init Register 2</description>
-      </register>
+        <index>255</index>
+        <address>255</address>
+        <description>RESET_FACTORY_DEFAULT</description>
+      </register-->
 
     </registersADC>
 
     <GPIOs>
-      <register>
-        <index>67</index>
-        <address>67</address>
-        <description>ADC Reset</description>
-      </register>
-
-      <register>
-        <index>68</index>
-        <address>68</address>
-        <description>ADC Power down</description>
-      </register>
-
-      <register>
-        <index>70</index>
-        <address>70</address>
-        <description>Short-range disable</description>
-      </register>
-
-      <register>
-        <index>71</index>
-        <address>71</address>
-        <description>Short-range attenuation</description>
-      </register>
-
-      <register>
-        <index>72</index>
-        <address>72</address>
-        <description>Short-range gain</description>
-      </register>
-
-      <register>
-        <index>73</index>
-        <address>73</address>
-        <description>Long-range disable</description>
-      </register>
-
-      <register>
-        <index>74</index>
-        <address>74</address>
-        <description>Long-range attenuation</description>
-      </register>
-
-      <register>
-        <index>75</index>
-        <address>75</address>
-        <description>Long-range gain</description>
-      </register>
     </GPIOs>
 
     <algos>
-      <defaultAlgo>4</defaultAlgo>
-      <algo>
-        <!-- Algo 00 -->
-        <!-- Algo00 is the Global parameters section -->
-        <algoID>0</algoID>
-        <algoName>Global</algoName>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Moving average</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>Persistance</description>
-          <type>int</type>
-          <default>7</default>
-        </parameter>
-
-        <parameter>
-          <index>17</index>
-          <address>17</address>
-          <description>Window width</description>
-          <type>int</type>
-          <default>3</default>
-        </parameter>
-
-        <parameter>
-          <index>18</index>
-          <address>18</address>
-          <description>Window qty</description>
-          <type>int</type>
-          <default>3</default>
-        </parameter>
-
-        <parameter>
-          <index>257</index>
-          <address>257</address>
-          <description>Track filter Alpha</description>
-          <type>float</type>
-          <default>0.2</default>
-        </parameter>
-
-        <parameter>
-          <index>258</index>
-          <address>258</address>
-          <description>Track filter Beta</description>
-          <type>float</type>
-          <default>0.015</default>
-        </parameter>
-
-        <parameter>
-          <index>289</index>
-          <address>289</address>
-          <description>Track max speed</description>
-          <type>float</type>
-          <default>30.0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 01 -->
-        <!-- Algo01 is the threshold algo section -->
-        <algoID>1</algoID>
-        <algoName>Threshold</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 02 -->
-        <!-- Algo02 is the dw algosection -->
-        <algoID>2</algoID>
-        <algoName>Double-W</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Starting threshold</description>
-          <type>float</type>
-          <default>0.15</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>First damping</description>
-          <type>float</type>
-          <default>0.15</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Numwidth</description>
-          <type>int</type>
-          <default>2</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>Intensity filter</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>5</index>
-          <address>5</address>
-          <description>Second width</description>
-          <type>int</type>
-          <default>6</default>
-        </parameter>
-
-        <parameter>
-          <index>6</index>
-          <address>6</address>
-          <description>First index</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>18.0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 03 -->
-        <!-- Algo03 is the double-d algo -->
-        <algoID>3</algoID>
-        <algoName>Double-D</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Starting threshold</description>
-          <type>float</type>
-          <default>0.1</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>First derivate order</description>
-          <type>int</type>
-          <default>2</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Second derivate order</description>
-          <type>int</type>
-          <default>6</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>Intensity filter</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>6</index>
-          <address>6</address>
-          <description>First index</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>18.0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 04 -->
-        <!-- Algo04 is RMSConv -->
-        <algoID>4</algoID>
-        <algoName>RMSConv</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>float</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>Damping</description>
-          <type>float</type>
-          <default>1.3</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Mean width</description>
-          <type>int</type>
-          <default>3</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>SourceWidth</description>
-          <type>int</type>
-          <default>7</default>
-        </parameter>
-
-        <parameter>
-          <index>5</index>
-          <address>5</address>
-          <description>Derivate width</description>
-          <type>int</type>
-          <default>5</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>18.0</default>
-        </parameter>
-
-      </algo>
-    </algos>
-  </registerDescription_RevC>
-
-
-  <registerDescription_RevD>
-    <!-- Registers for Revision D of AWL
-  Revision D includes Algo 5 test version-->
-    <registersFPGA>
-      <register>
-        <index>R0</index>
-        <address>0</address>
-        <description>Version - Date</description>
-      </register>
-
-      <register>
-        <index>R1</index>
-        <address>4</address>
-        <description>Underflow - Overflow</description>
-      </register>
-
-      <register>
-        <index>R3</index>
-        <address>12</address>
-        <description>MIO Control/Gains</description>
-      </register>
-
-      <register>
-        <index>R4</index>
-        <address>16</address>
-        <description>ASCAN Timing Register</description>
-      </register>
-
-      <register>
-        <index>R5</index>
-        <address>20</address>
-        <description>ASCAN Frequency Register</description>
-      </register>
-
-      <register>
-        <index>R6</index>
-        <address>24</address>
-        <description>Debug Mode - Ramp Test - Soft Reset - Input Clock</description>
-      </register>
-
-      <register>
-        <index>R7</index>
-        <address>28</address>
-        <description>Dead zone</description>
-      </register>
-
-      <register>
-        <index>R8</index>
-        <address>32</address>
-        <description>SYS - LIDAR Module Enable</description>
-      </register>
-
-      <register>
-        <index>R9</index>
-        <address>36</address>
-        <description>Pulse Width - Mode - LZ Enable</description>
-      </register>
-
-      <register>
-        <index>R10</index>
-        <address>40</address>
-        <description>ACC-  ChannelMask</description>
-      </register>
-
-      <register>
-        <index>R11</index>
-        <address>44</address>
-        <description>FIR Tap A</description>
-      </register>
-
-      <register>
-        <index>R12</index>
-        <address>48</address>
-        <description>FIR Tap B</description>
-      </register>
-
-      <register>
-        <index>R13</index>
-        <address>52</address>
-        <description>DDR Base Address</description>
-      </register>
-
-      <register>
-        <index>R14</index>
-        <address>56</address>
-        <description>SR Channel Enable</description>
-      </register>
-
-      <register>
-        <index>R15</index>
-        <address>60</address>
-        <description>LR Channel Enable</description>
-      </register>
-
-      <register>
-        <index>R16</index>
-        <address>64</address>
-        <description>IRQ Status</description>
-      </register>
-
-      <register>
-        <index>R17</index>
-        <address>68</address>
-        <description>IRQ Enable</description>
-      </register>
-
-      <register>
-        <index>R18</index>
-        <address>72</address>
-        <description>IRQ Reset</description>
-      </register>
-
-      <register>
-        <index>R19</index>
-        <address>76</address>
-        <description>Laser frequency</description>
-      </register>
-
-      <register>
-        <index>R27</index>
-        <address>108</address>
-        <description>DDR Input Delay</description>
-      </register>
-
-      <register>
-        <index>R28</index>
-        <address>112</address>
-        <description>SERDES Sync.</description>
-      </register>
-
-      <register>
-        <index>R29</index>
-        <address>116</address>
-        <description>Tx AXI Error</description>
-      </register>
-
-      <register>
-        <index>R30</index>
-        <address>120</address>
-        <description>Debug Mode - Debug LED</description>
-      </register>
-
-      <register>
-        <index>R31</index>
-        <address>124</address>
-        <description>Channel Enable</description>
-      </register>
-    </registersFPGA>
-
-    <registersADC>
-      <register>
-        <index>0</index>
-        <address>0</address>
-        <description>Software Reset</description>
-      </register>
-
-      <register>
-        <index>1</index>
-        <address>1</address>
-        <description>Init Register 1</description>
-      </register>
-
-
-      <register>
-        <index>0x0F</index>
-        <address>15</address>
-        <description>Power-Down Modes</description>
-      </register>
-
-      <register>
-        <index>0x11</index>
-        <address>17</address>
-        <description>LVDS Drive Program</description>
-      </register>
-
-      <register>
-        <index>0x12</index>
-        <address>18</address>
-        <description>LVDS Internal Termination</description>
-      </register>
-
-      <register>
-        <index>0x14</index>
-        <address>20</address>
-        <description>Low-freq noise supression mode</description>
-      </register>
-
-      <register>
-        <index>0x24</index>
-        <address>36</address>
-        <description>Analog Input Invert</description>
-      </register>
-
-      <register>
-        <index>0x25</index>
-        <address>37</address>
-        <description>LVDS Test Patterns A</description>
-      </register>
-
-      <register>
-        <index>0x26</index>
-        <address>38</address>
-        <description>LVDS Test Patterns B</description>
-      </register>
-
-      <register>
-        <index>0x27</index>
-        <address>39</address>
-        <description>LVDS Test Patterns C</description>
-      </register>
-
-      <register>
-        <index>0x2A</index>
-        <address>42</address>
-        <description>Programmable Gain A</description>
-      </register>
-
-      <register>
-        <index>0x2B</index>
-        <address>43</address>
-        <description>Programmable Gain B</description>
-      </register>
-
-      <register>
-        <index>0x42</index>
-        <address>66</address>
-        <description>Clock, Reference, Data out mode A</description>
-      </register>
-
-      <register>
-        <index>0x45</index>
-        <address>69</address>
-        <description>LVDS Test Patterns Deskew-Sync</description>
-      </register>
-
-      <register>
-        <index>0x46</index>
-        <address>70</address>
-        <description>Clock, Reference, Data out mode B</description>
-      </register>
-
-      <register>
-        <index>0xE2</index>
-        <address>226</address>
-        <description>Init Register 2</description>
-      </register>
-
-    </registersADC>
-
-    <GPIOs>
-      <register>
-        <index>67</index>
-        <address>67</address>
-        <description>ADC Reset</description>
-      </register>
-
-      <register>
-        <index>68</index>
-        <address>68</address>
-        <description>ADC Power down</description>
-      </register>
-
-      <register>
-        <index>70</index>
-        <address>70</address>
-        <description>Short-range disable</description>
-      </register>
-
-      <register>
-        <index>71</index>
-        <address>71</address>
-        <description>Short-range attenuation</description>
-      </register>
-
-      <register>
-        <index>72</index>
-        <address>72</address>
-        <description>Short-range gain</description>
-      </register>
-
-      <register>
-        <index>73</index>
-        <address>73</address>
-        <description>Long-range disable</description>
-      </register>
-
-      <register>
-        <index>74</index>
-        <address>74</address>
-        <description>Long-range attenuation</description>
-      </register>
-
-      <register>
-        <index>75</index>
-        <address>75</address>
-        <description>Long-range gain</description>
-      </register>
-    </GPIOs>
-
-    <algos>
-      <defaultAlgo>6</defaultAlgo>
-      <algo>
-        <!-- Algo 00 -->
-        <!-- Algo00 is the Global parameters section -->
-        <algoID>0</algoID>
-        <algoName>Global</algoName>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Moving average</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>Persistance</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>17</index>
-          <address>17</address>
-          <description>Window width</description>
-          <type>int</type>
-          <default>3</default>
-        </parameter>
-
-        <parameter>
-          <index>18</index>
-          <address>18</address>
-          <description>Window qty</description>
-          <type>int</type>
-          <default>3</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 01 -->
-        <!-- Algo01 is the threshold algo section -->
-        <algoID>1</algoID>
-        <algoName>Threshold</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>int</type>
-          <default>0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 02 -->
-        <!-- Algo02 is the dw algosection -->
-        <algoID>2</algoID>
-        <algoName>Double-W</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>float</type>
-          <default>5.0</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Starting threshold</description>
-          <type>float</type>
-          <default>0.35</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>First damping</description>
-          <type>float</type>
-          <default>1.3</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Numwidth</description>
-          <type>float</type>
-          <default>2.0</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>Intensity filter</description>
-          <type>float</type>
-          <default>8.00</default>
-        </parameter>
-
-        <parameter>
-          <index>5</index>
-          <address>5</address>
-          <description>Second width</description>
-          <type>float</type>
-          <default>8.0</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>16.0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 03 -->
-        <!-- Algo03 is the double-d algo -->
-        <algoID>3</algoID>
-        <algoName>Double-D</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>float</type>
-          <default>5.0</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Starting threshold</description>
-          <type>float</type>
-          <default>0.24</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>First derivate order</description>
-          <type>float</type>
-          <default>2</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Second derivate order</description>
-          <type>float</type>
-          <default>8</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>Intensity filter</description>
-          <type>float</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>6</index>
-          <address>6</address>
-          <description>First index</description>
-          <type>float</type>
-          <default>28.0</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>24.0</default>
-        </parameter>
-      </algo>
-
-      <algo>
-        <!-- Algo 04 -->
-        <!-- Algo04 is RMSConv -->
-        <algoID>4</algoID>
-        <algoName>RMSConv</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>float</type>
-          <default>5.0</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>Damping</description>
-          <type>float</type>
-          <default>1.3</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Mean width</description>
-          <type>float</type>
-          <default>3.0</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>SourceWidth</description>
-          <type>float</type>
-          <default>7.0</default>
-        </parameter>
-
-        <parameter>
-          <index>5</index>
-          <address>5</address>
-          <description>Derivate width</description>
-          <type>float</type>
-          <default>5.0</default>
-        </parameter>
-
-        <parameter>
-          <index>6</index>
-          <address>6</address>
-          <description>Process</description>
-          <type>float</type>
-          <default>1.0</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>18.0</default>
-        </parameter>
-
-      </algo>
-
-      <algo>
-        <!-- Algo 05 -->
-        <!-- Algo05 is Algo 5-->
-        <algoID>5</algoID>
-        <algoName>Algo5</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>float</type>
-          <default>0</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>Damping</description>
-          <type>float</type>
-          <default>1.3</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>Mean width</description>
-          <type>int</type>
-          <default>3</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>SourceWidth</description>
-          <type>int</type>
-          <default>7</default>
-        </parameter>
-
-        <parameter>
-          <index>5</index>
-          <address>5</address>
-          <description>Derivate width</description>
-          <type>int</type>
-          <default>5</default>
-        </parameter>
-
-        <parameter>
-          <index>7</index>
-          <address>7</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>18.0</default>
-        </parameter>
-
-      </algo>
-
-      <algo>
-        <!-- Algo 06 -->
-        <!-- Algo06 is Algo 4.5-->
-        <algoID>6</algoID>
-        <algoName>Algo4.5</algoName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Offset</description>
-          <type>float</type>
-          <default>5.0</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Std. factor</description>
-          <type>float</type>
-          <default>6.0</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>Damping</description>
-          <type>float</type>
-          <default>1.3</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>SourceWidth</description>
-          <type>float</type>
-          <default>7.0</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>Derivate width</description>
-          <type>float</type>
-          <default>5.0</default>
-        </parameter>
-
-        <parameter>
-          <index>5</index>
-          <address>5</address>
-          <description>SNR Cutoff (dB)</description>
-          <type>float</type>
-          <default>16.0</default>
-        </parameter>
-
-      </algo>
-    </algos>
-
+      <defaultAlgo>1</defaultAlgo>
+    </algos> 
     <trackers>
-      <defaultTracker>1</defaultTracker>
-      <tracker>
-        <!-- Tracker 0 is A/B tracker -->
-        <trackerID>0</trackerID>
-        <trackerName>No Track</trackerName>
-
-        <trackerID>1</trackerID>
-        <trackerName>ABFilter</trackerName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>Alpha Pos</description>
-          <type>float</type>
-          <default>0.2</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>Beta Pos</description>
-          <type>float</type>
-          <default>0.015</default>
-        </parameter>
-
-        <parameter>
-          <index>2</index>
-          <address>2</address>
-          <description>AlphaSpeed</description>
-          <type>float</type>
-          <default>0.6</default>
-        </parameter>
-
-        <parameter>
-          <index>3</index>
-          <address>3</address>
-          <description>BetaSpeed</description>
-          <type>float</type>
-          <default>0.5</default>
-        </parameter>
-
-        <parameter>
-          <index>4</index>
-          <address>4</address>
-          <description>Persistance</description>
-          <type>float</type>
-          <default>3.0</default>
-        </parameter>
-      </tracker>
-
-      <tracker>
-        <!-- Tracker 1 is LR tracker -->
-        <trackerID>2</trackerID>
-        <trackerName>LRFilter</trackerName>
-
-        <parameter>
-          <index>0</index>
-          <address>0</address>
-          <description>SNR to Pair</description>
-          <type>float</type>
-          <default>20.0</default>
-        </parameter>
-
-        <parameter>
-          <index>1</index>
-          <address>1</address>
-          <description>SNR to Track</description>
-          <type>float</type>
-          <default>25.0</default>
-        </parameter>
-        
-      </tracker>
+	    <defaultTracker>1</defaultTracker>
     </trackers>
-    
-  </registerDescription_RevD>
-
-  <GeometryAWL7>
-       <!-- For multi-line sensors define wraparound and number of sensors per line.
-           If sensor does not support wrap around, write a wierdly high number that 
-           exceeds sensor physical range -->
-      <lineWrapAround>-1</lineWrapAround>
-      <channelsPerLine>8</channelsPerLine>
+  </registerDescription_ADI>
 
 
-      <channelQty>7</channelQty>
-      <channel0>
-        <!--channel 0: Short-range left -->
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>15.0</yaw>
-        </orientation>
-        <maxRange>25</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel0>
-
-      <channel1>
-        <!--channel 1: short range - middle left -->
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>5.0</yaw>
-        </orientation>
-        <maxRange>25</maxRange>
-         <displayColor>
-           <red>192</red>
-           <green>192</green>
-           <blue>192</blue>
-         </displayColor>
-      </channel1>
-
-      <channel2>
-        <!--channel 2: short range - middle right -->
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>-5.0</yaw>
-        </orientation>
-        <maxRange>25</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel2>
-
-      <channel3>
-        <!--channel 3: short range - right -->
-        <fov>
-          <x>9.0</x>
-          <y>9.0</y>
-        </fov>
-        <orientation>
-          <pitch>6.8</pitch>
-          <roll>0.0</roll>
-          <yaw>-15.0</yaw>
-        </orientation>
-        <maxRange>25</maxRange>
-        <displayColor>
-          <red>192</red>
-          <green>192</green>
-          <blue>192</blue>
-        </displayColor>
-      </channel3>
-
-      <channel4>
-        <!--channel 4: long range - left -->
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>4.6</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel4>
-
-      <channel5>
-        <!--channel 5: long range - center -->
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>0.0</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel5>
-
-      <channel6>
-        <!--channel 6: long range - right -->
-        <fov>
-          <x>4.3</x>
-          <y>4.3</y>
-        </fov>
-        <orientation>
-          <pitch>2.15</pitch>
-          <roll>0.0</roll>
-          <yaw>-4.6</yaw>
-        </orientation>
-        <maxRange>30</maxRange>
-        <displayColor>
-          <red>255</red>
-          <green>0</green>
-          <blue>0</blue>
-        </displayColor>
-      </channel6>
-  </GeometryAWL7>
-
-  <GeometryAWL16Array>
+  
+  <Geometry1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
     <lineWrapAround>-1</lineWrapAround>
-    <channelsPerLine>8</channelsPerLine>
+    <channelsPerLine>16</channelsPerLine>
 
     <arraySize>
-      <x>8</x>
-      <y>2</y>
+      <x>16</x>
+      <y>1</y>
     </arraySize>
     <arrayFOV>
       <x>28</x>
@@ -1982,8 +1149,9 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>15.0</maxRange>
-    <maxAscanRange>10.0</maxAscanRange>
+    <maxRange>20.0</maxRange>
+
+    <maxAscanRange>48.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>
@@ -2003,5 +1171,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </GeometryAWL16Array>
+  </Geometry1x16Array>
+  
 </config>
