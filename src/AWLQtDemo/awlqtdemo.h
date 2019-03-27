@@ -119,6 +119,7 @@ private slots:
   void on_checkBoxAutoScaleToggled();
 
   void on_checkBoxAscanSelToggled();
+  void on_radioReceiverSelToggled();
 
   void on_pushButtonSelectAllAscan_clicked();
   void on_pushButtonSelectNoneAscan_clicked();

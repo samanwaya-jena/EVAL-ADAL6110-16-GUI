@@ -399,6 +399,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.checkBox_15, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
   connect(ui.checkBox_16, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
 
+  connect(ui.radioButton_1, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_2, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_3, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_4, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+
   // AutoScale
   connect(ui.checkBoxAutoScale, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAutoScaleToggled()));
 
@@ -2418,6 +2425,18 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
   if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
   if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
   scopeWindow->setChannelMask(mask);
+}
+
+void AWLQtDemo::on_radioReceiverSelToggled()
+{
+  int receiver = 0;
+  if (ui.radioButton_1->isChecked()) receiver = 1;
+  if (ui.radioButton_2->isChecked()) receiver = 2;
+  if (ui.radioButton_3->isChecked()) receiver = 3;
+  if (ui.radioButton_4->isChecked()) receiver = 4;
+  if (ui.radioButton_5->isChecked()) receiver = 5;
+  if (ui.radioButton_6->isChecked()) receiver = 6;
+  scopeWindow->selectReceiver(receiver);
 }
 
 void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
