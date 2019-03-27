@@ -473,8 +473,6 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(AWLCANMessage &inMsg)
 // Patch because LiBUSB Sensor sends channels ou of order
 int channelReorder[16] = { 14, 12, 10, 8, 6, 4, 2, 0, 15, 13, 11, 9, 7, 5, 3, 1 };
 
-
-
 #endif
 
 void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
@@ -1129,8 +1127,8 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 	message.data[1] = AWLCANMSG_ID_CMD_PARAM_DATE_TIME;
 
 	*((uint16_t*)&message.data[2]) = 0x0001; // SET_DATE
-	*((uint16_t*)&message.data[4]) = year-yearOffset;
-	message.data[6] = (unsigned char) month-monthOffset;
+	*((uint16_t*)&message.data[4]) = year;
+	message.data[6] = (unsigned char) month;
 	message.data[7] = (unsigned char) day;
 
 	bMessageOk = bMessageOk && WriteMessage(message);
@@ -2140,8 +2138,9 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 }
 
 #endif // FORCE_FRAME_RESYNC_PATCH
-
 // Channel index in the data cycle returned by the Wagner chip
+//old
+/*
 int aChIdxWagner[16] = {
   0,
   1,
@@ -2160,8 +2159,28 @@ int aChIdxWagner[16] = {
   9,
   8
 };
-
+*/
+int aChIdxWagner[16] = {
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14, 
+  15
+};
 // Channel index of the Guardian 16rcvr Array
+//old
+/*
 int aChIdxArray[16] = {
   15,
   0,
@@ -2179,6 +2198,25 @@ int aChIdxArray[16] = {
   6,
   8,
   7
+};
+*/
+int aChIdxArray[16] = {
+  7,
+  8,
+  6,
+  9,
+  5,
+  10,
+  4,
+  11,
+  3,
+  12,
+  2,
+  13,
+  1,
+  14,
+  0,
+  15
 };
 
 void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size_t size)

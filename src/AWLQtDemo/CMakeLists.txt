@@ -34,7 +34,7 @@ ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
 message("QT5 DEF")
 message(${Qt5Widgets_DEFINITIONS})
 # Creation of executable fails in Qt5 with default configuration
-SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS "-g ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 message("QT5 CFLAGS")
 message("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
@@ -90,6 +90,13 @@ TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
 FIND_PACKAGE(OpenCV REQUIRED)
 TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
 TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
+
+# Comment next 5 lines to disable AP Video
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_AP_VIDEO )
+#file(GLOB AP_LIBRARIES "../AP/lib/*")
+#TARGET_SOURCES( LinuxCute PUBLIC APVideoCapture.cpp  APVideoViewer.cpp )
+#TARGET_LINK_LIBRARIES( LinuxCute ${AP_LIBRARIES} )
+#INCLUDE_DIRECTORIES(../AP/include)
 
 # Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
 message ("QT5_LIB")

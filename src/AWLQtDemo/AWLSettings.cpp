@@ -108,6 +108,7 @@ bool AWLSettings::ReadSettings()
 		CameraSettings *cameraPtr = &cameraSettings[cameraIndex];
 
 		cameraPtr->sCameraName = cameraNode.get<std::string>("cameraName");
+		cameraPtr->sCameraAPI = cameraNode.get<std::string>("cameraAPI", "OpenCV");
 		cameraPtr->cameraFlip = cameraNode.get<bool>("cameraFlip");
 		Get2DPoint(cameraNode.get_child("fov"), cameraPtr->cameraFovWidthDegrees, cameraPtr->cameraFovHeightDegrees);
 		cameraPtr->barrelK1 = 0.0;
