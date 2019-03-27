@@ -60,7 +60,7 @@ uint32_t numberOfSetBits(uint32_t i)
 AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent),
   m_chMask(0xFFFF),
-  m_selectedReceiver(1),
+  m_selectedReceiver(0),
   m_maxRange(0.0F),
   m_numPts(0),
   m_pPts(NULL)

@@ -2430,12 +2430,12 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
 void AWLQtDemo::on_radioReceiverSelToggled()
 {
   int receiver = 0;
-  if (ui.radioButton_1->isChecked()) receiver = 1;
-  if (ui.radioButton_2->isChecked()) receiver = 2;
-  if (ui.radioButton_3->isChecked()) receiver = 3;
-  if (ui.radioButton_4->isChecked()) receiver = 4;
-  if (ui.radioButton_5->isChecked()) receiver = 5;
-  if (ui.radioButton_6->isChecked()) receiver = 6;
+  if (ui.radioButton_1->isChecked()) receiver = 0;
+  if (ui.radioButton_2->isChecked()) receiver = 1;
+  if (ui.radioButton_3->isChecked()) receiver = 2;
+  if (ui.radioButton_4->isChecked()) receiver = 3;
+  if (ui.radioButton_5->isChecked()) receiver = 4;
+  if (ui.radioButton_6->isChecked()) receiver = 5;
   scopeWindow->selectReceiver(receiver);
 }
 

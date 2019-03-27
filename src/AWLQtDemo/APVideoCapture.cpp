@@ -17,10 +17,11 @@
 // define XIFORWINDOWS
 #include <fstream>
 
+#include <QMessageBox>
 #if QT_VERSION > 0x050000
 #include <QMessageBox>
 #else
-#include <QtGui/QMessageBox>
+// #include <QtGui/QMessageBox>
 #endif
 
 
