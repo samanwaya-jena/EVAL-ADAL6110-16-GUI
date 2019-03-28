@@ -109,6 +109,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 				fprintf(stderr, "usb_claim_interface %d %p succeeded\n", i, handle);
 			} else {
 				fprintf(stderr, "usb_claim_interface %d %p error %d\n", i, handle, ret);
+				libusb_close((libusb_device_handle *)handle);
 				handle = NULL;
 			}
 printf("in %p\n", handle);
