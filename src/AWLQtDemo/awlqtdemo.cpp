@@ -406,6 +406,20 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
   connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
 
+  ui.radioButton_1->hide();
+  ui.radioButton_2->hide();
+  ui.radioButton_3->hide();
+  ui.radioButton_4->hide();
+  ui.radioButton_5->hide();
+  ui.radioButton_6->hide();
+
+  if (receiverCaptures.size() > 0) ui.radioButton_1->show();
+  if (receiverCaptures.size() > 1) ui.radioButton_2->show();
+  if (receiverCaptures.size() > 2) ui.radioButton_3->show();
+  if (receiverCaptures.size() > 3) ui.radioButton_4->show();
+  if (receiverCaptures.size() > 4) ui.radioButton_5->show();
+  if (receiverCaptures.size() > 5) ui.radioButton_6->show();
+
   // AutoScale
   connect(ui.checkBoxAutoScale, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAutoScaleToggled()));
 
