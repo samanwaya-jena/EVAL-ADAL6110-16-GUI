@@ -93,6 +93,16 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 	int err = 0;
 	if (cnt < 0)
     		perror("libusb_get_device_list");
+	int matches = 0;
+	for (i = 0; i < cnt; i++) {
+    		libusb_device *device = list[i];
+    		err = libusb_get_device_descriptor(device, &descriptor);
+		if (!err && descriptor.idVendor == usbVendorId && descriptor.idProduct == usbProductId) {
+			matches ++;
+		}
+	}
+	if (matches != (receiverID + 1)) return false;
+
 	for (i = 0; i < cnt; i++) {
     		libusb_device *device = list[i];
     		err = libusb_get_device_descriptor(device, &descriptor);
@@ -106,18 +116,18 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 			ret = libusb_claim_interface((libusb_device_handle *)handle, 0);
 
 			if (!ret) {
-				fprintf(stderr, "usb_claim_interface %d %p succeeded\n", i, handle);
+				fprintf(stderr, "%d %d usb_claim_interface %d %p succeeded\n", receiverID, matches, i, handle);
 			} else {
-				fprintf(stderr, "usb_claim_interface %d %p error %d\n", i, handle, ret);
+				fprintf(stderr, "%d %d usb_claim_interface %d %p error %d\n", receiverID, matches, i, handle, ret);
 				libusb_close((libusb_device_handle *)handle);
 				handle = NULL;
 			}
-printf("in %p\n", handle);
-			if (handle) break;
+//printf("in %p\n", handle);
+			//if (handle) break;
 		}
 		if (handle) break;
 	}
-printf("out %p\n", handle);
+//printf("out %p\n", handle);
 if (!handle) return false;
   if (handle)
   {
