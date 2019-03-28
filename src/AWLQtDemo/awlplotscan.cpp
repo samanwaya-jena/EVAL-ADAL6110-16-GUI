@@ -60,6 +60,7 @@ uint32_t numberOfSetBits(uint32_t i)
 AWLPlotScan::AWLPlotScan(QWidget *parent) :
     QFrame(parent),
   m_chMask(0xFFFF),
+  m_selectedReceiver(0),
   m_maxRange(0.0F),
   m_numPts(0),
   m_pPts(NULL)
@@ -95,6 +96,11 @@ void AWLPlotScan::setChannelMask(uint32_t chMask)
 {
   m_chMask = chMask;
   m_nbrCh = numberOfSetBits(m_chMask);
+}
+
+void AWLPlotScan::selectReceiver(int receiver)
+{
+  m_selectedReceiver = receiver;
 }
 
 void AWLPlotScan::LabelAScan(QPainter* p)
@@ -248,7 +254,7 @@ void AWLPlotScan::plotAScans(QPainter* p)
     i = 0;
     BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
     {
-      if (m_chMask & (1 << i))
+      if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->channelID))
       {
         float minV, maxV, meanV;
 
@@ -276,7 +282,7 @@ void AWLPlotScan::plotAScans(QPainter* p)
   i = 0;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-    if (m_chMask & (1 << i))
+    if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->channelID))
     {
       PlotAScan(p, aScan, fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, maxRange);
 

@@ -42,6 +42,7 @@ public:
 	void start(ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
   void setChannelMask(uint32_t chMask);
+  void selectReceiver(int receiver);
   void AScanDataChanged(const AScan::Vector& data);
   void ShowAScan(bool show) { showAScan = show; }
   void SetMaxRange(float maxRange) { m_maxRange = maxRange; }
@@ -71,6 +72,7 @@ protected :
   float m_maxRange;
 
   uint32_t m_chMask;
+  int m_selectedReceiver;
   uint32_t m_nbrCh;
 
 #ifdef USE_FPS_AWLPLOTSCAN

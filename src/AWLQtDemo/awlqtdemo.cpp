@@ -99,12 +99,15 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	m_bConnected(false),
 	m_frameRate(1)
 {
+
 	labelConnected = new QLabel("Initializing...");
 	labelFramerate = new QLabel();
 
 	QMessageBox msgBox(this);
 
 	ui.setupUi(this);
+	//setStyleSheet("background-color:rgb(30,64,86)");
+	//setAutoFillBackground( true );
 
 	// Set the basic paths
 	QCoreApplication::setOrganizationName("Phantom Intelligence");
@@ -395,6 +398,27 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.checkBox_14, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
   connect(ui.checkBox_15, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
   connect(ui.checkBox_16, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
+
+  connect(ui.radioButton_1, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_2, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_3, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_4, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+  connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
+
+  ui.radioButton_1->hide();
+  ui.radioButton_2->hide();
+  ui.radioButton_3->hide();
+  ui.radioButton_4->hide();
+  ui.radioButton_5->hide();
+  ui.radioButton_6->hide();
+
+  if (receiverCaptures.size() > 0) ui.radioButton_1->show();
+  if (receiverCaptures.size() > 1) ui.radioButton_2->show();
+  if (receiverCaptures.size() > 2) ui.radioButton_3->show();
+  if (receiverCaptures.size() > 3) ui.radioButton_4->show();
+  if (receiverCaptures.size() > 4) ui.radioButton_5->show();
+  if (receiverCaptures.size() > 5) ui.radioButton_6->show();
 
   // AutoScale
   connect(ui.checkBoxAutoScale, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAutoScaleToggled()));
@@ -2415,6 +2439,18 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
   if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
   if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
   scopeWindow->setChannelMask(mask);
+}
+
+void AWLQtDemo::on_radioReceiverSelToggled()
+{
+  int receiver = 0;
+  if (ui.radioButton_1->isChecked()) receiver = 0;
+  if (ui.radioButton_2->isChecked()) receiver = 1;
+  if (ui.radioButton_3->isChecked()) receiver = 2;
+  if (ui.radioButton_4->isChecked()) receiver = 3;
+  if (ui.radioButton_5->isChecked()) receiver = 4;
+  if (ui.radioButton_6->isChecked()) receiver = 5;
+  scopeWindow->selectReceiver(receiver);
 }
 
 void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
