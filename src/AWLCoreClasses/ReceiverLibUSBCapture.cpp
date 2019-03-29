@@ -182,7 +182,7 @@ bool  ReceiverLibUSBCapture::CloseCANPort()
     handle = NULL;
   }
 
-	libusb_exit(NULL);
+	//libusb_exit(NULL);
 
 	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 
