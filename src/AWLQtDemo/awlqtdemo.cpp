@@ -420,6 +420,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   if (receiverCaptures.size() > 4) ui.radioButton_5->show();
   if (receiverCaptures.size() > 5) ui.radioButton_6->show();
 
+  if (receiverCaptures.size() > 0) {
+	  if (receiverCaptures.size() == 1) {
+		  ui.groupBox_5->hide();
+		  //ui.spinBoxReceiver1->hide();
+		  //ui.spinBoxReceiver2->hide();
+	 } else {
+		  ui.spinBoxReceiver1->setValue(1);
+		  ui.spinBoxReceiver2->setValue(2);
+		 }
+  }
+
+
   // AutoScale
   connect(ui.checkBoxAutoScale, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAutoScaleToggled()));
 
