@@ -5102,6 +5102,52 @@ color: rgb(255,255,255);</string>
            </property>
           </widget>
          </widget>
+         <widget class="QGroupBox" name="groupBox_5">
+          <property name="geometry">
+           <rect>
+            <x>530</x>
+            <y>10</y>
+            <width>120</width>
+            <height>80</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>Receivers swapping</string>
+          </property>
+          <widget class="QSpinBox" name="spinBoxReceiver1">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>20</y>
+             <width>49</width>
+             <height>29</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="spinBoxReceiver2">
+           <property name="geometry">
+            <rect>
+             <x>60</x>
+             <y>20</y>
+             <width>49</width>
+             <height>29</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButtonSwap">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>50</y>
+             <width>84</width>
+             <height>28</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Swap</string>
+           </property>
+          </widget>
+         </widget>
         </widget>
        </widget>
       </item>
