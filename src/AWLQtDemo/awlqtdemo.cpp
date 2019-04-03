@@ -406,6 +406,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
   connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
 
+  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggle()));
+
   ui.radioButton_1->hide();
   ui.radioButton_2->hide();
   ui.radioButton_3->hide();
@@ -420,6 +422,11 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   if (receiverCaptures.size() > 4) ui.radioButton_5->show();
   if (receiverCaptures.size() > 5) ui.radioButton_6->show();
 
+  
+  ui.spinBoxReceiver1->setMinimum(1);
+  ui.spinBoxReceiver1->setMaximum(receiverCaptures.size());
+  ui.spinBoxReceiver2->setMinimum(1);
+  ui.spinBoxReceiver2->setMaximum(receiverCaptures.size());
   if (receiverCaptures.size() > 0) {
 	  if (receiverCaptures.size() == 1) {
 		  ui.groupBox_5->hide();
@@ -814,6 +821,10 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 }
 
 
+void AWLQtDemo::on_ButtonSwapToggle()
+{	
+	fprintf(stderr, "swap button toggle  %d %d\n", ui.spinBoxReceiver1, ui.spinBoxReceiver2);
+}
 void AWLQtDemo::on_stopPushButton_clicked()
 
 {
