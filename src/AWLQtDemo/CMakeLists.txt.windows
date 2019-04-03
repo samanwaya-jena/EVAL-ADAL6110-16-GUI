@@ -1,0 +1,388 @@
+cmake_minimum_required(VERSION 2.8.7)
+project(LinuxCute)
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%    Helper functions       %%%%%%%%%%%%%%%     START       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%     > to simplify reading and writing           %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#cmake_minimum_required(VERSION 3.0.2) # MINIMUM ?
+
+include(CheckCXXCompilerFlag)
+function(enable_cxx_compiler_flag_if_supported flag)
+    string(FIND "${CMAKE_CXX_FLAGS}" "${flag}" flag_already_set)
+    if(flag_already_set EQUAL -1)
+        message(STATUS "Flag:      ${flag}")
+        check_cxx_compiler_flag("${flag}" flag_supported)
+        if(flag_supported)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}" PARENT_SCOPE)
+        endif()
+        unset(flag_supported CACHE)
+    endif()
+endfunction()
+
+function(print_package_info package_name)
+    set(NAME ${package_name})
+    message(STATUS "$printing info for... {NAME}")
+    if(${NAME}_FOUND)
+        message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
+        message(STATUS "${NAME} definitions                : ${${NAME}_DEFINITIONS}")
+        message(STATUS "${NAME} execution compile flags    : ${${NAME}_EXECUTABLE_COMPILE_FLAGS}")
+        message(STATUS "${NAME} include dirs               : ${${NAME}_INCLUDE_DIRS}")
+        message(STATUS "${NAME} includes                   : ${${NAME}_INCLUDES}")
+        message(STATUS "${NAME} library dirs               : ${${NAME}_LIBRARY_DIRS}")
+        message(STATUS "${NAME} libraries                  : ${${NAME}_LIBRARIES}")
+    else()
+        message(STATUS "${NAME} not Found...")
+    endif()
+    unset(NAME)
+endfunction()
+
+function(print_platform_info)
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "Printing platform info: ")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "CMAKE_SYSTEM               :  ${CMAKE_SYSTEM}")
+    message(STATUS "CMAKE_SYSTEM_NAME          :  ${CMAKE_SYSTEM_NAME}")
+    message(STATUS "CMAKE_SYSTEM_VERSION       :  ${CMAKE_SYSTEM_VERSION}")
+    message(STATUS "CMAKE_SYSTEM_PROCESSOR     :  ${CMAKE_SYSTEM_PROCESSOR}")
+    message(STATUS "CMAKE_HOST_SYSTEM_NAME     :  ${CMAKE_HOST_SYSTEM_NAME}")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "---------------------------------------------------------------")
+endfunction()
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%    Helper functions       %%%%%%%%%%%%%%%     END       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Let's talk
+set(CMAKE_VERBOSE_MAKEFILE ON)
+print_platform_info()
+
+# Automaticaly call moc when necessary
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+# moc genreated files are located in the bin directory,
+
+# tell CMake to always include header files in this directory
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+SET(THREADS_PREFER_PTHREAD_FLAG ON)
+
+find_package(Threads REQUIRED)
+
+#############################################################################################
+###    Boost       ##########################################################################
+#############################################################################################
+
+find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
+print_package_info("Boost")
+#set(NAME "Boost")
+#if(Boost_FOUND)
+#	message(STATUS "${NAME} Found!   (version : ${${NAME}_VERSION})")
+#	message(STATUS "${NAME} include dirs : ${${NAME}_INCLUDE_DIRS}")
+#	message(STATUS "${NAME} library dirs : ${${NAME}_LIBRARY_DIRS}")
+#	message(STATUS "${NAME} libraries : ${${NAME}_LIBRARIES}")
+#else()
+#	message(STATUS "${NAME} not Found...")
+#endif()
+#unset(NAME)
+
+# TODO: check if second find_package(Theards) really is necessary. It shouldn't
+find_package(Threads)
+
+#############################################################################################
+###    Ot       #############################################################################
+#############################################################################################
+
+# QtWidgets always finds its dependencies (QtGui and QtCore)
+find_package(Qt5Widgets REQUIRED)
+print_package_info("Qt5Widgets")
+#set(NAME "Qt5Widgets")
+#if(${NAME}_FOUND)
+#   message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
+#   message(STATUS "${NAME} definitions                : ${${NAME}_DEFINITIONS}")
+#   message(STATUS "${NAME} execution compile flags    : ${${NAME}_EXECUTABLE_COMPILE_FLAGS}")
+#   message(STATUS "${NAME} include dirs               : ${${NAME}_INCLUDE_DIRS}")
+#   message(STATUS "${NAME} includes                   : ${${NAME}_INCLUDES}")
+#   message(STATUS "${NAME} library dirs               : ${${NAME}_LIBRARY_DIRS}")
+#   message(STATUS "${NAME} libraries                  : ${${NAME}_LIBRARIES}")
+#else()
+#	message(STATUS "${NAME} not Found...")
+#endif()
+#unset(NAME)
+
+file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
+file(GLOB QWT_LIBRARIES "/usr/lib/libqwt-qt5*")
+# Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
+include_directories(${Qt5Widgets_INCLUDES})
+
+#  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
+#file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
+include_directories(include ${QWT_INCLUDE_DIR} )
+include_directories(include "../AWLCoreClasses")
+include_directories(include "../AWLQtScope")
+
+add_definitions(${Qt5Widgets_DEFINITIONS})
+
+# Creation of executable fails in Qt5 with default configuration
+SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
+	awlplotscan.cpp
+      	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui awlplotscan.ui
+../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
+../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
+../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
+../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ThreadedWorker.cpp
+../AWLCoreClasses/LoopedWorker.cpp      
+../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
+../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
+../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
+../AWLQtScope/awlqtscope.ui
+)
+
+
+#############################################################################################
+###    Option description       #############################################################
+#############################################################################################
+# Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
+set(WANT_EASY_SYNC_SUPPORT 1)
+
+# Set WANT_KVASER_SUPPORT to `1` to enable Kvaser support
+set(WANT_KVASER_SUPPORT 0)
+
+# Set WANT_SOCKET_CAN_SUPPORT to `1` to enable SocketCAN support WARNING Linux Only
+set(WANT_SOCKET_CAN_SUPPORT 1)
+
+# Set WANT_POSIX_UDP_SUPPORT to `1` to enable PosixUDP support WARNING Linux Only
+set(WANT_POSIX_UDP_SUPPORT 1)
+
+# Set WANT_POSIX_TTY_SUPPORT to `1` to enable PosixTTY support WARNING Linux Only
+set(WANT_POSIX_TTY_SUPPORT 1)
+
+# Set WANT_LIBUSB_SUPPORT to `1` to enable LibUSB support
+set(WANT_LIBUSB_SUPPORT 1)
+
+# Set WANT_TCP_SUPPORT to `1` to enable TCP_SUPPORT
+set(WANT_TCP_SUPPORT 0)
+
+# Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
+set(WANT_OPENCV_VIDEO 1)
+
+# Set WANT_ONLY_AP_VIDEO to `1` to enable only AP video
+set(WANT_ONLY_AP_VIDEO 0)
+
+# Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
+message(STATUS "ASKED FOR OPTION : WANT_EASY_SYNC_SUPPORT == ${WANT_EASY_SYNC_SUPPORT} (to enable, type -DWANT_EASY_SYNC_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_EASY_SYNC_SUPPORT})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+            USE_CAN_EASYSYNC 
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverEasySyncCapture.cpp 
+    )
+endif()
+
+
+
+# Set WANT_KVASER_SUPPORT to `1` to enable Kvaser support
+message(STATUS "ASKED FOR OPTION : WANT_KVASER_SUPPORT == ${WANT_KVASER_SUPPORT} (to enable, type -DWANT_KVASER_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_KVASER_SUPPORT})
+    file(
+        GLOB
+        CAN_INCLUDE_DIR 
+            "/usr/local/include/canlib"
+    )
+    file(
+        GLOB
+        CAN_LIBRARIES 
+            "/usr/local/lib/libcan*"
+    )
+    include_directories(
+        include
+        ${CAN_INCLUDE_DIR}
+    )
+
+
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+            USE_CAN_KVASER 
+    )
+
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverKvaserCapture.cpp 
+    )
+
+    TARGET_LINK_LIBRARIES(
+        LinuxCute
+        ${CAN_LIBRARIES}
+    )
+endif()
+
+
+# Set WANT_SOCKET_CAN_SUPPORT to `1` to enable SocketCAN support WARNING Linux Only
+message(STATUS "ASKED FOR OPTION : WANT_SOCKET_CAN_SUPPORT == ${WANT_SOCKET_CAN_SUPPORT} (to enable, type -DWANT_SOCKET_CAN_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_SOCKET_CAN_SUPPORT})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+            USE_CAN_SOCKETCAN 
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverSocketCANCapture.cpp 
+    )
+endif()
+
+
+# Set WANT_POSIX_UDP_SUPPORT to `1` to enable PosixUDP support WARNING Linux Only
+message(STATUS "ASKED FOR OPTION : WANT_POSIX_UDP_SUPPORT == ${WANT_POSIX_UDP_SUPPORT} (to enable, type -DWANT_POSIX_UDP_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_POSIX_UDP_SUPPORT})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+            USE_POSIXUDP 
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverPosixUDPCapture.cpp 
+    )
+endif()
+
+
+
+# Set WANT_POSIX_TTY_SUPPORT to `1` to enable PosixTTY support WARNING Linux Only
+message(STATUS "ASKED FOR OPTION : WANT_POSIX_TTY_SUPPORT == ${WANT_POSIX_TTY_SUPPORT} (to enable, type -DWANT_POSIX_TTY_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_POSIX_TTY_SUPPORT})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+            USE_POSIXTTY 
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverPosixTTYCapture.cpp 
+    )
+endif()
+
+# Set WANT_LIBUSB_SUPPORT to `1` to enable LibUSB support
+message(STATUS "ASKED FOR OPTION : WANT_LIBUSB_SUPPORT == ${WANT_LIBUSB_SUPPORT} (to enable, type -DWANT_LIBUSB_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_LIBUSB_SUPPORT})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+            USE_LIBUSB 
+    )
+    # TODO : find for windows?
+    TARGET_LINK_LIBRARIES( 
+        LinuxCute 
+        /usr/lib/x86_64-linux-gnu/libusb-1.0.so 
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverPolledCapture.cpp 
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC 
+            ../AWLCoreClasses/ReceiverLibUSBCapture.cpp 
+    )
+endif()
+
+# Set WANT_TCP_SUPPORT to `1` to enable TCP_SUPPORT
+message(STATUS "ASKED FOR OPTION : WANT_TCP_SUPPORT == ${WANT_TCP_SUPPORT} (to enable, type -DWANT_TCP_SUPPORT=1 after `cmake` cmd. ")
+if(${WANT_TCP_SUPPORT})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute 
+        PUBLIC 
+            USE_TCP
+    )
+    TARGET_SOURCES(
+        LinuxCute
+        PUBLIC
+            ../AWLCoreClasses/ReceiverTCPCapture.cp    
+    )
+endif()
+
+# Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
+message(STATUS "ASKED FOR OPTION : WANT_OPENCV_VIDEO == ${WANT_OPENCV_VIDEO} (to enable, type -DWANT_OPENCV_VIDEO=1 after `cmake` cmd. ")
+if(${WANT_OPENCV_VIDEO})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute 
+        PUBLIC 
+            USE_OPENCV_VIDEO
+    )
+    FIND_PACKAGE(OpenCV REQUIRED)
+    TARGET_SOURCES(
+        LinuxCute 
+        PUBLIC 
+            VideoCapture.cpp 
+            VideoViewer.cpp
+    )
+    TARGET_LINK_LIBRARIES(
+        LinuxCute 
+        ${OpenCV_LIBS}
+    )
+endif()
+
+# Set WANT_ONLY_AP_VIDEO to `1` to enable only AP video
+message(STATUS "ASKED FOR OPTION : WANT_ONLY_AP_VIDEO == ${WANT_ONLY_AP_VIDEO} (to enable, type -DWANT_ONLY_AP_VIDEO=1 after `cmake` cmd. ")
+if(${WANT_ONLY_AP_VIDEO})
+    TARGET_COMPILE_DEFINITIONS(
+        LinuxCute 
+        PUBLIC
+            USE_AP_VIDEO 
+    )
+    file(GLOB
+        AP_LIBRARIES 
+        "../AP/lib/*"
+    )
+    TARGET_SOURCES( 
+        LinuxCute 
+        PUBLIC 
+            APVideoCapture.cpp
+            APVideoViewer.cpp 
+    )
+    TARGET_LINK_LIBRARIES(
+        LinuxCute ${AP_LIBRARIES} 
+    )
+
+    INCLUDE_DIRECTORIES(../AP/include)
+endif()
+
+# Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
+message(STATUS "QT5::Widgets   ${Qt5::Widgets}")
+
+TARGET_LINK_LIBRARIES(
+        LinuxCute 
+        ${Qt5Widgets_LIBRARIES}
+        ${QWT_LIBRARIES}
+        ${Boost_DATE_TIME_LIBRARY}
+        ${Boost_FILESYSTEM_LIBRARY}
+        ${Boost_SIGNALS_LIBRARY}
+        ${Boost_THREAD_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
+)
+
+#target_link_libraries(LinuxCute Qt5::Widgets)
+target_link_libraries(LinuxCute Threads::Threads)
