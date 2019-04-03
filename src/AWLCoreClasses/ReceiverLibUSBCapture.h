@@ -44,6 +44,9 @@ public:
       */
 	virtual ~ReceiverLibUSBCapture();
 
+	void * GetHandle(void);
+	void SwapHandle(void *);
+
 protected:
 
 	/** \brief Open the CAN port
@@ -82,6 +85,8 @@ protected:
 		int usbEndPointIn;
 		int usbEndPointOut;
 		int usbTimeOut;
+
+		void * swap_handle;
 
 };
 
