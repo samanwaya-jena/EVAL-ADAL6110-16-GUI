@@ -406,7 +406,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
   connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
 
-  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggle()));
+//  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggled()));
 
   ui.radioButton_1->hide();
   ui.radioButton_2->hide();
@@ -427,15 +427,17 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   ui.spinBoxReceiver1->setMaximum(receiverCaptures.size());
   ui.spinBoxReceiver2->setMinimum(1);
   ui.spinBoxReceiver2->setMaximum(receiverCaptures.size());
-  if (receiverCaptures.size() > 0) {
-	  if (receiverCaptures.size() == 1) {
-		  ui.groupBox_5->hide();
-		  //ui.spinBoxReceiver1->hide();
-		  //ui.spinBoxReceiver2->hide();
-	 } else {
-		  ui.spinBoxReceiver1->setValue(1);
-		  ui.spinBoxReceiver2->setValue(2);
-		 }
+  ui.groupBox_5->hide();
+  if (receiverCaptures.size() > 1) {
+	bool show = true;
+	for (int i = 0; i < receiverCaptures.size(); i++) {
+		if (globalSettings->receiverSettings[i].sReceiverType != std::string( "LibUSB")) show = false;
+	}
+	if (show) {
+		ui.groupBox_5->show();
+		ui.spinBoxReceiver1->setValue(1);
+		ui.spinBoxReceiver2->setValue(2);
+	 }
   }
 
 
@@ -821,10 +823,28 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 }
 
 
-void AWLQtDemo::on_ButtonSwapToggle()
+void AWLQtDemo::on_pushButtonSwap_clicked()
 {	
-	fprintf(stderr, "swap button toggle  %d %d\n", ui.spinBoxReceiver1, ui.spinBoxReceiver2);
+	int r1, r2;
+	void *h1, *h2;
+	int cnt = receiverCaptures.size();
+	r1 = ui.spinBoxReceiver1->value();
+	r2 = ui.spinBoxReceiver2->value();
+	//fprintf(stderr, "swap %d %d of %d\n", r1, r2, cnt);
+	boost::shared_ptr<ReceiverPolledCapture> p1;
+	boost::shared_ptr<ReceiverPolledCapture> p2;
+	
+	if (r1 > 0 && r2 > 0 && r1 <= cnt && r2 <= cnt && r1 != r2) {
+		p1 = boost::reinterpret_pointer_cast<ReceiverPolledCapture>(receiverCaptures[r1 - 1]);
+		p2 = boost::reinterpret_pointer_cast<ReceiverPolledCapture>(receiverCaptures[r2 - 1]);
+		h1 = p1->GetHandle();
+		h2 = p2->GetHandle();
+		p1->SetHandle(h2);
+		p2->SetHandle(h1);
+		fprintf(stderr, "Swapping %p %p\n", h1, h2);
+	}
 }
+
 void AWLQtDemo::on_stopPushButton_clicked()
 
 {
@@ -2308,7 +2328,7 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-	msgBox.setText("QtDemo 1.3.7<br><br>Copyright @ 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+	msgBox.setText("QtDemo 1.3.7<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
 	msgBox.exec();
 }
 

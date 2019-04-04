@@ -47,6 +47,9 @@ public:
 	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
 	virtual bool StopRecord();
 
+  void * GetHandle(void);
+  void SetHandle(void *);
+
 protected:
 
   void DoThreadLoop();
@@ -67,6 +70,7 @@ protected:
 protected:
 
 		void*handle;
+		void *swap_handle;
 
 		/** \brief Time-out without an input message after which we try to recomnnect the serial port. */
 		boost::posix_time::ptime reconnectTime;

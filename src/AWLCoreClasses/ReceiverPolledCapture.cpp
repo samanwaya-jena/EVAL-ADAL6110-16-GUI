@@ -29,7 +29,8 @@ using namespace awl;
 
 ReceiverPolledCapture::ReceiverPolledCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCANCapture(receiverID, propTree),
-handle(NULL)
+handle(NULL),
+swap_handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();
 
@@ -199,6 +200,10 @@ bool ReceiverPolledCapture::DoOneLoop()
 
 void ReceiverPolledCapture::DoOneThreadIteration()
 {
+  if (swap_handle) {
+    handle = swap_handle;
+    swap_handle = NULL;
+  }
   if (handle)
   {
     bool bRet = DoOneLoop();
@@ -347,4 +352,13 @@ bool ReceiverPolledCapture::StopRecord()
 	receiverStatus.bInRecord = false;
 
 	return true;
+}
+
+void * ReceiverPolledCapture::GetHandle(void) {
+	return handle;
+}
+
+void ReceiverPolledCapture::SetHandle(void *h)
+{
+	swap_handle = h;
 }

@@ -44,9 +44,6 @@ public:
       */
 	virtual ~ReceiverLibUSBCapture();
 
-	void * GetHandle(void);
-	void SwapHandle(void *);
-
 protected:
 
 	/** \brief Open the CAN port

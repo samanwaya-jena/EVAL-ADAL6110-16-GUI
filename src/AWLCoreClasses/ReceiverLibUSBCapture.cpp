@@ -29,8 +29,7 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds ev
 
 ReceiverLibUSBCapture::ReceiverLibUSBCapture(int receiverID, boost::property_tree::ptree &propTree):
   ReceiverPolledCapture(receiverID, propTree),
-context(NULL),
-swap_handle(NULL)
+context(NULL)
 {
   // Read the configuration from the configuration file
   ReadConfigFromPropTree(propTree);
@@ -45,11 +44,6 @@ int ReceiverLibUSBCapture::ReadBytes(uint8_t * pData, int num)
 {
   int received;
 
-  if (swap_handle) {
-     handle = swap_handle;
-     swap_handle = NULL;
-  }
-
   int ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointIn, (unsigned char *)pData, num, &received, usbTimeOut);
   if (ret || (received != num))
     return false;
@@ -60,11 +54,6 @@ int ReceiverLibUSBCapture::ReadBytes(uint8_t * pData, int num)
 int ReceiverLibUSBCapture::WriteBytes(uint8_t * pData, int num)
 {
   int transferred;
-
-  if (swap_handle) {
-     handle = swap_handle;
-     swap_handle = NULL;
-  }
 
   int ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointOut, (unsigned char *)pData, num, &transferred, usbTimeOut);
   if (ret || (transferred != num))
@@ -104,7 +93,9 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 	int err = 0;
 	if (cnt < 0)
     		perror("libusb_get_device_list");
+
 	int matches = 0;
+
 	for (i = 0; i < cnt; i++) {
     		libusb_device *device = list[i];
     		err = libusb_get_device_descriptor(device, &descriptor);
@@ -112,7 +103,8 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 			matches ++;
 		}
 	}
-	if (matches != (receiverID + 1)) return false;
+	//if (matches != (receiverID + 1)) return false;
+	if (matches < (receiverID + 1)) return false;
 
 	for (i = 0; i < cnt; i++) {
     		libusb_device *device = list[i];
@@ -218,13 +210,4 @@ bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 	usbTimeOut =  receiverNode.get<int>("libUsbTimeOut");
 
 	return(true);
-}
-
-void * ReceiverLibUSBCapture::GetHandle(void) {
-	return handle;
-}
-
-void ReceiverLibUSBCapture::SwapHandle(void *h)
-{
-	swap_handle = h;
 }
