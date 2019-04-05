@@ -607,7 +607,7 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 	// Adjust the default maximum displayed range for the receiver (used in various interfaces) 
 	// to reflect the maximum of all its channel ranges.
 	int receiverQty = globalSettings->receiverSettings.size();
-	long absoluteMaxRange = 0.0;
+	//long absoluteMaxRange = 0.0;
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		long absoluteMaxRangeForReceiver = 0.0;
@@ -617,9 +617,9 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
 				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange;
 		}
-		AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMax = absoluteMaxRangeForReceiver;
+		AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax = absoluteMaxRangeForReceiver;
 
-		if (absoluteMaxRangeForReceiver > absoluteMaxRange) absoluteMaxRange = absoluteMaxRangeForReceiver; 
+		//if (absoluteMaxRangeForReceiver > absoluteMaxRange) absoluteMaxRange = absoluteMaxRangeForReceiver; 
 	}
 }
 
@@ -940,6 +940,7 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 
 void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 {
+	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
@@ -947,20 +948,27 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 
 	// Update the settings
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-	settings->receiverSettings[0].channelsConfig[channelID].maxRange = range;
-	
-	// Calculate the absolute max distance from the settings
-	AdjustDefaultDisplayedRanges();
+        int receiverQty = globalSettings->receiverSettings.size();
 
-	// Update user interface parts
-	
-	if (m2DScan && !m2DScan->isHidden())
-	{
-		m2DScan->slotConfigChanged();
-	}
+        for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+        {
 
-	// Restore the wait cursor
-	setCursor(Qt::ArrowCursor);
+
+		settings->receiverSettings[receiverID].channelsConfig[channelID].maxRange = range;
+	
+		// Calculate the absolute max distance from the settings
+		AdjustDefaultDisplayedRanges();
+
+		// Update user interface parts
+	
+		if (m2DScan && !m2DScan->isHidden())
+		{
+			m2DScan->slotConfigChanged();
+		}
+
+		// Restore the wait cursor
+		setCursor(Qt::ArrowCursor);
+	}	
 }
 
 void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
