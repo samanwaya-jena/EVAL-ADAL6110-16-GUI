@@ -27,7 +27,7 @@ endfunction()
 
 function(print_package_info package_name)
     set(NAME ${package_name})
-    message(STATUS "$printing info for... {NAME}")
+    message(STATUS "Printing info for... ${NAME}")
     if(${NAME}_FOUND)
         message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
         message(STATUS "${NAME} definitions                : ${${NAME}_DEFINITIONS}")
@@ -178,8 +178,8 @@ set(WANT_TCP_SUPPORT 0)
 # Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
 set(WANT_OPENCV_VIDEO 1)
 
-# Set WANT_ONLY_AP_VIDEO to `1` to enable only AP video
-set(WANT_ONLY_AP_VIDEO 0)
+# Set WANT_AP_VIDEO to `1` to enable AP video
+set(WANT_AP_VIDEO 0)
 
 # Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
 message(STATUS "ASKED FOR OPTION : WANT_EASY_SYNC_SUPPORT == ${WANT_EASY_SYNC_SUPPORT} (to enable, type -DWANT_EASY_SYNC_SUPPORT=1 after `cmake` cmd. ")
@@ -345,9 +345,9 @@ if(${WANT_OPENCV_VIDEO})
     )
 endif()
 
-# Set WANT_ONLY_AP_VIDEO to `1` to enable only AP video
-message(STATUS "ASKED FOR OPTION : WANT_ONLY_AP_VIDEO == ${WANT_ONLY_AP_VIDEO} (to enable, type -DWANT_ONLY_AP_VIDEO=1 after `cmake` cmd. ")
-if(${WANT_ONLY_AP_VIDEO})
+# Set WANT_AP_VIDEO to `1` to enable AP video
+message(STATUS "ASKED FOR OPTION : WANT_AP_VIDEO == ${WANT_AP_VIDEO} (to enable, type -DWANT_AP_VIDEO=1 after `cmake` cmd. ")
+if(${WANT_AP_VIDEO})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute 
         PUBLIC
