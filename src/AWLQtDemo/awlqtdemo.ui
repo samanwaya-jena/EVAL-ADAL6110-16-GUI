@@ -1215,7 +1215,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>7</number>
+         <number>8</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -5148,6 +5148,11 @@ color: rgb(255,255,255);</string>
            </property>
           </widget>
          </widget>
+        </widget>
+        <widget class="QWidget" name="extraTab">
+         <attribute name="title">
+          <string>Misc</string>
+         </attribute>
         </widget>
        </widget>
       </item>
