@@ -27,7 +27,11 @@ endfunction()
 
 function(print_package_info package_name)
     set(NAME ${package_name})
+    message(STATUS)
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "---------------------------------------------------------------")
     message(STATUS "Printing info for... ${NAME}")
+    message(STATUS "---------------------------------------------------------------")
     if(${NAME}_FOUND)
         message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
         message(STATUS "${NAME} definitions                : ${${NAME}_DEFINITIONS}")
@@ -39,6 +43,9 @@ function(print_package_info package_name)
     else()
         message(STATUS "${NAME} not Found...")
     endif()
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS)
     unset(NAME)
 endfunction()
 
@@ -79,23 +86,37 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
+print_package_info("Threads")
 
 #############################################################################################
 ###    Boost       ##########################################################################
 #############################################################################################
 
+# find_package(bzip2) # Required for Boost
+# print_package_info("BZip2")
+
+# find_package(ZLIB) # Required for Boost
+# print_package_info("ZLIB")
+ 
+# if(NOT BOOST_USER_DEFINED_ROOT)
+# message(STATUS)
+# message(STATUS "!!!!!!!!!!!!!!!!!!!")
+# message(STATUS "!!!!! WARNING !!!!!")
+# message(STATUS "!!!!!!!!!!!!!!!!!!!")
+# message(STATUS)
+# message(STATUS "Please re-run your `cmake` command but next time, add `-D BOOST_USER_DEFINED_ROOT={Your Boost library ROOT_DIR}`")
+# message(STATUS "If you are unsure about what is your `BOOST_ROOT`, please read the following: https://www.boost.org/doc/libs/1_69_0/more/getting_started/windows.html#the-boost-distribution. It is necessary for correct compilation of this project.")
+# message(STATUS)
+# message(FATAL_ERROR "BOOST_USER_DEFINED_ROOT is not set! find_package(Boost...) might not work!")
+# endif()
+
+#set(FETCHCONTENT_SOURCE_DIR_BOOST ${BOOST_USER_DEFINED_ROOT})
+#add_subdirectory(cmake-modules/boost-cmake)
+
+set(BOOST_ROOT "/d/boost/boost_1_67_0")
+set(BOOST_LIBRARYDIR "/d/boost/boost_1_67_0/libs")
 find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
 print_package_info("Boost")
-#set(NAME "Boost")
-#if(Boost_FOUND)
-#	message(STATUS "${NAME} Found!   (version : ${${NAME}_VERSION})")
-#	message(STATUS "${NAME} include dirs : ${${NAME}_INCLUDE_DIRS}")
-#	message(STATUS "${NAME} library dirs : ${${NAME}_LIBRARY_DIRS}")
-#	message(STATUS "${NAME} libraries : ${${NAME}_LIBRARIES}")
-#else()
-#	message(STATUS "${NAME} not Found...")
-#endif()
-#unset(NAME)
 
 # TODO: check if second find_package(Theards) really is necessary. It shouldn't
 find_package(Threads)
