@@ -113,10 +113,13 @@ print_package_info("Threads")
 #set(FETCHCONTENT_SOURCE_DIR_BOOST ${BOOST_USER_DEFINED_ROOT})
 #add_subdirectory(cmake-modules/boost-cmake)
 
+set (Boost_DETAILED_FAILURE_MSG ON)
+set (Boost_THREADAPI win32)
 set(BOOST_ROOT "/d/boost/boost_1_67_0")
 set(BOOST_LIBRARYDIR "/d/boost/boost_1_67_0/libs")
 find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
 print_package_info("Boost")
+set (BOOST_DEBUG ON)
 
 # TODO: check if second find_package(Theards) really is necessary. It shouldn't
 find_package(Threads)
