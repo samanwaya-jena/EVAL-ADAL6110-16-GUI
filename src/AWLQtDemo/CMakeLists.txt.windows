@@ -124,8 +124,7 @@ set(Boost_DEBUG ON)
 
 #set(BOOST_ROOT "D:\\boost\\boost_1_67_0")
 #set(BOOST_LIBRARYDIR "D:\\boost\\boost_1_67_0\\libs")
-#find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
 print_package_info("Boost")
 
 # TODO: check if second find_package(Theards) really is necessary. It shouldn't
