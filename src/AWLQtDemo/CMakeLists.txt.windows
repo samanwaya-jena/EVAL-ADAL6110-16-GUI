@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(LinuxCute)
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%    Helper functions       %%%%%%%%%%%%%%%     START       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -54,11 +53,12 @@ function(print_platform_info)
     message(STATUS "---------------------------------------------------------------")
     message(STATUS "Printing platform info: ")
     message(STATUS "---------------------------------------------------------------")
-    message(STATUS "CMAKE_SYSTEM               :  ${CMAKE_SYSTEM}")
-    message(STATUS "CMAKE_SYSTEM_NAME          :  ${CMAKE_SYSTEM_NAME}")
-    message(STATUS "CMAKE_SYSTEM_VERSION       :  ${CMAKE_SYSTEM_VERSION}")
-    message(STATUS "CMAKE_SYSTEM_PROCESSOR     :  ${CMAKE_SYSTEM_PROCESSOR}")
-    message(STATUS "CMAKE_HOST_SYSTEM_NAME     :  ${CMAKE_HOST_SYSTEM_NAME}")
+    message(STATUS "CMAKE_SYSTEM                         :  ${CMAKE_SYSTEM}")
+    message(STATUS "CMAKE_SYSTEM_NAME                    :  ${CMAKE_SYSTEM_NAME}")
+    message(STATUS "CMAKE_SYSTEM_VERSION                 :  ${CMAKE_SYSTEM_VERSION}")
+    message(STATUS "CMAKE_SYSTEM_PROCESSOR               :  ${CMAKE_SYSTEM_PROCESSOR}")
+    message(STATUS "CMAKE_HOST_SYSTEM_NAME               :  ${CMAKE_HOST_SYSTEM_NAME}")
+    message(STATUS "CMAKE_CXX_COMPILER_ARCHITECTURE_ID   :  ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
     message(STATUS "---------------------------------------------------------------")
     message(STATUS "---------------------------------------------------------------")
 endfunction()
@@ -71,20 +71,29 @@ endfunction()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Let's talk
-set(CMAKE_VERBOSE_MAKEFILE ON)
-print_platform_info()
+#############################################################################################
+###    General Settings    ##################################################################
+#############################################################################################
 
-# Automaticaly call moc when necessary
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-# moc genreated files are located in the bin directory,
+# This tells CMake to use the <PackageName>_ROOT variables
+# Otherwise, environment variable should be set
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW) # CMake 3.12
+endif ()
 
 # tell CMake to always include header files in this directory
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-SET(THREADS_PREFER_PTHREAD_FLAG ON)
+# Let's talk
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
+print_platform_info()
+
+#############################################################################################
+###    Threads    ###########################################################################
+#############################################################################################
+
+SET(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 print_package_info("Threads")
 
@@ -92,42 +101,41 @@ print_package_info("Threads")
 ###    Boost       ##########################################################################
 #############################################################################################
 
-# find_package(bzip2) # Required for Boost
-# print_package_info("BZip2")
+set(Boost_DETAILED_FAILURE_MSG OFF)
+set(Boost_DEBUG OFF)
 
-# find_package(ZLIB) # Required for Boost
-# print_package_info("ZLIB")
- 
-# if(NOT BOOST_USER_DEFINED_ROOT)
-# message(STATUS)
-# message(STATUS "!!!!!!!!!!!!!!!!!!!")
-# message(STATUS "!!!!! WARNING !!!!!")
-# message(STATUS "!!!!!!!!!!!!!!!!!!!")
-# message(STATUS)
-# message(STATUS "Please re-run your `cmake` command but next time, add `-D BOOST_USER_DEFINED_ROOT={Your Boost library ROOT_DIR}`")
-# message(STATUS "If you are unsure about what is your `BOOST_ROOT`, please read the following: https://www.boost.org/doc/libs/1_69_0/more/getting_started/windows.html#the-boost-distribution. It is necessary for correct compilation of this project.")
-# message(STATUS)
-# message(FATAL_ERROR "BOOST_USER_DEFINED_ROOT is not set! find_package(Boost...) might not work!")
-# endif()
-
-#set(Boost_NO_BOOST_CMAKE ON)
-
-set(Boost_DETAILED_FAILURE_MSG ON)
-set(Boost_THREADAPI win32)
+# The following functions help to search for the compiled boost lib.
+# 
 set(Boost_USE_STATIC_LIBS ON)
-set(Boost_DEBUG ON)
+#set(Boost_USE_STATIC_RUNTIME ON)  
 
-#set(FETCHCONTENT_SOURCE_DIR_BOOST ${BOOST_USER_DEFINED_ROOT})
-#set(BOOST_USER_DEFINED_ROOT "D:\\boost\\boost_1_67_0")
-#set(FETCHCONTENT_SOURCE_DIR_BOOST ${BOOST_USER_DEFINED_ROOT})
-#add_subdirectory(cmake-modules/boost-cmake)
+set(Boost_USE_MULTITHREADED ON)      
+set(Boost_COMPILER "-mgw81")        
+set(Boost_ARCHITECTURE "-x64")
 
-#set(BOOST_ROOT "D:\\boost\\boost_1_67_0")
-#set(BOOST_LIBRARYDIR "D:\\boost\\boost_1_67_0\\libs")
-find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
+set(BOOST_ROOT "C:/Program Files/boost")
+set(BOOST_LIBRARYDIR "C:/Program Files/boost/lib")
+set(BOOST_INCLUDEDIR "C:/Program Files/boost/include/boost-1_67")
+
+message(STATUS "For Boost installation on Windows that actually work with this CMake, see : https://gist.github.com/JBHarvey/e49348b03cf0898c929a107852c43e22")
+find_package(
+    Boost 
+    COMPONENTS 
+        thread
+        system
+        filesystem
+        date_time
+        signals 
+    REQUIRED
+)
 print_package_info("Boost")
+#print_package_info("Boost::date_time")
+#print_package_info("Boost::system")
+#print_package_info("Boost::filesystem")
+#print_package_info("Boost::thread")
+#print_package_info("Boost::signals")
 
-# TODO: check if second find_package(Theards) really is necessary. It shouldn't
+# TODO: check if second find_package(Threads) really is necessary. It shouldn't
 find_package(Threads)
 print_package_info("Threads")
 
@@ -135,9 +143,24 @@ print_package_info("Threads")
 ###    Ot       #############################################################################
 #############################################################################################
 
-# QtWidgets always finds its dependencies (QtGui and QtCore)
-find_package(Qt5Widgets REQUIRED)
-print_package_info("Qt5Widgets")
+# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOMOC ON)
+# Create code from a list of Qt designer ui files
+set(CMAKE_AUTOUIC ON)
+
+# moc generated files are located in the bin directory,
+
+# From https://blog.kitware.com/cmake-finding-qt5-the-right-way/
+find_package(
+    Qt5 
+    COMPONENTS
+        Core
+        Widgets
+    REQUIRED
+)
+print_package_info("Qt5::Core")
+print_package_info("Qt5::Gui")
+print_package_info("Qt5::Widgets")
 #set(NAME "Qt5Widgets")
 #if(${NAME}_FOUND)
 #   message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
@@ -148,7 +171,7 @@ print_package_info("Qt5Widgets")
 #   message(STATUS "${NAME} library dirs               : ${${NAME}_LIBRARY_DIRS}")
 #   message(STATUS "${NAME} libraries                  : ${${NAME}_LIBRARIES}")
 #else()
-#	message(STATUS "${NAME} not Found...")
+#    message(STATUS "${NAME} not Found...")
 #endif()
 #unset(NAME)
 
@@ -167,18 +190,57 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 
 # Creation of executable fails in Qt5 with default configuration
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
-	awlplotscan.cpp
-      	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui awlplotscan.ui
-../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
-../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
-../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
-../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ThreadedWorker.cpp
-../AWLCoreClasses/LoopedWorker.cpp      
-../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
-../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
-../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
-../AWLQtScope/awlqtscope.ui
+
+set(CUTEDEMO_MAIN_FILES "")
+list(APPEND CUTEDEMO_MAIN_FILES 
+        main.cpp
+        awlqtdemo.cpp
+        AWLSettings.cpp
+        fov_2dscan.cpp
+        awlplotscan.cpp
+        TableView.cpp
+)
+
+set(CUTEDEMO_QT_UI_FILES "")
+list(APPEND CUTEDEMO_QT_UI_FILES 
+        awlqtdemo.ui
+        fov_2dscan.ui
+        TableView.ui
+        awlplotscan.ui
+)
+
+set(CUTEDEMO_CORE_FILES "")
+list(APPEND CUTEDEMO_CORE_FILES 
+        ../AWLCoreClasses/awlcoord.cpp
+        ../AWLCoreClasses/Publisher.cpp
+        ../AWLCoreClasses/ReceiverPostProcessor.cpp
+        ../AWLCoreClasses/CoordinateSystem.cpp
+        ../AWLCoreClasses/ReceiverCANCapture.cpp
+        ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
+        ../AWLCoreClasses/DebugPrintf.cpp
+        ../AWLCoreClasses/ReceiverCapture.cpp
+        ../AWLCoreClasses/Subscription.cpp
+        ../AWLCoreClasses/DetectionStruct.cpp
+        ../AWLCoreClasses/ThreadedWorker.cpp
+        ../AWLCoreClasses/LoopedWorker.cpp
+)
+
+set(CUTEDEMO_SCOPE_FILES "")
+list(APPEND CUTEDEMO_SCOPE_FILES 
+        ../AWLQtScope/awlqtscope.cpp
+        ../AWLQtScope/knob.cpp
+        ../AWLQtScope/awlscopeplot.cpp
+        ../AWLQtScope/signaldata.cpp
+        ../AWLQtScope/curvedata.cpp
+        ../AWLQtScope/wheelbox.cpp
+        ../AWLQtScope/awlqtscope.ui
+)
+
+ADD_EXECUTABLE(LinuxCute WIN32 
+   ${CUTEDEMO_MAIN_FILES}
+   ${CUTEDEMO_QT_UI_FILES}
+   ${CUTEDEMO_CORE_FILES}
+   ${CUTEDEMO_SCOPE_FILES}
 )
 
 
