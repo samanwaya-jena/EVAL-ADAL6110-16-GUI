@@ -33,6 +33,7 @@ function(print_package_info package_name)
     message(STATUS "---------------------------------------------------------------")
     if(${NAME}_FOUND)
         message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
+        message(STATUS "${NAME} directory                  : ${${NAME}_DIR}")
         message(STATUS "${NAME} definitions                : ${${NAME}_DEFINITIONS}")
         message(STATUS "${NAME} execution compile flags    : ${${NAME}_EXECUTABLE_COMPILE_FLAGS}")
         message(STATUS "${NAME} include dirs               : ${${NAME}_INCLUDE_DIRS}")
@@ -61,6 +62,12 @@ function(print_platform_info)
     message(STATUS "CMAKE_CXX_COMPILER_ARCHITECTURE_ID   :  ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
     message(STATUS "---------------------------------------------------------------")
     message(STATUS "---------------------------------------------------------------")
+endfunction()
+
+function(print_option_wanted_status option_name)
+    set(NAME ${option_name})
+    message(STATUS "ASKED FOR OPTION : ${NAME} == ${${NAME}} (to enable, type -D${NAME}=1 after `cmake` cmd. ")
+    unset(NAME)
 endfunction()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -129,67 +136,71 @@ find_package(
     REQUIRED
 )
 print_package_info("Boost")
-#print_package_info("Boost::date_time")
-#print_package_info("Boost::system")
-#print_package_info("Boost::filesystem")
-#print_package_info("Boost::thread")
-#print_package_info("Boost::signals")
+
+include_directories(${Boost_INCLUDE_DIRS})
 
 # TODO: check if second find_package(Threads) really is necessary. It shouldn't
 find_package(Threads)
 print_package_info("Threads")
 
 #############################################################################################
-###    Ot       #############################################################################
+###    Qt       #############################################################################
 #############################################################################################
 
 # Instruct CMake to run moc automatically when needed
+# moc generated files are located in the bin directory,
 set(CMAKE_AUTOMOC ON)
+
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
-# moc generated files are located in the bin directory,
-
+# From --> https://doc.qt.io/qt-5/cmake-manual.html
+set(OLD_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH "D:/Qt/5.12.2/msvc2017_64")
+set(Qt5_DIR "D:/Qt/5.12.2/msvc2017_64/lib/cmake/Qt5")
+set(Qt5Widgets_DIR "${Qt5_DIR}Widgets")
+set(Qt5Gui_DIR "${Qt5_DIR}Gui")
+set(Qt5Core_DIR "${Qt5_DIR}Core")
 # From https://blog.kitware.com/cmake-finding-qt5-the-right-way/
 find_package(
     Qt5 
     COMPONENTS
         Core
+        Gui
         Widgets
     REQUIRED
 )
-print_package_info("Qt5::Core")
-print_package_info("Qt5::Gui")
-print_package_info("Qt5::Widgets")
-#set(NAME "Qt5Widgets")
-#if(${NAME}_FOUND)
-#   message(STATUS "${NAME} Found!   (version          : ${${NAME}_VERSION})")
-#   message(STATUS "${NAME} definitions                : ${${NAME}_DEFINITIONS}")
-#   message(STATUS "${NAME} execution compile flags    : ${${NAME}_EXECUTABLE_COMPILE_FLAGS}")
-#   message(STATUS "${NAME} include dirs               : ${${NAME}_INCLUDE_DIRS}")
-#   message(STATUS "${NAME} includes                   : ${${NAME}_INCLUDES}")
-#   message(STATUS "${NAME} library dirs               : ${${NAME}_LIBRARY_DIRS}")
-#   message(STATUS "${NAME} libraries                  : ${${NAME}_LIBRARIES}")
-#else()
-#    message(STATUS "${NAME} not Found...")
-#endif()
-#unset(NAME)
+print_package_info("Qt5")
+print_package_info("Qt5Core")
+print_package_info("Qt5Gui")
+print_package_info("Qt5Widgets")
+set(CMAKE_PREFIX_PATH ${OLD_CMAKE_PREFIX_PATH})
 
-file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
-file(GLOB QWT_LIBRARIES "/usr/lib/libqwt-qt5*")
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
 include_directories(${Qt5Widgets_INCLUDES})
-
-#  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
-#file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
-include_directories(include ${QWT_INCLUDE_DIR} )
-include_directories(include "../AWLCoreClasses")
-include_directories(include "../AWLQtScope")
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
 # Creation of executable fails in Qt5 with default configuration
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+#############################################################################################
+###    Qwt      #############################################################################
+#############################################################################################
+
+
+file(GLOB QWT_ROOT_DIR "C:/Qwt-6.1.4")
+file(GLOB QWT_INCLUDE_DIRS "${QWT_ROOT_DIR}/include")
+file(GLOB QWT_LIBRARY_DIRS "${QWT_ROOT_DIR}/lib")
+#  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
+#file(GLOB QWT_INCLUDE_DIRS "/usr/include/qwt")
+include_directories(include ${QWT_INCLUDE_DIRS} )
+include_directories(include "../AWLCoreClasses")
+include_directories(include "../AWLQtScope")
+
+#############################################################################################
+###    CuteDemo    ##########################################################################
+#############################################################################################
 
 set(CUTEDEMO_MAIN_FILES "")
 list(APPEND CUTEDEMO_MAIN_FILES 
@@ -243,7 +254,6 @@ ADD_EXECUTABLE(LinuxCute WIN32
    ${CUTEDEMO_SCOPE_FILES}
 )
 
-
 #############################################################################################
 ###    Option description       #############################################################
 #############################################################################################
@@ -254,13 +264,13 @@ set(WANT_EASY_SYNC_SUPPORT 1)
 set(WANT_KVASER_SUPPORT 0)
 
 # Set WANT_SOCKET_CAN_SUPPORT to `1` to enable SocketCAN support WARNING Linux Only
-set(WANT_SOCKET_CAN_SUPPORT 1)
+set(WANT_SOCKET_CAN_SUPPORT 0)
 
 # Set WANT_POSIX_UDP_SUPPORT to `1` to enable PosixUDP support WARNING Linux Only
-set(WANT_POSIX_UDP_SUPPORT 1)
+set(WANT_POSIX_UDP_SUPPORT 0)
 
 # Set WANT_POSIX_TTY_SUPPORT to `1` to enable PosixTTY support WARNING Linux Only
-set(WANT_POSIX_TTY_SUPPORT 1)
+set(WANT_POSIX_TTY_SUPPORT 0)
 
 # Set WANT_LIBUSB_SUPPORT to `1` to enable LibUSB support
 set(WANT_LIBUSB_SUPPORT 1)
@@ -269,13 +279,16 @@ set(WANT_LIBUSB_SUPPORT 1)
 set(WANT_TCP_SUPPORT 0)
 
 # Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
-set(WANT_OPENCV_VIDEO 1)
+set(WANT_OPENCV_VIDEO 0)
 
 # Set WANT_AP_VIDEO to `1` to enable AP video
 set(WANT_AP_VIDEO 0)
 
-# Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
-message(STATUS "ASKED FOR OPTION : WANT_EASY_SYNC_SUPPORT == ${WANT_EASY_SYNC_SUPPORT} (to enable, type -DWANT_EASY_SYNC_SUPPORT=1 after `cmake` cmd. ")
+#############################################################################################
+###    EasySync    ##########################################################################
+#############################################################################################
+
+print_option_wanted_status("WANT_EASY_SYNC_SUPPORT")
 if(${WANT_EASY_SYNC_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute
@@ -289,10 +302,11 @@ if(${WANT_EASY_SYNC_SUPPORT})
     )
 endif()
 
+#############################################################################################
+###    Kvaser (canlib)    ###################################################################
+#############################################################################################
 
-
-# Set WANT_KVASER_SUPPORT to `1` to enable Kvaser support
-message(STATUS "ASKED FOR OPTION : WANT_KVASER_SUPPORT == ${WANT_KVASER_SUPPORT} (to enable, type -DWANT_KVASER_SUPPORT=1 after `cmake` cmd. ")
+print_option_wanted_status("WANT_KVASER_SUPPORT")
 if(${WANT_KVASER_SUPPORT})
     file(
         GLOB
@@ -328,9 +342,11 @@ if(${WANT_KVASER_SUPPORT})
     )
 endif()
 
+#############################################################################################
+###    socket can    ########################################################################
+#############################################################################################
 
-# Set WANT_SOCKET_CAN_SUPPORT to `1` to enable SocketCAN support WARNING Linux Only
-message(STATUS "ASKED FOR OPTION : WANT_SOCKET_CAN_SUPPORT == ${WANT_SOCKET_CAN_SUPPORT} (to enable, type -DWANT_SOCKET_CAN_SUPPORT=1 after `cmake` cmd. ")
+print_option_wanted_status("WANT_SOCKET_CAN_SUPPORT")
 if(${WANT_SOCKET_CAN_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute
@@ -345,8 +361,11 @@ if(${WANT_SOCKET_CAN_SUPPORT})
 endif()
 
 
-# Set WANT_POSIX_UDP_SUPPORT to `1` to enable PosixUDP support WARNING Linux Only
-message(STATUS "ASKED FOR OPTION : WANT_POSIX_UDP_SUPPORT == ${WANT_POSIX_UDP_SUPPORT} (to enable, type -DWANT_POSIX_UDP_SUPPORT=1 after `cmake` cmd. ")
+#############################################################################################
+###    POSIX UDP    #########################################################################
+#############################################################################################
+
+print_option_wanted_status("WANT_POSIX_UDP_SUPPORT")
 if(${WANT_POSIX_UDP_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute
@@ -361,9 +380,11 @@ if(${WANT_POSIX_UDP_SUPPORT})
 endif()
 
 
+#############################################################################################
+###    POSIX TTY    #########################################################################
+#############################################################################################
 
-# Set WANT_POSIX_TTY_SUPPORT to `1` to enable PosixTTY support WARNING Linux Only
-message(STATUS "ASKED FOR OPTION : WANT_POSIX_TTY_SUPPORT == ${WANT_POSIX_TTY_SUPPORT} (to enable, type -DWANT_POSIX_TTY_SUPPORT=1 after `cmake` cmd. ")
+print_option_wanted_status("WANT_POSIX_TTY_SUPPORT")
 if(${WANT_POSIX_TTY_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute
@@ -377,18 +398,27 @@ if(${WANT_POSIX_TTY_SUPPORT})
     )
 endif()
 
-# Set WANT_LIBUSB_SUPPORT to `1` to enable LibUSB support
-message(STATUS "ASKED FOR OPTION : WANT_LIBUSB_SUPPORT == ${WANT_LIBUSB_SUPPORT} (to enable, type -DWANT_LIBUSB_SUPPORT=1 after `cmake` cmd. ")
+#############################################################################################
+###    libusb    ############################################################################
+#############################################################################################
+
+print_option_wanted_status("WANT_LIBUSB_SUPPORT")
 if(${WANT_LIBUSB_SUPPORT})
+
+    set(LIBUSB_ROOT "C:/libusb")
+    set(LIBUSB_LIB "${LIBUSB_ROOT}/libusb-1.0.lib")
+    set(LIBUSB_INCLUDE_DIRS "${LIBUSB_ROOT}/include")
+
+    include_directories(${LIBUSB_INCLUDE_DIRS})
+
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute
         PUBLIC 
             USE_LIBUSB 
     )
-    # TODO : find for windows?
     TARGET_LINK_LIBRARIES( 
         LinuxCute 
-        /usr/lib/x86_64-linux-gnu/libusb-1.0.so 
+        ${LIBUSB_LIB} 
     )
     TARGET_SOURCES(
         LinuxCute
@@ -402,8 +432,11 @@ if(${WANT_LIBUSB_SUPPORT})
     )
 endif()
 
-# Set WANT_TCP_SUPPORT to `1` to enable TCP_SUPPORT
-message(STATUS "ASKED FOR OPTION : WANT_TCP_SUPPORT == ${WANT_TCP_SUPPORT} (to enable, type -DWANT_TCP_SUPPORT=1 after `cmake` cmd. ")
+#############################################################################################
+###    TCP    ###############################################################################
+#############################################################################################
+
+print_option_wanted_status("WANT_TCP_SUPPORT")
 if(${WANT_TCP_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute 
@@ -417,8 +450,11 @@ if(${WANT_TCP_SUPPORT})
     )
 endif()
 
-# Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
-message(STATUS "ASKED FOR OPTION : WANT_OPENCV_VIDEO == ${WANT_OPENCV_VIDEO} (to enable, type -DWANT_OPENCV_VIDEO=1 after `cmake` cmd. ")
+#############################################################################################
+###    OpenCV    ############################################################################
+#############################################################################################
+
+print_option_wanted_status("WANT_OPENCV_VIDEO")
 if(${WANT_OPENCV_VIDEO})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute 
@@ -438,8 +474,11 @@ if(${WANT_OPENCV_VIDEO})
     )
 endif()
 
-# Set WANT_AP_VIDEO to `1` to enable AP video
-message(STATUS "ASKED FOR OPTION : WANT_AP_VIDEO == ${WANT_AP_VIDEO} (to enable, type -DWANT_AP_VIDEO=1 after `cmake` cmd. ")
+#############################################################################################
+###    AP Video    ##########################################################################
+#############################################################################################
+
+print_option_wanted_status("WANT_AP_VIDEO")
 if(${WANT_AP_VIDEO})
     TARGET_COMPILE_DEFINITIONS(
         LinuxCute 
@@ -463,19 +502,22 @@ if(${WANT_AP_VIDEO})
     INCLUDE_DIRECTORIES(../AP/include)
 endif()
 
-# Qt5Widgets_LIBRARIES contient aussi QtGui et QtCore
-message(STATUS "QT5::Widgets   ${Qt5::Widgets}")
+#############################################################################################
+###    Final linking...    ##################################################################
+#############################################################################################
 
 TARGET_LINK_LIBRARIES(
-        LinuxCute 
-        ${Qt5Widgets_LIBRARIES}
-        ${QWT_LIBRARIES}
-        ${Boost_DATE_TIME_LIBRARY}
-        ${Boost_FILESYSTEM_LIBRARY}
-        ${Boost_SIGNALS_LIBRARY}
-        ${Boost_THREAD_LIBRARY}
-        ${Boost_SYSTEM_LIBRARY}
+    LinuxCute 
+    ${Qt5Core_LIBRARIES}
+    ${Qt5Gui_LIBRARIES}
+    ${Qt5Widgets_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${QWT_LIBRARIES}
+    #        ${Boost_DATE_TIME_LIBRARY}
+    #        ${Boost_FILESYSTEM_LIBRARY}
+    #        ${Boost_SIGNALS_LIBRARY}
+    #        ${Boost_THREAD_LIBRARY}
+    #        ${Boost_SYSTEM_LIBRARY}
 )
 
-#target_link_libraries(LinuxCute Qt5::Widgets)
 target_link_libraries(LinuxCute Threads::Threads)
