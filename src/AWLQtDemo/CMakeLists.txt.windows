@@ -111,6 +111,7 @@ print_package_info("Threads")
 set(Boost_DETAILED_FAILURE_MSG OFF)
 set(Boost_DEBUG OFF)
 
+# Still needs some tests
 #######--->>>#add_compile_definitions(D_WIN32_WINNT=0x0A00 _WIN32_WINNT=0x0A00)
 # The following functions help to search for the compiled boost lib.
 # 
@@ -122,8 +123,8 @@ set(Boost_COMPILER "-vc141")
 set(Boost_ARCHITECTURE "-x64")
 
 set(BOOST_ROOT "C:/Program Files/boost")
-set(BOOST_LIBRARYDIR "C:/Program Files/boost/lib")
-set(BOOST_INCLUDEDIR "C:/Program Files/boost/include/boost-1_67")
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
+set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include/boost-1_67")
 
 message(STATUS "For Boost installation on Windows that actually work with this CMake, see : https://gist.github.com/JBHarvey/e49348b03cf0898c929a107852c43e22")
 find_package(
@@ -179,24 +180,37 @@ print_package_info("Qt5Widgets")
 set(CMAKE_PREFIX_PATH ${OLD_CMAKE_PREFIX_PATH})
 
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
+#include_directories(${Qt5Core_INCLUDES})
+#include_directories(${Qt5Gui_INCLUDES})
 include_directories(${Qt5Widgets_INCLUDES})
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
 # Creation of executable fails in Qt5 with default configuration
-SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+enable_cxx_compiler_flag_if_supported("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 #############################################################################################
 ###    Qwt      #############################################################################
 #############################################################################################
 
 
-file(GLOB QWT_ROOT_DIR "C:/Qwt-6.1.4")
-file(GLOB QWT_INCLUDE_DIRS "${QWT_ROOT_DIR}/include")
-file(GLOB QWT_LIBRARY_DIRS "${QWT_ROOT_DIR}/lib")
-#  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
-#file(GLOB QWT_INCLUDE_DIRS "/usr/include/qwt")
-include_directories(include ${QWT_INCLUDE_DIRS} )
+file(GLOB Qwt_ROOT_DIR "C:/Qwt-6.1.4")
+file(GLOB Qwt_INCLUDE_DIRS "${Qwt_ROOT_DIR}/include")
+file(GLOB Qwt_LIBRARY_DIRS "${Qwt_ROOT_DIR}/lib")
+
+# This function will search in different places, but ${CMAKE_FIND_ROOT_PATH} is targetted here
+# source : https://cmake.org/cmake/help/latest/command/find_library.html#command:find_library
+set(OLD_CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH})
+set(CMAKE_FIND_ROOT_PATH ${Qwt_ROOT_DIR})
+set(Qwt_LIBRARY_NAME "qwt")
+
+find_library(
+    Qwt_LIBRARIES             # Variable in which the lib will be stored
+    ${Qwt_LIBRARY_NAME}       # Name to look for
+)
+
+set(CMAKE_FIND_ROOT_PATH ${OLD_CMAKE_FIND_ROOT_PATH})
+include_directories(include ${Qwt_INCLUDE_DIRS} )
 include_directories(include "../AWLCoreClasses")
 include_directories(include "../AWLQtScope")
 
@@ -249,7 +263,7 @@ list(APPEND CUTEDEMO_SCOPE_FILES
         ../AWLQtScope/awlqtscope.ui
 )
 
-ADD_EXECUTABLE(LinuxCute WIN32 
+ADD_EXECUTABLE(LinuxCute
    ${CUTEDEMO_MAIN_FILES}
    ${CUTEDEMO_QT_UI_FILES}
    ${CUTEDEMO_CORE_FILES}
@@ -260,6 +274,7 @@ TARGET_COMPILE_DEFINITIONS(
         LinuxCute
         PUBLIC 
 	    WINDOWS 
+	    QWT_DLL
     )
 
 #############################################################################################
@@ -516,16 +531,11 @@ endif()
 
 TARGET_LINK_LIBRARIES(
     LinuxCute 
+    ${Qwt_LIBRARIES}
     ${Qt5Core_LIBRARIES}
     ${Qt5Gui_LIBRARIES}
     ${Qt5Widgets_LIBRARIES}
     ${Boost_LIBRARIES}
-    ${QWT_LIBRARIES}
-    #        ${Boost_DATE_TIME_LIBRARY}
-    #        ${Boost_FILESYSTEM_LIBRARY}
-    #        ${Boost_SIGNALS_LIBRARY}
-    #        ${Boost_THREAD_LIBRARY}
-    #        ${Boost_SYSTEM_LIBRARY}
 )
 
 target_link_libraries(LinuxCute Threads::Threads)
