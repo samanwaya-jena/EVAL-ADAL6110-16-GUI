@@ -629,7 +629,6 @@ void AWLQtDemo::SetupToolBar()
 {
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-printf(get_current_dir_name());
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
 	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.gif"), "2Z View", 0);

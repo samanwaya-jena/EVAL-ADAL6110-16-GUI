@@ -1,3 +1,0 @@
-[submodule "src/AWLQtDemo/cmake-modules/boost-cmake"]
-	path = src/AWLQtDemo/cmake-modules/boost-cmake
-	url = https://github.com/Orphis/boost-cmake.git

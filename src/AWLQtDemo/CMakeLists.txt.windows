@@ -111,13 +111,14 @@ print_package_info("Threads")
 set(Boost_DETAILED_FAILURE_MSG OFF)
 set(Boost_DEBUG OFF)
 
+#######--->>>#add_compile_definitions(D_WIN32_WINNT=0x0A00 _WIN32_WINNT=0x0A00)
 # The following functions help to search for the compiled boost lib.
 # 
 set(Boost_USE_STATIC_LIBS ON)
 #set(Boost_USE_STATIC_RUNTIME ON)  
 
 set(Boost_USE_MULTITHREADED ON)      
-set(Boost_COMPILER "-mgw81")        
+set(Boost_COMPILER "-vc141")        
 set(Boost_ARCHITECTURE "-x64")
 
 set(BOOST_ROOT "C:/Program Files/boost")
@@ -128,6 +129,7 @@ message(STATUS "For Boost installation on Windows that actually work with this C
 find_package(
     Boost 
     COMPONENTS 
+        regex
         thread
         system
         filesystem
@@ -253,6 +255,12 @@ ADD_EXECUTABLE(LinuxCute WIN32
    ${CUTEDEMO_CORE_FILES}
    ${CUTEDEMO_SCOPE_FILES}
 )
+
+TARGET_COMPILE_DEFINITIONS(
+        LinuxCute
+        PUBLIC 
+	    WINDOWS 
+    )
 
 #############################################################################################
 ###    Option description       #############################################################
