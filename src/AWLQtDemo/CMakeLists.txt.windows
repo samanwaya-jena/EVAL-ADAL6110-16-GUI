@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 2.8.7)
-project(LinuxCute)
+cmake_minimum_required(VERSION 3.0.2) # Mendatory because of Qt5 --> https://doc.qt.io/qt-5/cmake-manual.html#using-qt-5-with-cmake-older-than-2-8-9
+project(CuteDemo)
+set(CMAKE_COLOR_MAKEFILE ON)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8,8 +9,6 @@ project(LinuxCute)
 #%%     > to simplify reading and writing           %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-#cmake_minimum_required(VERSION 3.0.2) # MINIMUM ?
 
 include(CheckCXXCompilerFlag)
 function(enable_cxx_compiler_flag_if_supported flag)
@@ -24,7 +23,7 @@ function(enable_cxx_compiler_flag_if_supported flag)
     endif()
 endfunction()
 
-function(print_package_info package_name)
+macro(print_package_info package_name)
     set(NAME ${package_name})
     message(STATUS)
     message(STATUS "---------------------------------------------------------------")
@@ -47,22 +46,159 @@ function(print_package_info package_name)
     message(STATUS "---------------------------------------------------------------")
     message(STATUS)
     unset(NAME)
-endfunction()
+endmacro()
 
-function(print_platform_info)
+macro(print_general_cmake_info)
     message(STATUS "---------------------------------------------------------------")
+    message(STATUS "CMake info: ")
     message(STATUS "---------------------------------------------------------------")
-    message(STATUS "Printing platform info: ")
+    message(STATUS)
+    message(STATUS "CMAKE_VERSION                        :  ${CMAKE_VERSION}")
+    message(STATUS "CMAKE_COMMAND                        :  ${CMAKE_COMMAND}") 
+    message(STATUS "CMAKE_AR                             :  ${CMAKE_AR}") 
+    message(STATUS "CMAKE_ARGC                           :  ${CMAKE_ARGC}") 
+    message(STATUS "CMAKE_ARGV0                          :  ${CMAKE_ARGV0}") 
+    message(STATUS "BUILD_SHARED_LIBS                    :  ${BUILD_SHARED_LIBS}") 
+    message(STATUS "CMAKE_ROOT                           :  ${CMAKE_ROOT}")
+    message(STATUS "CMAKE_FOLDER                         :  ${CMAKE_FOLDER}") 
+    message(STATUS "CMAKE_SYSROOT                        :  ${CMAKE_SYSROOT}") 
+    message(STATUS "CMAKE_SYSROOT_COMPILE                :  ${CMAKE_SYSROOT_COMPILE}") 
+    message(STATUS "CMAKE_SYSROOT_LINK                   :  ${CMAKE_SYSROOT_LINK}") 
+    message(STATUS "CMAKE_HOME_DIRECTORY                 :  ${CMAKE_HOME_DIRECTORY}") 
+    message(STATUS "CMAKE_IGNORE_PATH                    :  ${CMAKE_IGNORE_PATH}") 
+    message(STATUS "CMAKE_PREFIX_PATH                    :  ${CMAKE_PREFIX_PATH}") 
+    message(STATUS "CMAKE_PROGRAM_PATH                   :  ${CMAKE_PROGRAM_PATH}") 
+    message(STATUS "CMAKE_CONFIGURATION_TYPES            :  ${CMAKE_CONFIGURATION_TYPES}") 
+    message(STATUS "CMAKE_POSITION_INDEPENDENT_CODE      :  ${CMAKE_POSITION_INDEPENDENT_CODE}") 
+    message(STATUS "CMAKE_JOB_POOLS                      :  ${CMAKE_JOB_POOLS}") 
+    message(STATUS "CMAKE_JOB_POOL_COMPILE               :  ${CMAKE_JOB_POOL_COMPILE}") 
+    message(STATUS "CMAKE_JOB_POOL_LINK                  :  ${CMAKE_JOB_POOL_LINK}") 
+    message(STATUS "CMAKE_COLOR_MAKEFILE                 :  ${CMAKE_COLOR_MAKEFILE}") 
+    message(STATUS "CMAKE_OBJECT_PATH_MAX                :  ${CMAKE_OBJECT_PATH_MAX}") 
+    message(STATUS "CMAKE_SOURCE_DIR                     :  ${CMAKE_SOURCE_DIR}") 
+    message(STATUS "CMAKE_BINARY_DIR                     :  ${CMAKE_BINARY_DIR}") 
+    message(STATUS "CMAKE_CURRENT_SOURCE_DIR             :  ${CMAKE_CURRENT_SOURCE_DIR}") 
+    message(STATUS "CMAKE_CURRENT_BINARY_DIR             :  ${CMAKE_CURRENT_BINARY_DIR}") 
+    message(STATUS "CMAKE_BUILD_TOOL                     :  ${CMAKE_BUILD_TOOL}") 
+    message(STATUS "CMAKE_BUILD_TYPE                     :  ${CMAKE_BUILD_TYPE}") 
+    message(STATUS "CMAKE_MAKE_PROGRAM                   :  ${CMAKE_MAKE_PROGRAM}")
+    message(STATUS "CMAKE_GENERATOR                      :  ${CMAKE_GENERATOR}")
+    message(STATUS "CMAKE_GENERATOR_INSTANCE             :  ${CMAKE_GENERATOR_INSTANCE}")
+    message(STATUS "CMAKE_GENERATOR_PLATFORM             :  ${CMAKE_GENERATOR_PLATFORM}")
+    message(STATUS "CMAKE_GENERATOR_TOOLSET              :  ${CMAKE_GENERATOR_TOOLSET}")
+    message(STATUS "CMAKE_DIRECTORY_LABELS               :  ${CMAKE_DIRECTORY_LABELS}")
+    message(STATUS "CMAKE_LIBRARY_ARCHITECTURE           :  ${CMAKE_LIBRARY_ARCHITECTURE}") 
+    message(STATUS "CMAKE_LIBRARY_ARCHITECTURE_REGEX     :  ${CMAKE_LIBRARY_ARCHITECTURE_REGEX}") 
+    message(STATUS)
+endmacro()
+macro(print_cmake_x_build_info)
     message(STATUS "---------------------------------------------------------------")
+    message(STATUS "CMake x-platform build informations: ")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS)
+    message(STATUS "CMAKE_CROSSCOMPILING                 :  ${CMAKE_CROSSCOMPILING}") 
+    message(STATUS "CMAKE_TOOLCHAIN_FILE                 :  ${CMAKE_TOOLCHAIN_FILE}")
     message(STATUS "CMAKE_SYSTEM                         :  ${CMAKE_SYSTEM}")
     message(STATUS "CMAKE_SYSTEM_NAME                    :  ${CMAKE_SYSTEM_NAME}")
     message(STATUS "CMAKE_SYSTEM_VERSION                 :  ${CMAKE_SYSTEM_VERSION}")
     message(STATUS "CMAKE_SYSTEM_PROCESSOR               :  ${CMAKE_SYSTEM_PROCESSOR}")
     message(STATUS "CMAKE_HOST_SYSTEM_NAME               :  ${CMAKE_HOST_SYSTEM_NAME}")
+    message(STATUS "CMAKE_HOST_SYSTEM_NAME               :  ${CMAKE_HOST_SYSTEM_NAME}")
+    message(STATUS "CMAKE_HOST_SYSTEM_VERSION            :  ${CMAKE_HOST_SYSTEM_VERSION}")
+    message(STATUS "CMAKE_HOST_SYSTEM_PROCESSOR          :  ${CMAKE_HOST_SYSTEM_PROCESSOR}")
     message(STATUS "CMAKE_CXX_COMPILER_ARCHITECTURE_ID   :  ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+    message(STATUS)
+endmacro()
+macro(print_cpack_info)
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "CPack variables: ")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS)
+    message(STATUS "CMAKE_CPACK_COMMAND                            :  ${CMAKE_CPACK_COMMAND}") 
+    message(STATUS "CPACK_INSTALL_SCRIPT                           :  ${CPACK_INSTALL_SCRIPT}") 
+    message(STATUS "CPACK_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS    :  ${CPACK_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS}") 
+    message(STATUS "CPACK_PACKAGING_INSTALL_PREFIX                 :  ${CPACK_PACKAGING_INSTALL_PREFIX}") 
+    message(STATUS "CPACK_ABSOLUTE_DESTINATION_FILES               :  ${CPACK_ABSOLUTE_DESTINATION_FILES}") 
+    message(STATUS "CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION     :  ${CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION}") 
+    message(STATUS "CPACK_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION    :  ${CPACK_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION}") 
+    message(STATUS "CPACK_SET_DESTDIR                              :  ${CPACK_SET_DESTDIR}") 
+    message(STATUS "CPACK_INCLUDE_TOPLEVEL_DIRECTORY               :  ${CPACK_INCLUDE_TOPLEVEL_DIRECTORY}") 
+    message(STATUS "CPACK_COMPONENT_INCLUDE_TOPLEVEL_DIRECTORY     :  ${CPACK_COMPONENT_INCLUDE_TOPLEVEL_DIRECTORY}") 
+    message(STATUS)
+endmacro()
+macro(print_system_variables)
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "CMake system variables: ")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS)
+    message(STATUS "CMAKE_GNUtoMS            :  ${CMAKE_GNUtoMS}") 
+    message(STATUS "CMAKE_CL_64              :  ${CMAKE_CL_64}") 
+    message(STATUS "CMAKE_COMPILER_2005      :  ${CMAKE_COMPILER_2005}") 
+    message(STATUS "CMAKE_HOST_APPLE         :  ${CMAKE_HOST_APPLE}") 
+    message(STATUS "CMAKE_HOST_SOLARIS       :  ${CMAKE_HOST_SOLARIS}") 
+    message(STATUS "CMAKE_HOST_UNIX          :  ${CMAKE_HOST_UNIX}") 
+    message(STATUS "CMAKE_HOST_WIN32         :  ${CMAKE_HOST_WIN32}") 
+    message(STATUS "ANDROID                  :  ${ANDROID}") 
+    message(STATUS "APPLE                    :  ${APPLE}") 
+    message(STATUS "BORLAND                  :  ${BORLAND}") 
+    message(STATUS "CYGWIN                   :  ${CYGWIN}") 
+    message(STATUS "GHS-MULTI                :  ${GHS-MULTI}") 
+    message(STATUS "IOS                      :  ${IOS}") 
+    message(STATUS "MINGW                    :  ${MINGW}") 
+    message(STATUS "MSVC                     :  ${MSVC}") 
+    message(STATUS "MSVC10                   :  ${MSVC10}") 
+    message(STATUS "MSVC11                   :  ${MSVC11}") 
+    message(STATUS "MSVC12                   :  ${MSVC12}") 
+    message(STATUS "MSVC14                   :  ${MSVC14}") 
+    message(STATUS "MSVC60                   :  ${MSVC60}") 
+    message(STATUS "MSVC70                   :  ${MSVC70}") 
+    message(STATUS "MSVC71                   :  ${MSVC71}") 
+    message(STATUS "MSVC80                   :  ${MSVC80}") 
+    message(STATUS "MSVC90                   :  ${MSVC90}") 
+    message(STATUS "MSVC_IDE                 :  ${MSVC_IDE}") 
+    message(STATUS "MSVC_TOOLSET_VERSION     :  ${MSVC_TOOLSET_VERSION}") 
+    message(STATUS "MSVC_VERSION             :  ${MSVC_VERSION}") 
+    message(STATUS "MSYS                     :  ${MSYS}") 
+    message(STATUS "UNIX                     :  ${UNIX}") 
+    message(STATUS "WIN32                    :  ${WIN32}") 
+    message(STATUS "WINCE                    :  ${WINCE}") 
+    message(STATUS "WINDOWS_PHONE            :  ${WINDOWS_PHONE}") 
+    message(STATUS "WINDOWS_STORE            :  ${WINDOWS_STORE}") 
+    message(STATUS "XCODE                    :  ${XCODE}") 
+    message(STATUS "XCODE_VERSION            :  ${XCODE_VERSION}") 
+    message(STATUS)
+endmacro()
+macro(print_project_info)
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "CMake Project Info:             <<<<    ${PROJECT_NAME}    >>>>")
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS)
+    message(STATUS "${PROJECT_NAME}_VERSION_MAJOR   :  ${${PROJECT_NAME}_VERSION_MAJOR}")
+    message(STATUS "${PROJECT_NAME}_VERSION_MINOR   :  ${${PROJECT_NAME}_VERSION_MINOR}")
+    message(STATUS "${PROJECT_NAME}_VERSION_PATCH   :  ${${PROJECT_NAME}_VERSION_PATCH}")
+    message(STATUS "${PROJECT_NAME}_VERSION_TWEAK   :  ${${PROJECT_NAME}_VERSION_TWEAK}")
+    message(STATUS "${PROJECT_NAME}_DESCRIPTION     :  ${${PROJECT_NAME}_DESCRIPTION}")
+    message(STATUS "${PROJECT_NAME}_HOMEPAGE_URL    :  ${${PROJECT_NAME}_HOMEPAGE_URL}")
+    message(STATUS "${PROJECT_NAME}_VERSION         :  ${${PROJECT_NAME}_VERSION}")
+    message(STATUS "${PROJECT_NAME}_SOURCE_DIR      :  ${${PROJECT_NAME}_SOURCE_DIR}")
+    message(STATUS "${PROJECT_NAME}_BINARY_DIR      :  ${${PROJECT_NAME}_BINARY_DIR}")
+    message(STATUS)
+endmacro()
+
+macro(print_all_cmake_info)
     message(STATUS "---------------------------------------------------------------")
     message(STATUS "---------------------------------------------------------------")
-endfunction()
+    message(STATUS)
+    message(STATUS "Printing... ")
+    message(STATUS)
+    print_general_cmake_info()
+    print_cmake_x_build_info()
+    print_cpack_info()
+    print_system_variables()
+    print_project_info()
+    message(STATUS "---------------------------------------------------------------")
+    message(STATUS "---------------------------------------------------------------")
+endmacro()
 
 function(print_option_wanted_status option_name)
     set(NAME ${option_name})
@@ -79,6 +215,37 @@ endfunction()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #############################################################################################
+###    Version and Installation settings    #################################################
+#############################################################################################
+
+set(${PROJECT_NAME}_MAJOR_VERSION 1)
+set(${PROJECT_NAME}_MINOR_VERSION 4)
+set(${PROJECT_NAME}_PATCH_VERSION 0)
+set(${PROJECT_NAME}_VERSION
+        ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_PATCH_VERSION})
+
+# Offer the user the choice of overriding the installation directories
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+
+if(WIN32 AND NOT CYGWIN)
+    set(DEF_INSTALL_CMAKE_DIR CMake)
+else()
+    set(DEF_INSTALL_CMAKE_DIR lib/CMake/${PROJECT_NAME})
+endif()
+set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
+        "Installation directory for CMake files")
+
+# Mak relative paths absolute (needed later on)
+foreach(p LIB BIN INCLUDE CMAKE)
+    set(var INSTALL_${p}_DIR)
+    if(NOT IS_ABSOLUTE "${${var}}")
+        set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+    endif()
+endforeach()
+
+#############################################################################################
 ###    General Settings    ##################################################################
 #############################################################################################
 
@@ -91,10 +258,9 @@ endif ()
 # tell CMake to always include header files in this directory
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Let's talk
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-print_platform_info()
+print_all_cmake_info()
 
 #############################################################################################
 ###    Threads    ###########################################################################
@@ -263,19 +429,38 @@ list(APPEND CUTEDEMO_SCOPE_FILES
         ../AWLQtScope/awlqtscope.ui
 )
 
-ADD_EXECUTABLE(LinuxCute
+set(CUTEDEMO_RESOURCES "CuteDemo.rc")
+if(WIN32)
+ADD_EXECUTABLE(CuteDemo
+	WIN32
    ${CUTEDEMO_MAIN_FILES}
    ${CUTEDEMO_QT_UI_FILES}
    ${CUTEDEMO_CORE_FILES}
    ${CUTEDEMO_SCOPE_FILES}
+   ${CUTEDEMO_RESOURCES}
 )
 
 TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
 	    WINDOWS 
 	    QWT_DLL
     )
+else()
+ADD_EXECUTABLE(CuteDemo
+   ${CUTEDEMO_MAIN_FILES}
+   ${CUTEDEMO_QT_UI_FILES}
+   ${CUTEDEMO_CORE_FILES}
+   ${CUTEDEMO_SCOPE_FILES}
+   ${CUTEDEMO_RESOURCES}
+)
+
+TARGET_COMPILE_DEFINITIONS(
+        CuteDemo
+        PUBLIC 
+	    QWT_DLL
+    )
+endif()
 
 #############################################################################################
 ###    Option description       #############################################################
@@ -314,12 +499,12 @@ set(WANT_AP_VIDEO 0)
 print_option_wanted_status("WANT_EASY_SYNC_SUPPORT")
 if(${WANT_EASY_SYNC_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             USE_CAN_EASYSYNC 
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverEasySyncCapture.cpp 
     )
@@ -348,19 +533,19 @@ if(${WANT_KVASER_SUPPORT})
 
 
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             USE_CAN_KVASER 
     )
 
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverKvaserCapture.cpp 
     )
 
     TARGET_LINK_LIBRARIES(
-        LinuxCute
+        CuteDemo
         ${CAN_LIBRARIES}
     )
 endif()
@@ -372,12 +557,12 @@ endif()
 print_option_wanted_status("WANT_SOCKET_CAN_SUPPORT")
 if(${WANT_SOCKET_CAN_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             USE_CAN_SOCKETCAN 
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverSocketCANCapture.cpp 
     )
@@ -391,12 +576,12 @@ endif()
 print_option_wanted_status("WANT_POSIX_UDP_SUPPORT")
 if(${WANT_POSIX_UDP_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             USE_POSIXUDP 
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverPosixUDPCapture.cpp 
     )
@@ -410,12 +595,12 @@ endif()
 print_option_wanted_status("WANT_POSIX_TTY_SUPPORT")
 if(${WANT_POSIX_TTY_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             USE_POSIXTTY 
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverPosixTTYCapture.cpp 
     )
@@ -435,21 +620,21 @@ if(${WANT_LIBUSB_SUPPORT})
     include_directories(${LIBUSB_INCLUDE_DIRS})
 
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             USE_LIBUSB 
     )
     TARGET_LINK_LIBRARIES( 
-        LinuxCute 
+        CuteDemo 
         ${LIBUSB_LIB} 
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverPolledCapture.cpp 
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC 
             ../AWLCoreClasses/ReceiverLibUSBCapture.cpp 
     )
@@ -462,12 +647,12 @@ endif()
 print_option_wanted_status("WANT_TCP_SUPPORT")
 if(${WANT_TCP_SUPPORT})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute 
+        CuteDemo 
         PUBLIC 
             USE_TCP
     )
     TARGET_SOURCES(
-        LinuxCute
+        CuteDemo
         PUBLIC
             ../AWLCoreClasses/ReceiverTCPCapture.cp    
     )
@@ -480,19 +665,19 @@ endif()
 print_option_wanted_status("WANT_OPENCV_VIDEO")
 if(${WANT_OPENCV_VIDEO})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute 
+        CuteDemo 
         PUBLIC 
             USE_OPENCV_VIDEO
     )
     FIND_PACKAGE(OpenCV REQUIRED)
     TARGET_SOURCES(
-        LinuxCute 
+        CuteDemo 
         PUBLIC 
             VideoCapture.cpp 
             VideoViewer.cpp
     )
     TARGET_LINK_LIBRARIES(
-        LinuxCute 
+        CuteDemo 
         ${OpenCV_LIBS}
     )
 endif()
@@ -504,7 +689,7 @@ endif()
 print_option_wanted_status("WANT_AP_VIDEO")
 if(${WANT_AP_VIDEO})
     TARGET_COMPILE_DEFINITIONS(
-        LinuxCute 
+        CuteDemo 
         PUBLIC
             USE_AP_VIDEO 
     )
@@ -513,13 +698,13 @@ if(${WANT_AP_VIDEO})
         "../AP/lib/*"
     )
     TARGET_SOURCES( 
-        LinuxCute 
+        CuteDemo 
         PUBLIC 
             APVideoCapture.cpp
             APVideoViewer.cpp 
     )
     TARGET_LINK_LIBRARIES(
-        LinuxCute ${AP_LIBRARIES} 
+        CuteDemo ${AP_LIBRARIES} 
     )
 
     INCLUDE_DIRECTORIES(../AP/include)
@@ -530,7 +715,8 @@ endif()
 #############################################################################################
 
 TARGET_LINK_LIBRARIES(
-    LinuxCute 
+    CuteDemo 
+
     ${Qwt_LIBRARIES}
     ${Qt5Core_LIBRARIES}
     ${Qt5Gui_LIBRARIES}
@@ -538,4 +724,77 @@ TARGET_LINK_LIBRARIES(
     ${Boost_LIBRARIES}
 )
 
-target_link_libraries(LinuxCute Threads::Threads)
+target_link_libraries(
+    CuteDemo 
+    Threads::Threads 
+    Qt5::WinMain       # <-- New target available via find_package ( Qt5Core )
+)
+
+
+#############################################################################################
+###    Installation directives    ###########################################################
+#############################################################################################
+
+# Add all targets to the build-tree export set
+export(TARGETS ${PROJECT_NAME}
+        FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE ${PROJECT_NAME})
+
+# Create the ${PROJECT_NAME}Config.cmake and ${PROJECT_NAME}Version files
+file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}")
+# ... for the build tree
+set(CONF_INCLUDE_DIRS "\${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+configure_file(${PROJECT_NAME}Config.cmake.in
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" @ONLY)
+# ... for the install tree
+set(CONF_INCLUDE_DIRS "\${${PROJECT_NAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(${PROJECT_NAME}Config.cmake.in
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake" @ONLY)
+# ... for both
+configure_file(${PROJECT_NAME}ConfigVersion.cmake.in
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" @ONLY)
+
+# Install the ${PROJECT_NAME}Config.cmake and ${PROJECT_NAME}ConfigVersion.cmake
+install(FILES
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake"
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+# Install the export set for use with the install-tree
+install(EXPORT ${PROJECT_NAME}Targets DESTINATION
+"${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+#############################################################################################
+###    Packaging    #########################################################################
+#############################################################################################
+include(InstallRequiredSystemLibraries)
+set(CPACK_RESOURCE_FILES_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_VENDOR "Phantom Intelligence Inc.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Qt Demo application made with <3 at Phantom")
+set(CPACK_PACKAGE_VERSION_MAJOR "${${PROJECT_NAME}_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${${PROJECT_NAME}_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}")
+
+print_cpack_info()
+
+include(CPack)
+# CPack Modules
+#CPack
+#CPackArchive
+#CPackBundle
+#CPackComponent
+#CPackCygwin
+#CPackDMG
+#CPackDeb
+#CPackFreeBSD
+#CPackIFW
+#CPackIFWConfigureFile
+#CPackNSIS
+#CPackNuGet
+#CPackPackageMaker
+#CPackProductBuild
+#CPackRPM
+#CPackWIX
