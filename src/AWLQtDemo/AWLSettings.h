@@ -155,6 +155,8 @@ public:
         bool bTabSettingGPIOs;
         bool bTabSettingAlgoControl;
         bool bTabSettingTrackerControl;
+        bool bTabSettingAScan;
+        bool bTabSettingMisc;
 
 
 	bool bDisplayScopeDistance;

@@ -518,6 +518,12 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	if (!globalSettings->bTabSettingTrackerControl) {
                 ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.TrackerTab));
         }
+	if (!globalSettings->bTabSettingAScan) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.tab));
+        }
+	if (!globalSettings->bTabSettingMisc) {
+                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.extraTab));
+        }
 
 	on_view2DActionToggled();
         on_viewTableViewActionToggled();

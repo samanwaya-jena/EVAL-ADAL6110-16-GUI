@@ -6,17 +6,28 @@
 	       screen are displayed. -->
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
+    <displayAScanViewWindow>false</displayAScanViewWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>false</displayScopeWindow>
+    <displayScopeWindow>true</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
+    <displayAboutWindow>false</displayAboutWindow>
+
+    <TabSettingCalibration>true</TabSettingCalibration>
+    <TabSettingControl>true</TabSettingControl>
+    <TabSettingStatus>true</TabSettingStatus>
+    <TabSettingRegisters>true</TabSettingRegisters>
+    <TabSettingGPIOs>true</TabSettingGPIOs>
+    <TabSettingAlgoControl>true</TabSettingAlgoControl>
+    <TabSettingTrackerControl>true</TabSettingTrackerControl>
+
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
 	       1: Units are in km/h -->
     <velocityUnits>1</velocityUnits>
 
-    <!-- displayed logo: empty string means no logo -->
+    <!-- displayed logo: empy string means no logo -->
     <logoFileName>./Images/Logos/Phantom-Black-logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
@@ -54,12 +65,12 @@
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
-      <receiverRegisterSet>registerDescription_RevD</receiverRegisterSet>
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryAWL16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -68,10 +79,10 @@
       <kvaserChannel>0</kvaserChannel>
 
       <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
+      <socketCANdevice>vcan0</socketCANdevice>
 
       <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.83</posixUDPServerAddress>
+      <posixUDPServerAddress>127.0.0.1</posixUDPServerAddress>
 
       <!-- The PosixUDP server port -->
       <posixUDPServerPort>23456</posixUDPServerPort>
@@ -80,15 +91,15 @@
       <posixTTYName>/dev/ttyUSB0</posixTTYName>
 
       <!-- The LibUSB Vendor id -->
-      <libUsbVendorId>0x1111</libUsbVendorId>
+      <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>0xffff</libUsbProductId>
+      <libUsbProductId>30755</libUsbProductId>
       <!-- The LibUSB input end point -->
-      <libUsbEndPointIn>1</libUsbEndPointIn>
+      <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>3000<libUsbTimeOut>
+      <libUsbTimeOut>1000</libUsbTimeOut>
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -110,7 +121,7 @@
 		       processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>255</channelMask>
-;
+
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -141,10 +152,10 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>80</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
-    
+
 
     </receivers>
 
@@ -158,7 +169,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>v4l2src device=/dev/video0 ! videoscale ! videorate ! video/x-raw, width=640, height=360, framerate=30/1 ! videoconvert ! appsink</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -335,7 +346,7 @@
     <!-- Car width in meters -->
     <carHeight>1.44</carHeight>
     <!-- LaneWidth in meters 3.7 -->
-    <laneWidth>0</laneWidth>
+    <laneWidth>-1</laneWidth>
     <!--Lane width in meters -->
 
     <!-- velocity for colorCoding in m/s -->
@@ -344,7 +355,7 @@
     <!-- zeroVelocity is velocity at which we consider 
 	     a target to be static (-zeroVelocity to +zeroVelocity) -->
     <!-- in m/s -->
-    <zeroVelocity>1.0</zeroVelocity>
+    <zeroVelocity>0</zeroVelocity>
 
     <!-- Merge detection Mode
 	     0:		eNoMerge - don't merge targets
@@ -1805,6 +1816,793 @@
     
   </registerDescription_RevD>
 
+  <registerDescription_ADI>
+    <!-- Registers for Revision D of AWL
+  Revision D includes Algo 5 test version-->
+    <registersFPGA>
+
+      <register>
+        <index>R0</index>
+        <address>0</address>
+        <description>DEVICE</description>
+      </register>
+      <register>
+        <index>R1</index>
+        <address>1</address>
+        <description>CONTROL_0</description>
+      </register>
+      <register>
+        <index>R2</index>
+        <address>2</address>
+        <description>CONTROL_1</description>
+      </register>
+      <register>
+        <index>R3</index>
+        <address>3</address>
+        <description>SRAM_READ</description>
+      </register>
+      <register>
+        <index>R4</index>
+        <address>4</address>
+        <description>FLASH_DELAY</description>
+      </register>
+      <register>
+        <index>R7</index>
+        <address>7</address>
+        <description>TIMING</description>
+      </register>
+
+      <!-- Channel 0 -->
+      <register>
+        <index>R13</index>
+        <address>13</address>
+        <description>CH0_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R14</index>
+        <address>14</address>
+        <description>CH0_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R15</index>
+        <address>15</address>
+        <description>CH0_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 1 -->
+      <register>
+        <index>R17</index>
+        <address>17</address>
+        <description>CH1_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R18</index>
+        <address>18</address>
+        <description>CH1_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R19</index>
+        <address>19</address>
+        <description>CH1_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 2 -->
+      <register>
+        <index>R21</index>
+        <address>21</address>
+        <description>CH2_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R22</index>
+        <address>22</address>
+        <description>CH2_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R23</index>
+        <address>23</address>
+        <description>CH2_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 3 -->
+      <register>
+        <index>R25</index>
+        <address>25</address>
+        <description>CH3_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R26</index>
+        <address>26</address>
+        <description>CH3_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R27</index>
+        <address>27</address>
+        <description>CH3_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 4 -->
+      <register>
+        <index>R29</index>
+        <address>29</address>
+        <description>CH4_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R30</index>
+        <address>30</address>
+        <description>CH4_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R31</index>
+        <address>31</address>
+        <description>CH4_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 5 -->
+      <register>
+        <index>R33</index>
+        <address>33</address>
+        <description>CH5_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R34</index>
+        <address>34</address>
+        <description>CH5_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R35</index>
+        <address>35</address>
+        <description>CH5_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 6 -->
+      <register>
+        <index>R37</index>
+        <address>37</address>
+        <description>CH6_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R38</index>
+        <address>38</address>
+        <description>CH6_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R39</index>
+        <address>39</address>
+        <description>CH6_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 7 -->
+      <register>
+        <index>R41</index>
+        <address>41</address>
+        <description>CH7_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R42</index>
+        <address>42</address>
+        <description>CH7_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R43</index>
+        <address>43</address>
+        <description>CH7_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 8 -->
+      <register>
+        <index>R45</index>
+        <address>45</address>
+        <description>CH8_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R46</index>
+        <address>46</address>
+        <description>CH8_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R47</index>
+        <address>47</address>
+        <description>CH8_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 9 -->
+      <register>
+        <index>R49</index>
+        <address>49</address>
+        <description>CH9_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R50</index>
+        <address>50</address>
+        <description>CH9_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R51</index>
+        <address>51</address>
+        <description>CH9_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 10 -->
+      <register>
+        <index>R53</index>
+        <address>53</address>
+        <description>CH10_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R54</index>
+        <address>54</address>
+        <description>CH10_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R55</index>
+        <address>55</address>
+        <description>CH10_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 11 -->
+      <register>
+        <index>R57</index>
+        <address>57</address>
+        <description>CH11_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R58</index>
+        <address>58</address>
+        <description>CH11_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R59</index>
+        <address>59</address>
+        <description>CH11_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 12 -->
+      <register>
+        <index>R61</index>
+        <address>61</address>
+        <description>CH12_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R62</index>
+        <address>62</address>
+        <description>CH12_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R63</index>
+        <address>63</address>
+        <description>CH12_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 13 -->
+      <register>
+        <index>R65</index>
+        <address>65</address>
+        <description>CH13_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R66</index>
+        <address>66</address>
+        <description>CH13_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R67</index>
+        <address>67</address>
+        <description>CH13_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 14 -->
+      <register>
+        <index>R69</index>
+        <address>69</address>
+        <description>CH14_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R70</index>
+        <address>70</address>
+        <description>CH14_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R71</index>
+        <address>71</address>
+        <description>CH14_CONTROL_2</description>
+      </register>
+
+      <!-- Channel 15 -->
+      <register>
+        <index>R73</index>
+        <address>73</address>
+        <description>CH15_CONTROL_0</description>
+      </register>
+      <register>
+        <index>R74</index>
+        <address>74</address>
+        <description>CH15_CONTROL_1</description>
+      </register>
+      <register>
+        <index>R75</index>
+        <address>75</address>
+        <description>CH15_CONTROL_2</description>
+      </register>
+
+      <register>
+        <index>R100</index>
+        <address>100</address>
+        <description>Wagner: Max Acc</description>
+      </register>
+      <register>
+        <index>R101</index>
+        <address>101</address>
+        <description>Wagner: Acc Shift</description>
+      </register>
+      <register>
+        <index>R102</index>
+        <address>102</address>
+        <description>Wagner: Algo Scaler</description>
+      </register>
+
+      <register>
+        <index>R998</index>
+        <address>998</address>
+        <description>SAVE_CONFIG_TO_FLASH</description>
+      </register>
+
+      <register>
+        <index>R999</index>
+        <address>999</address>
+        <description>RESET_FACTORY_DEFAULT</description>
+      </register>
+
+    </registersFPGA>
+
+    <registersADC>
+      <register>
+        <index>0</index>
+        <address>0</address>
+        <description>Software Reset</description>
+      </register>
+    </registersADC>
+
+    <GPIOs>
+      <register>
+        <index>67</index>
+        <address>67</address>
+        <description>ADC Reset</description>
+      </register>
+    </GPIOs>
+
+    <algos>
+      <defaultAlgo>6</defaultAlgo>
+      <algo>
+        <!-- Algo 00 -->
+        <!-- Algo00 is the Global parameters section -->
+        <algoID>0</algoID>
+        <algoName>Global</algoName>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Moving average</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Persistance</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>17</index>
+          <address>17</address>
+          <description>Window width</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
+
+        <parameter>
+          <index>18</index>
+          <address>18</address>
+          <description>Window qty</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
+      </algo>
+
+      <algo>
+        <!-- Algo 01 -->
+        <!-- Algo01 is the threshold algo section -->
+        <algoID>1</algoID>
+        <algoName>Threshold</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>int</type>
+          <default>0</default>
+        </parameter>
+      </algo>
+
+      <algo>
+        <!-- Algo 02 -->
+        <!-- Algo02 is the dw algosection -->
+        <algoID>2</algoID>
+        <algoName>Double-W</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>5.0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Starting threshold</description>
+          <type>float</type>
+          <default>0.35</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>First damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Numwidth</description>
+          <type>float</type>
+          <default>2.0</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Intensity filter</description>
+          <type>float</type>
+          <default>8.00</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>Second width</description>
+          <type>float</type>
+          <default>8.0</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>16.0</default>
+        </parameter>
+      </algo>
+
+      <algo>
+        <!-- Algo 03 -->
+        <!-- Algo03 is the double-d algo -->
+        <algoID>3</algoID>
+        <algoName>Double-D</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>5.0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Starting threshold</description>
+          <type>float</type>
+          <default>0.24</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>First derivate order</description>
+          <type>float</type>
+          <default>2</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Second derivate order</description>
+          <type>float</type>
+          <default>8</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Intensity filter</description>
+          <type>float</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>6</index>
+          <address>6</address>
+          <description>First index</description>
+          <type>float</type>
+          <default>28.0</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>24.0</default>
+        </parameter>
+      </algo>
+
+      <algo>
+        <!-- Algo 04 -->
+        <!-- Algo04 is RMSConv -->
+        <algoID>4</algoID>
+        <algoName>RMSConv</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>5.0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Mean width</description>
+          <type>float</type>
+          <default>3.0</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>SourceWidth</description>
+          <type>float</type>
+          <default>7.0</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>Derivate width</description>
+          <type>float</type>
+          <default>5.0</default>
+        </parameter>
+
+        <parameter>
+          <index>6</index>
+          <address>6</address>
+          <description>Process</description>
+          <type>float</type>
+          <default>1.0</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>18.0</default>
+        </parameter>
+
+      </algo>
+
+      <algo>
+        <!-- Algo 05 -->
+        <!-- Algo05 is Algo 5-->
+        <algoID>5</algoID>
+        <algoName>Algo5</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>Mean width</description>
+          <type>int</type>
+          <default>3</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>SourceWidth</description>
+          <type>int</type>
+          <default>7</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>Derivate width</description>
+          <type>int</type>
+          <default>5</default>
+        </parameter>
+
+        <parameter>
+          <index>7</index>
+          <address>7</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>18.0</default>
+        </parameter>
+
+      </algo>
+
+      <algo>
+        <!-- Algo 06 -->
+        <!-- Algo06 is Algo 4.5-->
+        <algoID>6</algoID>
+        <algoName>Algo4.5</algoName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Offset</description>
+          <type>float</type>
+          <default>5.0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Std. factor</description>
+          <type>float</type>
+          <default>6.0</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>Damping</description>
+          <type>float</type>
+          <default>1.3</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>SourceWidth</description>
+          <type>float</type>
+          <default>7.0</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Derivate width</description>
+          <type>float</type>
+          <default>5.0</default>
+        </parameter>
+
+        <parameter>
+          <index>5</index>
+          <address>5</address>
+          <description>SNR Cutoff (dB)</description>
+          <type>float</type>
+          <default>16.0</default>
+        </parameter>
+
+      </algo>
+    </algos>
+
+    <trackers>
+      <defaultTracker>1</defaultTracker>
+      <tracker>
+        <!-- Tracker 0 is A/B tracker -->
+        <trackerID>1</trackerID>
+        <trackerName>ABFilter</trackerName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>Alpha Pos</description>
+          <type>float</type>
+          <default>0.2</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>Beta Pos</description>
+          <type>float</type>
+          <default>0.015</default>
+        </parameter>
+
+        <parameter>
+          <index>2</index>
+          <address>2</address>
+          <description>AlphaSpeed</description>
+          <type>float</type>
+          <default>0.6</default>
+        </parameter>
+
+        <parameter>
+          <index>3</index>
+          <address>3</address>
+          <description>BetaSpeed</description>
+          <type>float</type>
+          <default>0.5</default>
+        </parameter>
+
+        <parameter>
+          <index>4</index>
+          <address>4</address>
+          <description>Persistance</description>
+          <type>float</type>
+          <default>3.0</default>
+        </parameter>
+      </tracker>
+
+      <tracker>
+        <!-- Tracker 1 is LR tracker -->
+        <trackerID>2</trackerID>
+        <trackerName>LRFilter</trackerName>
+
+        <parameter>
+          <index>0</index>
+          <address>0</address>
+          <description>SNR to Pair</description>
+          <type>float</type>
+          <default>20.0</default>
+        </parameter>
+
+        <parameter>
+          <index>1</index>
+          <address>1</address>
+          <description>SNR to Track</description>
+          <type>float</type>
+          <default>25.0</default>
+        </parameter>
+        
+      </tracker>
+    </trackers>
+    
+  </registerDescription_ADI>
+
   <GeometryAWL7>
        <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
@@ -1972,7 +2770,8 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>25.0</maxRange>
+    <maxRange>80.0</maxRange>
+    <maxAscanRange>80.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>
@@ -1993,4 +2792,52 @@
     </displayColorLine1>
 
   </GeometryAWL16Array>
+  
+  <Geometry1x16Array>
+    <!-- For multi-line sensors define wraparound and number of sensors per line.
+           If sensor does not support wrap around, write a wierdly high number that 
+           exceeds sensor physical range -->
+    <lineWrapAround>-1</lineWrapAround>
+    <channelsPerLine>16</channelsPerLine>
+
+    <arraySize>
+      <x>16</x>
+      <y>1</y>
+    </arraySize>
+    <arrayFOV>
+      <x>28</x>
+      <y>4.1</y>
+    </arrayFOV>
+    <pixelSpacing>
+      <x>0.1</x>
+      <y>1.5</y>
+    </pixelSpacing>
+    <arrayOffset>
+      <x>0.0</x>
+      <y>0.0</y>
+    </arrayOffset>
+
+    <maxRange>10.0</maxRange>
+    <maxAscanRange>10.0</maxAscanRange>
+    
+    <displayColor>
+      <red>255</red>
+      <green>128</green>
+      <blue>128</blue>
+    </displayColor>
+
+    <displayColorLine0>
+      <red>192</red>
+      <green>192</green>
+      <blue>192</blue>
+    </displayColorLine0>
+
+    <displayColorLine1>
+      <red>255</red>
+      <green>0</green>
+      <blue>0</blue>
+    </displayColorLine1>
+
+  </Geometry1x16Array>
+  
 </config>

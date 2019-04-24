@@ -18,8 +18,8 @@ if(Boost_FOUND)
 	message("Boost Found!")
 endif()
 #SET(BOOST_INCLUDE_DIRS "/usr/include/boost")
-file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
-file(GLOB QWT_LIBRARIES "/usr/lib/libqwt-qt5*")
+file(GLOB QWT_INCLUDE_DIR "/usr/include/qt5/qwt")
+file(GLOB QWT_LIBRARIES "/usr/lib64/libqwt-qt5*")
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
 INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
 message("QT5 INC")
@@ -34,7 +34,7 @@ ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
 message("QT5 DEF")
 message(${Qt5Widgets_DEFINITIONS})
 # Creation of executable fails in Qt5 with default configuration
-SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS "-g ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 message("QT5 CFLAGS")
 message("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
@@ -77,7 +77,7 @@ TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPosixTTYCapture.cpp )
 
 # Comment next 2 lines to disable LibUSB support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_LIBUSB )
-TARGET_LINK_LIBRARIES( LinuxCute /usr/lib/x86_64-linux-gnu/libusb-1.0.so )
+TARGET_LINK_LIBRARIES( LinuxCute /usr/lib64/libusb-1.0.so.0 )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverPolledCapture.cpp )
 TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverLibUSBCapture.cpp )
 
@@ -91,7 +91,7 @@ FIND_PACKAGE(OpenCV REQUIRED)
 TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
 TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
 
-# Comment next 4 lines to disable AP Video
+# Comment next 5 lines to disable AP Video
 #TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_AP_VIDEO )
 #file(GLOB AP_LIBRARIES "../AP/lib/*")
 #TARGET_SOURCES( LinuxCute PUBLIC APVideoCapture.cpp  APVideoViewer.cpp )
@@ -106,6 +106,6 @@ message (Qt5::Widgets)
 message ("QT5 END")
 TARGET_LINK_LIBRARIES(LinuxCute ${Qt5Widgets_LIBRARIES} ${QWT_LIBRARIES}
 ${Boost_DATE_TIME_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
-${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+${Boost_SIGNALS_LIBRARY} ${Boost_THREAD_LIBRARY} )
 #target_link_libraries(LinuxCute Qt5::Widgets)
 target_link_libraries(LinuxCute Threads::Threads)

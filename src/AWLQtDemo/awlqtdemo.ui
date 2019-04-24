@@ -5153,6 +5153,107 @@ color: rgb(255,255,255);</string>
          <attribute name="title">
           <string>Misc</string>
          </attribute>
+         <widget class="QCheckBox" name="misc_checkBox_System">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>10</y>
+            <width>91</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>System Enable</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="misc_checkBox_Laser">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>40</y>
+            <width>91</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Laser  Enable</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="misc_checkBox_Gain">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>70</y>
+            <width>151</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Auto Gain Control Enable</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="misc_checkBox_DC">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>100</y>
+            <width>121</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Dc Balance Enable</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="misc_checkBox_Calibration">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>130</y>
+            <width>131</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Calibration Enable</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_FR">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>10</y>
+            <width>63</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Frame rate</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_FR">
+          <property name="geometry">
+           <rect>
+            <x>360</x>
+            <y>10</y>
+            <width>71</width>
+            <height>28</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Set</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="spinBox_FR">
+          <property name="geometry">
+           <rect>
+            <x>310</x>
+            <y>10</y>
+            <width>49</width>
+            <height>29</height>
+           </rect>
+          </property>
+         </widget>
         </widget>
        </widget>
       </item>

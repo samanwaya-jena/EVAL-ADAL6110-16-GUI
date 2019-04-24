@@ -234,6 +234,14 @@ public:
     QSpinBox *spinBoxReceiver2;
     QPushButton *pushButtonSwap;
     QWidget *extraTab;
+    QCheckBox *misc_checkBox_System;
+    QCheckBox *misc_checkBox_Laser;
+    QCheckBox *misc_checkBox_Gain;
+    QCheckBox *misc_checkBox_DC;
+    QCheckBox *misc_checkBox_Calibration;
+    QLabel *label_FR;
+    QPushButton *pushButton_FR;
+    QSpinBox *spinBox_FR;
     QGridLayout *gridDisplayLayout;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -2697,6 +2705,30 @@ public:
         interfaceTabs->addTab(tab, QString());
         extraTab = new QWidget();
         extraTab->setObjectName(QStringLiteral("extraTab"));
+        misc_checkBox_System = new QCheckBox(extraTab);
+        misc_checkBox_System->setObjectName(QStringLiteral("misc_checkBox_System"));
+        misc_checkBox_System->setGeometry(QRect(30, 10, 91, 26));
+        misc_checkBox_Laser = new QCheckBox(extraTab);
+        misc_checkBox_Laser->setObjectName(QStringLiteral("misc_checkBox_Laser"));
+        misc_checkBox_Laser->setGeometry(QRect(30, 40, 91, 26));
+        misc_checkBox_Gain = new QCheckBox(extraTab);
+        misc_checkBox_Gain->setObjectName(QStringLiteral("misc_checkBox_Gain"));
+        misc_checkBox_Gain->setGeometry(QRect(30, 70, 151, 26));
+        misc_checkBox_DC = new QCheckBox(extraTab);
+        misc_checkBox_DC->setObjectName(QStringLiteral("misc_checkBox_DC"));
+        misc_checkBox_DC->setGeometry(QRect(30, 100, 121, 26));
+        misc_checkBox_Calibration = new QCheckBox(extraTab);
+        misc_checkBox_Calibration->setObjectName(QStringLiteral("misc_checkBox_Calibration"));
+        misc_checkBox_Calibration->setGeometry(QRect(30, 130, 131, 26));
+        label_FR = new QLabel(extraTab);
+        label_FR->setObjectName(QStringLiteral("label_FR"));
+        label_FR->setGeometry(QRect(240, 10, 63, 21));
+        pushButton_FR = new QPushButton(extraTab);
+        pushButton_FR->setObjectName(QStringLiteral("pushButton_FR"));
+        pushButton_FR->setGeometry(QRect(360, 10, 71, 28));
+        spinBox_FR = new QSpinBox(extraTab);
+        spinBox_FR->setObjectName(QStringLiteral("spinBox_FR"));
+        spinBox_FR->setGeometry(QRect(310, 10, 49, 29));
         interfaceTabs->addTab(extraTab, QString());
 
         verticalLayout->addWidget(interfaceTabs);
@@ -3067,6 +3099,13 @@ public:
         groupBox_5->setTitle(QApplication::translate("AWLQtDemoClass", "Receivers swapping", Q_NULLPTR));
         pushButtonSwap->setText(QApplication::translate("AWLQtDemoClass", "Swap", Q_NULLPTR));
         interfaceTabs->setTabText(interfaceTabs->indexOf(tab), QApplication::translate("AWLQtDemoClass", "Ascan", Q_NULLPTR));
+        misc_checkBox_System->setText(QApplication::translate("AWLQtDemoClass", "System Enable", Q_NULLPTR));
+        misc_checkBox_Laser->setText(QApplication::translate("AWLQtDemoClass", "Laser  Enable", Q_NULLPTR));
+        misc_checkBox_Gain->setText(QApplication::translate("AWLQtDemoClass", "Auto Gain Control Enable", Q_NULLPTR));
+        misc_checkBox_DC->setText(QApplication::translate("AWLQtDemoClass", "Dc Balance Enable", Q_NULLPTR));
+        misc_checkBox_Calibration->setText(QApplication::translate("AWLQtDemoClass", "Calibration Enable", Q_NULLPTR));
+        label_FR->setText(QApplication::translate("AWLQtDemoClass", "Frame rate", Q_NULLPTR));
+        pushButton_FR->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
         interfaceTabs->setTabText(interfaceTabs->indexOf(extraTab), QApplication::translate("AWLQtDemoClass", "Misc", Q_NULLPTR));
     } // retranslateUi
 
