@@ -174,7 +174,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	AdjustDefaultDisplayedRanges();
 
 	// Create the receiver communication objects
-	int receiverQty = globalSettings->receiverSettings.size();
+	size_t receiverQty = globalSettings->receiverSettings.size();
 	receiverCaptures.resize(receiverQty);
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
@@ -307,7 +307,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.targetHintDistanceSpinBox->setValue(receiverCaptures[0]->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
 
-	// Default values
+	// Default values, currently unused
 	ChannelMask channelMask;
 
 	if (receiverCaptures[0]) 
@@ -354,7 +354,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Fill in the algo select combo box
 	ui.algoSelectComboBox->clear();
-	int algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size();
+	size_t algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size();
 	for (int i = 1; i < algoQty; i++)
 	{
 		QString algoLabel = QString(receiverCaptures[0]->parametersAlgos.algorithms[i].sAlgoName.c_str());
@@ -367,7 +367,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Fill in the tracker select combo box
 	ui.trackerSelectComboBox->clear();
-	int trackerQty = receiverCaptures[0]->parametersTrackers.algorithms.size();
+	size_t trackerQty = receiverCaptures[0]->parametersTrackers.algorithms.size();
 	for (int i = 0; i < trackerQty; i++)
 	{
 		QString trackerLabel = QString(receiverCaptures[0]->parametersTrackers.algorithms[i].sAlgoName.c_str());
@@ -424,9 +424,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
   
   ui.spinBoxReceiver1->setMinimum(1);
-  ui.spinBoxReceiver1->setMaximum(receiverCaptures.size());
+  ui.spinBoxReceiver1->setMaximum((int)receiverCaptures.size());
   ui.spinBoxReceiver2->setMinimum(1);
-  ui.spinBoxReceiver2->setMaximum(receiverCaptures.size());
+  ui.spinBoxReceiver2->setMaximum((int)receiverCaptures.size());
   ui.groupBox_5->hide();
   if (receiverCaptures.size() > 1) {
 	bool show = true;
@@ -612,7 +612,7 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Adjust the default maximum displayed range for the receiver (used in various interfaces) 
 	// to reflect the maximum of all its channel ranges.
-	int receiverQty = globalSettings->receiverSettings.size();
+	size_t receiverQty = globalSettings->receiverSettings.size();
 	//long absoluteMaxRange = 0.0;
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
@@ -635,7 +635,6 @@ void AWLQtDemo::SetupToolBar()
 {
 	// Read the settigs from the configuration file
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-printf(get_current_dir_name());
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
 	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.gif"), "2Z View", 0);
@@ -833,7 +832,7 @@ void AWLQtDemo::on_pushButtonSwap_clicked()
 {	
 	int r1, r2;
 	void *h1, *h2;
-	int cnt = receiverCaptures.size();
+	size_t cnt = receiverCaptures.size();
 	r1 = ui.spinBoxReceiver1->value();
 	r2 = ui.spinBoxReceiver2->value();
 	//fprintf(stderr, "swap %d %d of %d\n", r1, r2, cnt);
@@ -954,7 +953,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 
 	// Update the settings
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-        int receiverQty = globalSettings->receiverSettings.size();
+        size_t receiverQty = globalSettings->receiverSettings.size();
 
         for (int receiverID = 0; receiverID < receiverQty; receiverID++)
         {
@@ -982,7 +981,7 @@ void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 	double range = ui.sensorRangeMaxSpinBox->value();
 
 	// Calculate the absolute max distance from the settings
-	int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
+	size_t channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
 		QListWidgetItem *listItem = ui.channelSelectListWidget->item(channelIndex);
@@ -1279,7 +1278,7 @@ bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 void AWLQtDemo::DisplayReceiverStatus()
 {
 
-	int receiverQty = receiverCaptures.size();
+	size_t receiverQty = receiverCaptures.size();
 	 for (int receiverID = 0; receiverID < receiverQty; receiverID++) 
 	 {
 		DisplayReceiverStatus(receiverID);
@@ -1454,7 +1453,7 @@ void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
 {
 	if (newIndex < 0) return;
 
-	int receiverCount = receiverCaptures.size();
+	size_t receiverCount = receiverCaptures.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		uint16_t algoID = ui.algoSelectComboBox->itemData(newIndex).value<int>();
@@ -1481,7 +1480,7 @@ void AWLQtDemo::PrepareAlgoParametersView()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
 
@@ -1574,7 +1573,7 @@ void AWLQtDemo::UpdateAlgoParametersView()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
 
@@ -1653,7 +1652,7 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 	if (algoDescription == NULL) return;
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
 
@@ -1714,7 +1713,7 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
 
@@ -1757,7 +1756,7 @@ void AWLQtDemo::PrepareGlobalParametersView()
 	if (algoDescription == NULL) return;
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
 
@@ -1840,7 +1839,7 @@ void AWLQtDemo::UpdateGlobalParametersView()
 	if (algoDescription == NULL) return;
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
 
@@ -1919,7 +1918,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
 
@@ -1979,7 +1978,7 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
-	int rowCount = algoParameters.size();
+	size_t rowCount = algoParameters.size();
 	for (int row = 0; row < rowCount; row++) 
 	{
 
@@ -2011,8 +2010,8 @@ void AWLQtDemo::on_trackerSelectComboBox_indexChanged(int newIndex)
 {
 	if (newIndex < 0) return;
 
-	int receiverCount = receiverCaptures.size();
-	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	size_t receiverCount = receiverCaptures.size();
+	for (size_t receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		uint16_t trackerID = ui.trackerSelectComboBox->itemData(newIndex).value<int>();
 		receiverCaptures[receiverID]->SetTracker(trackerID);
@@ -2036,7 +2035,7 @@ void AWLQtDemo::PrepareTrackerParametersView()
 	if (trackerDescription == NULL) return;
 
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
-	int rowCount = trackerParameters.size();
+	size_t rowCount = trackerParameters.size();
 
 	// Make sure headers show up.  Sometimes Qt designer flips that attribute.
 
@@ -2128,7 +2127,7 @@ void AWLQtDemo::UpdateTrackerParametersView()
 
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
-	int rowCount = trackerParameters.size();
+	size_t rowCount = trackerParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
 
@@ -2208,7 +2207,7 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
-	int rowCount = trackerParameters.size();
+	size_t rowCount = trackerParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
 
@@ -2269,7 +2268,7 @@ void AWLQtDemo::on_trackerParametersGetPushButton_clicked()
 
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
-	int rowCount = trackerParameters.size();
+	size_t rowCount = trackerParameters.size();
 	for (int row = 0; row < rowCount; row++)
 	{
 

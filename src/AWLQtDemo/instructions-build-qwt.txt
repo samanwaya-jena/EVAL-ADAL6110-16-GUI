@@ -1,0 +1,2 @@
+D:\Qwt\qwt-6.1.4>..\..\Qt\5.12.2\msvt2017_64\bin\qmake.exe qwt.pro
+D:\Qwt\qwt-6.1.4>nmake && nmake install
