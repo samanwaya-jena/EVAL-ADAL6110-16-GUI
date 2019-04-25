@@ -4,6 +4,7 @@ PROJECT(LinuxCute)
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 # Automaticaly call moc when necessary
 SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTORCC ON)
 SET(CMAKE_AUTOUIC ON)
 # moc genreated files are located in the bin directory,
 # tell CMake to always include header files in this directory
