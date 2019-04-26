@@ -133,6 +133,7 @@ bool ReceiverPolledCapture::ReadDataFromUSB(char * ptr, int uiCount, uint32_t dw
 typedef struct
 {
   short AcqFifo[GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH];
+  short footer[96];
 } tDataFifo;
 
 tDataFifo dataFifo[8];
@@ -168,12 +169,26 @@ bool ReceiverPolledCapture::DoOneLoop()
 						{
 							char str[128];
 							if (ch == (GUARDIAN_NUM_CHANNEL - 1) && i == (GUARDIAN_SAMPLING_LENGTH - 1))
-								sprintf(str, "%d\n", *pData++);
+								//sprintf(str, "%d\n", *pData++);
+                                sprintf(str, "%d,", *pData++);
 							else
 								sprintf(str, "%d,", *pData++);
 							fwrite(str, strlen(str), 1, m_pFile);
 						}
 					}
+                    char footer[128];
+                    short * pFooter = &dataFifo[cycle].footer[0];
+                    for ( i = 0; i < GORDON_FOOTER_SIZE; i++)
+                    {
+                        if(i == GORDON_FOOTER_SIZE-1){
+                            sprintf(footer, "%d\n", *pFooter++);
+                        }
+                        else
+                        {
+                            sprintf(footer, "%d,", *pFooter++);
+                        }
+                        fwrite(footer, strlen(footer), 1, m_pFile);
+                    }
 				}
 				fflush(m_pFile);
 			}

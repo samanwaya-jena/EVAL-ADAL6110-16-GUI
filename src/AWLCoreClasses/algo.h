@@ -12,6 +12,7 @@
 #define GUARDIAN_NUM_TRACK_PER_CH      4
 #define GUARDIAN_NUM_ALARM             16
 #define GUARDIAN_NUM_TRIGGER           2
+#define GORDON_FOOTER_SIZE             96 
 
 /**
  * DSP constant
