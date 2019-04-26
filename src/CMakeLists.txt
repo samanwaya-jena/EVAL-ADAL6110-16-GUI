@@ -23,6 +23,32 @@ function(enable_cxx_compiler_flag_if_supported flag)
     endif()
 endfunction()
 
+# Return the date (yyyy-mm-dd)
+macro(get_current_date RESULT)
+	if(WIN32)
+		execute_process(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
+		string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1" ${RESULT} ${${RESULT}})
+	elseif(UNIX)
+		execute_process(COMMAND "date" "+%Y-%m-%d" OUTPUT_VARIABLE ${RESULT})
+	else()
+		message(SEND_ERROR "Unable to detect date")
+		set(${RESULT} UNKNOWN)
+	endif()
+endmacro()
+
+# Return the time (hh-mm-ss)
+macro(get_current_time RESULT)
+	if(WIN32)
+		execute_process(COMMAND "cmd" " /C echo %TIME%" OUTPUT_VARIABLE ${RESULT})
+		string(REGEX REPLACE ".?(..):(..):(..).*" "\\1-\\2-\\3" ${RESULT} ${${RESULT}})
+	elseif(UNIX)
+		execute_process(COMMAND "date" "+%H-%M-%S" OUTPUT_VARIABLE ${RESULT})
+	else()
+		message(SEND_ERROR "Unable to detect time")
+		set(${RESULT} UNKNOWN)
+	endif()
+endmacro()
+
 macro(print_package_info package_name)
     set(NAME ${package_name})
     message(STATUS)
@@ -324,6 +350,8 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
+set(CMAKE_AUTORCC ON)
+
 # From --> https://doc.qt.io/qt-5/cmake-manual.html
 set(OLD_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH "D:/Qt/5.12.2/msvc2017_64")
@@ -389,6 +417,8 @@ include_directories(include ${SCOPE_FILES_DIR})
 ###    CuteDemo    ##########################################################################
 #############################################################################################
 
+include_directories(${DEMO_FILES_DIR})
+
 set(CUTEDEMO_MAIN_FILES "")
 list(APPEND CUTEDEMO_MAIN_FILES 
 	${DEMO_FILES_DIR}/main.cpp
@@ -435,6 +465,7 @@ list(APPEND CUTEDEMO_SCOPE_FILES
 )
 
 set(CUTEDEMO_RESOURCES "${DEMO_FILES_DIR}/CuteDemo.rc")
+set(CUTEDEMO_QRESOURCES "${DEMO_FILES_DIR}/awlqtdemo.qrc")
 if(WIN32)
     ADD_EXECUTABLE(CuteDemo
         WIN32
@@ -443,12 +474,13 @@ if(WIN32)
         ${CUTEDEMO_CORE_FILES}
         ${CUTEDEMO_SCOPE_FILES}
         ${CUTEDEMO_RESOURCES}
+        ${CUTEDEMO_QRESOURCES}
     )
     
     TARGET_COMPILE_DEFINITIONS(
             CuteDemo
             PUBLIC 
-            WINDOWS 
+                WINDOWS 
                 QWT_DLL
     )
 else()
@@ -458,12 +490,13 @@ else()
         ${CUTEDEMO_CORE_FILES}
         ${CUTEDEMO_SCOPE_FILES}
         ${CUTEDEMO_RESOURCES}
+        ${CUTEDEMO_QRESOURCES}
 )
 
 TARGET_COMPILE_DEFINITIONS(
         CuteDemo
         PUBLIC 
-        QWT_DLL
+            QWT_DLL
     )
 endif()
 
@@ -779,17 +812,18 @@ install(
         dev
 )
 
+# TODO : Fix THIS `install(...)` and it'll be done :D
 # Install the export set for use with the install-tree
-#install(
-#        EXPORT 
-#            ${PROJECT_NAME}Targets 
-#        DESTINATION
-#            "${INSTALL_CMAKE_DIR}" 
-#        FILE 
-#            "${PROJECT_NAME}Targets.cmake"
-#        COMPONENT 
-#            dev
-#)
+install(
+        EXPORT 
+            ${PROJECT_NAME}Targets 
+        DESTINATION
+            "${INSTALL_CMAKE_DIR}" 
+        FILE 
+            "${PROJECT_NAME}Targets.cmake"
+        COMPONENT 
+            dev
+)
 
 #############################################################################################
 ###    Packaging    #########################################################################
@@ -805,13 +839,19 @@ set(CPACK_PACKAGE_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}")
 
 print_cpack_info()
 
+#set(DATE "")
+#set(TIME "")
+#get_current_date(DATE)
+#get_current_time(TIME)
+string(TIMESTAMP TIMESTAMP_VALUE "%Y-%m-%dT%H-%M-%S")
+
 if(WIN32)
     set(CPACK_GENERATOR "WIX")
-    set(CPACK_WIX_PRODUCT_GUID "---")
-    set(CPACK_WIX_UPGRADE_GUID "---")
+    set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "CuteDemo")
+    #set(CPACK_WIX_PRODUCT_GUID "") # TODO: Set those with actual values
+    #set(CPACK_WIX_UPGRADE_GUID "") # TODO: Set those with actual values
     set(CPACK_PACKAGE_FILE_NAME
-	    "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}")
-    set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/patch.xml")
+	    "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}-${TIMESTAMP_VALUE}")
 endif()
 
 include(CPack)

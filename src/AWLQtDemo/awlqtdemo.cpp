@@ -637,29 +637,29 @@ void AWLQtDemo::SetupToolBar()
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
-	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.gif"), "2Z View", 0);
+	action2DButton = new QAction(QIcon(":/Images/ButtonBitmaps/Scan.gif"), "2Z View", 0);
 	action2DButton->setCheckable(true);
 	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
 	ui.mainToolBar->addAction(action2DButton);
 
-	actionTableButton = new QAction(QIcon("./Images/ButtonBitmaps/Grid.gif"), "Table View", 0);
+	actionTableButton = new QAction(QIcon(":/Images/ButtonBitmaps/Grid.gif"), "Table View", 0);
 	actionTableButton->setCheckable(true);
 	actionTableButton->setChecked(globalSettings->bDisplayTableViewWindow);
 	ui.mainToolBar->addAction(actionTableButton);
 
-	actionAScanButton = new QAction(QIcon("./Images/ButtonBitmaps/AScan.gif"), "AScan View", 0);
+	actionAScanButton = new QAction(QIcon(":/Images/ButtonBitmaps/AScan.gif"), "AScan View", 0);
 	actionAScanButton->setCheckable(true);
 	actionAScanButton->setChecked(globalSettings->bDisplayAScanViewWindow);
 	ui.mainToolBar->addAction(actionAScanButton);
 
 #if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
-	actionCameraButton = new QAction(QIcon("./Images/ButtonBitmaps/Camera.gif"), "Camera View", 0);
+	actionCameraButton = new QAction(QIcon(":/Images/ButtonBitmaps/Camera.gif"), "Camera View", 0);
 	actionCameraButton->setCheckable(true);
 	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
 	ui.mainToolBar->addAction(actionCameraButton);
 #endif
 
-	actionSettingsButton = new QAction(QIcon("./Images/ButtonBitmaps/Settings.gif"), "Settings", 0);
+	actionSettingsButton = new QAction(QIcon(":/Images/ButtonBitmaps/Settings.gif"), "Settings", 0);
 	actionSettingsButton->setCheckable(true);
 	actionSettingsButton->setChecked(globalSettings->bDisplaySettingsWindow);
 	ui.mainToolBar->addAction(actionSettingsButton);
@@ -669,19 +669,19 @@ void AWLQtDemo::SetupToolBar()
 	spacerRightAligned->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui.mainToolBar->addWidget(spacerRightAligned);
 
-	actionAboutButton = new QAction(QIcon("./Images/ButtonBitmaps/About.gif"), "About", 0);
+	actionAboutButton = new QAction(QIcon(":/Images/ButtonBitmaps/About.gif"), "About", 0);
 	actionAboutButton->setCheckable(true);
 	actionAboutButton->setChecked(globalSettings->bDisplayAboutWindow);
 	ui.mainToolBar->addAction(actionAboutButton);
 
-	actionResizeMaximizeIcon = new QIcon("./Images/ButtonBitmaps/Maximize.gif");
-	actionResizeRestoreDownIcon = new QIcon("./Images/ButtonBitmaps/RestoreDown.gif");
+	actionResizeMaximizeIcon = new QIcon(":/Images/ButtonBitmaps/Maximize.gif");
+	actionResizeRestoreDownIcon = new QIcon(":/Images/ButtonBitmaps/RestoreDown.gif");
 	actionResizeButton = new QAction(*actionResizeRestoreDownIcon, actionResizeRestoreDownString, 0);
 	actionResizeButton->setCheckable(true);
 	actionResizeButton->setChecked(globalSettings->sDisplayShowSize == std::string("FullScreen"));
 	ui.mainToolBar->addAction(actionResizeButton);
 
-	actionQuitButton = new QAction(QIcon("./Images/ButtonBitmaps/Quit.gif"), "Quit Application", 0);
+	actionQuitButton = new QAction(QIcon(":/Images/ButtonBitmaps/Quit.gif"), "Quit Application", 0);
 	ui.mainToolBar->addAction(actionQuitButton);
 
 	connect(action2DButton, SIGNAL(toggled(bool )), this, SLOT(on_view2DActionToggled()));
