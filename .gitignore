@@ -52,3 +52,5 @@ src/AWLQtDemo/cmake_install.cmake
 src/AWLQtDemo/LinuxCute_autogen/
 src/AWLQtDemo/Makefile
 src/AWLQtDemo/LinuxCute
+src/build
+src/AWLQtDemo/build
