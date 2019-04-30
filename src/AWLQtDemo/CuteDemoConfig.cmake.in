@@ -1,0 +1,22 @@
+# - Config file for the CuteDemo package
+# It defines the following variables
+#  CuteDemo_INCLUDE_DIRS - include directories for CuteDemo
+#  CuteDemo_LIBRARIES    - libraries to link against
+#  CuteDemo_EXECUTABLE   - the test executable
+
+# Compute paths
+get_filename_component(CuteDemo_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include (CMakeFindDependencyMacro)
+find_package(Threads REQUIRED)
+
+set(CuteDemo_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# This library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET CuteDemo AND NOT CuteDemo_BINARY_DIR)
+	#include_directories("${CuteDemo_CMAKE_DIR}/sensor-gateway")
+    include("${CuteDemo_CMAKE_DIR}/CuteDemoTargets.cmake")
+endif()
+
+# These are IMPORTED targets created by CuteDemoTargets.cmake
+set(CuteDemo_EXECUTABLE CuteDemo)

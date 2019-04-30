@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="sensor_desc.xsl"?>
+<!--
+****************************************************************************************************
+*   If you are reading this, you are not taking advantage of the XML Stylesheet                    *
+*                                                                                                  *
+*   Instructions for viewing XML LDAT file can be found in:                                        *
+*   C:\Aptina Imaging [Dev]\sensor_data\!DevWare XML-formatted SDAT User Guide.exe                 *
+****************************************************************************************************
+-->
+<sensor name="A-5100" version="8" part_number="MT9P001" version_name="REV8">
+	<registers>
+	<reg name="CHIP_VERSION_REG">
+		<long_desc>Chip version.</long_desc>
+		<bitfield name="DIGITAL_REV">
+			<long_desc>Constant value incremented with each digital functionality change for the same Part ID. Legal values:[0,15].</long_desc>
+		</bitfield>
+		<bitfield name="ANALOG_REV">
+			<long_desc>Constant value incremented with each mask change for the same Part ID. Legal values:[0,15].</long_desc>
+		</bitfield>
+		<bitfield name="PART_ID">
+			<long_desc>Two-digit BCD value typically derived from the reticle ID code. Legal values: [0,15].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="ROW_WINDOW_START_REG">
+		<long_desc>The Y coordinate of the upper-left corner of the FOV.  If this register is set to an odd value, the next lower even value will be used. Writers are synchronized to the frame boundaries, Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: [0,2004], even.</long_desc>
+	</reg>
+	<reg name="COL_WINDOW_START_REG">
+		<long_desc>The  X coordinate of the upper-left corner of the FOV. The value  will be rounded down to the nearest multiple of 2 times the column bin  factor. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Legal values: [0,2750], even.  Note: Set Colum_Start such that it is in the form shown below, where n is an integer:      Mirror_Column=0           Mirror_Colum=1 no bin            4n                            4n+2 Bin2x             8n                            8n+4 Bin4x             16n                         16n+8 </long_desc>
+	</reg>
+	<reg name="ROW_WINDOW_SIZE_REG">
+		<long_desc>The height of the FOV minus one.  If this register is set to an even value, the next higher odd value will be used. Writes are synchronized to frame boundaries. Afected by Synchronize_Changes.  Causes a Bad Frame if written. Legal values: [1,2005], odd.</long_desc>
+	</reg>
+	<reg name="COL_WINDOW_SIZE_REG">
+		<long_desc>The width of the FOV minus one.  If this register is set to an even value, the next higher odd value will be used. In other words, it should be (2*n*(Column_Bin+1)-1) for some integer n. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: [1,2751], odd.</long_desc>
+	</reg>
+	<reg name="HORZ_BLANK_REG">
+		<long_desc>Extra  time added to the end of each row, in pixel clocks. Incrementing this  register will increase exposure and decrease frame rate. Setting a  value less than the minimum will use the minumum horizontal blank. The  minimum horizontal blank depends on the mode of the sensor. Writes are synchronized to frame  boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: [0,4095].</long_desc>
+	</reg>
+	<reg name="VERT_BLANK_REG">
+		<long_desc>Extra time added to the end of each frame in rows minus one.  Incrementing this register will decrease frame rate, but not affect exposure.  Setting a value less than the minimum will use the minimum vertical blank. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Legal values: [8,2047].</long_desc>
+	</reg>
+	<reg name="CONTROL_MODE_REG">
+		<bitfield name="SYNC">
+			<long_desc>When set, changes to certain registers (those with the SC attribute) are delayed until the bit is clear.  When cleared, all the delayed writes will happen immediately.  Registers with the F attribute will still have the update synchronized to the next frame boundary.</long_desc>
+		</bitfield>
+		<bitfield name="CHIP_ENABLE">
+			<long_desc>When clear, sensor readout is stopped and analog circuitry is put in a state which draws minimal power.  When set, the chip operates according to the current mode.  Writing this bit does not affect the values of any other registers.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="SHUTTER_WIDTH_HI">
+		<long_desc>The most significant bits of the shutter width, which are combined with Shutter Width Lower (R9).</long_desc>
+	</reg>
+	<reg name="INTEG_TIME_REG">
+		<long_desc>The least significant bits of the shutter width.  This is combined with Shutter_Width_Upper and Shutter_Delay for the effective shutter width. If set to zero, a value of &quot;1&quot; will be used.</long_desc>
+	</reg>
+	<reg name="PIXEL_CLOCK_CONTROL">
+		<bitfield name="DIVIDE">
+			<long_desc>Produces a PIXCLK that is divided by the value times two.  The value must be zero or a power of 2.  This will slow down the internal clock in the array control and datapath blocks, including pixel readout.  It will not affect the two-wire serial interface clock.  interface clock.  A value of 0 corresponds to a PIXCLK with the same frequency as EXTCLK_IN.  A value of 1 means f_PIXCLK = (f_EXTCLK_IN / 2); 2 means f_PIXCLK = (f_EXTCLK_IN / 4); 64 means f_PIXCLK = (f_EXTCLK_IN / 128); and so on.  Note: This field is not reset by the soft rest (R13). This field should not be written while in streaming mode. Instead, Pause_Restart should be used to suspend output while the divider is being changed. Legal values: [0,1,2,4,8,16,32,64].  </long_desc>
+		</bitfield>
+		<bitfield name="SHIFT">
+			<long_desc>Two&apos;s compliment value representing how far to shift the PIXCLK output pin relative to DOUT, in EXTCLK_IN cycles.  Positive values shift PIXCLK later in time relative to DOUT (and thus relative to the internal array/datapath clock.  No effect unless PIXCLK is divided by Divide Pixel Clock. Note: This field is not rest by the soft Reset(R13). Legal values: [-2,2].</long_desc>
+		</bitfield>
+		<bitfield name="INVERT">
+			<long_desc>When set, LV, FV, and D_OUT should be captured on the rising edge of PIXCLK.  When clear, they should be captured on the falling edge.  This is accomplished by inverting the PIXCLK output. Note: This field is not reset by the soft Reset (R13).</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="RESTART_REG">
+		<bitfield name="RESTART">
+			<long_desc>Setting this bit will cause the sensor to abandon the current frame and restart from the first row.  It will take up to 2*t_ROW for the restart to take effect.  This bit resets to 0 automatically unless Pause_Restart is set.</long_desc>
+		</bitfield>
+		<bitfield name="PAUSE">
+			<long_desc>When set, Restart will not automatically be cleared.  Instead, the sensor will pause at row 0 after Restart is set.  When Pause_Restart is cleared, the sensor will resume.  This allows for a repeatable delay from clearing restart to FV.</long_desc>
+		</bitfield>
+		<bitfield name="TRIGGER">
+			<long_desc>Setting this bit in Snapshot mode will cause the next trigger to occur as if the TRIGGER pin were properly asserted/negated.  Ineffective if not in Snapshot mode.  The sense of this bit is NOT affected by Invert Trigger. When using this bit instead of the TRIGGER pad, make sure that either the trigger pad is continuously asserted, or that the pad is continuously negated and Invert_Trigger is set.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="SHUTTER_DELAY_REG">
+		<long_desc>A negative adjustment to the effective shutter width in aclks.  See Shutter_Width_Lower.</long_desc>
+	</reg>
+	<reg name="RESET_REG">
+		<long_desc>Setting this bit will put the sensor into reset mode, which will set the sensor to its default power-up state and cause it to halt.  Clearing this bit will resume normal operation.  This is equivalent to pulling the RESET_BAR_LOW, except that the two-wire serial interface remains functional.</long_desc>
+	</reg>
+	<reg name="PLL_CONTROL">
+		<bitfield name="PWR_PLL">
+			<long_desc>When set, the PLL is powered.  When clear, it is not powered.</long_desc>
+		</bitfield>
+		<bitfield name="USE_PLL">
+			<long_desc>When set, use the PLL output as the system clock.  When clear, use EXTCLK as the system clock.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="PLL_CONFIG_1">
+		<bitfield name="N_DIVIDER">
+			<long_desc>PLL n Divider PLL output frequency divider minus 1. Legal values: [0,63].</long_desc>
+		</bitfield>
+		<bitfield name="M_FACTOR">
+			<long_desc>PLL m Factor.  PLL output frequency multiplier. Legal values: [16,255].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="PLL_CONFIG_2">
+		<bitfield name="P1_DIVIDER">
+			<long_desc>PLL p1 Divider PLL system clock divider minus 1. Use odd numbers. If this is set to an even number, the system clock duty cycle will not be 50:50. In this case, set all bits in R101 or slow down EXTCLK.  Legal values:[0,127].  </long_desc>
+		</bitfield>
+	</reg>
+	<reg name="READ_MODE_1">
+		<bitfield name="STROBE_END">
+			<long_desc>Determines the timepoint when the strobe is negated. If this is set equal to or less than Strobe_Start, the width of the strobe pulse will be t_ROW. See Strobe_Start. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="STROBE_START">
+			<long_desc>Determines the timepoint when the strobe is asserted.  0: First trigger 1: Start of simultaneous exposure 2 : Shutter width 3: Second trigger Writes are synchronized to frame boundaries. Affetced by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="STROBE_ENABLE">
+			<long_desc>When set, a strobe signal will be generated by the digital logic during integration. When clear, the strobe pin will be set to the value of Invert_Strobe.</long_desc>
+		</bitfield>
+		<bitfield name="INVERT_STROBE">
+			<long_desc>When set, the STROBE signal will be be active LOW (during exposure). When clear, the STROBE signal is active HIGH.   </long_desc>
+		</bitfield>
+		<bitfield name="BULB_EXP">
+			<long_desc>When set, exposure time will be controlled by an external trigger.  When clear, exposure time will be controlled by the Shutter_Width_Lower and Shutter_Width_Upper registers. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="GLOBAL_RST">
+			<long_desc>When set, the Global Reset Release shutter will be used.  When clear, the Electronic Rolling Shutter will be used. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="SNAPSHOT_MODE">
+			<long_desc>When set, the sensor enters snapshot mode, and will wait for a trigger event between frames.  When clear, the sensor is in continuous mode.Writes are syncrhonized to  frame boundaries. Affected by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="INVERT_TRIGGER">
+			<long_desc>When set, the sense of the TRIGGER input pin will be inverted.</long_desc>
+		</bitfield>
+		<bitfield name="CONT_LINE_VALID">
+			<long_desc>When set, produce the LV signal even during the vertical blank period. When clear, produce LV only when active rows are being read out (that is, only when FVis HIGH).  Ineffective if FIFO_Parallel_Data is set.</long_desc>
+		</bitfield>
+		<bitfield name="XOR_LINE_VALID">
+			<long_desc>When set, produce a LV signal that is the XOR of FV and the normal line_valid.  Ineffective if Continuous Line Valid is set.  When clear, produce a normal LV.</long_desc>
+		</bitfield>
+		<bitfield name="MAINTAIN_FRAME_RATE">
+			<long_desc>When set, writing registers with the BF attribute will create bad frames, but if these writes would not otherwise change the frame rate, the frame rate will be maintained.  When clear, writing registers with the BF attribute will interrupt the frame rate to avoid creating a bad frame.</long_desc>
+		</bitfield>
+		<bitfield name="OUT_BAD_FRAMES">
+			<long_desc>When set, frames that would normally be suppressed as "Bad Frames" will not be suppressed.  When clear, setting registers with the BF attribute will cause one frame to be dropped in the output stream.  Ineffective unless Maintain_Frame_Rate is set.</long_desc>
+		</bitfield>
+		<bitfield name="ANTI_BLOOM">
+			<long_desc>When set, multiple reset mode will be used to control blooming:  rows which are not sampled will be held in reset.  When clear, multiple reset mode will be disabled and there will be no anti blooming in row skip modes.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="READ_MODE_2">
+		<bitfield name="MAN_CHAN_OFF">
+			<long_desc>When set, the channel offsets written to Green1_Channel_Offset, Red_Channel_Offset, Blue_Channel_Offset, and Green2_Channel_Offset will be applied.  When clear, the offset values will be calculated automatically.</long_desc>
+		</bitfield>
+		<bitfield name="COL_SUM">
+			<long_desc>When set, column summing will be enabled, and in column bin modes, all sampled capacitors will be enabled for column readout, reesulting in an effective gain equal to the column bin factor.  When clear, column averaging will be done, and there will be no additional gain related to the column bin factor. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes.  </long_desc>
+		</bitfield>
+		<bitfield name="ROW_BLC">
+			<long_desc>When set, digitally compensate for differing black levels between rows by adding Dark Target (R73) and subtracting the average value of the 8 same-color dark pixels at the beginning of the row.  When clear, digitally add Row Black Default Offset (R75) to the value of each pixel.</long_desc>
+		</bitfield>
+		<bitfield name="SHOW_DARK_ROWS">
+			<long_desc>When set, the dark rows will be output before the active image rows, making the output image taller.  This has no effect on integration time or frame rate.  When clear, only rows from the active image will be output. Writes are synchronized to frame boundaries. Affected by Synchronized_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="SHOW_DARK_COLS">
+			<long_desc>When set, the dark columns will be output to the left of the active image, making the output image wider. This has no effect on integration time or frame rate. When clear, only columns that are part of the active image will be output. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="MIRROR_COL">
+			<long_desc>When set, column readout in the active image occurs in reverse numerical order, starting from (Column_Start + Column_Size).  When clear, column readout of the active image occurs in numerical order.  This has no effect on the readout of the dark columns.Writes are synchronized to frame boudaries. Affected by Synchronize_Changes.</long_desc>
+		</bitfield>
+		<bitfield name="MIRROR_ROW">
+			<long_desc>When set, row readout in the active image occurs in reverse numerical order starting from (Row_Start + Row_Size).  When clear, row readout of the active image occurs in numerical order.  This has no effect on the readout of the dark rows.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="ROW_MODE">
+		<bitfield name="ROW_SKIP">
+			<long_desc>The number of row-pairs to skip for every row-pair output.  A value of zero means to read every row.  For Skip 2x, this should be 1; for Skip 3x, it should be 2, and so on.  This value should be no less than Row_Bin.  For full binning, Row_Skip should equal Row_Bin.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: [0,3].   </long_desc>
+		</bitfield>
+		<bitfield name="ROW_BIN">
+			<long_desc>The number of rows to be read and averaged per row output minus one. The rows will be read independently into sampling capacitors, then averaged together before column readout. For normal readout, this should be 0. For Bin 2x, it should be 1; for Bin 3x, it should be 2; for Bin 4x, it should be 3. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: [0,3]. </long_desc>
+		</bitfield>
+	</reg>
+	<reg name="COL_MODE">
+		<bitfield name="COL_SKIP">
+			<long_desc>The number of column-pairs to skip for every column-pair output.  A value of zero means to read every column in the active image.  For Skip 2x, this should be 1; for Skip 3x, this should be 2, and so on.  This value should be no less than Column_Bin.  For full binning, Column_Skip should equal Column_Bin. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: [0,6]. </long_desc>
+		</bitfield>
+		<bitfield name="COL_BIN">
+			<long_desc>The number of columns to be read and averaged per column output minus one.  For normal readout, this should be zero.  For Bin 2x, it shoud be 1; for Bin 4x, it should be 3. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Causes a Bad Frame if written. Legal values: {0,1,3}. </long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GREEN1_GAIN_REG">
+		<bitfield name="GREEN1_GAIN_VALUE">
+			<long_desc>Analog gain setting for the Green1 channel times 8.  The effective gain for the channel is (((Green1_Digital_Gain/8) + 1) * (Green1_Analog_Multiplier + 1) * (Green1_Analog_Gain/8)). Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [8,63].</long_desc>
+		</bitfield>
+		<bitfield name="GREEN1_GAIN_DOUBLE_1">
+			<long_desc>Analog gain multiplier for the Green1 channel minus 1.  If 1, an additional analog gain of 2x will be applied.  If 0, no additional gain is applied. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile.</long_desc>
+		</bitfield>
+		<bitfield name="GREEN1_GAIN_DIGITAL">
+			<long_desc>Digital Gain for the Green1 channel minus 1 times 8.  The actual digital gain is (1 + value/8), and can range from 1 (a setting of 0) to 16 (a setting of 120) in increments of 1/8.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values:[0,120].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="BLUE_GAIN_REG">
+		<bitfield name="BLUE_GAIN_VALUE">
+			<long_desc>Analog gain setting for the Blue channel times 8.  The effective gain for the channel is (((Blue_Digital_Gain/8) + 1) * (Blue_Analog_Multiplier + 1) * (Blue_Analog_Gain/8)). Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [8,63].</long_desc>
+		</bitfield>
+		<bitfield name="BLUE_GAIN_DOUBLE_1">
+			<long_desc>Analog gain multiplier for the Blue channel minus 1.  If 1, an additional analog gain of 2x will be applied.  If 0, no additional gain is applied. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile.</long_desc>
+		</bitfield>
+		<bitfield name="BLUE_GAIN_DIGITAL">
+			<long_desc>Digital Gain for the Blue channel minus 1 times 8.  The actual digital gain is (1 + value/8), and can range from 1 (a setting of 0) to 16 (a setting of 120) in increments of 1/8. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [0, 120].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="RED_GAIN_REG">
+		<bitfield name="RED_GAIN_VALUE">
+			<long_desc>Analog gain setting for the Red channel times 8.  The effective gain for the channel is (((Red_Digital_Gain/8) + 1) * (Red_Analog_Multiplier + 1) * (Red_Analog_Gain/8)). Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [8,63].</long_desc>
+		</bitfield>
+		<bitfield name="RED_GAIN_DOUBLE_1">
+			<long_desc>Analog gain multiplier for the Red channel minus 1.  If 1, an additional analog gain of 2x will be applied.  If 0, no additional gain is applied.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile.</long_desc>
+		</bitfield>
+		<bitfield name="RED_GAIN_DIGITAL">
+			<long_desc>Digital Gain for the Red channel minus 1 times 8.  The actual digital gain is (1 + value/8), and can range from 1 (a setting of 0) to 16 (a setting of 120) in increments of 1/8. Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [0,120].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GREEN2_GAIN_REG">
+		<bitfield name="GREEN2_GAIN_VALUE">
+			<long_desc>Analog gain setting for the Green2 channel times 8. The effective gain for the channel is (((Green2_Digital_Gain/8) + 1) * (Green2_Analog_Multiplier + 1) * (Green2_Analog_Gain/8)).Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [8,63].</long_desc>
+		</bitfield>
+		<bitfield name="GREEN2_GAIN_DOUBLE_1">
+			<long_desc>Analog gain multiplier for the Green2 channel minus 1.  If 1, an additional analog gain of 2x will be applied.  If 0, no additional gain is applied.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile.</long_desc>
+		</bitfield>
+		<bitfield name="GREEN2_GAIN_DIGITAL">
+			<long_desc>Digital Gain for the Green2 channel minus 1 times 8. The actual digital gain is (1 + value/8), and can range from 1 (a setting of 0) to 16 (a setting of 120) in increments of 1/8.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: [0,120].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GLOBAL_GAIN_REG">
+		<long_desc>Writing the Global_Gain sets all four individual gain registers R43-R46 to the value. This register should not be read.  See Green1_Gain (R43) for a description of the various fields.Writes are synchronized to frame boundaries. Affected by Synchronize_Changes. Volatile. Legal values: special</long_desc>
+	</reg>
+	<reg name="ROW_BLACK_TARGET">
+		<long_desc>The target black level for the Row BLC algorithm.</long_desc>
+	</reg>
+	<reg name="ROW_BLACK_DEFAULT_OFFSET">
+		<long_desc>A two&apos;s-compliment offset digitally added to all active image pixel values when Row BLC (R30[6]) is disabled.</long_desc>
+	</reg>
+	<reg name="BLC_SAMPLE_SIZE">
+		<long_desc>If set, the &quot;moving average&quot; calculation in the BLC algorithm will use a sample size of 32. If clear, it will use a sample size of 1 (i.e., each frame&apos;s black level will be considered independent of other frames).</long_desc>
+	</reg>
+	<reg name="BLC_TUNE1">
+		<bitfield name="SETTLING_TIME">
+			<long_desc>The number of pixclks it takes for a newly set offset to take effect divided by 2. Used to configure the fast sample algorithm. After setting a calibration value in fast sample mode, (value * 2) pixclks will elapse before the next sample is taken.</long_desc>
+		</bitfield>
+		<bitfield name="DELTA_DAMPING">
+			<long_desc>A number subtracted from the calculated correction&apos;s magnitude when in delta mode. Setting this to a positive number will correct by that much less than the delta value. A negative (two&apos;s compliment) number will correct by more (possibly worsening the overshoot). This applies to the magnitude of the delta, so a positive damping value will be subtracted from a positive delta and added to a negative delta.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="BLC_THRESHOLDS">
+		<bitfield name="LOW_DELTA">
+			<long_desc>Lower delta threshold divided by 4. See BLC_High_Delta_Threshold. Should be no higher than BLC_Low_Target_Threshold.</long_desc>
+		</bitfield>
+		<bitfield name="HIGH_DELTA">
+			<long_desc>Upper delta threshold divided by 4. If the average black value for a color is higher than this value times 4 or lower than BLC_Low_Delta_Threshold times 4, the fast sampling and binary search modes will be activated (if enabled). Once the black level is between the BLC_High_Delta_Threshold and the BLC_Low_Delta_Threshold, the delta adjustment mode will be used (though fast sample mode will continue until the end of the frame). This value should be set no lower than BLC High Target Threshold.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="BLC_TUNE2">
+		<bitfield name="MAX_ADJ">
+			<long_desc>The maximum adjustment (positive or negative) that the BLC delta adjustment mode is allowed to make to the analog offset.</long_desc>
+		</bitfield>
+		<bitfield name="STEP_SIZE">
+			<long_desc>Base 2 log of the change in pixel value (in LSBs) of a pixel when the analog offset is changed by one.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="CAL_THRESHOLD">
+		<bitfield name="CAL_THRESHOLD_MIN">
+			<long_desc>The lower target threshold for the BLC algorithm divided by 4. See BLC High Target Threshold above.</long_desc>
+		</bitfield>
+		<bitfield name="CAL_THRESHOLD_MAX">
+			<long_desc>The upper target threshold of the BLC algorithm divided by 4. The target black value is 4 times the average of the BLC_High_Target_Threshold and the BLC_Low_Target_Threshold. When the black value for a color is within these thresholds, it will be considered to be on target.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="GREEN1_OFFSET">
+		<long_desc>Two&apos;s-compliment representation of the analog offset value for Green1. If Manual_BLC (R98[0]) is set, this value will be used as the analog offset. Otherwise, the value may be overridden by the BLC algorithm. When read, this register returns the offset currently in use. The user-programmed value is always retained internally, and may be read by setting Manual_BLC. A value of -256 will set the offset to -255.</long_desc>
+	</reg>
+	<reg name="GREEN2_OFFSET">
+		<long_desc>Two&apos;s-compliment representation of the analog offset value for Green2. See Green1_Offset.</long_desc>
+	</reg>
+	<reg name="CAL_CTRL">
+		<bitfield name="MANUAL_BLC">
+			<long_desc>When set, the user programmed calibration offsets from R96-R97 and R99-R100 will be used. Also, black level calculation will be disabled. When clear, the BLC algorithm will adjust the offsets to maintain the target black level.</long_desc>
+		</bitfield>
+		<bitfield name="DIS_CALIB">
+			<long_desc>When set, analog calibration is disabled. When clear, the programmed or automatic offsets will be used.</long_desc>
+		</bitfield>
+		<bitfield name="DIS_BIN_SEARCH">
+			<long_desc>When set, binary search mode will not be used when the black level falls outside the delta thresholds; instead the delta mode will be used. Fast sampling mode may still be used if enabled.</long_desc>
+		</bitfield>
+		<bitfield name="RESYNC_BL">
+			<long_desc>When set, any running averages will be reset and the fast sample and binary search modes will be activated (if enabled). This bit always reads 0.</long_desc>
+		</bitfield>
+		<bitfield name="LOCK_RB">
+			<long_desc>When set, the calibration offset chosen for Red will be used for Blue pixels as well. Only effective if Red_Analog_Gain equals Blue_Analog_Gain and Red_Analog_Multiplier equals Blue_Analog_Multiplier.</long_desc>
+		</bitfield>
+		<bitfield name="LOCK_GREEN">
+			<long_desc>When set, the calibration offset chosen for Green1 will be used for Green2 pixels as well. Only effective if Green1_Analog_Gain equals Green2_Analog_Gain and Green1_Analog_Multiplier equals Green2_Analog_Multiplier.</long_desc>
+		</bitfield>
+		<bitfield name="DIS_FAST_SAMP">
+			<long_desc>When set, the fast sampling mode (multiple samples per frame) will not be used if the black level falls outside the delta thresholds; instead, only one sample-adjust will take place per frame. Binary search mode may still be used. When clear, fast sample mode will be used when necessary.</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="RED_OFFSET">
+		<long_desc>Two&apos;s-compliment representation of the analog offset value for Red. See Green1_Offset.</long_desc>
+	</reg>
+	<reg name="BLUE_OFFSET">
+		<long_desc>Two&apos;s-compliment representation of the analog offset value for Blue. See Green1_Offset.</long_desc>
+	</reg>
+	<reg name="GRN1_CHANNEL_OFF">
+		<long_desc>The offset between the A channel and B channel pixel values (B - A) for Green1. When positive, the absolute value will be added to channel A pixels. When negative, the absolute value will be added to channel B pixels. Reads from this register always reflect the offset currently in effect. Writes to this register set the offset that will be applied when Manual_Channel_Offset is set.</long_desc>
+	</reg>
+	<reg name="RED_CHANNEL_OFF">
+		<long_desc>See Green1_Channel_Offset.</long_desc>
+	</reg>
+	<reg name="BLUE_CHANNEL_OFF">
+		<long_desc>See Green1_Channel_Offset.</long_desc>
+	</reg>
+	<reg name="GRN2_CHANNEL_OFF">
+		<long_desc>See Green1_Channel_Offset.</long_desc>
+	</reg>
+	<reg name="SHUTTER_SEQ_LEN">
+		<long_desc>The total length (in units of 2*t_aclk) of the shutter sequence, minus one.</long_desc>
+	</reg>
+	<reg name="CHIP_ENABLE_REG">
+		<bitfield name="CHIP_ENABLE">
+			<long_desc>Mirror of R7[1].</long_desc>
+		</bitfield>
+		<bitfield name="SYNC">
+			<long_desc>Mirror of R7[0].</long_desc>
+		</bitfield>
+	</reg>
+	<reg name="CHIP_VERSION_REG2">
+		<long_desc>Mirror of R0[15:0]. Read-only. Duplicate. Appears in all pages. Legal values: special.</long_desc>
+	</reg>
+</registers>
+</sensor>
