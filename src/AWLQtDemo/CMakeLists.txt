@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2) # Mendatory because of Qt5 --> https://doc.qt.io/qt-5/cmake-manual.html#using-qt-5-with-cmake-older-than-2-8-9
-project(CuteDemo)
+project(CuteDemo C CXX)
 set(CMAKE_COLOR_MAKEFILE ON)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,28 +25,28 @@ endfunction()
 
 # Return the date (yyyy-mm-dd)
 macro(get_current_date RESULT)
-	if(WIN32)
-		execute_process(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
-		string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1" ${RESULT} ${${RESULT}})
-	elseif(UNIX)
-		execute_process(COMMAND "date" "+%Y-%m-%d" OUTPUT_VARIABLE ${RESULT})
-	else()
-		message(SEND_ERROR "Unable to detect date")
-		set(${RESULT} UNKNOWN)
-	endif()
+    if(WIN32)
+        execute_process(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
+        string(REGEX REPLACE "(..)/(..)/(....).*" "\\3-\\2-\\1" ${RESULT} ${${RESULT}})
+    elseif(UNIX)
+        execute_process(COMMAND "date" "+%Y-%m-%d" OUTPUT_VARIABLE ${RESULT})
+    else()
+        message(SEND_ERROR "Unable to detect date")
+        set(${RESULT} UNKNOWN)
+    endif()
 endmacro()
 
 # Return the time (hh-mm-ss)
 macro(get_current_time RESULT)
-	if(WIN32)
-		execute_process(COMMAND "cmd" " /C echo %TIME%" OUTPUT_VARIABLE ${RESULT})
-		string(REGEX REPLACE ".?(..):(..):(..).*" "\\1-\\2-\\3" ${RESULT} ${${RESULT}})
-	elseif(UNIX)
-		execute_process(COMMAND "date" "+%H-%M-%S" OUTPUT_VARIABLE ${RESULT})
-	else()
-		message(SEND_ERROR "Unable to detect time")
-		set(${RESULT} UNKNOWN)
-	endif()
+    if(WIN32)
+        execute_process(COMMAND "cmd" " /C echo %TIME%" OUTPUT_VARIABLE ${RESULT})
+        string(REGEX REPLACE ".?(..):(..):(..).*" "\\1-\\2-\\3" ${RESULT} ${${RESULT}})
+    elseif(UNIX)
+        execute_process(COMMAND "date" "+%H-%M-%S" OUTPUT_VARIABLE ${RESULT})
+    else()
+        message(SEND_ERROR "Unable to detect time")
+        set(${RESULT} UNKNOWN)
+    endif()
 endmacro()
 
 macro(print_package_info package_name)
@@ -283,15 +283,12 @@ endif ()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_INSTALL_MESSAGE ALWAYS)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(${PROJECT_NAME}_DLL_TO_INSTALL "")
+
 print_all_cmake_info()
 
-#############################################################################################
-###    Install Windows dependencies    ######################################################
-#############################################################################################
-if(WIN32)
-    set(CMAKE_INSTALL_UCRT_LIBRARIES)
-    include(InstallRequiredSystemLibraries)
-endif()
 #############################################################################################
 ###    Threads    ###########################################################################
 #############################################################################################
@@ -303,23 +300,52 @@ print_package_info("Threads")
 #############################################################################################
 ###    Boost       ##########################################################################
 #############################################################################################
+if(WIN32)
+    set(Boost_INSTALLED_PATH "C:/Program Files/boost")
+    
+    set(Boost_DETAILED_FAILURE_MSG OFF)
+    set(Boost_DEBUG OFF)
+    
+    set(Boost_USE_STATIC_LIBS ON)
+    #set(Boost_USE_STATIC_RUNTIME ON)  
+    
+    set(Boost_USE_MULTITHREADED ON)      
+    set(Boost_MULTITHREADED_LIB_APPEND "")      
+    if(Boost_USE_MULTITHREADED)
+        set(Boost_MULTITHREADED_LIB_APPEND "-mt")      
+    endif()
+    set(Boost_VERSION_INTERNAL_USE_ONLY "-1_67")        
+    set(Boost_COMPILER "-vc141")        
+    set(Boost_ARCHITECTURE "-x64")
+    
+    set(BOOST_ROOT "${Boost_INSTALLED_PATH}")
+    set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
+    set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include/boost${Boost_VERSION_INTERNAL_USE_ONLY}")
 
-set(Boost_DETAILED_FAILURE_MSG OFF)
-set(Boost_DEBUG OFF)
+    macro(format_boost_lib_name wanted)
+	    set(FORMATED_${wanted} "${BOOST_LIBRARYDIR}/libboost_${wanted}${Boost_COMPILER}${Boost_MULTITHREADED_LIB_APPEND}${Boost_ARCHITECTURE}${Boost_VERSION_INTERNAL_USE_ONLY}.lib")
+    endmacro()
 
-set(Boost_USE_STATIC_LIBS ON)
-#set(Boost_USE_STATIC_RUNTIME ON)  
-
-set(Boost_USE_MULTITHREADED ON)      
-set(Boost_COMPILER "-vc141")        
-set(Boost_ARCHITECTURE "-x64")
-
-set(BOOST_ROOT "C:/Program Files/boost")
-set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
-set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include/boost-1_67")
+    format_boost_lib_name(regex)
+    format_boost_lib_name(thread)
+    format_boost_lib_name(system)
+    format_boost_lib_name(filesystem)
+    format_boost_lib_name(date_time)
+    format_boost_lib_name(signals)
+    list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+	    "${FORMATED_regex}"
+	    "${FORMATED_thread}"
+	    "${FORMATED_system}"
+	    "${FORMATED_filesystem}"
+	    "${FORMATED_date_time}"
+	    "${FORMATED_signals}"
+    )
+    
+endif()
 
 message(STATUS "Note that ${PROJECT_NAME} will not work with boost version > 1.68")
 message(STATUS "For Boost installation on Windows that actually work with this CMake, see : https://gist.github.com/JBHarvey/e49348b03cf0898c929a107852c43e22")
+
 find_package(
     Boost 
     COMPONENTS 
@@ -342,17 +368,53 @@ print_package_info("Threads")
 #############################################################################################
 ###    Qt       #############################################################################
 #############################################################################################
+if(WIN32)
+    set(Qt5_INSTALLED_PATH "D:/Qt/5.12.2/msvc2017_64")
+    
+    # From --> https://doc.qt.io/qt-5/cmake-manual.html
+    set(OLD_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
+    set(CMAKE_PREFIX_PATH "${Qt5_INSTALLED_PATH}")
+    
+    set(Qt5_DIR "${Qt5_INSTALLED_PATH}/lib/cmake/Qt5")
+    set(Qt5Widgets_DIR "${Qt5_DIR}Widgets")
+    set(Qt5Gui_DIR "${Qt5_DIR}Gui")
+    set(Qt5Core_DIR "${Qt5_DIR}Core")
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_POSITION_INDEPENDANT_CODE TRUE)
+    macro(format_qt5_lib_name wanted)
+	    set(FORMATED_${wanted} "${Qt5_INSTALLED_PATH}/bin/Qt5${wanted}.dll")
+    endmacro()
 
-# From --> https://doc.qt.io/qt-5/cmake-manual.html
-set(OLD_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH "D:/Qt/5.12.2/msvc2017_64")
-set(Qt5_DIR "D:/Qt/5.12.2/msvc2017_64/lib/cmake/Qt5")
-set(Qt5Widgets_DIR "${Qt5_DIR}Widgets")
-set(Qt5Gui_DIR "${Qt5_DIR}Gui")
-set(Qt5Core_DIR "${Qt5_DIR}Core")
+    format_qt5_lib_name(Core)
+    format_qt5_lib_name(Cored)
+    format_qt5_lib_name(Gui)
+    format_qt5_lib_name(Guid)
+    format_qt5_lib_name(Widgets)
+    format_qt5_lib_name(Widgetsd)
+    format_qt5_lib_name(Svg)
+    format_qt5_lib_name(Svgd)
+    format_qt5_lib_name(OpenGL)
+    format_qt5_lib_name(OpenGLd)
+    list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+	    "${FORMATED_Core}"
+	    "${FORMATED_Cored}"
+	    "${FORMATED_Gui}"
+	    "${FORMATED_Guid}"
+	    "${FORMATED_Widgets}"
+	    "${FORMATED_Widgetsd}"
+	    "${FORMATED_Svg}"
+	    "${FORMATED_Svgd}"
+	    "${FORMATED_OpenGL}"
+	    "${FORMATED_OpenGLd}"
+    )
+
+endif()
+
+# These code will enable the auto MOC, UIC and RCC feature.
+# See http://www.cmake.org/cmake/help/v3.0/manual/cmake-qt.7.html
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
+
 # From https://blog.kitware.com/cmake-finding-qt5-the-right-way/
 find_package(
     Qt5 
@@ -371,13 +433,8 @@ print_package_info("Qt5Gui")
 print_package_info("Qt5Widgets")
 set(CMAKE_PREFIX_PATH ${OLD_CMAKE_PREFIX_PATH})
 
-# Instruct CMake to run moc automatically when needed
-# moc generated files are located in the bin directory,
 set(CMAKE_AUTOMOC ON)
-
-# Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
-
 set(CMAKE_AUTORCC ON)
 
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
@@ -391,9 +448,17 @@ enable_cxx_compiler_flag_if_supported("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 #############################################################################################
 ###    Qwt      #############################################################################
 #############################################################################################
+if(WIN32)
+    set(Qwt_INSTALLED_PATH "C:/Qwt-6.1.4")
+else()
+    set(Qwt_INSTALLED_PATH "linux/path/to/QWT")
+endif()
+list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+    "${Qwt_INSTALLED_PATH}/lib/qwt.dll"
+    "${Qwt_INSTALLED_PATH}/lib/qwt.lib"
+)
 
-
-file(GLOB Qwt_ROOT_DIR "C:/Qwt-6.1.4")
+file(GLOB Qwt_ROOT_DIR "${Qwt_INSTALLED_PATH}")
 file(GLOB Qwt_INCLUDE_DIRS "${Qwt_ROOT_DIR}/include")
 file(GLOB Qwt_LIBRARY_DIRS "${Qwt_ROOT_DIR}/lib")
 
@@ -415,39 +480,40 @@ endif()
 
 set(CMAKE_FIND_ROOT_PATH ${OLD_CMAKE_FIND_ROOT_PATH})
 include_directories(include ${Qwt_INCLUDE_DIRS} )
-set(CORE_FILES_DIR "AWLCoreClasses")
-set(SCOPE_FILES_DIR "AWLQtScope")
-include_directories(include ${CORE_FILES_DIR})
-include_directories(include ${SCOPE_FILES_DIR})
 
 #############################################################################################
 ###    CuteDemo    ##########################################################################
 #############################################################################################
 
+set(CORE_FILES_DIR "AWLCoreClasses")
+set(SCOPE_FILES_DIR "AWLQtScope")
+include_directories(include ${CORE_FILES_DIR})
+include_directories(include ${SCOPE_FILES_DIR})
+
 set(CUTEDEMO_MAIN_FILES "")
 list(APPEND CUTEDEMO_MAIN_FILES 
-	main.cpp
-	awlqtdemo.cpp
-	AWLSettings.cpp
-	fov_2dscan.cpp
-	awlplotscan.cpp
-	TableView.cpp
+    main.cpp
+    awlqtdemo.cpp
+    AWLSettings.cpp
+    fov_2dscan.cpp
+    awlplotscan.cpp
+    TableView.cpp
 )
 
 set(CUTEDEMO_QT_UI_FILES "")
 list(APPEND CUTEDEMO_QT_UI_FILES 
-	awlqtdemo.ui
-	fov_2dscan.ui
-	TableView.ui
-	awlplotscan.ui
+    awlqtdemo.ui
+    fov_2dscan.ui
+    TableView.ui
+    awlplotscan.ui
 )
 
 set(CUTEDEMO_CORE_FILES "")
 list(APPEND CUTEDEMO_CORE_FILES 
-	${CORE_FILES_DIR}/awlcoord.cpp
-	${CORE_FILES_DIR}/Publisher.cpp
-	${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
-	${CORE_FILES_DIR}/CoordinateSystem.cpp
+    ${CORE_FILES_DIR}/awlcoord.cpp
+    ${CORE_FILES_DIR}/Publisher.cpp
+    ${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
+    ${CORE_FILES_DIR}/CoordinateSystem.cpp
         ${CORE_FILES_DIR}/ReceiverCANCapture.cpp
         ${CORE_FILES_DIR}/ReceiverSimulatorCapture.cpp
         ${CORE_FILES_DIR}/DebugPrintf.cpp
@@ -473,7 +539,7 @@ set(CUTEDEMO_RESOURCES CuteDemo.rc)
 set(CUTEDEMO_QRESOURCES awlqtdemo.qrc)
 if(WIN32)
     ADD_EXECUTABLE(
-	${PROJECT_NAME}
+    ${PROJECT_NAME}
         WIN32
         ${CUTEDEMO_MAIN_FILES}
         ${CUTEDEMO_QT_UI_FILES}
@@ -484,14 +550,14 @@ if(WIN32)
     )
     
     TARGET_COMPILE_DEFINITIONS(
-	    ${PROJECT_NAME}
+        ${PROJECT_NAME}
             PUBLIC 
                 WINDOWS 
                 QWT_DLL
     )
 else()
     ADD_EXECUTABLE(
-	${PROJECT_NAME}
+    ${PROJECT_NAME}
         ${CUTEDEMO_MAIN_FILES}
         ${CUTEDEMO_QT_UI_FILES}
         ${CUTEDEMO_CORE_FILES}
@@ -509,22 +575,22 @@ else()
 endif()
 
 target_include_directories(
-	${PROJECT_NAME}
-	PRIVATE
-	    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILE_DIR}>
-	    $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILE_DIR}>
+    ${PROJECT_NAME}
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILE_DIR}>
+        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILE_DIR}>
 )
 target_include_directories(
-	${PROJECT_NAME}
-	PRIVATE
-	    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${SCOPE_FILE_DIR}>
-	    $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${SCOPE_FILE_DIR}>
+    ${PROJECT_NAME}
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${SCOPE_FILE_DIR}>
+        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${SCOPE_FILE_DIR}>
 )
 target_include_directories(
-	${PROJECT_NAME}
-	PRIVATE
-	    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${DEMO_FILE_DIR}>
-	    $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${DEMO_FILE_DIR}>
+    ${PROJECT_NAME}
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${DEMO_FILE_DIR}>
+        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${DEMO_FILE_DIR}>
 )
 
 #############################################################################################
@@ -570,7 +636,7 @@ if(${WANT_EASY_SYNC_SUPPORT})
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverEasySyncCapture.cpp 
     )
 endif()
@@ -605,7 +671,7 @@ if(${WANT_KVASER_SUPPORT})
 
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverKvaserCapture.cpp 
     )
 
@@ -628,7 +694,7 @@ if(${WANT_SOCKET_CAN_SUPPORT})
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverSocketCANCapture.cpp 
     )
 endif()
@@ -647,7 +713,7 @@ if(${WANT_POSIX_UDP_SUPPORT})
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverPosixUDPCapture.cpp 
     )
 endif()
@@ -666,7 +732,7 @@ if(${WANT_POSIX_TTY_SUPPORT})
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverPosixTTYCapture.cpp 
     )
 endif()
@@ -677,11 +743,17 @@ endif()
 
 print_option_wanted_status("WANT_LIBUSB_SUPPORT")
 if(${WANT_LIBUSB_SUPPORT})
+    set(libusb_INSTALLED_PATH "C:/libusb")
 
     message(STATUS "If you need to install libusb-1.0 ---> http://libusb.sourceforge.net/api-1.0/")
-    set(LIBUSB_ROOT "C:/libusb")
+    set(LIBUSB_ROOT "${libusb_INSTALLED_PATH}")
     set(LIBUSB_LIB "${LIBUSB_ROOT}/libusb-1.0.lib")
     set(LIBUSB_INCLUDE_DIRS "${LIBUSB_ROOT}/include")
+
+    list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+        "${LIBUSB_ROOT}/libusb-1.0.lib"
+        "${LIBUSB_ROOT}/libusb-1.0.dll"
+    )
 
     include_directories(${LIBUSB_INCLUDE_DIRS})
 
@@ -696,12 +768,12 @@ if(${WANT_LIBUSB_SUPPORT})
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverPolledCapture.cpp 
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE 
+    PRIVATE 
             ${CORE_FILES_DIR}/ReceiverLibUSBCapture.cpp 
     )
 endif()
@@ -719,7 +791,7 @@ if(${WANT_TCP_SUPPORT})
     )
     TARGET_SOURCES(
         CuteDemo
-	PRIVATE
+    PRIVATE
             ${CORE_FILES_DIR}/ReceiverTCPCapture.cpp
     )
 endif()
@@ -738,7 +810,7 @@ if(${WANT_OPENCV_VIDEO})
     FIND_PACKAGE(OpenCV REQUIRED)
     TARGET_SOURCES(
         CuteDemo 
-	PRIVATE 
+    PRIVATE 
             VideoCapture.cpp 
             VideoViewer.cpp
     )
@@ -762,11 +834,11 @@ if(${WANT_AP_VIDEO})
     )
     file(GLOB
         AP_LIBRARIES 
-	"${AP_FILES_DIR}/lib/*"
+    "${AP_FILES_DIR}/lib/*"
     )
     TARGET_SOURCES( 
         CuteDemo 
-	PRIVATE 
+    PRIVATE 
             APVideoCapture.cpp
             APVideoViewer.cpp 
     )
@@ -800,8 +872,6 @@ target_link_libraries(
 #############################################################################################
 ###    Installation directives    ###########################################################
 #############################################################################################
-
-#set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION OFF)
 
 set_target_properties(
     CuteDemo
@@ -842,19 +912,17 @@ install(
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     DESTINATION 
         "${INSTALL_CMAKE_DIR}" 
-    COMPONENT 
-        dev
 )
 
 include(GNUInstallDirs)
 
-install(
-    TARGETS
-        ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} 
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} 
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} 
-)
+##install(
+#    TARGETS
+#        ${PROJECT_NAME}
+#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} 
+#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} 
+#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} 
+#)
 
 install(
     TARGETS
@@ -866,38 +934,68 @@ install(
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} 
 )
 
-### Configuration file... needed for adequate runtime
-install(
-    FILES
-        AWLDemoSettings.xml
-    DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-#set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 install(
     EXPORT
         ${PROJECT_NAME}Targets
     FILE 
         ${PROJECT_NAME}Targets.cmake
     DESTINATION
-        #${INSTALL_CONFIGDIR}
         ${INSTALL_CMAKE_DIR}
-    COMPONENT
-        dev
 )
 
+# Configuration file... needed for adequate runtime
+install(
+    FILES
+        AWLDemoSettings.xml
+       ${CUTEDEMO_RESOURCES}
+       ${CUTEDEMO_QRESOURCES}
+       LICENSE.txt
+       README.txt
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+    
 install(
     DIRECTORY
         Images/
-    DESTINATION
-        ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+    DESTINATION ${CMAKE_INSTALL_BINDIR}/Images
 )
+
+# Installation of dll & other dependencies
+if(WIN32)
+    install(
+        DIRECTORY
+            ${Qt5_INSTALLED_PATH}/plugins/platforms
+        DESTINATION
+            ${CMAKE_INSTALL_BINDIR}
+    )
+
+    # DLLs
+    message(STATUS "${PROJECT_NAME}_DLL_TO_INSTALL ----> ${${PROJECT_NAME}_DLL_TO_INSTALL}")
+    install(
+        FILES
+            ${${PROJECT_NAME}_DLL_TO_INSTALL}
+        DESTINATION
+            ${CMAKE_INSTALL_BINDIR}
+    )
+     
+    # Custom installation of system requirements
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES TRUE)
+    set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+    include(InstallRequiredSystemLibraries)
+        install(
+            PROGRAMS
+                ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+            DESTINATION 
+                ${CMAKE_INSTALL_BINDIR}
+        )
+endif()
 
 #############################################################################################
 ###    Packaging    #########################################################################
 #############################################################################################
-set(CPACK_RESOURCE_FILES_LICENSE "LICENSE")
-set(CPACK_RESOURCE_FILES_README "README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Qt Demo application. Made with <3 at Phantom")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VENDOR "Phantom Intelligence Inc.")
@@ -905,6 +1003,8 @@ set(CPACK_PACKAGE_VERSION "${${PROJECT_NAME}_VERSION}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${${PROJECT_NAME}_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${${PROJECT_NAME}_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}")
+set(CPACK_MONOLITHIC_INSTALL TRUE)
+set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME})
 
 string(TIMESTAMP TIMESTAMP_VALUE "%Y-%m-%dT%H-%M-%S")
 
@@ -914,7 +1014,7 @@ if(WIN32)
     #set(CPACK_WIX_PRODUCT_GUID "") # TODO: Set those with actual values
     #set(CPACK_WIX_UPGRADE_GUID "") # TODO: Set those with actual values
     set(CPACK_PACKAGE_FILE_NAME
-	    "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}-${TIMESTAMP_VALUE}")
+        "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}-${TIMESTAMP_VALUE}")
 endif()
 
 include(CPack)
