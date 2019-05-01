@@ -125,6 +125,11 @@ private slots:
   void on_pushButtonSelectAllAscan_clicked();
   void on_pushButtonSelectNoneAscan_clicked();
 
+	void on_checkBoxMiscSystemSelToggled();
+	void on_checkBoxMiscLaserSelToggled();
+	void on_checkBoxMiscGainSelToggled();
+	void on_checkBoxMiscDCSelToggled();
+
 	void on_viewSettingsActionToggled();
 
 	void on_view2DActionToggled();
