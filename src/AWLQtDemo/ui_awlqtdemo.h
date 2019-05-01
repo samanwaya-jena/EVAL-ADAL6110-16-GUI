@@ -238,7 +238,6 @@ public:
     QCheckBox *misc_checkBox_Laser;
     QCheckBox *misc_checkBox_Gain;
     QCheckBox *misc_checkBox_DC;
-    QCheckBox *misc_checkBox_Calibration;
     QLabel *label_FR;
     QPushButton *pushButton_FR;
     QSpinBox *spinBox_FR;
@@ -949,7 +948,8 @@ public:
 "}\n"
 "\n"
 "QSpinBox::up-button:hover {\n"
-"    border-image: url(./Images/Widgets/spinup_hover.png) 1;\n"
+"    border-image: url(."
+                        "/Images/Widgets/spinup_hover.png) 1;\n"
 "}\n"
 "\n"
 "QSpinBox::up-button:pressed {\n"
@@ -1049,7 +1049,7 @@ public:
 "}\n"
 "\n"
 "*::up-arrow:disabled, *::up-arrow:off {\n"
-"   image: url(./WidgetImages/Iimages/up_arrow_disabled.png);\n"
+"   image: url(:/WidgetImages/Iimages/up_arrow_disabled.png);\n"
 "}\n"
 "\n"
 "/* Scrollbars use dark arrows. */\n"
@@ -2715,9 +2715,6 @@ public:
         misc_checkBox_DC = new QCheckBox(extraTab);
         misc_checkBox_DC->setObjectName(QStringLiteral("misc_checkBox_DC"));
         misc_checkBox_DC->setGeometry(QRect(30, 100, 121, 26));
-        misc_checkBox_Calibration = new QCheckBox(extraTab);
-        misc_checkBox_Calibration->setObjectName(QStringLiteral("misc_checkBox_Calibration"));
-        misc_checkBox_Calibration->setGeometry(QRect(30, 130, 131, 26));
         label_FR = new QLabel(extraTab);
         label_FR->setObjectName(QStringLiteral("label_FR"));
         label_FR->setGeometry(QRect(240, 10, 63, 21));
@@ -3101,7 +3098,6 @@ public:
         misc_checkBox_Laser->setText(QApplication::translate("AWLQtDemoClass", "Laser  Enable", Q_NULLPTR));
         misc_checkBox_Gain->setText(QApplication::translate("AWLQtDemoClass", "Auto Gain Control Enable", Q_NULLPTR));
         misc_checkBox_DC->setText(QApplication::translate("AWLQtDemoClass", "Dc Balance Enable", Q_NULLPTR));
-        misc_checkBox_Calibration->setText(QApplication::translate("AWLQtDemoClass", "Calibration Enable", Q_NULLPTR));
         label_FR->setText(QApplication::translate("AWLQtDemoClass", "Frame rate", Q_NULLPTR));
         pushButton_FR->setText(QApplication::translate("AWLQtDemoClass", "Set", Q_NULLPTR));
         interfaceTabs->setTabText(interfaceTabs->indexOf(extraTab), QApplication::translate("AWLQtDemoClass", "Misc", Q_NULLPTR));

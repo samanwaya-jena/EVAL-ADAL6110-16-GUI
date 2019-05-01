@@ -32,8 +32,8 @@ INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
 include_directories(include ${QWT_INCLUDE_DIR} )
 include_directories(include ${QT5_INCLUDE_DIR} )
 include_directories(include ${QT5_INCLUDE_DIRS} )
-include_directories(include "../AWLCoreClasses")
-include_directories(include "../AWLQtScope")
+include_directories(include "./AWLCoreClasses")
+include_directories(include "./AWLQtScope")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
 ADD_DEFINITIONS("-DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB")
 # Creation of executable fails in Qt5 with default configuration
@@ -44,15 +44,15 @@ ADD_EXECUTABLE( LinuxCute
  AWLSettings.cpp
   fov_2dscan.cpp
       	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui
-../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
-../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
-../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
-../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ThreadedWorker.cpp
-../AWLCoreClasses/LoopedWorker.cpp      
-../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
-../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
-../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
-../AWLQtScope/awlqtscope.ui 
+./AWLCoreClasses/awlcoord.cpp          ./AWLCoreClasses/Publisher.cpp                ./AWLCoreClasses/ReceiverPostProcessor.cpp
+./AWLCoreClasses/CoordinateSystem.cpp  ./AWLCoreClasses/ReceiverCANCapture.cpp       ./AWLCoreClasses/ReceiverSimulatorCapture.cpp
+./AWLCoreClasses/DebugPrintf.cpp       ./AWLCoreClasses/ReceiverCapture.cpp          ./AWLCoreClasses/Subscription.cpp
+./AWLCoreClasses/DetectionStruct.cpp   ./AWLCoreClasses/ThreadedWorker.cpp
+./AWLCoreClasses/LoopedWorker.cpp      
+./AWLQtScope/awlqtscope.cpp    ./AWLQtScope/knob.cpp        
+./AWLQtScope/awlscopeplot.cpp  ./AWLQtScope/signaldata.cpp
+./AWLQtScope/curvedata.cpp     ./AWLQtScope/wheelbox.cpp
+./AWLQtScope/awlqtscope.ui 
 awlqtdemo.cpp 
  main.cpp 
 )
@@ -65,19 +65,19 @@ TARGET_LINK_LIBRARIES(LinuxCute ${BOOST_LIBRARIES})
 
 # Comment next 2 lines to disable EasySync support
 #TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
-#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
+#TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverEasySyncCapture.cpp )
 
 # Comment next 6 lines to disable Kvaser support
 #file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
 #file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
 #include_directories(include ${CAN_INCLUDE_DIR})
 #TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
-#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
+#TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverKvaserCapture.cpp )
 #TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 
 # Comment next 2 lines to disable SocketCAN support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
-TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverSocketCANCapture.cpp )
 
 #FIND_PACKAGE(OpenCV REQUIRED)
 #TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
