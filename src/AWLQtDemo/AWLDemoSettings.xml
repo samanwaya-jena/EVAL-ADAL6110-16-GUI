@@ -17,11 +17,9 @@
     <TabSettingControl>true</TabSettingControl>
     <TabSettingStatus>true</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
-    <TabSettingGPIOs>true</TabSettingGPIOs>
-    <TabSettingAlgoControl>true</TabSettingAlgoControl>
-    <TabSettingTrackerControl>true</TabSettingTrackerControl>
-    <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>true</TabSettingMisc>
+    <TabSettingGPIOs>false</TabSettingGPIOs>
+    <TabSettingAlgoControl>false</TabSettingAlgoControl>
+    <TabSettingTrackerControl>false</TabSettingTrackerControl>
 
 
     <!-- velocity units: display velocity in km/h or m/s
@@ -143,11 +141,11 @@
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0.06</forward>
+          <forward>0</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0.08</up>
+          <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -162,6 +160,13 @@
     </receiver0>
 
 
+
+
+
+
+
+
+
     </receivers>
 
   <cameras>
@@ -174,7 +179,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName></cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -183,11 +188,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0.03</forward>
+        <forward>0</forward>
         <!-- lateral offet -->
         <left>0</left>
         <!-- height -->
-        <up>0.13</up>
+        <up>0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -252,10 +257,10 @@
 
       <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
       <fov>
-        <x>82.1</x>
-        <y>52.2</y>
+        <x>45.0</x>
+        <y>34.0</y>
       </fov>
-      <radialCorrectionK1>0.0</radialCorrectionK1>
+      <radialCorrectionK1>-.04</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
 
@@ -521,7 +526,7 @@
   <registerDescription_ADI>
   
     <!-- Registers for Wagner evaluation board based on ADI Gordon -->
-    <registersFPGA label="ADAL6110-16 Registers">
+    <registersFPGA label="ADAL6110-16 Rev0 Registers">
 
       <register>
         <index>R0</index>
@@ -550,9 +555,21 @@
         <description>FLASH_DELAY</description>
       </register>
       <register>
+        <index>R5</index>
+        <address>5</address>
+        <description>CHANNEL_ENABLE</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R6</index>
+        <address>6</address>
+        <description>DATA_ACQUISITION_MODE</description>
+        <advanced>1</advanced>
+      </register>      
+      <register>
         <index>R7</index>
         <address>7</address>
-        <description>TIMING</description>
+        <description>TRIGGER_OUT</description>
       </register>
 
       <!-- Channel 0 -->
@@ -874,6 +891,79 @@
         <description>CH15_CONTROL_2</description>
         <advanced>1</advanced>
       </register>
+      <!-- OTHERS CONTROLS REG -->
+      <register>
+        <index>R112</index>
+        <address>112</address>
+        <description>GPIO_CFG</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R115</index>
+        <address>115</address>
+        <description>SPI_CFG</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R225</index>
+        <address>225</address>
+        <description>THS_MAX</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R226</index>
+        <address>226</address>
+        <description>THS_MIN</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R227</index>
+        <address>227</address>
+        <description>AGC_DCB_CTRL</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R228</index>
+        <address>228</address>
+        <description>AGC_EN</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R229</index>
+        <address>229</address>
+        <description>DC_EN</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R230</index>
+        <address>230</address>
+        <description>AGC_DCB_PID_0</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R231</index>
+        <address>231</address>
+        <description>AGC_DCB_PID_1</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R232</index>
+        <address>232</address>
+        <description>FRAME_DELAY</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R247</index>
+        <address>247</address>
+        <description>LFSR_SEED_L</description>
+        <advanced>1</advanced>
+      </register>
+      <register>
+        <index>R248</index>
+        <address>248</address>
+        <description>LFSR_SEED_H</description>
+        <advanced>1</advanced>
+      </register>  
 
     </registersFPGA>
 
