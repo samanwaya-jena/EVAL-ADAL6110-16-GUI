@@ -24,39 +24,39 @@ INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
 #  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
 #file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
 include_directories(include ${QWT_INCLUDE_DIR} )
-include_directories(include "../AWLCoreClasses")
-include_directories(include "../AWLQtScope")
+include_directories(include "./AWLCoreClasses")
+include_directories(include "./AWLQtScope")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
 # Creation of executable fails in Qt5 with default configuration
 SET(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp
       	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui
-../AWLCoreClasses/awlcoord.cpp          ../AWLCoreClasses/Publisher.cpp                ../AWLCoreClasses/ReceiverPostProcessor.cpp
-../AWLCoreClasses/CoordinateSystem.cpp  ../AWLCoreClasses/ReceiverCANCapture.cpp       ../AWLCoreClasses/ReceiverSimulatorCapture.cpp
-../AWLCoreClasses/DebugPrintf.cpp       ../AWLCoreClasses/ReceiverCapture.cpp          ../AWLCoreClasses/Subscription.cpp
-../AWLCoreClasses/DetectionStruct.cpp   ../AWLCoreClasses/ThreadedWorker.cpp
-../AWLCoreClasses/LoopedWorker.cpp      
-../AWLQtScope/awlqtscope.cpp    ../AWLQtScope/knob.cpp        
-../AWLQtScope/awlscopeplot.cpp  ../AWLQtScope/signaldata.cpp
-../AWLQtScope/curvedata.cpp     ../AWLQtScope/wheelbox.cpp
-../AWLQtScope/awlqtscope.ui 
+./AWLCoreClasses/awlcoord.cpp          ./AWLCoreClasses/Publisher.cpp                ./AWLCoreClasses/ReceiverPostProcessor.cpp
+./AWLCoreClasses/CoordinateSystem.cpp  ./AWLCoreClasses/ReceiverCANCapture.cpp       ./AWLCoreClasses/ReceiverSimulatorCapture.cpp
+./AWLCoreClasses/DebugPrintf.cpp       ./AWLCoreClasses/ReceiverCapture.cpp          ./AWLCoreClasses/Subscription.cpp
+./AWLCoreClasses/DetectionStruct.cpp   ./AWLCoreClasses/ThreadedWorker.cpp
+./AWLCoreClasses/LoopedWorker.cpp      
+./AWLQtScope/awlqtscope.cpp    ./AWLQtScope/knob.cpp        
+./AWLQtScope/awlscopeplot.cpp  ./AWLQtScope/signaldata.cpp
+./AWLQtScope/curvedata.cpp     ./AWLQtScope/wheelbox.cpp
+./AWLQtScope/awlqtscope.ui 
 )
 
 # Comment next 2 lines to disable EasySync support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
-TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverEasySyncCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverEasySyncCapture.cpp )
 
 # Comment next 6 lines to disable Kvaser support
 file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
 file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
 include_directories(include ${CAN_INCLUDE_DIR})
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
-TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverKvaserCapture.cpp )
 TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 
 # Comment next 2 lines to disable SocketCAN support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
-TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverSocketCANCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverSocketCANCapture.cpp )
 
 # Comment next 4 lines to disable OpenCV Video (and OpenCV in general)
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
