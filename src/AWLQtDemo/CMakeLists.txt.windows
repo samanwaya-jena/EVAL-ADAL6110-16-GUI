@@ -394,6 +394,8 @@ if(WIN32)
     format_qt5_lib_name(Svgd)
     format_qt5_lib_name(OpenGL)
     format_qt5_lib_name(OpenGLd)
+    format_qt5_lib_name(PrintSupport)
+    format_qt5_lib_name(PrintSupportd)
     list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
 	    "${FORMATED_Core}"
 	    "${FORMATED_Cored}"
@@ -405,6 +407,8 @@ if(WIN32)
 	    "${FORMATED_Svgd}"
 	    "${FORMATED_OpenGL}"
 	    "${FORMATED_OpenGLd}"
+	    "${FORMATED_PrintSupport}"
+	    "${FORMATED_PrintSupportd}"
     )
 
 endif()
