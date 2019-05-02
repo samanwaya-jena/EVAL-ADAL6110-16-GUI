@@ -49,7 +49,7 @@ ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cp
 ./AWLQtScope/awlqtscope.cpp    ./AWLQtScope/knob.cpp        
 ./AWLQtScope/awlscopeplot.cpp  ./AWLQtScope/signaldata.cpp
 ./AWLQtScope/curvedata.cpp     ./AWLQtScope/wheelbox.cpp
-./AWLQtScope/awlqtscope.ui
+./AWLQtScope/awlqtscope.ui     ./awlqtdemo.qrc
 )
 
 # Comment next 2 lines to disable EasySync support

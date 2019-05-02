@@ -5208,7 +5208,7 @@ color: rgb(255,255,255);</string>
          <widget class="QLabel" name="label_FR">
           <property name="geometry">
            <rect>
-            <x>240</x>
+            <x>230</x>
             <y>10</y>
             <width>63</width>
             <height>21</height>
@@ -5221,7 +5221,7 @@ color: rgb(255,255,255);</string>
          <widget class="QPushButton" name="pushButton_FR">
           <property name="geometry">
            <rect>
-            <x>360</x>
+            <x>370</x>
             <y>10</y>
             <width>71</width>
             <height>28</height>
