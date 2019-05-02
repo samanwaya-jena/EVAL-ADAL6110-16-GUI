@@ -965,6 +965,7 @@ if(WIN32)
     install(
         DIRECTORY
             ${Qt5_INSTALLED_PATH}/plugins/platforms
+            ${Qt5_INSTALLED_PATH}/plugins/imageformats
         DESTINATION
             ${CMAKE_INSTALL_BINDIR}
     )
