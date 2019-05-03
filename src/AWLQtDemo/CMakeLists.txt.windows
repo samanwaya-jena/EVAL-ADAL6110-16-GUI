@@ -969,7 +969,10 @@ if(WIN32)
     install(
         DIRECTORY
             ${Qt5_INSTALLED_PATH}/plugins/platforms
+            ${Qt5_INSTALLED_PATH}/plugins/platformthemes
             ${Qt5_INSTALLED_PATH}/plugins/imageformats
+            ${Qt5_INSTALLED_PATH}/plugins/accessible
+            ${Qt5_INSTALLED_PATH}/plugins/styles
         DESTINATION
             ${CMAKE_INSTALL_BINDIR}
     )
@@ -1015,9 +1018,13 @@ string(TIMESTAMP TIMESTAMP_VALUE "%Y-%m-%dT%H-%M-%S")
 
 if(WIN32)
     set(CPACK_GENERATOR "WIX")
-    set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "CuteDemo")
+
     #set(CPACK_WIX_PRODUCT_GUID "") # TODO: Set those with actual values
     #set(CPACK_WIX_UPGRADE_GUID "") # TODO: Set those with actual values
+
+    #TODO : check if this effectively changes the "C:\Program Files\CuteDemo" for "C:\Program Files\PhantomIntelligence\CuteDemo"
+    #set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "PhantomIntelligence/CuteDemo")
+    set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "CuteDemo")
     set(CPACK_PACKAGE_FILE_NAME
         "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}-${TIMESTAMP_VALUE}")
 endif()
