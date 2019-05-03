@@ -1,0 +1,16 @@
+## These commands will work on a Windows environment to build and create and
+installer for Windows. 
+## Right now x64 is supported for sure (because x64 .dlls are included)
+## Make sure you have all the dependencies installed and a working msvc
+runtime environment to build the project 
+### *** with the current installation, msvc 2015 and more recent versions are suggested ***
+
+## Build 
+mkdir build
+cd build
+cmake -G "NMake Makefiles" ..
+nmake
+
+## Deploy
+"C:\Program Files\CMake\bin\cpack.exe" -V -G WIX -C Release
+
