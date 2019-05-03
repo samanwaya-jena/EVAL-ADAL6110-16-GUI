@@ -459,7 +459,7 @@ spacing: 10px; /* spacing between items in the tool bar */
 /* mainFrame won't have this border-image since we have
    explicitly set it to 'none' using a more specific selector. */
 QLineEdit, QComboBox[editable=&quot;true&quot;], QSpinBox, QAbstractSpinBox {
-    border-image: url(./Images/Widgets/frame.png) 4;
+    border-image: url(:/Widgets/Images/Widgets/frame.png) 4;
     border-width: 3;
 }
 
@@ -558,19 +558,19 @@ QPushButton {
 
 QPushButton, QComboBox[editable=&quot;false&quot;],
 QComboBox[editable=&quot;true&quot;]::drop-down, QSpinBox, QAbstractSpinBox {
-    border-image:  url(./Images/Widgets/pushbutton.png) 5;
+    border-image:  url(:/Widgets/Images/Widgets/pushbutton.png) 5;
     border-width: 5;
 }
 
 QPushButton:hover, QComboBox[editable=&quot;false&quot;]:hover,
 QComboBox[editable=&quot;true&quot;]::drop-down:hover, QMenuBar::item:hover, QSpinBox:hover, QAbstractSpinBox:hover {
-    border-image: url(./Images/Widgets/pushbutton_hover.png) 5;
+    border-image: url(:/Widgets/Images/Widgets/pushbutton_hover.png) 5;
     border-width: 5;
 }
 
 QPushButton:pressed, QComboBox[editable=&quot;false&quot;]:on,
 QComboBox[editable=&quot;true&quot;]::drop-down:on, QMenuBar::item:on , QSpinBox:pressed, QAbstractSpinBox:pressed{
-    border-image: url(./Images/Widgets/pushbutton_pressed.png) 5;
+    border-image: url(:/Widgets/Images/Widgets/pushbutton_pressed.png) 5;
     border-width: 5;
 }
 
@@ -870,30 +870,30 @@ border:transparent;
 }
 
 QRadioButton::indicator:unchecked{
-image: url(./Images/Widgets/radiobutton_unchecked.png);
+image: url(:/Widgets/Images/Widgets/radiobutton_unchecked.png);
 }
 
 QRadioButton::indicator:unchecked:hover {
-    image: url(./Images/Widgets/radiobutton_unchecked_hover.png);
+    image: url(:/Widgets/Images/Widgets/radiobutton_unchecked_hover.png);
 }
 
 QRadioButton::indicator:unchecked:pressed {
-    image: url(./Images/Widgets/radiobutton_unchecked_pressed.png);
+    image: url(:/Widgets/Images/Widgets/radiobutton_unchecked_pressed.png);
 }
 
 
 QRadioButton::indicator:checked
 {
-    image: url(./Images/Widgets/radiobutton_checked.png);
+    image: url(:/Widgets/Images/Widgets/radiobutton_checked.png);
 
 }
 
 QRadioButton::indicator:checked:hover {
-    image: url(./Images/Widgets/radiobutton_checked_hover.png);
+    image: url(:/Widgets/Images/Widgets/radiobutton_checked_hover.png);
 }
 
 QRadioButton::indicator:checked:pressed {
-    image: url(./Images/Widgets/radiobutton_checked_pressed.png);
+    image: url(:/Widgets/Images/Widgets/radiobutton_checked_pressed.png);
 }
 
 
@@ -927,27 +927,27 @@ height:13px;
 
 QCheckBox::indicator:checked
 {
-    image: url(./Images/Widgets/checkbox_checked.png);
+    image: url(:/Widgets/Images/Widgets/checkbox_checked.png);
 }
 
 QCheckBox::indicator:unchecked {
-    image: url(./Images/Widgets/checkbox_unchecked.png);
+    image: url(:/Widgets/Images/Widgets/checkbox_unchecked.png);
 }
 
 QCheckBox::indicator:unchecked:hover {
-    image: url(./Images/Widgets/checkbox_unchecked_hover.png);
+    image: url(:/Widgets/Images/Widgets/checkbox_unchecked_hover.png);
 }
 
 QCheckBox::indicator:unchecked:pressed {
-    image: url(./Images/Widgets/checkbox_unchecked_pressed.png);
+    image: url(:/Widgets/Images/Widgets/checkbox_unchecked_pressed.png);
 }
 
 QCheckBox::indicator:checked:hover {
-    image: url(./Images/Widgets/checkbox_checked_hover.png);
+    image: url(:/Widgets/Images/Widgets/checkbox_checked_hover.png);
 }
 
 QCheckBox::indicator:checked:pressed {
-    image: url(./Images/Widgets/checkbox_checked_pressed.png);
+    image: url(:/Widgets/Images/Widgets/checkbox_checked_pressed.png);
 }
 
 /* Customize spin boxes. */
@@ -961,16 +961,16 @@ QSpinBox::up-button {
     subcontrol-position: top right;
 
     width: 16px; /* 16 + 2*1px border-width = 15px padding + 3px parent border */
-    border-image: url(./Images/Widgets/spinup.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spinup.png) 1;
     border-width: 1px;
 }
 
 QSpinBox::up-button:hover {
-    border-image: url(./Images/Widgets/spinup_hover.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spinup_hover.png) 1;
 }
 
 QSpinBox::up-button:pressed {
-    border-image: url(./Images/Widgets/spinup_pressed.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spinup_pressed.png) 1;
 top:1;
 }
 
@@ -979,17 +979,17 @@ QSpinBox::down-button {
     subcontrol-position: bottom right;
 
     width: 16px;
-    border-image: url(./Images/Widgets/spindown.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spindown.png) 1;
     border-width: 1px;
     border-top-width: 0;
 }
 
 QSpinBox::down-button:hover {
-    border-image: url(./Images/Widgets/spindown_hover.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spindown_hover.png) 1;
 }
 
 QSpinBox::down-button:pressed {
-    border-image: url(./Images/Widgets/spindown_pressed.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spindown_pressed.png) 1;
    top:1;
 }
 
@@ -1005,16 +1005,16 @@ QAbstractSpinBox::up-button {
     subcontrol-position: top right;
 
     width: 16px; /* 16 + 2*1px border-width = 15px padding + 3px parent border */
-    border-image: url(./Images/Widgets/spinup.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spinup.png) 1;
     border-width: 1px;
 }
 
 QAbstractSpinBox::up-button:hover {
-    border-image: url(./Images/Widgets/spinup_hover.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spinup_hover.png) 1;
 }
 
 QAbstractSpinBox::up-button:pressed {
-    border-image: url(./Images/Widgets/spinup_pressed.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spinup_pressed.png) 1;
 top:1;
 }
 
@@ -1023,17 +1023,17 @@ QAbstractSpinBox::down-button {
     subcontrol-position: bottom right;
 
     width: 16px;
-    border-image: url(./Images/Widgets/spindown.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spindown.png) 1;
     border-width: 1px;
     border-top-width: 0;
 }
 
 QAbstractSpinBox::down-button:hover {
-    border-image: url(./Images/Widgets/spindown_hover.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spindown_hover.png) 1;
 }
 
 QAbstractSpinBox::down-button:pressed {
-    border-image: url(./Images/Widgets/spindown_pressed.png) 1;
+    border-image: url(:/Widgets/Images/Widgets/spindown_pressed.png) 1;
     top: 1;
 }
 
@@ -1048,17 +1048,17 @@ color: rgb(255,255,255);
 /* Customize arrows. */
 
 *::down-arrow, *::menu-indicator {
-    image: url(./Images/Widgets/down_arrow.png);
+    image: url(:/Widgets/Images/Widgets/down_arrow.png);
     width: 7px;
     height: 7px;
 }
 
 *::down-arrow:disabled, *::down-arrow:off {
-   image: url(./Images/Widgets/down_arrow_disabled.png);
+   image: url(:/Widgets/Images/Widgets/down_arrow_disabled.png);
 }
 
 *::up-arrow {
-    image: url(./Images/Widgets/up_arrow.png);
+    image: url(:/Widgets/Images/Widgets/up_arrow.png);
     width: 7px;
     height: 7px;
 }
@@ -1070,13 +1070,13 @@ color: rgb(255,255,255);
 /* Scrollbars use dark arrows. */
 
 QScrollBar::down-arrow {
-    image: url(./Images/Widgets/down_arrow_dark.png);
+    image: url(:/Widgets/Images/Widgets/down_arrow_dark.png);
     width: 9px;
     height: 9px;
 }
 
 QScrollBar::down-arrow:pressed {
-    image: url(./Images/Widgets/down_arrow_dark.png);
+    image: url(:/Widgets/Images/Widgets/down_arrow_dark.png);
     width: 7px;
     height: 7px;
     top:1;
@@ -1084,13 +1084,13 @@ QScrollBar::down-arrow:pressed {
 
 
 QScrollBar::up-arrow {
-    image: url(./Images/Widgets/up_arrow_dark.png);
+    image: url(:/Widgets/Images/Widgets/up_arrow_dark.png);
     width: 9px;
     height: 9px;
 }
 
 QScrollBar::up-arrow:pressed {
-    image: url(./Images/Widgets/up_arrow_dark.png);
+    image: url(:/Widgets/Images/Widgets/up_arrow_dark.png);
     width: 7px;
     height: 7px;
     top:1;
