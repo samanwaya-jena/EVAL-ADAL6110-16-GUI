@@ -12,6 +12,7 @@ set(CMAKE_COLOR_MAKEFILE ON)
 
 include(CheckCXXCompilerFlag)
 function(enable_cxx_compiler_flag_if_supported flag)
+    message(STATUS "FLAG_CHECK! ----> Current flags    :  ${CMAKE_CXX_FLAGS}")
     string(FIND "${CMAKE_CXX_FLAGS}" "${flag}" flag_already_set)
     if(flag_already_set EQUAL -1)
         message(STATUS "Flag:      ${flag}")
@@ -437,10 +438,6 @@ print_package_info("Qt5Gui")
 print_package_info("Qt5Widgets")
 set(CMAKE_PREFIX_PATH ${OLD_CMAKE_PREFIX_PATH})
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
 include_directories(${Qt5Widgets_INCLUDES})
 
@@ -448,6 +445,11 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 
 # Creation of executable fails in Qt5 with default configuration
 enable_cxx_compiler_flag_if_supported("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+enable_cxx_compiler_flag_if_supported("-o2")
+enable_cxx_compiler_flag_if_supported("-fp:fast")
+enable_cxx_compiler_flag_if_supported("-Qfast_transcendentals")
+enable_cxx_compiler_flag_if_supported("-permissive-")
+enable_cxx_compiler_flag_if_supported("-opt:REF")
 
 #############################################################################################
 ###    Qwt      #############################################################################
@@ -920,14 +922,6 @@ install(
 
 include(GNUInstallDirs)
 
-##install(
-#    TARGETS
-#        ${PROJECT_NAME}
-#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} 
-#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} 
-#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} 
-#)
-
 install(
     TARGETS
         ${PROJECT_NAME}
@@ -936,6 +930,12 @@ install(
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} 
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} 
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} 
+)
+
+set_property(
+    INSTALL
+        "${CMAKE_INSTALL_BINDIR}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
+    PROPERTY CPACK_START_MENU_SHORTCUTS "${PROJECT_NAME}"
 )
 
 install(
@@ -971,7 +971,6 @@ if(WIN32)
             ${Qt5_INSTALLED_PATH}/plugins/platforms
             ${Qt5_INSTALLED_PATH}/plugins/platformthemes
             ${Qt5_INSTALLED_PATH}/plugins/imageformats
-            ${Qt5_INSTALLED_PATH}/plugins/accessible
             ${Qt5_INSTALLED_PATH}/plugins/styles
         DESTINATION
             ${CMAKE_INSTALL_BINDIR}

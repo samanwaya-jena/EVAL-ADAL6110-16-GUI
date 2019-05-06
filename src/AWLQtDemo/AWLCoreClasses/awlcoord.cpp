@@ -174,7 +174,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 		char receiverKeyString[32];
 		sprintf(receiverKeyString,  "config.receivers.receiver%d", receiverID);
 		std::string receiverKey = receiverKeyString;
-		boost::property_tree::ptree &receiverPropNode =  propTree.get_child(receiverKey);
+		boost::property_tree::ptree &receiverPropNode = propTree.get_child(receiverKey);
 
 
 		// Get to the receiver geometry in the configuration tree
@@ -218,8 +218,8 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 			float offsetY(0.0);
 
 			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("arraySize"), columnsFloat, rowsFloat);
-			columns = columnsFloat;
-			rows = rowsFloat;
+			columns = (int)columnsFloat;
+			rows = (int)rowsFloat;
 			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("arrayFOV"), fovX, fovY);
 			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("pixelSpacing"), spacingX, spacingY);
 			AWLSettings::Get2DPoint(channelGeometryPropNode.get_child("arrayOffset"), offsetX, offsetY);
