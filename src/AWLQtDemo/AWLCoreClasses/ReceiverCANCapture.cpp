@@ -1380,6 +1380,28 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
    return(bMessageOk);
 }
 
+bool ReceiverCANCapture::EnableSystem(bool on)
+{
+	bool bMessageOk = true;
+   	return(bMessageOk);
+}
+
+bool ReceiverCANCapture::EnableLaser(bool on)
+{
+	bool bMessageOk = true;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::EnableAutoGain(bool on)
+{
+	bool bMessageOk = true;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::EnableDCBalance(bool on)
+{
+	bool bMessageOk = true;
+   	return(bMessageOk);
+}
+
 bool ReceiverCANCapture::SetTracker(uint16_t trackerID)
 {
 

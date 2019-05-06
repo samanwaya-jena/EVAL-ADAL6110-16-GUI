@@ -194,6 +194,30 @@ public:
 	* \return true if success.  false on error.
 	*/
 
+	virtual bool EnableSystem(bool on);
+	
+	/** \brief Issues the command to enable the sensor.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableLaser(bool on);
+	
+	/** \brief Issues the command to enable the Laser.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableAutoGain(bool on);
+	
+	/** \brief Issues the command to enable the Auto Gain.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableDCBalance(bool on);
+	
+	/** \brief Issues the command to enable the DC Balance.
+	* \return true if success.  false on error.
+	*/
+
 	virtual bool SetTracker(uint16_t trackerID);
 
 	/** \brief Sets an internal FPGA register to the value sent as argument. 

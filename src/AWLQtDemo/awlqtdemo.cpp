@@ -2439,6 +2439,7 @@ void AWLQtDemo::on_checkBoxAdvanceModeToggled()
 
 void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
 {
+
 	if(ui.misc_checkBox_System->isChecked()) {
 		fprintf(stderr, "System enable message\n");
 	} else {
@@ -2466,10 +2467,14 @@ void AWLQtDemo::on_checkBoxMiscGainSelToggled()
 
 void AWLQtDemo::on_checkBoxMiscDCSelToggled()
 {
+	uint16_t registerAddress = 229;
+	uint32_t registerValue = 0;
+
 	if(ui.misc_checkBox_DC->isChecked()) {
 		fprintf(stderr, "DC enable message\n");
 	} else {
-		fprintf(stderr, "DC disable message\n");
+		//fprintf(stderr, "DC disable message\n");
+		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
 	}
 }
 

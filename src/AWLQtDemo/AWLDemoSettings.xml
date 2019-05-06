@@ -95,7 +95,7 @@
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>30755</libUsbProductId>
+      <libUsbProductId>30755</libUsbProductIdb>
       <!-- The LibUSB input end point -->
       <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
