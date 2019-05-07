@@ -585,31 +585,31 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-        virtual bool SspSetFrameRate(int FrameRate );
+        virtual bool SspSetFrameRate(int FrameRate ) = 0;
 
         /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
         * \return true if success.  false on error.
         */
 
-	virtual bool EnableSystem(bool on);
+	virtual bool EnableSystem(bool on) = 0;
 
 	/** \brief Issues the command to enable the sensor.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableLaser(bool on);
+	virtual bool EnableLaser(bool on) = 0;
 
 	/** \brief Issues the command to enable the Laser.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableAutoGain(bool on);
+	virtual bool EnableAutoGain(bool on) = 0;
 
 	/** \brief Issues the command to enable the Auto Gain.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableDCBalance(bool on);
+	virtual bool EnableDCBalance(bool on) = 0;
 
 	/** \brief Issues the command to enable the DC Balance.
 	* \return true if success.  false on error.
