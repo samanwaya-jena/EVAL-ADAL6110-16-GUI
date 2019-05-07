@@ -194,6 +194,12 @@ public:
 	* \return true if success.  false on error.
 	*/
 
+	virtual bool SspSetFrameRate(int FrameRate );
+
+	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
+	* \return true if success.  false on error.
+	*/
+
 	virtual bool EnableSystem(bool on);
 	
 	/** \brief Issues the command to enable the sensor.
