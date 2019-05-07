@@ -253,6 +253,37 @@ public:
 	  * \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
+
+        virtual bool SspGetFrameRate(int FrameRate ) { return(true); };
+
+        /** \brief Issues the command to get the frame rate.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool StatusSystem(bool on) { return(true); };
+
+        /** \brief Issues the command to know if the sensor.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool StatusLaser(bool on) { return(true); };
+
+        /** \brief Issues the command to know if the Laser is on.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool StatusAutoGain(bool on) { return(true); };
+
+        /** \brief Issues the command to know if the Auto Gain is on.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool StatusDCBalance(bool on) { return(true); };
+
+        /** \brief Issues the command to know if the DC Balance is on.
+        * \return true if success.  false on error.
+        */
+
 	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) {return(true);};
 
 	/** \brief Send an asynchronous query command for a Tracker parameter.

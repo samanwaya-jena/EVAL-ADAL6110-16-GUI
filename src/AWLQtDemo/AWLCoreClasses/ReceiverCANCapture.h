@@ -293,6 +293,39 @@ public:
 	/** \brief Issues an asynchronous query command to get the current tracker.
 	* \return true if success.  false on error.
 	*/
+
+
+	virtual bool SspGetFrameRate();
+
+	/** \brief Issues the command to get the frame rate.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusSystem();
+	
+	/** \brief Issues the command to enable the sensor.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool SatusLaser();
+	
+	/** \brief Issues the command to enable the Laser.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusAutoGain();
+	
+	/** \brief Issues the command to enable the Auto Gain.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusDCBalance();
+	
+	/** \brief Issues the command to enable the DC Balance.
+	* \return true if success.  false on error.
+	*/
+
+
 	virtual bool QueryTracker();
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 

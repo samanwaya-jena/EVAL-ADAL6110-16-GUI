@@ -678,6 +678,37 @@ public:
 	/** \  an asynchronous query command to get the current tracker.
 	* \return true if success.  false on error.
 	*/
+
+        virtual bool SspGetFrameRate() = 0;
+
+        /** \brief Issues the command to get the frame rate.
+        * \return true if success.  false on error.
+        */
+
+	virtual bool StatusSystem() = 0;
+
+	/** \brief Issues the command know if the sensor is on.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusLaser() = 0;
+
+	/** \brief Issues the command to know if the Laser is on.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusAutoGain() = 0;
+
+	/** \brief Issues the command to know if the Auto Gain is on.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusDCBalance() = 0;
+
+	/** \brief Issues the command to know if the DC Balance is on.
+	* \return true if success.  false on error.
+	*/
+
 	virtual bool QueryTracker() = 0;
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
