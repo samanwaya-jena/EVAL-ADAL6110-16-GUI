@@ -2442,8 +2442,10 @@ void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
 
 	if(ui.misc_checkBox_System->isChecked()) {
 		fprintf(stderr, "System enable message\n");
+		receiverCaptures[0]->EnableSystem(true);
 	} else {
 		fprintf(stderr, "System disable message\n");
+		receiverCaptures[0]->EnableSystem(false);
 	}
 }
 
@@ -2451,8 +2453,10 @@ void AWLQtDemo::on_checkBoxMiscLaserSelToggled()
 {
 	if(ui.misc_checkBox_Laser->isChecked()) {
 		fprintf(stderr, "Laser enable message\n");
+		receiverCaptures[0]->EnableLaser(true);
 	} else {
 		fprintf(stderr, "Laser disable message\n");
+		receiverCaptures[0]->EnableLaser(false);
 	}
 }
 
@@ -2460,8 +2464,10 @@ void AWLQtDemo::on_checkBoxMiscGainSelToggled()
 {
 	if(ui.misc_checkBox_Gain->isChecked()) {
 		fprintf(stderr, "Gain enable message\n");
+		receiverCaptures[0]->EnableAutoGain(true);
 	} else {
 		fprintf(stderr, "Gain disable message\n");
+		receiverCaptures[0]->EnableAutoGain(false);
 	}
 }
 

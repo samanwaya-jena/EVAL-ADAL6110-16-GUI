@@ -584,6 +584,37 @@ public:
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
+
+        virtual bool SspSetFrameRate(int FrameRate );
+
+        /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
+        * \return true if success.  false on error.
+        */
+
+	virtual bool EnableSystem(bool on);
+
+	/** \brief Issues the command to enable the sensor.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableLaser(bool on);
+
+	/** \brief Issues the command to enable the Laser.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableAutoGain(bool on);
+
+	/** \brief Issues the command to enable the Auto Gain.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableDCBalance(bool on);
+
+	/** \brief Issues the command to enable the DC Balance.
+	* \return true if success.  false on error.
+	*/
+
 		
 	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 

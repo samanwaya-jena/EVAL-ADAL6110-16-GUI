@@ -113,7 +113,39 @@ public:
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-		
+	
+        virtual bool SspSetFrameRate(int FrameRate ) { return(true); };
+
+        /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
+        * \return true if success.  false on error.
+        */
+
+        virtual bool EnableSystem(bool on) { return(true); };
+
+        /** \brief Issues the command to enable the sensor.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool EnableLaser(bool on) { return(true); };
+
+        /** \brief Issues the command to enable the Laser.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool EnableAutoGain(bool on) { return(true); };
+
+        /** \brief Issues the command to enable the Auto Gain.
+        * \return true if success.  false on error.
+        */
+
+        virtual bool EnableDCBalance(bool on) { return(true); };
+
+        /** \brief Issues the command to enable the DC Balance.
+        * \return true if success.  false on error.
+        */
+
+
+
 	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) {return(true);};
 
 	/** \brief Sets an ADC register to the value sent as argument. 
