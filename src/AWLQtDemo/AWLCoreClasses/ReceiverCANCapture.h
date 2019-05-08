@@ -307,7 +307,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SatusLaser();
+	virtual bool StatusLaser();
 	
 	/** \brief Issues the command to enable the Laser.
 	* \return true if success.  false on error.

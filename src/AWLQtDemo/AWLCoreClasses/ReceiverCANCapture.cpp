@@ -1380,6 +1380,32 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
    return(bMessageOk);
 }
 
+bool ReceiverCANCapture::SspGetFrameRate()
+{
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusSystem()
+{
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusLaser()
+{
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusAutoGain()
+{
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusDCBalance()
+{
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+
 bool ReceiverCANCapture::SspSetFrameRate(int FrameRate )
 {
 	AWLCANMessage message;
@@ -1397,6 +1423,7 @@ bool ReceiverCANCapture::SspSetFrameRate(int FrameRate )
 
    	return(bMessageOk);
 }
+
 
 bool ReceiverCANCapture::EnableSystem(bool on)
 {

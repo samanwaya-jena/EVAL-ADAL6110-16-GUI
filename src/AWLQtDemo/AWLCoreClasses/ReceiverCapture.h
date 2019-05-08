@@ -717,6 +717,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the FPGA registerSet. 
 		*/
+
 	virtual bool QueryFPGARegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for an ADC register. 

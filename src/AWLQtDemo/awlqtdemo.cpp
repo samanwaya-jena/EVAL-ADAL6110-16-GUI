@@ -1017,7 +1017,11 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 	AWLSettings::GetGlobalSettings()->StoreReceiverCalibration();
 }
 
-
+void AWLQtDemo::on_pushButton_FR_clicked()
+{
+		receiverCaptures[0]->SspSetFrameRate(20);
+		fprintf(stderr, "Frame rate message\n");
+}
 
 void AWLQtDemo::on_calibratePushButton_clicked()
 
