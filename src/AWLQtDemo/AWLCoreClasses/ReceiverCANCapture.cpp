@@ -1380,31 +1380,6 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
    return(bMessageOk);
 }
 
-bool ReceiverCANCapture::SspGetFrameRate()
-{
-	bool bMessageOk = false;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::StatusSystem()
-{
-	bool bMessageOk = false;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::StatusLaser()
-{
-	bool bMessageOk = false;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::StatusAutoGain()
-{
-	bool bMessageOk = false;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::StatusDCBalance()
-{
-	bool bMessageOk = false;
-   	return(bMessageOk);
-}
 
 bool ReceiverCANCapture::SspSetFrameRate(int FrameRate )
 {
@@ -1775,6 +1750,73 @@ bool ReceiverCANCapture::QueryAlgorithm()
 	receiverStatus.currentAlgoPendingUpdates = updateStatusPendingUpdate;
 
     return(bMessageOk);
+}
+
+
+bool ReceiverCANCapture::SspGetFrameRate()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] =  AWLCANMSG_ID_CMD_SSP_FRAME_RATE;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusSystem()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_SYSTEM;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusLaser()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_LASER;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusAutoGain()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_AUTO_GAIN;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusDCBalance()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_DC_BALANCE;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+   	return(bMessageOk);
 }
 
 bool ReceiverCANCapture::QueryTracker()
