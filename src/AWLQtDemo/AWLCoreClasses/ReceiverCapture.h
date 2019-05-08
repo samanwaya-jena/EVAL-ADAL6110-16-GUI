@@ -203,6 +203,18 @@ public:
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
 
+	uint32_t SspFrameRate;
+	uint32_t SspFrameRatePendingUpdates;
+	uint32_t StatusSystem;
+	uint32_t StatusSystemPendingUpdates;
+	uint32_t StatusLaser;
+	uint32_t StatusLaserPendingUpdates;
+	uint32_t StatusAutoGain;
+	uint32_t StatusAutoGainPendingUpdates;
+	uint32_t StatusDCBalance;
+	uint32_t StatusDCBalancePendingUpdates;
+
+
 	uint16_t currentTracker;
 	uint16_t currentTrackerPendingUpdates;
 

@@ -1765,6 +1765,8 @@ bool ReceiverCANCapture::SspGetFrameRate()
 
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.SspFrameRatePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusSystem()
@@ -1779,6 +1781,8 @@ bool ReceiverCANCapture::StatusSystem()
 
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusSystemPendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusLaser()
@@ -1793,6 +1797,8 @@ bool ReceiverCANCapture::StatusLaser()
 
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusLaserPendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusAutoGain()
@@ -1807,6 +1813,8 @@ bool ReceiverCANCapture::StatusAutoGain()
 
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusAutoGainPendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusDCBalance()
@@ -1821,6 +1829,8 @@ bool ReceiverCANCapture::StatusDCBalance()
 
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusDCBalancePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
 
