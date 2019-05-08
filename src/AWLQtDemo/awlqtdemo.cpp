@@ -413,6 +413,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.misc_checkBox_Gain, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscGainSelToggled()));
   connect(ui.misc_checkBox_DC, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscDCSelToggled()));
 
+  ui.spinBox_FR->setRange(10, 50);
+  ui.spinBox_FR->setSingleStep(5);
+  ui.spinBox_FR->setValue(50);
+
 //  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggled()));
 
   ui.radioButton_1->hide();
@@ -1019,8 +1023,8 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 
 void AWLQtDemo::on_pushButton_FR_clicked()
 {
-		receiverCaptures[0]->SspSetFrameRate(20);
-		fprintf(stderr, "Frame rate message\n");
+		receiverCaptures[0]->SspSetFrameRate(ui.spinBox_FR->value());
+		fprintf(stderr, "Frame rate: %d\n",ui.spinBox_FR->value());
 }
 
 void AWLQtDemo::on_calibratePushButton_clicked()

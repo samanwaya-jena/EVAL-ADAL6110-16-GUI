@@ -1764,6 +1764,7 @@ bool ReceiverCANCapture::SspGetFrameRate()
 	*(int32_t *)&message.data[4] = 0L;
 
 	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusSystem()
@@ -1777,6 +1778,7 @@ bool ReceiverCANCapture::StatusSystem()
 	*(int32_t *)&message.data[4] = 0L;
 
 	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusLaser()
@@ -1790,6 +1792,7 @@ bool ReceiverCANCapture::StatusLaser()
 	*(int32_t *)&message.data[4] = 0L;
 
 	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusAutoGain()
@@ -1803,6 +1806,7 @@ bool ReceiverCANCapture::StatusAutoGain()
 	*(int32_t *)&message.data[4] = 0L;
 
 	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
 bool ReceiverCANCapture::StatusDCBalance()
@@ -1816,6 +1820,7 @@ bool ReceiverCANCapture::StatusDCBalance()
 	*(int32_t *)&message.data[4] = 0L;
 
 	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
 
