@@ -203,6 +203,18 @@ public:
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
 
+	uint32_t SspFrameRate;
+	uint32_t SspFrameRatePendingUpdates;
+	uint32_t StatusSystem;
+	uint32_t StatusSystemPendingUpdates;
+	uint32_t StatusLaser;
+	uint32_t StatusLaserPendingUpdates;
+	uint32_t StatusAutoGain;
+	uint32_t StatusAutoGainPendingUpdates;
+	uint32_t StatusDCBalance;
+	uint32_t StatusDCBalancePendingUpdates;
+
+
 	uint16_t currentTracker;
 	uint16_t currentTrackerPendingUpdates;
 
@@ -584,6 +596,37 @@ public:
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
+
+        virtual bool SspSetFrameRate(int FrameRate ) = 0;
+
+        /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
+        * \return true if success.  false on error.
+        */
+
+	virtual bool EnableSystem(bool on) = 0;
+
+	/** \brief Issues the command to enable the sensor.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableLaser(bool on) = 0;
+
+	/** \brief Issues the command to enable the Laser.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableAutoGain(bool on) = 0;
+
+	/** \brief Issues the command to enable the Auto Gain.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool EnableDCBalance(bool on) = 0;
+
+	/** \brief Issues the command to enable the DC Balance.
+	* \return true if success.  false on error.
+	*/
+
 		
 	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
@@ -647,6 +690,37 @@ public:
 	/** \  an asynchronous query command to get the current tracker.
 	* \return true if success.  false on error.
 	*/
+
+        virtual bool SspGetFrameRate() = 0;
+
+        /** \brief Issues the command to get the frame rate.
+        * \return true if success.  false on error.
+        */
+
+	virtual bool StatusSystem() = 0;
+
+	/** \brief Issues the command know if the sensor is on.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusLaser() = 0;
+
+	/** \brief Issues the command to know if the Laser is on.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusAutoGain() = 0;
+
+	/** \brief Issues the command to know if the Auto Gain is on.
+	* \return true if success.  false on error.
+	*/
+
+	virtual bool StatusDCBalance() = 0;
+
+	/** \brief Issues the command to know if the DC Balance is on.
+	* \return true if success.  false on error.
+	*/
+
 	virtual bool QueryTracker() = 0;
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
@@ -655,6 +729,7 @@ public:
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the FPGA registerSet. 
 		*/
+
 	virtual bool QueryFPGARegister(uint16_t registerAddress) = 0;
 
 	/** \brief Send an asynchronous query command for an ADC register. 

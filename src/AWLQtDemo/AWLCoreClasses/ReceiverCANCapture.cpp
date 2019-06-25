@@ -1380,6 +1380,92 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
    return(bMessageOk);
 }
 
+
+bool ReceiverCANCapture::SspSetFrameRate(int FrameRate )
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+	message.len = AWLCANMSG_LEN;       		// Frame size (0.8)
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] =  AWLCANMSG_ID_CMD_SSP_FRAME_RATE;
+
+	bool bMessageOk = false;
+	if ((( FrameRate % 5) == 0) && ( FrameRate >=10) && ( FrameRate <= 50)) {
+		*(int32_t *)&message.data[4] = FrameRate;
+		bMessageOk = WriteMessage(message);
+	}
+
+   	return(bMessageOk);
+}
+
+
+bool ReceiverCANCapture::EnableSystem(bool on)
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+	message.len = AWLCANMSG_LEN;       		// Frame size (0.8)
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_SYSTEM;
+	*(int32_t *)&message.data[4] = 0;
+
+	bool bMessageOk = false;
+	if ( on ) 
+		*(int32_t *)&message.data[4] = 1;
+	bMessageOk = WriteMessage(message);
+   	return(bMessageOk);
+}
+
+bool ReceiverCANCapture::EnableLaser(bool on)
+{	
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+	message.len = AWLCANMSG_LEN;       		// Frame size (0.8)
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_LASER;
+	*(int32_t *)&message.data[4] = 0;
+
+	bool bMessageOk = false;
+	if ( on ) 
+		*(int32_t *)&message.data[4] = 1;
+	bMessageOk = WriteMessage(message);
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::EnableAutoGain(bool on)
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+	message.len = AWLCANMSG_LEN;       		// Frame size (0.8)
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_AUTO_GAIN;
+	*(int32_t *)&message.data[4] = 0;
+
+	bool bMessageOk = false;
+	if ( on ) 
+		*(int32_t *)&message.data[4] = 1;
+	bMessageOk = WriteMessage(message);
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::EnableDCBalance(bool on)
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+	message.len = AWLCANMSG_LEN;       		// Frame size (0.8)
+	message.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_DC_BALANCE;
+	*(int32_t *)&message.data[4] = 0;
+
+	bool bMessageOk = false;
+	if ( on ) 
+		*(int32_t *)&message.data[4] = 1;
+	bMessageOk = WriteMessage(message);
+   	return(bMessageOk);
+}
+
 bool ReceiverCANCapture::SetTracker(uint16_t trackerID)
 {
 
@@ -1664,6 +1750,88 @@ bool ReceiverCANCapture::QueryAlgorithm()
 	receiverStatus.currentAlgoPendingUpdates = updateStatusPendingUpdate;
 
     return(bMessageOk);
+}
+
+
+bool ReceiverCANCapture::SspGetFrameRate()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] =  AWLCANMSG_ID_CMD_SSP_FRAME_RATE;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.SspFrameRatePendingUpdates = updateStatusPendingUpdate;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusSystem()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_SYSTEM;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusSystemPendingUpdates = updateStatusPendingUpdate;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusLaser()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_LASER;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusLaserPendingUpdates = updateStatusPendingUpdate;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusAutoGain()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_AUTO_GAIN;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusAutoGainPendingUpdates = updateStatusPendingUpdate;
+   	return(bMessageOk);
+}
+bool ReceiverCANCapture::StatusDCBalance()
+{
+	AWLCANMessage message;
+	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
+    	message.len = AWLCANMSG_LEN;       // Frame size (0.8)
+   	message.data[0] = AWLCANMSG_ID_CMD_QUERY_PARAMETER;
+	message.data[1] = AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
+	*(int16_t *)&message.data[2] = AWLCANMSG_ID_CMD_SSP_ENABLE_DC_BALANCE;
+	*(int32_t *)&message.data[4] = 0L;
+
+	bool bMessageOk = false;
+	bMessageOk = WriteMessage(message);
+	// Signal that we are waiting for an update of the register settings.
+	receiverStatus.StatusDCBalancePendingUpdates = updateStatusPendingUpdate;
+   	return(bMessageOk);
 }
 
 bool ReceiverCANCapture::QueryTracker()

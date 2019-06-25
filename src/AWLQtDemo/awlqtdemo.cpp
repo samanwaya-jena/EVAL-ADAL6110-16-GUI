@@ -413,6 +413,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.misc_checkBox_Gain, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscGainSelToggled()));
   connect(ui.misc_checkBox_DC, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscDCSelToggled()));
 
+  ui.spinBox_FR->setRange(10, 50);
+  ui.spinBox_FR->setSingleStep(5);
+  ui.spinBox_FR->setValue(50);
+
 //  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggled()));
 
   ui.radioButton_1->hide();
@@ -1017,7 +1021,11 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 	AWLSettings::GetGlobalSettings()->StoreReceiverCalibration();
 }
 
-
+void AWLQtDemo::on_pushButton_FR_clicked()
+{
+		receiverCaptures[0]->SspSetFrameRate(ui.spinBox_FR->value());
+		fprintf(stderr, "Frame rate: %d\n",ui.spinBox_FR->value());
+}
 
 void AWLQtDemo::on_calibratePushButton_clicked()
 
@@ -2439,10 +2447,13 @@ void AWLQtDemo::on_checkBoxAdvanceModeToggled()
 
 void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
 {
+
 	if(ui.misc_checkBox_System->isChecked()) {
 		fprintf(stderr, "System enable message\n");
+		receiverCaptures[0]->EnableSystem(true);
 	} else {
 		fprintf(stderr, "System disable message\n");
+		receiverCaptures[0]->EnableSystem(false);
 	}
 }
 
@@ -2450,8 +2461,10 @@ void AWLQtDemo::on_checkBoxMiscLaserSelToggled()
 {
 	if(ui.misc_checkBox_Laser->isChecked()) {
 		fprintf(stderr, "Laser enable message\n");
+		receiverCaptures[0]->EnableLaser(true);
 	} else {
 		fprintf(stderr, "Laser disable message\n");
+		receiverCaptures[0]->EnableLaser(false);
 	}
 }
 
@@ -2459,17 +2472,23 @@ void AWLQtDemo::on_checkBoxMiscGainSelToggled()
 {
 	if(ui.misc_checkBox_Gain->isChecked()) {
 		fprintf(stderr, "Gain enable message\n");
+		receiverCaptures[0]->EnableAutoGain(true);
 	} else {
 		fprintf(stderr, "Gain disable message\n");
+		receiverCaptures[0]->EnableAutoGain(false);
 	}
 }
 
 void AWLQtDemo::on_checkBoxMiscDCSelToggled()
 {
+	uint16_t registerAddress = 229;
+	uint32_t registerValue = 0;
+
 	if(ui.misc_checkBox_DC->isChecked()) {
 		fprintf(stderr, "DC enable message\n");
 	} else {
-		fprintf(stderr, "DC disable message\n");
+		//fprintf(stderr, "DC disable message\n");
+		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
 	}
 }
 

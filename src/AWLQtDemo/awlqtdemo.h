@@ -112,6 +112,7 @@ private slots:
 
 	void on_globalParametersSetPushButton_clicked();
 	void on_globalParametersGetPushButton_clicked();
+	void on_pushButton_FR_clicked();
 
   void on_checkBoxAdvanceModeToggled();
 
