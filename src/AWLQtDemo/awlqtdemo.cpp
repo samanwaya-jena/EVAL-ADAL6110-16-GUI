@@ -2356,7 +2356,7 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-	msgBox.setText("QtDemo 1.3.7<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+	msgBox.setText("QtDemo 1.4.0<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
 	msgBox.exec();
 }
 

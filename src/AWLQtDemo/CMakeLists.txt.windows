@@ -605,27 +605,35 @@ target_include_directories(
 # Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
 set(WANT_EASY_SYNC_SUPPORT 1)
 
+# TODO: Compatibility for windows for this one
 # Set WANT_KVASER_SUPPORT to `1` to enable Kvaser support
 set(WANT_KVASER_SUPPORT 0)
 
+# TODO: Compatibility for windows for this one
 # Set WANT_SOCKET_CAN_SUPPORT to `1` to enable SocketCAN support WARNING Linux Only
 set(WANT_SOCKET_CAN_SUPPORT 0)
 
+# TODO: Compatibility for windows for this one
 # Set WANT_POSIX_UDP_SUPPORT to `1` to enable PosixUDP support WARNING Linux Only
 set(WANT_POSIX_UDP_SUPPORT 0)
 
+# TODO: Compatibility for windows for this one
 # Set WANT_POSIX_TTY_SUPPORT to `1` to enable PosixTTY support WARNING Linux Only
 set(WANT_POSIX_TTY_SUPPORT 0)
 
 # Set WANT_LIBUSB_SUPPORT to `1` to enable LibUSB support
 set(WANT_LIBUSB_SUPPORT 1)
 
+# TODO: Compatibility for windows for this one
 # Set WANT_TCP_SUPPORT to `1` to enable TCP_SUPPORT
 set(WANT_TCP_SUPPORT 0)
 
+# TODO: complete this one 
+### (PS : opencv needs to be recompiled with the option that activates XIMEA in it (see -DWITH_XIMEA:BOOL=ON in CMakeLists.txt file of "D:\opencv\opencv\CMakeLists.txt"))
 # Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
-set(WANT_OPENCV_VIDEO 0)
+set(WANT_OPENCV_VIDEO 1)
 
+# TODO: Compatibility for windows for this one
 # Set WANT_AP_VIDEO to `1` to enable AP video
 set(WANT_AP_VIDEO 0)
 
@@ -808,22 +816,34 @@ endif()
 
 print_option_wanted_status("WANT_OPENCV_VIDEO")
 if(${WANT_OPENCV_VIDEO})
+
     TARGET_COMPILE_DEFINITIONS(
         CuteDemo 
         PUBLIC 
             USE_OPENCV_VIDEO
     )
-    FIND_PACKAGE(OpenCV REQUIRED)
+
+    #FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build/opencv)
+    FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build)
+    print_package_info(OpenCV)
+   
+    INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+
     TARGET_SOURCES(
         CuteDemo 
     PRIVATE 
             VideoCapture.cpp 
             VideoViewer.cpp
     )
+
     TARGET_LINK_LIBRARIES(
         CuteDemo 
         ${OpenCV_LIBS}
     )
+
+list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+	"${OpenCV_INSTALL_PATH}/bin/opencv_world411d.dll"
+)
 endif()
 
 #############################################################################################

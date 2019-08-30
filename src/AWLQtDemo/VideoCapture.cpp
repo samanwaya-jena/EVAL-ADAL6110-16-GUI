@@ -60,7 +60,7 @@ public:
     virtual bool setProperty(int, double);
     virtual bool grabFrame();
     virtual IplImage* retrieveFrame(int);
-    virtual int getCaptureDomain() { return CV_CAP_XIAPI; } // Return the type of the capture object: CV_CAP_VFW, etc...
+    virtual int getCaptureDomain() { return cv::CAP_XIAPI; } // Return the type of the capture object: cv::CAP_VFW, etc...
 
 public:
     void init();
@@ -306,17 +306,17 @@ bool VideoCapture::OpenCamera()
 		int pref = (inputID / 100) * 100;
 
 		// If we are using the Ximea driver, set the downsampling for a 640x480 image
-		if (pref == CV_CAP_XIAPI)
+		if (pref == cv::CAP_XIAPI)
 		{
 			// Set the amount of downsampling to get decent frame rate.
-			cam.set(CV_CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
+			cam.set(cv::CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
 		}
 
-		calibration.frameWidthInPixels = (int) cam.get(CV_CAP_PROP_FRAME_WIDTH);
-		calibration.frameHeightInPixels = (int) cam.get(CV_CAP_PROP_FRAME_HEIGHT);
-		double framesPerSecond = cam.get(CV_CAP_PROP_FPS);
+		calibration.frameWidthInPixels = (int) cam.get(cv::CAP_PROP_FRAME_WIDTH);
+		calibration.frameHeightInPixels = (int) cam.get(cv::CAP_PROP_FRAME_HEIGHT);
+		double framesPerSecond = cam.get(cv::CAP_PROP_FPS);
 
- 		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // CV_CAP_PROP_FPS may reurn 0;
+ 		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // cv::CAP_PROP_FPS may reurn 0;
 		frameRate = (double) 1.0/framesPerSecond;
 		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
 
