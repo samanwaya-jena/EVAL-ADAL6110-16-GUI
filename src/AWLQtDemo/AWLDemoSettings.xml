@@ -4,13 +4,13 @@
   <layout>
     <!-- default layout at startup.  Tells which windows and parts of
 	       screen are displayed. -->
-    <displaySettingsWindow>false</displaySettingsWindow>
+    <displaySettingsWindow>true</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
-    <displayTableViewWindow>false</displayTableViewWindow>
-    <display3DWindow>false</display3DWindow>
+    <displayTableViewWindow>true</displayTableViewWindow>
+    <display3DWindow>true</display3DWindow>
     <displayScopeWindow>true</displayScopeWindow>
-    <displayCameraWindow>false</displayCameraWindow>
+    <displayCameraWindow>true</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
@@ -20,8 +20,6 @@
     <TabSettingGPIOs>true</TabSettingGPIOs>
     <TabSettingAlgoControl>true</TabSettingAlgoControl>
     <TabSettingTrackerControl>true</TabSettingTrackerControl>
-    <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>true</TabSettingMisc>
 
 
     <!-- velocity units: display velocity in km/h or m/s
@@ -95,13 +93,13 @@
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>30755</libUsbProductIdb>
+      <libUsbProductId>30755</libUsbProductId>
       <!-- The LibUSB input end point -->
       <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
+      <libUsbTimeOut>3000</libUsbTimeOut>
 
       <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
@@ -158,18 +156,10 @@
 
       <displayedRangeMin>1.0</displayedRangeMin>
       <displayedRangeMax>25</displayedRangeMax>
-      <rangeOffset>0.0</rangeOffset>
+      <rangeOffset>-2.0</rangeOffset>
+      <rangeOffset>-2.0</rangeOffset>
     </receiver0>
-
-
-
-
-
-
-
-
-
-    </receivers>
+</receivers>
 
   <cameras>
     <cameraQty>1</cameraQty>
@@ -528,7 +518,7 @@
   <registerDescription_ADI>
   
     <!-- Registers for Wagner evaluation board based on ADI Gordon -->
-    <registersFPGA label="ADAL6110-16 Rev0 Registers">
+    <registersFPGA label="ADAL6110-16 Registers">
 
       <register>
         <index>R0</index>
@@ -556,22 +546,20 @@
         <address>4</address>
         <description>FLASH_DELAY</description>
       </register>
-      <register>
+	  <register>
         <index>R5</index>
         <address>5</address>
-        <description>CHANNEL_ENABLE</description>
-        <advanced>1</advanced>
+        <description>CH_EN</description>
       </register>
-      <register>
+	  <register>
         <index>R6</index>
         <address>6</address>
-        <description>DATA_ACQUISITION_MODE</description>
-        <advanced>1</advanced>
-      </register>      
+        <description>ACQ_MODE</description>
+      </register>
       <register>
         <index>R7</index>
         <address>7</address>
-        <description>TRIGGER_OUT</description>
+        <description>TIMING</description>
       </register>
 
       <!-- Channel 0 -->
@@ -893,79 +881,70 @@
         <description>CH15_CONTROL_2</description>
         <advanced>1</advanced>
       </register>
-      <!-- OTHERS CONTROLS REG -->
-      <register>
-        <index>R112</index>
-        <address>112</address>
-        <description>GPIO_CFG</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R115</index>
-        <address>115</address>
-        <description>SPI_CFG</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R225</index>
-        <address>225</address>
-        <description>THS_MAX</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R226</index>
-        <address>226</address>
-        <description>THS_MIN</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
+	  <register>
         <index>R227</index>
         <address>227</address>
         <description>AGC_DCB_CTRL</description>
         <advanced>1</advanced>
       </register>
-      <register>
+	  <register>
         <index>R228</index>
         <address>228</address>
-        <description>AGC_EN</description>
+        <description>AGCEN</description>
         <advanced>1</advanced>
       </register>
-      <register>
+	  
+	  <register>
         <index>R229</index>
         <address>229</address>
         <description>DC_EN</description>
         <advanced>1</advanced>
       </register>
-      <register>
-        <index>R230</index>
-        <address>230</address>
-        <description>AGC_DCB_PID_0</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R231</index>
-        <address>231</address>
-        <description>AGC_DCB_PID_1</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
+	  
+	  <register>
         <index>R232</index>
         <address>232</address>
         <description>FRAME_DELAY</description>
         <advanced>1</advanced>
       </register>
-      <register>
-        <index>R247</index>
-        <address>247</address>
-        <description>LFSR_SEED_L</description>
+	  
+	   <register>
+        <index>R245</index>
+        <address>245</address>
+        <description>SRAM_ADDR_POINTER</description>
         <advanced>1</advanced>
       </register>
-      <register>
-        <index>R248</index>
-        <address>248</address>
-        <description>LFSR_SEED_H</description>
+	  
+	   <register>
+        <index>R246</index>
+        <address>246</address>
+        <description>SRAM_READY</description>
         <advanced>1</advanced>
-      </register>  
+      </register>
+	  
+	  <register>
+        <index>R77</index>
+        <address>77</address>
+        <description>4D</description>
+        <advanced>1</advanced>
+      </register>
+	  
+	  <register>
+        <index>R84</index>
+        <address>84</address>
+        <description>54</description>
+        <advanced>1</advanced>
+      </register>
+	  
+	 	  
+	  <register>
+        <index>R93</index>
+        <address>93</address>
+        <description>5D</description>
+        <advanced>1</advanced>
+      </register>
+	  
+	  
 
     </registersFPGA>
 

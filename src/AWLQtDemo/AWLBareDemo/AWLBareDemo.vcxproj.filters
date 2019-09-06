@@ -119,9 +119,6 @@
     <ClCompile Include="..\AWLCoreClasses\ReceiverCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AWLCoreClasses\ReceiverEasySyncCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -135,6 +132,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverKvaserCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverLibUSBCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixUDPCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
