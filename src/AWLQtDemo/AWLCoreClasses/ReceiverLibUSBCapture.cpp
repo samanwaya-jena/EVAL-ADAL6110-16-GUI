@@ -45,8 +45,13 @@ int ReceiverLibUSBCapture::ReadBytes(uint8_t * pData, int num)
   int received;
 
   int ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointIn, (unsigned char *)pData, num, &received, usbTimeOut);
-  if (ret || (received != num))
-    return false;
+  if (ret)
+    return 0;
+  
+  if (num != received)
+  {
+	  return (received); // Just to have some breakpoint
+  }
 
   return received;
 }

@@ -150,7 +150,8 @@ bool ReceiverPolledCapture::DoOneLoop()
 
   if (dwCount)
   {
-    bRet = ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
+    bool bReadSuccess =  ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
+
 
     if (m_pFile)
     {
@@ -200,15 +201,15 @@ bool ReceiverPolledCapture::DoOneLoop()
   if (dwReadPending)
   {
     bRet = PollMessages(dwReadPending);
+	if (!bRet)
+		return false;
   }
 
   if (!dwCount && !dwReadPending)
   {
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(5));
   }
 
-  if (!bRet)
-    return false;
 
   return bRet;
 }
