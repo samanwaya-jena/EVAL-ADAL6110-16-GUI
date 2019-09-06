@@ -19,10 +19,12 @@
 
 #include <string>
 #include <stdint.h>
-
 #include <boost/container/vector.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+
+#include "CoordinateSystem.h"
+#include "DetectionStruct.h"
 
 #define VelocityToKmH(velocity) (velocity * 3.6)
 
@@ -30,12 +32,17 @@ namespace awl
 {
 
 
-	typedef struct ChannelConfig 
+	typedef struct ChannelConfig
 	{
 		int channelIndex;
 		float fovWidth;
 		float fovHeight;
+
 		float maxRange;
+		float maxAscanRange;
+		uint8_t displayColorRed;
+		uint8_t displayColorGreen;
+		uint8_t displayColorBlue;
 	}
 	ChannelConfig;
 
@@ -50,77 +57,161 @@ namespace awl
 
 	typedef struct ReceiverSettings
 	{
-	// Channel configuration
-	ChannelConfigVector channelsConfig;
+		// Channel configuration
+		ChannelConfigVector channelsConfig;
 
-	// Receiver
-	std::string sReceiverType;
-	std::string sReceiverRegisterSet;
-	std::string sReceiverChannelGeometry;
-	float displayedRangeMin;
-	float displayedRangeMax;
+		// Receiver
+		std::string sReceiverType;
+		std::string sReceiverRegisterSet;
+		std::string sReceiverChannelGeometry;
+
+
+		float displayedRangeMin;
+		float displayedRangeMax;
 	}
 	ReceiverSettings;
 
 	typedef boost::container::vector<ReceiverSettings> ReceiverSettingsVector;
 
-class AWLSettings
-{
-public:
-	static AWLSettings *InitSettings();
-	static AWLSettings *GetGlobalSettings();
+	typedef struct CameraSettings
+	{
+		// Camera
+		std::string sCameraName;
+		std::string sCameraAPI;
+		bool cameraFlip;
 
-	// Constructor
-	AWLSettings();
-	bool ReadSettings();
-	boost::property_tree::ptree &GetPropTree() {return (propTree);};
+		CameraCalibration calibration;
+		float cameraFovWidthDegrees;
+		float cameraFovHeightDegrees;
+		float barrelK1;
+		float barrelK2;
+	}
+	CameraSettings;
 
+	typedef boost::container::vector<CameraSettings> CameraSettingsVector;
 
-	// Get/Set methods
+	class AWLSettings
+	{
+	public:
+		static AWLSettings* InitSettings(const std::string sSettingsFileName = std::string(""));
+		static AWLSettings* GetGlobalSettings();
 
-	static void GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up);
-
-	static void GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float&roll);
-	static void Get2DPoint(boost::property_tree::ptree &node, float &x, float &y);
-
-	static void GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll);
-	static void GetColor(boost::property_tree::ptree &colorNodeNode, uint8_t &red, uint8_t &green, uint8_t &blue);
-
-	static void GetChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr);
-
-	static void PutPosition(boost::property_tree::ptree &node, float forward, float left, float up);
-	static void PutOrientation(boost::property_tree::ptree &node, float pitch, float yaw, float roll);
-	static void Put2DPoint(boost::property_tree::ptree &node, float x, float y);
-	static void PutGeometry(boost::property_tree::ptree &geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
-	static void PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue);
-
-	static void PutChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr);
+		// Constructor
+		AWLSettings(const std::string sSettingsFileName = std::string(""));
+		bool ReadSettings();
+		boost::property_tree::ptree& GetPropTree() { return (propTree); };
 
 
-	/** \brief Stores the current receiver calibration settings
-		* \return true if storage processe dwithout error. False in case of a storage error.
-      */
-	bool AWLSettings::StoreReceiverCalibration();
+		// Get/Set methods
 
-public:
-	// Receiver configuration
-	ReceiverSettingsVector receiverSettings;
+		static void GetPosition(boost::property_tree::ptree& node, float& forward, float& left, float& up);
 
-	// Dynamic testing
-	float brakingDeceleration;
-	float travelSpeed;
+		static void GetOrientation(boost::property_tree::ptree& node, float& pitch, float& yaw, float& roll);
+		static void Get2DPoint(boost::property_tree::ptree& node, float& x, float& y);
 
-	// Debug
-	bool bWriteDebugFile;
-	bool bWriteLogFile;
+		static void GetGeometry(boost::property_tree::ptree& geometryNode, float& forward, float& left, float& up, float& pitch, float& yaw, float& roll);
+		static void GetColor(boost::property_tree::ptree& colorNodeNode, uint8_t& red, uint8_t& green, uint8_t& blue);
+		static void GetAlertConditions(boost::property_tree::ptree& alertNode, AlertCondition& alert);
+
+		static void GetChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
+		static void GetChannelGeometryArray(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
 
 
-protected:
-	std::string sFileName;
-	static AWLSettings *globalSettings;
-	// Property tree contains all the information from the configuration file
-	boost::property_tree::ptree propTree;
-};
+		static void PutPosition(boost::property_tree::ptree& node, float forward, float left, float up);
+		static void PutOrientation(boost::property_tree::ptree& node, float pitch, float yaw, float roll);
+		static void Put2DPoint(boost::property_tree::ptree& node, float x, float y);
+		static void PutGeometry(boost::property_tree::ptree& geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
+		static void PutColor(boost::property_tree::ptree& colorNode, uint8_t red, uint8_t green, uint8_t blue);
+
+		static void PutChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
+		/** \brief Stores the current receiver calibration settings
+			* \return true if storage processe dwithout error. False in case of a storage error.
+		  */
+		  //bool AWLSettings::StoreReceiverCalibration();
+		  //Linux
+		bool StoreReceiverCalibration();
+
+	public:
+		// Receiver configuration
+		ReceiverSettingsVector receiverSettings;
+
+		// Camera configuration
+		CameraSettingsVector cameraSettings;
+
+		// Layout
+		bool bDisplaySettingsWindow;
+		bool bDisplay3DWindow;
+		bool bDisplay2DWindow;
+		bool bDisplayTableViewWindow;
+		bool bDisplayAScanViewWindow;
+		bool bDisplayAboutWindow;
+		bool bDisplayScopeWindow;
+		bool bDisplayCameraWindow;
+
+		bool bTabSettingCalibration;
+		bool bTabSettingControl;
+		bool bTabSettingStatus;
+		bool bTabSettingRegisters;
+		bool bTabSettingGPIOs;
+		bool bTabSettingAlgoControl;
+		bool bTabSettingTrackerControl;
+		bool bTabSettingAScan;
+		bool bTabSettingMisc;
+
+
+		bool bDisplayScopeDistance;
+		bool bDisplayScopeVelocity;
+		std::string sDisplayShowSize;
+
+		VelocityUnits velocityUnits;
+
+		std::string sLogoFileName;
+		std::string sIconFileName;
+
+		// Table view options
+		int displayedDetectionsPerChannelInTableView;
+
+		// 2D display options
+		float carWidth;
+		float carLength;
+		float carHeight;
+
+		float laneWidth;
+
+		bool showPalette;
+		int mergeDisplayMode;
+		int measureMode;
+		int displayDistanceMode2D;
+		int displayZoomMode2D;
+		float mergeAcceptanceX;
+		float mergeAcceptanceY;
+		int colorCode2D;
+		float maxVelocity2D;
+		float zeroVelocity;
+
+		// Video display options
+		bool bDisplayVideoCrosshair;
+		bool bDisplayVideoTime;
+
+		// Scope
+		int scopeTimerInterval;
+
+		// Dynamic testing
+		float brakingDeceleration;
+		float travelSpeed;
+
+		// Debug
+		bool bWriteDebugFile;
+		bool bWriteLogFile;
+
+
+	protected:
+		std::string sFileName;
+		static AWLSettings* globalSettings;
+		// Property tree contains all the information from the configuration file
+		boost::property_tree::ptree propTree;
+	};
+
 } // namespace AWL          
 
 #endif 

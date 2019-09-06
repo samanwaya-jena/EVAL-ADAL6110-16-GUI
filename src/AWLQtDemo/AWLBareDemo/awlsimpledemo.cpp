@@ -25,9 +25,22 @@
 #include "AWLCoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
-#include "ReceiverEasySyncCapture.h"
+
+#ifdef USE_CAN_SOCKETCAN
 #include "ReceiverSocketCANCapture.h"
+#endif
+#ifdef USE_POSIXUDP
+#include "ReceiverPosixUDPCapture.h"
+#endif
+#ifdef USE_LIBUSB
+#include "ReceiverLibUSBCapture.h"
+#endif
+#ifdef USE_TCP
+#include "ReceiverTCPCapture.h"
+#endif
+#ifdef USE_CAN_KVASER
 #include "ReceiverKvaserCapture.h"
+#endif
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
 #include "DebugPrintf.h"
@@ -54,24 +67,57 @@ AWLSimpleDemo::AWLSimpleDemo()
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
-		if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "EasySyncCAN"))
-		{
-			// EasySync CAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else if (boost::iequals(globalSettings->receiverSettings[receiverID].sReceiverType, "KvaserLeaf"))
-		{
-			// Kvaser Leaf CAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-		{
-			// If the type is undefined, just use the dumb simulator, not using external device
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSimulatorCapture(receiverID, globalSettings->GetPropTree()));
-		}
+
+
+#ifdef USE_CAN_KVASER
+			if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("KvaserLeaf"))
+			{
+				// Kvaser Leaf CAN Capture is used if defined in the ini file
+				receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
+			}
+			else
+#endif
+#ifdef USE_CAN_SOCKETCAN
+				if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("SocketCAN"))
+				{
+					// SocketCAN Capture is used if defined in the ini file
+					receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSocketCANCapture(receiverID, globalSettings->GetPropTree()));
+				}
+				else
+#endif
+#ifdef USE_POSIXUDP
+					if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("PosixUDP"))
+					{
+						// PosixUDP Capture is used if defined in the ini file
+						receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixUDPCapture(receiverID, globalSettings->GetPropTree()));
+					}
+					else
+#endif
+
+#ifdef USE_TCP
+							if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("TCP"))
+							{
+								// PosixTTY Capture is used if defined in the ini file
+								receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverTCPCapture(receiverID, globalSettings->GetPropTree()));
+							}
+							else
+#endif
+#ifdef USE_LIBUSB
+								if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("LibUSB"))
+								{
+									// LibUSB Capture is used if defined in the ini file
+									receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverLibUSBCapture(receiverID, globalSettings->GetPropTree()));
+								}
+								else
+#endif
+								{
+									// If the type is undefined, just use the dumb simulator, not using external device
+									receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSimulatorCapture(receiverID, globalSettings->GetPropTree()));
+								}
 
 		receiverCaptureSubscriberIDs.push_back(receiverCaptures[receiverID]->Subscribe());
 	}
+
 
 }
 
