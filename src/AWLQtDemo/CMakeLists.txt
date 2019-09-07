@@ -302,7 +302,7 @@ print_package_info("Threads")
 ###    Boost       ##########################################################################
 #############################################################################################
 if(WIN32)
-    set(Boost_INSTALLED_PATH "C:/Program Files/boost")
+    set(Boost_INSTALLED_PATH  "$ENV{BOOST_DIR}")
     
     set(Boost_DETAILED_FAILURE_MSG OFF)
     set(Boost_DEBUG OFF)
@@ -315,68 +315,83 @@ if(WIN32)
     if(Boost_USE_MULTITHREADED)
         set(Boost_MULTITHREADED_LIB_APPEND "-mt")      
     endif()
-    set(Boost_VERSION_INTERNAL_USE_ONLY "-1_67")        
-    set(Boost_COMPILER "-vc141")        
-    set(Boost_ARCHITECTURE "-x64")
+    set(Boost_VERSION_INTERNAL_USE_ONLY "-1_60")        
+    set(Boost_COMPILER "-vc140")        
+    set(Boost_ARCHITECTURE "32")
     
     set(BOOST_ROOT "${Boost_INSTALLED_PATH}")
-    set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
-    set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include/boost${Boost_VERSION_INTERNAL_USE_ONLY}")
+
+     set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib${Boost_ARCHITECTURE}-msvc-14.0")
+
+    set(BOOST_INCLUDEDIR "${Boost_INSTALLED_PATH}")
+
 
     macro(format_boost_lib_name wanted)
-	    set(FORMATED_${wanted} "${BOOST_LIBRARYDIR}/libboost_${wanted}${Boost_COMPILER}${Boost_MULTITHREADED_LIB_APPEND}${Boost_ARCHITECTURE}${Boost_VERSION_INTERNAL_USE_ONLY}.lib")
+	#############################################################################################
+	###  UNCOMMENT the following for manually compiled libraries. This is respects the nomenclature published by Boost
+	###set(FORMATED_LIB_${wanted} "${BOOST_LIBRARYDIR}/libboost_${wanted}${Boost_COMPILER}${Boost_MULTITHREADED_LIB_APPEND}${Boost_ARCHITECTURE}${Boost_VERSION_INTERNAL_USE_ONLY}.lib")
+	###set(FORMATED_DLL_${wanted} "${BOOST_LIBRARYDIR}/libboost_${wanted}${Boost_COMPILER}${Boost_MULTITHREADED_LIB_APPEND}${Boost_ARCHITECTURE}${Boost_VERSION_INTERNAL_USE_ONLY}.dll")
+	###  Some versions of the BOOST precompiled Libraries do not respect the nomenclature published By Boost.  In this case uncomment the following 
+		set(FORMATED_LIB_${wanted} "${BOOST_LIBRARYDIR}/libboost_${wanted}${Boost_COMPILER}${Boost_MULTITHREADED_LIB_APPEND}${Boost_VERSION_INTERNAL_USE_ONLY}.lib")
+		set(FORMATED_DLL_${wanted} "${BOOST_LIBRARYDIR}/boost_${wanted}${Boost_COMPILER}${Boost_MULTITHREADED_LIB_APPEND}${Boost_VERSION_INTERNAL_USE_ONLY}.dll")
+	#############################################################################################
     endmacro()
+
 
     format_boost_lib_name(regex)
     format_boost_lib_name(thread)
     format_boost_lib_name(system)
     format_boost_lib_name(filesystem)
     format_boost_lib_name(date_time)
+    format_boost_lib_name(chrono)
     format_boost_lib_name(signals)
+
     list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
-	    "${FORMATED_regex}"
-	    "${FORMATED_thread}"
-	    "${FORMATED_system}"
-	    "${FORMATED_filesystem}"
-	    "${FORMATED_date_time}"
-	    "${FORMATED_signals}"
-    )
+	    "${FORMATED_DLL_regex}"
+	    "${FORMATED_DLL_thread}"
+	    "${FORMATED_DLL_system}"
+	    "${FORMATED_DLL_filesystem}"
+	    "${FORMATED_DLL_date_time}"
+	    "${FORMATED_DLL_chrono}"
+	    "${FORMATED_DLL_signals}"
+       )
     
 endif()
 
 message(STATUS "Note that ${PROJECT_NAME} will not work with boost version > 1.68")
 message(STATUS "For Boost installation on Windows that actually work with this CMake, see : https://gist.github.com/JBHarvey/e49348b03cf0898c929a107852c43e22")
 
-find_package(
-    Boost 
-    COMPONENTS 
-        regex
-        thread
-        system
-        filesystem
-        date_time
-        signals 
-    REQUIRED
-)
-print_package_info("Boost")
 
-include_directories(${Boost_INCLUDE_DIRS})
 
+
+list(APPEND Boost_LIBRARIES
+	    "${FORMATED_LIB_regex}"
+	    "${FORMATED_LIB_thread}"
+	    "${FORMATED_LIB_system}"
+	    "${FORMATED_LIB_filesystem}"
+	    "${FORMATED_LIB_date_time}"
+	    "${FORMATED_LIB_chrono}"
+	    "${FORMATED_LIB_signals}"
+       )
+
+include_directories("${BOOST_INCLUDEDIR}")
+ 
 # TODO: check if second find_package(Threads) really is necessary. It shouldn't
-find_package(Threads)
-print_package_info("Threads")
+#find_package(Threads)
+#print_package_info("Threads")
 
 #############################################################################################
 ###    Qt       #############################################################################
 #############################################################################################
 if(WIN32)
-    set(Qt5_INSTALLED_PATH "D:/Qt/5.12.2/msvc2017_64")
+    set(Qt5_INSTALLED_PATH "$ENV{QTDIR}")
     
     # From --> https://doc.qt.io/qt-5/cmake-manual.html
     set(OLD_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
     set(CMAKE_PREFIX_PATH "${Qt5_INSTALLED_PATH}")
     
-    set(Qt5_DIR "${Qt5_INSTALLED_PATH}/lib/cmake/Qt5")
+    set(Qt5_DIR "${Qt5_INSTALLED_PATH}/lib/cmake/Qt5")	
+
     set(Qt5Widgets_DIR "${Qt5_DIR}Widgets")
     set(Qt5Gui_DIR "${Qt5_DIR}Gui")
     set(Qt5Core_DIR "${Qt5_DIR}Core")
@@ -399,17 +414,11 @@ if(WIN32)
     format_qt5_lib_name(PrintSupportd)
     list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
 	    "${FORMATED_Core}"
-	    "${FORMATED_Cored}"
 	    "${FORMATED_Gui}"
-	    "${FORMATED_Guid}"
-	    "${FORMATED_Widgets}"
-	    "${FORMATED_Widgetsd}"
-	    "${FORMATED_Svg}"
-	    "${FORMATED_Svgd}"
 	    "${FORMATED_OpenGL}"
-	    "${FORMATED_OpenGLd}"
 	    "${FORMATED_PrintSupport}"
-	    "${FORMATED_PrintSupportd}"
+	    "${FORMATED_Svg}"
+	    "${FORMATED_Widgets}"
     )
 
 endif()
@@ -421,14 +430,8 @@ SET(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
 
 # From https://blog.kitware.com/cmake-finding-qt5-the-right-way/
-find_package(
-    Qt5 
-    COMPONENTS
-        Core
-        Gui
-        Widgets
-    REQUIRED
-)
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+
 if(NOT Qt5Core_FOUND)
     message(STATUS "If you need to install Qt5 ---> https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5")
 endif()
@@ -455,29 +458,34 @@ enable_cxx_compiler_flag_if_supported("-opt:REF")
 ###    Qwt      #############################################################################
 #############################################################################################
 if(WIN32)
-    set(Qwt_INSTALLED_PATH "C:/Qwt-6.1.4")
+    set(Qwt_INSTALLED_PATH  "$ENV{QWTDIR}")
 else()
     set(Qwt_INSTALLED_PATH "linux/path/to/QWT")
 endif()
+
+
 list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
     "${Qwt_INSTALLED_PATH}/lib/qwt.dll"
-    "${Qwt_INSTALLED_PATH}/lib/qwt.lib"
 )
+
 
 file(GLOB Qwt_ROOT_DIR "${Qwt_INSTALLED_PATH}")
 file(GLOB Qwt_INCLUDE_DIRS "${Qwt_ROOT_DIR}/include")
-file(GLOB Qwt_LIBRARY_DIRS "${Qwt_ROOT_DIR}/lib")
+file(GLOB Qwt_LIBRARY_DIRS "${Qwt_INSTALLED_PATH}/lib/qwt.lib")
 
 # This function will search in different places, but ${CMAKE_FIND_ROOT_PATH} is targetted here
 # source : https://cmake.org/cmake/help/latest/command/find_library.html#command:find_library
 set(OLD_CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH})
 set(CMAKE_FIND_ROOT_PATH ${Qwt_ROOT_DIR})
-set(Qwt_LIBRARY_NAME "qwt")
+set(Qwt_LIBRARY_NAME "qwt.lib")
 
-find_library(
-    Qwt_LIBRARIES             # Variable in which the lib will be stored
-    ${Qwt_LIBRARY_NAME}       # Name to look for
-)
+#find_library(
+#    Qwt_LIBRARIES             # Variable in which the lib will be stored
+#    ${Qwt_LIBRARY_NAME}       # Name to look for
+#)
+
+set(Qwt_LIBRARIES  "${Qwt_ROOT_DIR}/lib/qwt.lib")
+
 if(NOT Qwt_LIBRARIES)
     message(STATUS "For Qwt... if you need to ")
     message(STATUS "           - download --> https://sourceforge.net/projects/qwt/files/qwt/")
@@ -485,8 +493,9 @@ if(NOT Qwt_LIBRARIES)
 endif()
 
 set(CMAKE_FIND_ROOT_PATH ${OLD_CMAKE_FIND_ROOT_PATH})
-include_directories(include ${Qwt_INCLUDE_DIRS} )
+include_directories(${Qwt_INCLUDE_DIRS})
 
+ 
 #############################################################################################
 ###    CuteDemo    ##########################################################################
 #############################################################################################
@@ -603,7 +612,7 @@ target_include_directories(
 ###    Option description       #############################################################
 #############################################################################################
 # Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
-set(WANT_EASY_SYNC_SUPPORT 1)
+set(WANT_EASY_SYNC_SUPPORT 0)
 
 # TODO: Compatibility for windows for this one
 # Set WANT_KVASER_SUPPORT to `1` to enable Kvaser support
@@ -664,12 +673,12 @@ if(${WANT_KVASER_SUPPORT})
     file(
         GLOB
         CAN_INCLUDE_DIR 
-            "/usr/local/include/canlib"
+            "$ENV{CANLIB_DIR}/INC"
     )
     file(
         GLOB
         CAN_LIBRARIES 
-            "/usr/local/lib/libcan*"
+            "$ENV{CANLIB_DIR}/IN/MS"
     )
     include_directories(
         include
@@ -693,6 +702,10 @@ if(${WANT_KVASER_SUPPORT})
         CuteDemo
         ${CAN_LIBRARIES}
     )
+	
+	list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+    "$ENV{CANLIB_DIR}/Bin/canlib32.dll"
+)
 endif()
 
 #############################################################################################
@@ -757,16 +770,16 @@ endif()
 
 print_option_wanted_status("WANT_LIBUSB_SUPPORT")
 if(${WANT_LIBUSB_SUPPORT})
-    set(libusb_INSTALLED_PATH "C:/libusb")
+    set(libusb_INSTALLED_PATH "$ENV{LIBUSB_DIR}")
 
     message(STATUS "If you need to install libusb-1.0 ---> http://libusb.sourceforge.net/api-1.0/")
     set(LIBUSB_ROOT "${libusb_INSTALLED_PATH}")
-    set(LIBUSB_LIB "${LIBUSB_ROOT}/libusb-1.0.lib")
-    set(LIBUSB_INCLUDE_DIRS "${LIBUSB_ROOT}/include")
+    set(LIBUSB_LIB "${LIBUSB_ROOT}/Win32/release/lib/libusb-1.0.lib")
+	set(LIBUSB_DLL "${LIBUSB_ROOT}/Win32/release/dll/libusb-1.0.dll")
+    set(LIBUSB_INCLUDE_DIRS "${LIBUSB_ROOT}/libusb")
 
     list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
-        "${LIBUSB_ROOT}/libusb-1.0.lib"
-        "${LIBUSB_ROOT}/libusb-1.0.dll"
+        "${LIBUSB_DLL}"
     )
 
     include_directories(${LIBUSB_INCLUDE_DIRS})
@@ -823,7 +836,6 @@ if(${WANT_OPENCV_VIDEO})
             USE_OPENCV_VIDEO
     )
 
-    #FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build/opencv)
     FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build)
     print_package_info(OpenCV)
    
@@ -842,8 +854,12 @@ if(${WANT_OPENCV_VIDEO})
     )
 
 list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
-	"${OpenCV_INSTALL_PATH}/bin/opencv_world411d.dll"
+	"${OpenCV_INSTALL_PATH}/bin/release/opencv_world346.dll"
+	"$ENV{XIMEA_DIR}/API/x86/m3api.dll"
+	"$ENV{XIMEA_DIR}/API/x86/XIAPI32.dll"
 )
+
+include_directories("$ENV{XIMEA_DIR}/API")
 endif()
 
 #############################################################################################
