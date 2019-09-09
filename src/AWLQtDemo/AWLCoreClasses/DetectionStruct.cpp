@@ -441,7 +441,7 @@ AlertCondition::ThreatLevel AlertCondition::FindTrackThreat(int inReceiverID, bo
 				break;
 
 			case eAlertDistanceOutside:
-				if (!(track->distance >= alert->minRange && track->distance <= alert->maxRange))
+				if (!(track->distance <= alert->minRange || track->distance >= alert->maxRange))
 				{
 					currentThreatLevel = alert->threatLevel;
 				}
