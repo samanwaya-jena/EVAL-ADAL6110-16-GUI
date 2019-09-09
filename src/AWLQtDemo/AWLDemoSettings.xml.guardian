@@ -7,9 +7,9 @@
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
-    <displayTableViewWindow>false</displayTableViewWindow>
+    <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>true</displayScopeWindow>
+    <displayScopeWindow>false</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
@@ -67,12 +67,12 @@
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
-      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+      <receiverRegisterSet>registerDescription_Guardian</receiverRegisterSet>
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>GeometryGuardian1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -105,6 +105,12 @@
 
       <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
+
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>false</xmitsFooterData>
+
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -525,10 +531,10 @@
 
 
 
-  <registerDescription_ADI>
+  <registerDescription_Guardian>
   
-    <!-- Registers for Wagner evaluation board based on ADI Gordon -->
-    <registersFPGA label="ADAL6110-16 Registers">
+    <!-- Registers for Guardian sensor based on ADI Gordon -->
+    <registersFPGA label="Guardian Acquire Registers">
 
       <register>
         <index>R0</index>
@@ -922,7 +928,7 @@
 
     </registersFPGA>
 
-    <registersADC label="Guardian Registers">
+    <registersADC label="Guardian Control Registers">
     
       <register>
         <index>0</index>
@@ -933,7 +939,7 @@
       <register>
         <index>1</index>
         <address>1</address>
-        <description>Wagner: Max Acc</description>
+        <description>Guardian: Max Acc</description>
       </register>
 
       <!--register>
@@ -959,11 +965,11 @@
     <trackers>
 	    <defaultTracker>1</defaultTracker>
     </trackers>
-  </registerDescription_ADI>
+  </registerDescription_Guardian>
 
 
   
-  <Geometry1x16Array>
+  <GeometryGuardian1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -976,7 +982,7 @@
     </arraySize>
     <arrayFOV>
       <x>28</x>
-      <y>4.1</y>
+      <y>1.8</y>
     </arrayFOV>
     <pixelSpacing>
       <x>0.1</x>
@@ -1009,6 +1015,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </Geometry1x16Array>
+  </GeometryGuardian1x16Array>
   
 </config>

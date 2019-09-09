@@ -4,13 +4,13 @@
   <layout>
     <!-- default layout at startup.  Tells which windows and parts of
 	       screen are displayed. -->
-    <displaySettingsWindow>true</displaySettingsWindow>
+    <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
     <displayTableViewWindow>true</displayTableViewWindow>
-    <display3DWindow>true</display3DWindow>
-    <displayScopeWindow>true</displayScopeWindow>
-    <displayCameraWindow>true</displayCameraWindow>
+    <display3DWindow>false</display3DWindow>
+    <displayScopeWindow>false</displayScopeWindow>
+    <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
@@ -28,7 +28,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>./Images/Logos/Phantom-Black-logo.png</logoFileName>
+    <logoFileName>./Images/Logos/ADI_logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
@@ -69,8 +69,9 @@
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
-		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" "GeometryADI_1x16Array" "GeometryGuardian_1x16Array" (case sensistive!) 
+           The corresponding geometry section must be included in the xml file. -->
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -93,16 +94,22 @@
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>30755</libUsbProductId>
-      <!-- The LibUSB input end point -->
-      <libUsbEndPointIn>129</libUsbEndPointIn>
-      <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>1</libUsbEndPointOut>
-      <!-- The LibUSB time out -->
-      <libUsbTimeOut>3000</libUsbTimeOut>
+      <libUsbProductId>30755</libUsbProductIdb>
+        <!-- The LibUSB input end point -->
+        <libUsbEndPointIn>129</libUsbEndPointIn>
+        <!-- The LibUSB output end point -->
+        <libUsbEndPointOut>1</libUsbEndPointOut>
+        <!-- The LibUSB time out -->
+        <libUsbTimeOut>1000</libUsbTimeOut>
 
-      <TCPServerAddress>localhost</TCPServerAddress>
+        <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
+
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>true</xmitsFooterData>
+
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -137,7 +144,10 @@
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
       <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
       <msgEnableRaw>false</msgEnableRaw>
- 
+
+      <!-- Sensor geometry: 
+		       Defines the position and orientation of the sensor in space. 
+           This will be reflected in the coordinates calculation and layout of the display elements-->
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
@@ -154,10 +164,12 @@
         </orientation>
       </sensorGeometry>
 
+      <!-- Displayed range section:
+           Default values for range display limitations in the user interface. -->
       <displayedRangeMin>1.0</displayedRangeMin>
       <displayedRangeMax>25</displayedRangeMax>
-      <rangeOffset>-2.0</rangeOffset>
-      <rangeOffset>-2.0</rangeOffset>
+      <rangeOffset>0.0</rangeOffset>
+      <rangeOffset>0.0</rangeOffset>
     </receiver0>
 </receivers>
 
@@ -989,7 +1001,7 @@
 
 
   
-  <Geometry1x16Array>
+  <GeometryADI1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -1035,6 +1047,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </Geometry1x16Array>
+  </GeometryADI1x16Array>
   
 </config>

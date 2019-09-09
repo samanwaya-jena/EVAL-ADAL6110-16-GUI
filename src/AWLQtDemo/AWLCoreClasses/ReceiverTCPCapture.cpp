@@ -215,7 +215,7 @@ bool  ReceiverTCPCapture::CloseCANPort()
 
 bool ReceiverTCPCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
-	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
+	ReceiverPolledCapture::ReadConfigFromPropTree(propTree);
 
 	char receiverKeyString[32];
 	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);

@@ -83,6 +83,7 @@ protected:
 		int usbEndPointOut;
 		int usbTimeOut;
 
+
 		void * swap_handle;
 
 };

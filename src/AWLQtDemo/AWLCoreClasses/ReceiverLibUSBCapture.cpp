@@ -40,19 +40,24 @@ ReceiverLibUSBCapture::~ReceiverLibUSBCapture()
 {
 }
 
+int testCount = 0;
 int ReceiverLibUSBCapture::ReadBytes(uint8_t * pData, int num)
 {
   int received;
 
   int ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointIn, (unsigned char *)pData, num, &received, usbTimeOut);
   if (ret)
-    return 0;
+  {
+	  testCount = 0;
+	  return 0;
+  }
   
   if (num != received)
   {
 	  return (received); // Just to have some breakpoint
   }
 
+  testCount++;
   return received;
 }
 
@@ -199,7 +204,7 @@ bool  ReceiverLibUSBCapture::CloseCANPort()
 
 bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
-	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
+	ReceiverPolledCapture::ReadConfigFromPropTree(propTree);
 
 	char receiverKeyString[32];
 	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
@@ -208,11 +213,12 @@ bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters
 
-	usbVendorId =  receiverNode.get<int>("libUsbVendorId");
-	usbProductId =  receiverNode.get<int>("libUsbProductId");
-	usbEndPointIn =  receiverNode.get<int>("libUsbEndPointIn");
-	usbEndPointOut =  receiverNode.get<int>("libUsbEndPointOut");
-	usbTimeOut =  receiverNode.get<int>("libUsbTimeOut");
+	usbVendorId =  receiverNode.get<int>("libUsbVendorId", 1419);
+	usbProductId =  receiverNode.get<int>("libUsbProductId",80);
+	usbEndPointIn =  receiverNode.get<int>("libUsbEndPointIn", 129);
+	usbEndPointOut =  receiverNode.get<int>("libUsbEndPointOut", 2);
+	usbTimeOut =  receiverNode.get<int>("libUsbTimeOut", 1000);
+
 
 	return(true);
 }

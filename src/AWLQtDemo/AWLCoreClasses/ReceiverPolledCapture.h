@@ -66,6 +66,14 @@ protected:
   virtual int ReadBytes(uint8_t * pData, int num) = 0;
   virtual int WriteBytes(uint8_t * pData, int num) = 0;
 
+  /** \brief Reads the configuration proerties from the configuration file
+	* \param[in] propTree the boost propertyTree created from reading the configuration file.
+	* \returns Returns true otherwise.
+	* \throws  Throws boost error on read of the property keys.
+	*/
+  virtual bool ReadConfigFromPropTree(boost::property_tree::ptree& propTree);
+
+
 // Protected variables
 protected:
 
@@ -74,6 +82,9 @@ protected:
 
 		/** \brief Time-out without an input message after which we try to recomnnect the serial port. */
 		boost::posix_time::ptime reconnectTime;
+
+		bool xmitsFooterData;   // There is some extra data in the wave acquisition payload for some USB sensors (Gordon and later Guardians).  Earlier versions did not produce footer payload
+
 
     boost::mutex m_Mutex;
 

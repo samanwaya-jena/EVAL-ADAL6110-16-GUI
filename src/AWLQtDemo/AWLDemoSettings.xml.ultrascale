@@ -70,7 +70,36 @@
       <!-- The SocketCAN device path -->
       <socketCANdevice>can0</socketCANdevice>
 
-      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1611</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>
+        30755</libUsbProductIdb>
+        <!-- The LibUSB input end point -->
+        <libUsbEndPointIn>129</libUsbEndPointIn>
+        <!-- The LibUSB output end point -->
+        <libUsbEndPointOut>1</libUsbEndPointOut>
+        <!-- The LibUSB time out -->
+        <libUsbTimeOut>1000</libUsbTimeOut>
+
+        <TCPServerAddress>localhost</TCPServerAddress>
+        <TCPServerPort>27011</TCPServerPort>
+
+        <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+        <xmitsFooterData>true</xmitsFooterData>
+
+        <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
               		canRate1Mbps = 1000,
 		              canRate500kbps = 500,
@@ -724,6 +753,7 @@
     </arrayOffset>
 
     <maxRange>25.0</maxRange>
+    <maxAscanRange>120.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>

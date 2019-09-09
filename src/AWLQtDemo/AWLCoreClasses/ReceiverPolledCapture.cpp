@@ -130,31 +130,39 @@ bool ReceiverPolledCapture::ReadDataFromUSB(char * ptr, int uiCount, uint32_t dw
 
 #include "algo.h"
 
+
 typedef struct
 {
   short AcqFifo[GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH];
-  short footer[96];
+  short footer[GORDON_FOOTER_SIZE];
 } tDataFifo;
 
 tDataFifo dataFifo[8];
 
 bool ReceiverPolledCapture::DoOneLoop()
 {
-  uint32_t dwCount = 0;
-  uint32_t dwReadPending = 0;
+	uint32_t dwCount = 0;
+	uint32_t dwReadPending = 0;
 
-  bool bRet = LidarQuery(&dwCount, &dwReadPending);
+	bool bRet = LidarQuery(&dwCount, &dwReadPending);
 
-  if (!bRet)
-    return false;
+	if (!bRet)
+		return false;
 
-  if (dwCount)
-  {
-    bool bReadSuccess =  ReadDataFromUSB((char*)dataFifo, dwCount * sizeof(tDataFifo), dwCount);
+	if (dwCount)
+	{
+		bool bReadSuccess = true;
+
+		size_t payloadSize = dwCount * sizeof(tDataFifo);
+		if (!xmitsFooterData)
+		{
+			payloadSize -= GORDON_FOOTER_SIZE * sizeof(short);
+		}
+		bReadSuccess = ReadDataFromUSB((char*)dataFifo, payloadSize, dwCount);
 
 
-    if (m_pFile)
-    {
+		if (m_pFile)
+		{
 			boost::mutex::scoped_lock rawLock(m_Mutex);
 
 			if (m_pFile) // Check again for m_pFile now that we have the mutex
@@ -165,53 +173,53 @@ bool ReceiverPolledCapture::DoOneLoop()
 				{
 					for (ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
 					{
-						short * pData = &dataFifo[cycle].AcqFifo[ch * GUARDIAN_SAMPLING_LENGTH];
+						short* pData = &dataFifo[cycle].AcqFifo[ch * GUARDIAN_SAMPLING_LENGTH];
 						for (i = 0; i < GUARDIAN_SAMPLING_LENGTH; i++)
 						{
 							char str[128];
 							if (ch == (GUARDIAN_NUM_CHANNEL - 1) && i == (GUARDIAN_SAMPLING_LENGTH - 1))
 								//sprintf(str, "%d\n", *pData++);
-                                sprintf(str, "%d,", *pData++);
+								sprintf(str, "%d,", *pData++);
 							else
 								sprintf(str, "%d,", *pData++);
 							fwrite(str, strlen(str), 1, m_pFile);
 						}
 					}
-                    char footer[128];
-                    short * pFooter = &dataFifo[cycle].footer[0];
-                    for ( i = 0; i < GORDON_FOOTER_SIZE; i++)
-                    {
-                        if(i == GORDON_FOOTER_SIZE-1){
-                            sprintf(footer, "%d\n", *pFooter++);
-                        }
-                        else
-                        {
-                            sprintf(footer, "%d,", *pFooter++);
-                        }
-                        fwrite(footer, strlen(footer), 1, m_pFile);
-                    }
+					char footer[128];
+					short* pFooter = &dataFifo[cycle].footer[0];
+					for (i = 0; i < GORDON_FOOTER_SIZE; i++)
+					{
+						if (i == GORDON_FOOTER_SIZE - 1) {
+							sprintf(footer, "%d\n", *pFooter++);
+						}
+						else
+						{
+							sprintf(footer, "%d,", *pFooter++);
+						}
+						fwrite(footer, strlen(footer), 1, m_pFile);
+					}
 				}
 				fflush(m_pFile);
 			}
-    }
+		}
 
-    ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
-  }
+		ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
+	}
 
-  if (dwReadPending)
-  {
-    bRet = PollMessages(dwReadPending);
-	if (!bRet)
-		return false;
-  }
+	if (dwReadPending)
+	{
+		bRet = PollMessages(dwReadPending);
+		if (!bRet)
+			return false;
+	}
 
-  if (!dwCount && !dwReadPending)
-  {
-    boost::this_thread::sleep(boost::posix_time::milliseconds(5));
-  }
+	if (!dwCount && !dwReadPending)
+	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(5));
+	}
 
 
-  return bRet;
+	return bRet;
 }
 
 void ReceiverPolledCapture::DoOneThreadIteration()
@@ -377,4 +385,21 @@ void * ReceiverPolledCapture::GetHandle(void) {
 void ReceiverPolledCapture::SetHandle(void *h)
 {
 	swap_handle = h;
+}
+
+
+bool ReceiverPolledCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
+{
+	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
+
+	char receiverKeyString[32];
+	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
+	std::string receiverKey = receiverKeyString;
+
+	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
+	// Communication parameters
+
+	xmitsFooterData =  receiverNode.get<bool>("xmitsFooterData", true);
+
+	return(true);
 }

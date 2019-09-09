@@ -28,7 +28,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>./Images/Logos/Phantom-Black-logo.png</logoFileName>
+    <logoFileName>./Images/Logos/ADI_Logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
@@ -70,7 +70,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -103,6 +103,18 @@
 
       <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
+
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>true</xmitsFooterData>
+
+
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>true</xmitsFooterData>
+
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -207,8 +219,13 @@
 
       <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
+  
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>true</xmitsFooterData>
 
-      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+  <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
               		canRate1Mbps = 1000,
 		              canRate500kbps = 500,
@@ -310,8 +327,13 @@
 
       <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
+  
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>true</xmitsFooterData>
 
-      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+  <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
               		canRate1Mbps = 1000,
 		              canRate500kbps = 500,
@@ -1125,7 +1147,7 @@
 
 
   
-  <Geometry1x16Array>
+  <GeometryADI1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -1171,6 +1193,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </Geometry1x16Array>
+  </GeometryADI1x16Array>
   
 </config>

@@ -7,9 +7,9 @@
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
-    <displayTableViewWindow>false</displayTableViewWindow>
+    <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>true</displayScopeWindow>
+    <displayScopeWindow>false</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
@@ -20,8 +20,6 @@
     <TabSettingGPIOs>true</TabSettingGPIOs>
     <TabSettingAlgoControl>true</TabSettingAlgoControl>
     <TabSettingTrackerControl>true</TabSettingTrackerControl>
-    <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>true</TabSettingMisc>
 
 
     <!-- velocity units: display velocity in km/h or m/s
@@ -30,7 +28,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>./Images/Logos/Phantom-Black-logo.png</logoFileName>
+    <logoFileName>./Images/Logos/ADI_logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
@@ -71,8 +69,9 @@
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
-		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" "GeometryADI_1x16Array" "GeometryGuardian_1x16Array" (case sensistive!) 
+           The corresponding geometry section must be included in the xml file. -->
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
       <commPort>COM15</commPort>
@@ -96,15 +95,21 @@
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductIdb>
-      <!-- The LibUSB input end point -->
-      <libUsbEndPointIn>129</libUsbEndPointIn>
-      <!-- The LibUSB output end point -->
-      <libUsbEndPointOut>1</libUsbEndPointOut>
-      <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
+        <!-- The LibUSB input end point -->
+        <libUsbEndPointIn>129</libUsbEndPointIn>
+        <!-- The LibUSB output end point -->
+        <libUsbEndPointOut>1</libUsbEndPointOut>
+        <!-- The LibUSB time out -->
+        <libUsbTimeOut>1000</libUsbTimeOut>
 
-      <TCPServerAddress>localhost</TCPServerAddress>
+        <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
+
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>true</xmitsFooterData>
+
 
       <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
            Supported Values are:
@@ -139,7 +144,10 @@
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
       <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
       <msgEnableRaw>false</msgEnableRaw>
- 
+
+      <!-- Sensor geometry: 
+		       Defines the position and orientation of the sensor in space. 
+           This will be reflected in the coordinates calculation and layout of the display elements-->
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
@@ -156,20 +164,14 @@
         </orientation>
       </sensorGeometry>
 
+      <!-- Displayed range section:
+           Default values for range display limitations in the user interface. -->
       <displayedRangeMin>1.0</displayedRangeMin>
       <displayedRangeMax>25</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
+      <rangeOffset>0.0</rangeOffset>
     </receiver0>
-
-
-
-
-
-
-
-
-
-    </receivers>
+</receivers>
 
   <cameras>
     <cameraQty>1</cameraQty>
@@ -528,7 +530,7 @@
   <registerDescription_ADI>
   
     <!-- Registers for Wagner evaluation board based on ADI Gordon -->
-    <registersFPGA label="ADAL6110-16 Rev0 Registers">
+    <registersFPGA label="ADAL6110-16 Registers">
 
       <register>
         <index>R0</index>
@@ -556,22 +558,20 @@
         <address>4</address>
         <description>FLASH_DELAY</description>
       </register>
-      <register>
+	  <register>
         <index>R5</index>
         <address>5</address>
-        <description>CHANNEL_ENABLE</description>
-        <advanced>1</advanced>
+        <description>CH_EN</description>
       </register>
-      <register>
+	  <register>
         <index>R6</index>
         <address>6</address>
-        <description>DATA_ACQUISITION_MODE</description>
-        <advanced>1</advanced>
-      </register>      
+        <description>ACQ_MODE</description>
+      </register>
       <register>
         <index>R7</index>
         <address>7</address>
-        <description>TRIGGER_OUT</description>
+        <description>TIMING</description>
       </register>
 
       <!-- Channel 0 -->
@@ -893,79 +893,70 @@
         <description>CH15_CONTROL_2</description>
         <advanced>1</advanced>
       </register>
-      <!-- OTHERS CONTROLS REG -->
-      <register>
-        <index>R112</index>
-        <address>112</address>
-        <description>GPIO_CFG</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R115</index>
-        <address>115</address>
-        <description>SPI_CFG</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R225</index>
-        <address>225</address>
-        <description>THS_MAX</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R226</index>
-        <address>226</address>
-        <description>THS_MIN</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
+	  <register>
         <index>R227</index>
         <address>227</address>
         <description>AGC_DCB_CTRL</description>
         <advanced>1</advanced>
       </register>
-      <register>
+	  <register>
         <index>R228</index>
         <address>228</address>
-        <description>AGC_EN</description>
+        <description>AGCEN</description>
         <advanced>1</advanced>
       </register>
-      <register>
+	  
+	  <register>
         <index>R229</index>
         <address>229</address>
         <description>DC_EN</description>
         <advanced>1</advanced>
       </register>
-      <register>
-        <index>R230</index>
-        <address>230</address>
-        <description>AGC_DCB_PID_0</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
-        <index>R231</index>
-        <address>231</address>
-        <description>AGC_DCB_PID_1</description>
-        <advanced>1</advanced>
-      </register>
-      <register>
+	  
+	  <register>
         <index>R232</index>
         <address>232</address>
         <description>FRAME_DELAY</description>
         <advanced>1</advanced>
       </register>
-      <register>
-        <index>R247</index>
-        <address>247</address>
-        <description>LFSR_SEED_L</description>
+	  
+	   <register>
+        <index>R245</index>
+        <address>245</address>
+        <description>SRAM_ADDR_POINTER</description>
         <advanced>1</advanced>
       </register>
-      <register>
-        <index>R248</index>
-        <address>248</address>
-        <description>LFSR_SEED_H</description>
+	  
+	   <register>
+        <index>R246</index>
+        <address>246</address>
+        <description>SRAM_READY</description>
         <advanced>1</advanced>
-      </register>  
+      </register>
+	  
+	  <register>
+        <index>R77</index>
+        <address>77</address>
+        <description>4D</description>
+        <advanced>1</advanced>
+      </register>
+	  
+	  <register>
+        <index>R84</index>
+        <address>84</address>
+        <description>54</description>
+        <advanced>1</advanced>
+      </register>
+	  
+	 	  
+	  <register>
+        <index>R93</index>
+        <address>93</address>
+        <description>5D</description>
+        <advanced>1</advanced>
+      </register>
+	  
+	  
 
     </registersFPGA>
 
@@ -1010,7 +1001,7 @@
 
 
   
-  <Geometry1x16Array>
+  <GeometryADI1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -1056,6 +1047,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </Geometry1x16Array>
+  </GeometryADI1x16Array>
   
 </config>
