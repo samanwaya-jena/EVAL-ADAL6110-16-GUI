@@ -9,18 +9,18 @@
     <displayAScanViewWindow>true</displayAScanViewWindow>
     <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>false</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
-    <TabSettingControl>true</TabSettingControl>
-    <TabSettingStatus>true</TabSettingStatus>
+    <TabSettingControl>false</TabSettingControl>
+    <TabSettingStatus>flase</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>true</TabSettingGPIOs>
-    <TabSettingAlgoControl>true</TabSettingAlgoControl>
-    <TabSettingTrackerControl>true</TabSettingTrackerControl>
-
+    <TabSettingGPIOs>false</TabSettingGPIOs>
+    <TabSettingTrackerControl>false</TabSettingTrackerControl>
+    <TabSettingAScan>true</TabSettingAScan>
+    <TabSettingMisc>true</TabSettingMisc>
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s

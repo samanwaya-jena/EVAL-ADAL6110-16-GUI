@@ -7,20 +7,20 @@
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
-    <displayTableViewWindow>false</displayTableViewWindow>
+    <displayTableViewWindow>true</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>true</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
-    <TabSettingControl>true</TabSettingControl>
-    <TabSettingStatus>true</TabSettingStatus>
+    <TabSettingControl>false</TabSettingControl>
+    <TabSettingStatus>flase</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>false</TabSettingGPIOs>
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
-
+    <TabSettingAScan>true</TabSettingAScan>
+    <TabSettingMisc>true</TabSettingMisc>
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
@@ -28,7 +28,7 @@
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>./Images/Logos/ADI_Logo.png</logoFileName>
+    <logoFileName>./Images/Logos/ADI_logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
     <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>

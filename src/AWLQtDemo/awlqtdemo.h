@@ -137,7 +137,7 @@ private slots:
 	void on_viewTableViewActionToggled();
 	void on_viewAScanViewActionToggled();
 	void on_viewAboutActionTriggered();
-	void on_viewGraphActionToggled();
+
 #if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
 	void on_viewCameraActionToggled();
 #endif
@@ -145,7 +145,7 @@ private slots:
 
 	void on_view2DClose();
 	void on_viewTableViewClose();
-	void on_viewGraphClose();
+	void on_viewAScanClose();
 
 	void on_destroy();
 
@@ -196,9 +196,8 @@ private:
 
 	FOV_2DScan* m2DScan;
 	TableView * mTableView;
-	//AWLQtScope* scopeWindow;
-	AWLPlotScan* scopeWindow;
-	//TableView * scopeWindow;
+	AWLPlotScan* mAScanView;
+
 #if 0
 	QLabel	mLogoLabel;
 #endif

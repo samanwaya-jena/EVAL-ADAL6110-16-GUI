@@ -83,7 +83,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	: QMainWindow(),
 	m2DScan(NULL),
 	mTableView(NULL),
-	scopeWindow(NULL),
+	mAScanView(NULL),
 	myTimer(NULL),
 	actionSettingsButton(NULL),
 	action2DButton(NULL),
@@ -469,9 +469,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
 
-	// Initialize the scope window
-	//scopeWindow = new AWLScopePlot();
-	scopeWindow = new AWLPlotScan();
+	// Initialize the AScan window
+	mAScanView = new AWLPlotScan();
 
 	// Initialize the 2D view
 	m2DScan = new FOV_2DScan();
@@ -497,10 +496,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// View signals and slots on close
 	connect(m2DScan, SIGNAL(closed()), this, SLOT(on_view2DClose()));
 	connect(mTableView, SIGNAL(closed()), this, SLOT(on_viewTableViewClose()));
-	connect(scopeWindow, SIGNAL(closed( )), this, SLOT(on_viewGraphClose()));
+	connect(mAScanView, SIGNAL(closed( )), this, SLOT(on_viewAScanClose()));
 
-	connect(ui.actionGraph, SIGNAL(toggled(bool )), this, SLOT(on_viewGraphActionToggled()));
-	ui.actionGraph->setChecked(globalSettings->bDisplayScopeWindow);
 
 	// Setup the display grid and position the objects in the grid
 	SetupDisplayGrid();
@@ -536,7 +533,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
                 ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.extraTab));
         }
 
-	on_view2DActionToggled();
+	    on_view2DActionToggled();
         on_viewTableViewActionToggled();
         on_viewAScanViewActionToggled();
 #if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
@@ -591,9 +588,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 #endif
 
-        //20180719-JYD  Restart the scope...... It accidentally started before the receivers were available and the time base is off....
-
-        scopeWindow->start(receiverCaptures[0]);
 	
 	// Set size of statusbar & font
 	ui.statusBar->setFixedHeight(30);
@@ -713,31 +707,10 @@ void AWLQtDemo::SetupDisplayGrid()
 
 	// Position the objects in the layout in order
 
-#if 0
-	ui.gridDisplayLayout->addWidget((m2DScan, 0, 0, 3, 3, Qt::AlignTop);
-	ui.gridDisplayLayout->addWidget(mTableView, 0, 4, 3, 1, Qt::AlignTop);
 
-#if defined (USE_OPENCV_VIDEO)
-	int videoViewerQty = videoCaptures.size();
-	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 5, 1, 1, Qt::AlignTop);
-	}
-#endif
-#if defined (USE_AP_VIDEO)
-	int videoViewerQty = apVideoCaptures.size();
-	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID, 5, 1, 1, Qt::AlignTop);
-	}
-#endif
-
-#else
 	ui.gridDisplayLayout->addWidget(m2DScan, 0, 0, Qt::AlignTop);
 	ui.gridDisplayLayout->addWidget(mTableView, 0, 1, Qt::AlignTop);
-       //20180719- JYD Add the scope to a bottom row of the layout
-       // ui.gridDisplayLayout->addWidget(scopeWindow, videoViewerQty, 0, videoViewerQty, 3, Qt::AlignTop);
-       ui.gridDisplayLayout->addWidget(scopeWindow, 0, 3, Qt::AlignTop);
+    ui.gridDisplayLayout->addWidget(mAScanView, 0, 3, Qt::AlignTop);
 
         int videoViewerQty = 0;
 #if defined (USE_OPENCV_VIDEO)
@@ -753,8 +726,6 @@ void AWLQtDemo::SetupDisplayGrid()
 	{
 		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID + videoCaptures.size(), 2, Qt::AlignTop);
 	}
-#endif
-
 #endif
 }
 
@@ -780,7 +751,7 @@ void AWLQtDemo::on_destroy()
 
 	if (m2DScan) delete m2DScan;
 	if (mTableView) delete mTableView;	
-	if (scopeWindow) delete scopeWindow;
+	if (mAScanView) delete mAScanView;
 }
 
 
@@ -1165,14 +1136,13 @@ void AWLQtDemo::on_timerTimeout()
 		// Update the table views only if there is new data
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
 
-    if (scopeWindow && bNewDetections)
+    if (mAScanView && bNewDetections)
     {
       AScan::Vector aScanData;
       aScanData.clear();
 
       bool bNewAScans = GetLatestAScans(aScanData);
-      scopeWindow->AScanDataChanged(aScanData);
-      //scopeWindow->update();
+      mAScanView->AScanDataChanged(aScanData);
     }
 	}
 
@@ -2347,8 +2317,18 @@ void AWLQtDemo::on_viewTableViewActionToggled()
 
 void AWLQtDemo::on_viewAScanViewActionToggled()
 {
-	//m2DScan->ShowAScan (actionAScanButton->isChecked()) ;
-	scopeWindow->ShowAScan (actionAScanButton->isChecked()) ;
+	if (actionAScanButton->isChecked())
+	{
+		mAScanView->ShowAScan(true);
+		mAScanView->show();
+	}
+	else 
+	{
+		mAScanView->ShowAScan(false);
+		mAScanView->hide();
+	}
+
+	ui.gridDisplayLayout->update();
 }
 
 void AWLQtDemo::on_viewAboutActionTriggered()
@@ -2377,19 +2357,6 @@ void AWLQtDemo::on_viewSettingsActionToggled()
 	on_resizeActionToggled();
 }
 
-void AWLQtDemo::on_viewGraphActionToggled()
-{
-	if (ui.actionGraph->isChecked()) 
-	{
-		scopeWindow->show();
-		scopeWindow->start(receiverCaptures[0]);
-	}
-	else
-	{
-		scopeWindow->hide();
-		scopeWindow->stop();
-	}
-}
 
 #if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
 void AWLQtDemo::on_viewCameraActionToggled()
@@ -2511,7 +2478,7 @@ void AWLQtDemo::on_pushButtonSelectAllAscan_clicked()
   ui.checkBox_15->setChecked(true);
   ui.checkBox_16->setChecked(true);
 
-  scopeWindow->setChannelMask(0xFFFF);
+  mAScanView->setChannelMask(0xFFFF);
 }
 
 void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
@@ -2533,7 +2500,7 @@ void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
   ui.checkBox_15->setChecked(false);
   ui.checkBox_16->setChecked(false);
 
-  scopeWindow->setChannelMask(0);
+  mAScanView->setChannelMask(0);
 }
 
 void AWLQtDemo::on_checkBoxAscanSelToggled()
@@ -2555,7 +2522,7 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
   if (ui.checkBox_14->isChecked()) mask |= 1 << 13;
   if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
   if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
-  scopeWindow->setChannelMask(mask);
+  mAScanView->setChannelMask(mask);
 }
 
 void AWLQtDemo::on_radioReceiverSelToggled()
@@ -2567,7 +2534,7 @@ void AWLQtDemo::on_radioReceiverSelToggled()
   if (ui.radioButton_4->isChecked()) receiver = 3;
   if (ui.radioButton_5->isChecked()) receiver = 4;
   if (ui.radioButton_6->isChecked()) receiver = 5;
-  scopeWindow->selectReceiver(receiver);
+  mAScanView->selectReceiver(receiver);
 }
 
 void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
@@ -2576,10 +2543,10 @@ void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
   {
     switch (newIndex)
     {
-    case 0: scopeWindow->SetMaxRange(32767.0F); break;
-    case 1: scopeWindow->SetMaxRange(32767.0F * 0.75F); break;
-    case 2: scopeWindow->SetMaxRange(32767.0F * 0.50F); break;
-    default:scopeWindow->SetMaxRange(32767.0F * 0.25F); break;
+    case 0: mAScanView->SetMaxRange(32767.0F); break;
+    case 1: mAScanView->SetMaxRange(32767.0F * 0.75F); break;
+    case 2: mAScanView->SetMaxRange(32767.0F * 0.50F); break;
+    default:mAScanView->SetMaxRange(32767.0F * 0.25F); break;
     }
   }
 }
@@ -2589,7 +2556,7 @@ void AWLQtDemo::on_checkBoxAutoScaleToggled()
   if (ui.checkBoxAutoScale->isChecked())
   {
     ui.comboBoxMaxRange->setDisabled(true);
-    scopeWindow->SetMaxRange(0.0F);
+	mAScanView->SetMaxRange(0.0F);
   }
   else
   {
@@ -2597,10 +2564,10 @@ void AWLQtDemo::on_checkBoxAutoScaleToggled()
     int sel = ui.comboBoxMaxRange->currentIndex();
     switch (sel)
     {
-    case 0: scopeWindow->SetMaxRange(32767.0F); break;
-    case 1: scopeWindow->SetMaxRange(32767.0F * 0.75F); break;
-    case 2: scopeWindow->SetMaxRange(32767.0F * 0.50F); break;
-    default:scopeWindow->SetMaxRange(32767.0F * 0.25F); break;
+    case 0: mAScanView->SetMaxRange(32767.0F); break;
+    case 1: mAScanView->SetMaxRange(32767.0F * 0.75F); break;
+    case 2: mAScanView->SetMaxRange(32767.0F * 0.50F); break;
+    default:mAScanView->SetMaxRange(32767.0F * 0.25F); break;
     }
   }
 }
@@ -2634,9 +2601,9 @@ void AWLQtDemo::on_viewTableViewClose()
 	actionTableButton->setChecked(false);
 }
 
-void AWLQtDemo::on_viewGraphClose()
+void AWLQtDemo::on_viewAScanClose()
 {
-	ui.actionGraph->setChecked(false);
+	ui.actionAScan->setChecked(false);
 }
 
 
