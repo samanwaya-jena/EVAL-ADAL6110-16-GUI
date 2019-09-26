@@ -16,8 +16,8 @@
     <TabSettingControl>false</TabSettingControl>
     <TabSettingStatus>flase</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
-    <TabSettingGPIOs>true</TabSettingGPIOs>
     <TabSettingGPIOs>false</TabSettingGPIOs>
+    <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
     <TabSettingMisc>true</TabSettingMisc>
@@ -31,7 +31,7 @@
     <logoFileName>./Images/Logos/ADI_logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
-    <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
+    <iconFileName>./Images/Logos/ADIQtDemo.ico</iconFileName>
 
     <!-- displayShowSize:: Default display mode for the main window
          Possible values are:
@@ -55,7 +55,7 @@
   </video>
   
   <receivers>
-    <receiverQty>1</receiverQty>
+    <receiverQty>3</receiverQty>
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
@@ -69,8 +69,7 @@
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
-		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" "GeometryADI_1x16Array" "GeometryGuardian_1x16Array" (case sensistive!) 
-           The corresponding geometry section must be included in the xml file. -->
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
       <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
       <!-- The commPort is used only by EasySyncCAN recevivers -->  
@@ -94,15 +93,15 @@
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>30755</libUsbProductIdb>
-        <!-- The LibUSB input end point -->
-        <libUsbEndPointIn>129</libUsbEndPointIn>
-        <!-- The LibUSB output end point -->
-        <libUsbEndPointOut>1</libUsbEndPointOut>
-        <!-- The LibUSB time out -->
-        <libUsbTimeOut>1000</libUsbTimeOut>
+      <libUsbProductId>30755</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
 
-        <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerAddress>localhost</TCPServerAddress>
       <TCPServerPort>27011</TCPServerPort>
 
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
@@ -144,18 +143,15 @@
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
       <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
       <msgEnableRaw>false</msgEnableRaw>
-
-      <!-- Sensor geometry: 
-		       Defines the position and orientation of the sensor in space. 
-           This will be reflected in the coordinates calculation and layout of the display elements-->
+ 
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0</forward>
+          <forward>0.06</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0.0</up>
+          <up>0.08</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -164,14 +160,233 @@
         </orientation>
       </sensorGeometry>
 
-      <!-- Displayed range section:
-           Default values for range display limitations in the user interface. -->
       <displayedRangeMin>1.0</displayedRangeMin>
       <displayedRangeMax>25</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
-      <rangeOffset>0.0</rangeOffset>
     </receiver0>
-</receivers>
+
+
+<receiver1>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
+
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+
+      <!-- The commPort is used only by EasySyncCAN recevivers -->  
+      <commPort>COM15</commPort>
+
+      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
+      <kvaserChannel>0</kvaserChannel>
+
+      <!-- The SocketCAN device path -->
+      <socketCANdevice>can0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1611</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>30755</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
+
+      <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerPort>27011</TCPServerPort>
+
+  <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+     <xmitsFooterData>true</xmitsFooterData>
+
+  <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+           Supported Values are:
+              		canRate1Mbps = 1000,
+		              canRate500kbps = 500,
+		              canRate250kbps = 250,
+		              canRate125kbps = 125,
+		              canRate100kbps = 100,
+		              canRate50kbps = 50,
+		              canRate10kps = 10
+            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
+           -->
+      <canBitRate>1000</canBitRate>
+
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
+
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>true</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+      <msgEnableRaw>false</msgEnableRaw>
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0.04</forward>
+          <!-- lateral offet -->
+          <left>-1</left>
+          <!-- height -->
+          <up>0.025</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>30.0</yaw>
+        </orientation>
+      </sensorGeometry>
+
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>25</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver1>
+
+<receiver2>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
+
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+
+      <!-- The commPort is used only by EasySyncCAN recevivers -->  
+      <commPort>COM15</commPort>
+
+      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
+      <kvaserChannel>0</kvaserChannel>
+
+      <!-- The SocketCAN device path -->
+      <socketCANdevice>can0</socketCANdevice>
+
+      <!-- The PosixUDP server address -->
+      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
+
+      <!-- The PosixUDP server port -->
+      <posixUDPServerPort>23456</posixUDPServerPort>
+
+      <!-- The PosixTTY TTY name -->
+      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1611</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>30755</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>1</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
+
+      <TCPServerAddress>localhost</TCPServerAddress>
+      <TCPServerPort>27011</TCPServerPort>
+
+  <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+     <xmitsFooterData>true</xmitsFooterData>
+
+
+  <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
+           Supported Values are:
+              		canRate1Mbps = 1000,
+		              canRate500kbps = 500,
+		              canRate250kbps = 250,
+		              canRate125kbps = 125,
+		              canRate100kbps = 100,
+		              canRate50kbps = 50,
+		              canRate10kps = 10
+            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
+           -->
+      <canBitRate>1000</canBitRate>
+
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
+
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>true</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+      <msgEnableRaw>false</msgEnableRaw>
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0.04</forward>
+          <!-- lateral offet -->
+          <left>+1</left>
+          <!-- height -->
+          <up>0.025</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>-30.0</yaw>
+        </orientation>
+      </sensorGeometry>
+
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>25</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver2>
+
+
+
+
+    </receivers>
 
   <cameras>
     <cameraQty>1</cameraQty>
@@ -183,7 +398,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName></cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>1</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -192,11 +407,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0</forward>
+        <forward>0.03</forward>
         <!-- lateral offet -->
         <left>0</left>
         <!-- height -->
-        <up>0</up>
+        <up>0.13</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -261,10 +476,10 @@
 
       <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
       <fov>
-        <x>45.0</x>
-        <y>34.0</y>
+        <x>82.1</x>
+        <y>52.2</y>
       </fov>
-      <radialCorrectionK1>-.04</radialCorrectionK1>
+      <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
 
@@ -557,16 +772,6 @@
         <index>R4</index>
         <address>4</address>
         <description>FLASH_DELAY</description>
-      </register>
-	  <register>
-        <index>R5</index>
-        <address>5</address>
-        <description>CH_EN</description>
-      </register>
-	  <register>
-        <index>R6</index>
-        <address>6</address>
-        <description>ACQ_MODE</description>
       </register>
       <register>
         <index>R7</index>
@@ -893,70 +1098,6 @@
         <description>CH15_CONTROL_2</description>
         <advanced>1</advanced>
       </register>
-	  <register>
-        <index>R227</index>
-        <address>227</address>
-        <description>AGC_DCB_CTRL</description>
-        <advanced>1</advanced>
-      </register>
-	  <register>
-        <index>R228</index>
-        <address>228</address>
-        <description>AGCEN</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	  <register>
-        <index>R229</index>
-        <address>229</address>
-        <description>DC_EN</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	  <register>
-        <index>R232</index>
-        <address>232</address>
-        <description>FRAME_DELAY</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	   <register>
-        <index>R245</index>
-        <address>245</address>
-        <description>SRAM_ADDR_POINTER</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	   <register>
-        <index>R246</index>
-        <address>246</address>
-        <description>SRAM_READY</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	  <register>
-        <index>R77</index>
-        <address>77</address>
-        <description>4D</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	  <register>
-        <index>R84</index>
-        <address>84</address>
-        <description>54</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	 	  
-	  <register>
-        <index>R93</index>
-        <address>93</address>
-        <description>5D</description>
-        <advanced>1</advanced>
-      </register>
-	  
-	  
 
     </registersFPGA>
 

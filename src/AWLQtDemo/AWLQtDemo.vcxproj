@@ -777,6 +777,7 @@
     <Image Include="Images\ButtonBitmaps\Quit.png" />
     <Image Include="Images\ButtonBitmaps\Scan.png" />
     <Image Include="Images\ButtonBitmaps\Settings.png" />
+    <Image Include="Images\Logos\ADIQtDemo.ico" />
     <Image Include="Images\Logos\AWLQtDemo.ico" />
     <Image Include="Images\Logos\Phantom-Black-logo.png" />
     <Image Include="Images\Logos\Sungwoo.ico" />

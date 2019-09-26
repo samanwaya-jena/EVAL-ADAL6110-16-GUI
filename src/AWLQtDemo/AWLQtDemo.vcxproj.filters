@@ -512,5 +512,8 @@
     <Image Include="Images\Logos\SungwooLogoIconTransparent.png">
       <Filter>Resource Files\Logos</Filter>
     </Image>
+    <Image Include="Images\Logos\ADIQtDemo.ico">
+      <Filter>Resource Files\Logos</Filter>
+    </Image>
   </ItemGroup>
 </Project>
