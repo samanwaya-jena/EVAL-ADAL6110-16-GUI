@@ -54,3 +54,15 @@ src/AWLQtDemo/Makefile
 src/AWLQtDemo/LinuxCute
 src/build
 src/AWLQtDemo/build
+src/.vs/AWLCuteDemo/v16/Solution.VC.db
+src/.vs/AWLCuteDemo/v16/Solution.VC.db-shm
+src/.vs/AWLCuteDemo/v16/Solution.VC.db-wal
+*.testlog
+src/.vs/AWLCuteDemo/v16/TestStore/0/testlog.manifest
+src/AWLQtDemo/.vs/AWLQtDemo/v16/Browse.VC.db
+src/.vs/AWLCuteDemo/v16/Browse.VC.db
+src/.vs/AWLCuteDemo/v16/Browse.VC.opendb
+src/AWLQtDemo/build3/CMakeCache.txt
+src/AWLQtDemo/build3/CMakeFiles/3.15.3/CMakeDetermineCompilerABI_C.bin
+src/AWLQtDemo/build3/CMakeFiles/3.15.3/CMakeDetermineCompilerABI_CXX.bin
+src/AWLQtDemo/CMakeLists.txt.backup
