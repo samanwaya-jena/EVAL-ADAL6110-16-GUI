@@ -83,18 +83,6 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
   if (ret)
     return false;
 
-  //libusb_set_debug(context, 3);
-
-    //Open Device with VendorID and ProductID
-    /*
-	handle = libusb_open_device_with_vid_pid(context, usbVendorId, usbProductId);
-	if (!handle) {
-		perror("device not found");
-		return false;
-	}
-	*/
-
-
 	// discover devices
 	libusb_device **list;
 	libusb_device_descriptor descriptor;
@@ -107,66 +95,68 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 	int matches = 0;
 
 	for (i = 0; i < cnt; i++) {
-    		libusb_device *device = list[i];
-    		err = libusb_get_device_descriptor(device, &descriptor);
+    	libusb_device *device = list[i];
+    	err = libusb_get_device_descriptor(device, &descriptor);
 		if (!err && descriptor.idVendor == usbVendorId && descriptor.idProduct == usbProductId) {
 			matches ++;
 		}
 	}
+
 	//if (matches != (receiverID + 1)) return false;
 	if (matches < (receiverID + 1)) return false;
 
 	for (i = 0; i < cnt; i++) {
-    		libusb_device *device = list[i];
-    		err = libusb_get_device_descriptor(device, &descriptor);
+    	libusb_device *device = list[i];
+    	err = libusb_get_device_descriptor(device, &descriptor);
 		if (!err && descriptor.idVendor == usbVendorId && descriptor.idProduct == usbProductId) {
-    			libusb_device_handle *h;
+			libusb_device_handle* h;
 			err = libusb_open(device, &h);
-			if (err)
-				perror("libusb_open");
-			handle = h;
-	//Claim Interface 0 from the device
-			ret = libusb_claim_interface((libusb_device_handle *)handle, 0);
-
-			if (!ret) {
-				fprintf(stderr, "%ld %ld usb_claim_interface %ld %p succeeded\n", receiverID, matches, i, handle);
-			} else {
-				fprintf(stderr, "%ld %ld usb_claim_interface %ld %p error %d\n", receiverID, matches, i, handle, ret);
-				libusb_close((libusb_device_handle *)handle);
-				handle = NULL;
+			if (err) {
+				perror("libusb_open_no_access");
 			}
-//printf("in %p\n", handle);
-			//if (handle) break;
+			else {
+				handle = h;
+				//Claim Interface 0 from the device
+				ret = libusb_claim_interface((libusb_device_handle*)handle, 0);
+
+				if (!ret) {
+					fprintf(stderr, "%ld %ld usb_claim_interface %ld %p succeeded\n", receiverID, matches, i, handle);
+				}
+				else {
+					fprintf(stderr, "%ld %ld usb_claim_interface %ld %p error %d\n", receiverID, matches, i, handle, ret);
+					libusb_close((libusb_device_handle*)handle);
+					handle = NULL;
+				}
+			}
 		}
 		if (handle) break;
 	}
+
 //printf("out %p\n", handle);
-if (!handle) return false;
-  if (handle)
-  {
-    int transferred = 0;
-    int received = 0;
+	if (handle)
+	{
+		int transferred = 0;
+		int received = 0;
 
-    boost::mutex::scoped_lock rawLock(m_Mutex);
+		boost::mutex::scoped_lock rawLock(m_Mutex);
 
-    // DGG: Clear any outstanding data left in the USB buffers
-    do 
-    {
-      char tmp[256];
-      ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointIn, (unsigned char *)tmp, sizeof(tmp), &received, 100);
-    }
-    while (ret == 0 && received > 0);
+		// DGG: Clear any outstanding data left in the USB buffers
+		do
+		{
+			char tmp[256];
+			ret = libusb_bulk_transfer((libusb_device_handle*)handle, usbEndPointIn, (unsigned char*)tmp, sizeof(tmp), &received, 100);
+		} while (ret == 0 && received > 0);
 
-    AWLCANMessage msg;
-    msg.id = AWLCANMSG_ID_LIDARQUERY;
+		AWLCANMessage msg;
+		msg.id = AWLCANMSG_ID_LIDARQUERY;
 
-    AWLCANMessage resp;
+		AWLCANMessage resp;
 
-		transferred = WriteBytes((uint8_t*) &msg, sizeof(msg));
+		transferred = WriteBytes((uint8_t*)& msg, sizeof(msg));
 		if (transferred != sizeof(AWLCANMessage))
 			return false;
 
-		received = ReadBytes((uint8_t*) &resp, sizeof(resp));
+		received = ReadBytes((uint8_t*)& resp, sizeof(resp));
 		if (received != sizeof(AWLCANMessage))
 			return false;
 
@@ -174,12 +164,13 @@ if (!handle) return false;
 
 		SendSoftwareReset();
 
-    m_FrameRate = 0;
+		m_FrameRate = 0;
 
-    return true;
-  }
-
-  return false;
+		return true;
+	}
+	else {  // if (!handle)
+		return false;
+	}
 }
 
 bool  ReceiverLibUSBCapture::CloseCANPort()
