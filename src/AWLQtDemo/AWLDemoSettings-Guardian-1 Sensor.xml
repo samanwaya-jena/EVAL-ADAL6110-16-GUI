@@ -7,19 +7,18 @@
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
-    <displayTableViewWindow>true</displayTableViewWindow>
+    <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
-    <displayScopeWindow>false</displayScopeWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
-    <TabSettingControl>true</TabSettingControl>
-    <TabSettingStatus>true</TabSettingStatus>
+    <TabSettingControl>false</TabSettingControl>
+    <TabSettingStatus>flase</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
-    <TabSettingGPIOs>true</TabSettingGPIOs>
-    <TabSettingAlgoControl>true</TabSettingAlgoControl>
-    <TabSettingTrackerControl>true</TabSettingTrackerControl>
+    <TabSettingGPIOs>false</TabSettingGPIOs>
+    <TabSettingAlgoControl>false</TabSettingAlgoControl>
+    <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
     <TabSettingMisc>true</TabSettingMisc>
 
@@ -57,7 +56,7 @@
   </video>
   
   <receivers>
-    <receiverQty>1</receiverQty>
+    <receiverQty>3</receiverQty>
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
@@ -67,30 +66,12 @@
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
-      <receiverRegisterSet>registerDescription_Guardian</receiverRegisterSet>
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryGuardian1x16Array</receiverChannelGeometry>
-
-      <!-- The commPort is used only by EasySyncCAN recevivers -->  
-      <commPort>COM15</commPort>
-
-      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
-      <kvaserChannel>0</kvaserChannel>
-
-      <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
-
-      <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
-
-      <!-- The PosixUDP server port -->
-      <posixUDPServerPort>23456</posixUDPServerPort>
-
-      <!-- The PosixTTY TTY name -->
-      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1419</libUsbVendorId>
@@ -103,8 +84,6 @@
       <!-- The LibUSB time out -->
       <libUsbTimeOut>1000</libUsbTimeOut>
 
-      <TCPServerAddress>localhost</TCPServerAddress>
-      <TCPServerPort>27011</TCPServerPort>
 
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
@@ -112,18 +91,81 @@
       <xmitsFooterData>false</xmitsFooterData>
 
 
-      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
-           Supported Values are:
-              		canRate1Mbps = 1000,
-		              canRate500kbps = 500,
-		              canRate250kbps = 250,
-		              canRate125kbps = 125,
-		              canRate100kbps = 100,
-		              canRate50kbps = 50,
-		              canRate10kps = 10
-            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
-           -->
-      <canBitRate>1000</canBitRate>
+       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
+
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>true</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+      <msgEnableRaw>false</msgEnableRaw>
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0.06</forward>
+          <!-- lateral offet -->
+          <left>0.0</left>
+          <!-- height -->
+          <up>0.08</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>0.0</yaw>
+        </orientation>
+      </sensorGeometry>
+
+      <displayedRangeMin>0.0</displayedRangeMin>
+      <displayedRangeMax>20</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver0>
+
+
+<receiver1>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
+
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1419</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>80</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
+
+
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+          Earlier versions did not produce footer payload.  Boolean.
+          if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>false</xmitsFooterData>
 
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
@@ -149,33 +191,99 @@
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0</forward>
+          <forward>0.04</forward>
           <!-- lateral offet -->
-          <left>0.0</left>
+          <left>-0.06</left>
           <!-- height -->
-          <up>0.0</up>
+          <up>0.025</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
           <roll>0.0</roll>
-          <yaw>0.0</yaw>
+          <yaw>30.0</yaw>
         </orientation>
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
-    </receiver0>
+    </receiver1>
+
+<receiver2>
+      <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
+		       This is greatly incluence by  comm port communications.
+		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB</receiverType>
+
+      <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
+		       This is usually incluenced by model and firmare version.
+		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
+      <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
+
+      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+
+      <!-- The LibUSB Vendor id -->
+      <libUsbVendorId>1419</libUsbVendorId>
+      <!-- The LibUSB Product id -->
+      <libUsbProductId>80</libUsbProductId>
+      <!-- The LibUSB input end point -->
+      <libUsbEndPointIn>129</libUsbEndPointIn>
+      <!-- The LibUSB output end point -->
+      <libUsbEndPointOut>2</libUsbEndPointOut>
+      <!-- The LibUSB time out -->
+      <libUsbTimeOut>1000</libUsbTimeOut>
 
 
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+           Earlier versions did not produce footer payload.  Boolean.
+           if not defined, the value assumes there is footer payload-->
+      <xmitsFooterData>false</xmitsFooterData>
+        
+       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>0</frameRate>
 
+      <!-- Channel mask: Controls which channels are
+		       processed at AWL Unit Level -->
+      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
+      <channelMask>255</channelMask>
+;
+      <!-- Message mask flags: 
+		       Controls which messages are sent to client unit
+		       if msgEnableObstacle is true, all displays will
+		       be configured for track mode operation -->
+      <msgEnableObstacle>true</msgEnableObstacle>
+      <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
+      <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
+      <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
+      <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
+      <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
+      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
+      <msgEnableRaw>false</msgEnableRaw>
+ 
+      <sensorGeometry>
+        <position>
+          <!-- positionFromBumper -->
+          <forward>0.04</forward>
+          <!-- lateral offet -->
+          <left>0.06</left>
+          <!-- height -->
+          <up>0.025</up>
+         </position>
+        <orientation>
+          <pitch>0.0</pitch>
+          <roll>0.0</roll>
+          <yaw>-30.0</yaw>
+        </orientation>
+      </sensorGeometry>
 
-
-
-
-
-
-    </receivers>
+      <displayedRangeMin>1.0</displayedRangeMin>
+      <displayedRangeMax>20</displayedRangeMax>
+      <rangeOffset>0.0</rangeOffset>
+    </receiver2>
+  </receivers>
 
   <cameras>
     <cameraQty>1</cameraQty>
@@ -187,7 +295,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName></cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -196,11 +304,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0</forward>
+        <forward>0.03</forward>
         <!-- lateral offet -->
         <left>0</left>
         <!-- height -->
-        <up>0</up>
+        <up>0.13</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -265,10 +373,10 @@
 
       <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
       <fov>
-        <x>45.0</x>
-        <y>34.0</y>
+        <x>82.1</x>
+        <y>52.2</y>
       </fov>
-      <radialCorrectionK1>-.04</radialCorrectionK1>
+      <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
 
@@ -434,8 +542,6 @@
        1: Show
      -->
     <showPalette>0</showPalette>
-    
-    
   </display2D>
 
   <scope>
@@ -531,65 +637,41 @@
 
 
 
-  <registerDescription_Guardian>
+  <registerDescription_ADI>
   
-    <!-- Registers for Guardian sensor based on ADI Gordon -->
-    <registersFPGA label="Guardian Acquire Registers">
+    <!-- Registers for Wagner evaluation board based on ADI Gordon -->
+    <registersFPGA label="ADAL6110-16 Registers">
 
       <register>
         <index>R0</index>
         <address>0</address>
         <description>DEVICE</description>
-		<!--<advanced>1</advanced> -->
       </register>
       <register>
         <index>R1</index>
         <address>1</address>
         <description>CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
       </register>
       <register>
         <index>R2</index>
         <address>2</address>
         <description>CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
       </register>
       <register>
         <index>R3</index>
         <address>3</address>
         <description>SRAM_READ</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R4</index>
         <address>4</address>
         <description>FLASH_DELAY</description>
-		<!--<advanced>1</advanced> -->
-      </register>
-	  <register>
-        <index>R5</index>
-        <address>5</address>
-        <description>CHANNEL_ENABLE</description>
-		<!--<advanced>1</advanced> -->
-      </register>
-	  <register>
-        <index>R6</index>
-        <address>6</address>
-        <description>DATA_ACQ_MODE</description>
-		<!--<advanced>1</advanced> -->
       </register>
       <register>
         <index>R7</index>
         <address>7</address>
-        <description>TRIGGER_OUT</description>
-		<!--<advanced>1</advanced> -->
-      </register>
-	  
-	   <register>
-        <index>R232</index>
-        <address>232</address>
-        <description>FRAME_DELAY</description>
-		<!--<advanced>1</advanced> -->
+        <description>TIMING</description>
       </register>
 
       <!-- Channel 0 -->
@@ -597,19 +679,19 @@
         <index>R13</index>
         <address>13</address>
         <description>CH0_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R14</index>
         <address>14</address>
         <description>CH0_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R15</index>
         <address>15</address>
         <description>CH0_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 1 -->
@@ -617,19 +699,19 @@
         <index>R17</index>
         <address>17</address>
         <description>CH1_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R18</index>
         <address>18</address>
         <description>CH1_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R19</index>
         <address>19</address>
         <description>CH1_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 2 -->
@@ -637,19 +719,19 @@
         <index>R21</index>
         <address>21</address>
         <description>CH2_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R22</index>
         <address>22</address>
         <description>CH2_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R23</index>
         <address>23</address>
         <description>CH2_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 3 -->
@@ -657,19 +739,19 @@
         <index>R25</index>
         <address>25</address>
         <description>CH3_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R26</index>
         <address>26</address>
         <description>CH3_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R27</index>
         <address>27</address>
         <description>CH3_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 4 -->
@@ -677,19 +759,19 @@
         <index>R29</index>
         <address>29</address>
         <description>CH4_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R30</index>
         <address>30</address>
         <description>CH4_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R31</index>
         <address>31</address>
         <description>CH4_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 5 -->
@@ -697,19 +779,19 @@
         <index>R33</index>
         <address>33</address>
         <description>CH5_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R34</index>
         <address>34</address>
         <description>CH5_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R35</index>
         <address>35</address>
         <description>CH5_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 6 -->
@@ -717,19 +799,19 @@
         <index>R37</index>
         <address>37</address>
         <description>CH6_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R38</index>
         <address>38</address>
         <description>CH6_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R39</index>
         <address>39</address>
         <description>CH6_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 7 -->
@@ -737,19 +819,19 @@
         <index>R41</index>
         <address>41</address>
         <description>CH7_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R42</index>
         <address>42</address>
         <description>CH7_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R43</index>
         <address>43</address>
         <description>CH7_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 8 -->
@@ -757,19 +839,19 @@
         <index>R45</index>
         <address>45</address>
         <description>CH8_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R46</index>
         <address>46</address>
         <description>CH8_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R47</index>
         <address>47</address>
         <description>CH8_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 9 -->
@@ -777,19 +859,19 @@
         <index>R49</index>
         <address>49</address>
         <description>CH9_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R50</index>
         <address>50</address>
         <description>CH9_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R51</index>
         <address>51</address>
         <description>CH9_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 10 -->
@@ -797,19 +879,19 @@
         <index>R53</index>
         <address>53</address>
         <description>CH10_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R54</index>
         <address>54</address>
         <description>CH10_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R55</index>
         <address>55</address>
         <description>CH10_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 11 -->
@@ -817,19 +899,19 @@
         <index>R57</index>
         <address>57</address>
         <description>CH11_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R58</index>
         <address>58</address>
         <description>CH11_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R59</index>
         <address>59</address>
         <description>CH11_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 12 -->
@@ -837,19 +919,19 @@
         <index>R61</index>
         <address>61</address>
         <description>CH12_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R62</index>
         <address>62</address>
         <description>CH12_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R63</index>
         <address>63</address>
         <description>CH12_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 13 -->
@@ -857,19 +939,19 @@
         <index>R65</index>
         <address>65</address>
         <description>CH13_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R66</index>
         <address>66</address>
         <description>CH13_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R67</index>
         <address>67</address>
         <description>CH13_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 14 -->
@@ -877,19 +959,19 @@
         <index>R69</index>
         <address>69</address>
         <description>CH14_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R70</index>
         <address>70</address>
         <description>CH14_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R71</index>
         <address>71</address>
         <description>CH14_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
       <!-- Channel 15 -->
@@ -897,38 +979,24 @@
         <index>R73</index>
         <address>73</address>
         <description>CH15_CONTROL_0</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R74</index>
         <address>74</address>
         <description>CH15_CONTROL_1</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
       <register>
         <index>R75</index>
         <address>75</address>
         <description>CH15_CONTROL_2</description>
-		<!--<advanced>1</advanced> -->
-      </register>
-	  
-	  <register>
-        <index>R228</index>
-        <address>228</address>
-        <description>AGC_EN</description>
-		<!--<advanced>1</advanced> -->
-      </register>
-	  
-	  <register>
-        <index>R229</index>
-        <address>229</address>
-        <description>DC_EN</description>
-		<!--<advanced>1</advanced> -->
+        <advanced>1</advanced>
       </register>
 
     </registersFPGA>
 
-    <registersADC label="Guardian Control Registers">
+    <registersADC label="CPU Registers">
     
       <register>
         <index>0</index>
@@ -939,7 +1007,7 @@
       <register>
         <index>1</index>
         <address>1</address>
-        <description>Guardian: Max Acc</description>
+        <description>Wagner: Max Acc</description>
       </register>
 
       <!--register>
@@ -965,11 +1033,11 @@
     <trackers>
 	    <defaultTracker>1</defaultTracker>
     </trackers>
-  </registerDescription_Guardian>
+  </registerDescription_ADI>
 
 
   
-  <GeometryGuardian1x16Array>
+  <Geometry1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -982,7 +1050,7 @@
     </arraySize>
     <arrayFOV>
       <x>28</x>
-      <y>1.8</y>
+      <y>4.1</y>
     </arrayFOV>
     <pixelSpacing>
       <x>0.1</x>
@@ -1015,6 +1083,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </GeometryGuardian1x16Array>
+  </Geometry1x16Array>
   
 </config>

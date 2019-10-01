@@ -7,7 +7,7 @@
     <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
-    <displayTableViewWindow>true</displayTableViewWindow>
+    <displayTableViewWindow>false</displayTableViewWindow>
     <display3DWindow>false</display3DWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
@@ -22,16 +22,17 @@
     <TabSettingAScan>true</TabSettingAScan>
     <TabSettingMisc>true</TabSettingMisc>
 
+
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
 	       1: Units are in km/h -->
     <velocityUnits>1</velocityUnits>
 
     <!-- displayed logo: empty string means no logo -->
-    <logoFileName>./Images/Logos/ADI_logo.png</logoFileName>
+    <logoFileName>./Images/Logos/ADI_Logo.png</logoFileName>
 
     <!-- Name of file containing displayed icon -->
-    <iconFileName>./Images/Logos/ADIQtDemo.ico</iconFileName>
+    <iconFileName>./Images/Logos/AWLQtDemo.ico</iconFileName>
 
     <!-- displayShowSize:: Default display mode for the main window
          Possible values are:
@@ -70,25 +71,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
-
-      <!-- The commPort is used only by EasySyncCAN recevivers -->  
-      <commPort>COM15</commPort>
-
-      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
-      <kvaserChannel>0</kvaserChannel>
-
-      <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
-
-      <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
-
-      <!-- The PosixUDP server port -->
-      <posixUDPServerPort>23456</posixUDPServerPort>
-
-      <!-- The PosixTTY TTY name -->
-      <posixTTYName>/dev/ttyUSB0</posixTTYName>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -100,30 +83,14 @@
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
       <libUsbTimeOut>1000</libUsbTimeOut>
-
-      <TCPServerAddress>localhost</TCPServerAddress>
-      <TCPServerPort>27011</TCPServerPort>
-
+      
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
           if not defined, the value assumes there is footer payload-->
       <xmitsFooterData>true</xmitsFooterData>
 
 
-      <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
-           Supported Values are:
-              		canRate1Mbps = 1000,
-		              canRate500kbps = 500,
-		              canRate250kbps = 250,
-		              canRate125kbps = 125,
-		              canRate100kbps = 100,
-		              canRate50kbps = 50,
-		              canRate10kps = 10
-            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
-           -->
-      <canBitRate>1000</canBitRate>
-
-      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
       <!-- Channel mask: Controls which channels are
@@ -160,8 +127,8 @@
         </orientation>
       </sensorGeometry>
 
-      <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMin>0.0</displayedRangeMin>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
 
@@ -180,27 +147,9 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
-      <!-- The commPort is used only by EasySyncCAN recevivers -->  
-      <commPort>COM15</commPort>
-
-      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
-      <kvaserChannel>0</kvaserChannel>
-
-      <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
-
-      <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
-
-      <!-- The PosixUDP server port -->
-      <posixUDPServerPort>23456</posixUDPServerPort>
-
-      <!-- The PosixTTY TTY name -->
-      <posixTTYName>/dev/ttyUSB0</posixTTYName>
-
-      <!-- The LibUSB Vendor id -->
+        <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductId>
@@ -210,28 +159,14 @@
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
       <libUsbTimeOut>1000</libUsbTimeOut>
-
-      <TCPServerAddress>localhost</TCPServerAddress>
-      <TCPServerPort>27011</TCPServerPort>
-
-  <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+  
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
           if not defined, the value assumes there is footer payload-->
-     <xmitsFooterData>true</xmitsFooterData>
+      <xmitsFooterData>true</xmitsFooterData>
 
-  <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
-           Supported Values are:
-              		canRate1Mbps = 1000,
-		              canRate500kbps = 500,
-		              canRate250kbps = 250,
-		              canRate125kbps = 125,
-		              canRate100kbps = 100,
-		              canRate50kbps = 50,
-		              canRate10kps = 10
-            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
-           -->
-      <canBitRate>1000</canBitRate>
 
+  
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
@@ -258,7 +193,7 @@
           <!-- positionFromBumper -->
           <forward>0.04</forward>
           <!-- lateral offet -->
-          <left>-1</left>
+          <left>-0.06</left>
           <!-- height -->
           <up>0.025</up>
          </position>
@@ -270,7 +205,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver1>
 
@@ -288,27 +223,9 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
 
-      <!-- The commPort is used only by EasySyncCAN recevivers -->  
-      <commPort>COM15</commPort>
-
-      <!-- The kVaserChannel is used only by KvaserLeaf recevivers -->
-      <kvaserChannel>0</kvaserChannel>
-
-      <!-- The SocketCAN device path -->
-      <socketCANdevice>can0</socketCANdevice>
-
-      <!-- The PosixUDP server address -->
-      <posixUDPServerAddress>192.168.44.97</posixUDPServerAddress>
-
-      <!-- The PosixUDP server port -->
-      <posixUDPServerPort>23456</posixUDPServerPort>
-
-      <!-- The PosixTTY TTY name -->
-      <posixTTYName>/dev/ttyUSB0</posixTTYName>
-
-      <!-- The LibUSB Vendor id -->
+          <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductId>
@@ -318,30 +235,13 @@
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
       <libUsbTimeOut>1000</libUsbTimeOut>
-
-      <TCPServerAddress>localhost</TCPServerAddress>
-      <TCPServerPort>27011</TCPServerPort>
-
-  <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
+ 
+      <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
           if not defined, the value assumes there is footer payload-->
-     <xmitsFooterData>true</xmitsFooterData>
+      <xmitsFooterData>true</xmitsFooterData>
 
-
-  <!-- The canBitRate in kbps should correspond to the units pre-defined bit rate
-           Supported Values are:
-              		canRate1Mbps = 1000,
-		              canRate500kbps = 500,
-		              canRate250kbps = 250,
-		              canRate125kbps = 125,
-		              canRate100kbps = 100,
-		              canRate50kbps = 50,
-		              canRate10kps = 10
-            If not defined the default value is 1 MBit/s (1000) (which is default bit rate for all AWL Units)              
-           -->
-      <canBitRate>1000</canBitRate>
-
-      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
       <!-- Channel mask: Controls which channels are
@@ -367,7 +267,7 @@
           <!-- positionFromBumper -->
           <forward>0.04</forward>
           <!-- lateral offet -->
-          <left>+1</left>
+          <left>0.06</left>
           <!-- height -->
           <up>0.025</up>
          </position>
@@ -379,14 +279,10 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>25</displayedRangeMax>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver2>
-
-
-
-
-    </receivers>
+  </receivers>
 
   <cameras>
     <cameraQty>1</cameraQty>
@@ -398,7 +294,7 @@
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
        XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
        A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
+      <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
        if true, 180 degree rotation of the camera image, 
@@ -645,8 +541,6 @@
        1: Show
      -->
     <showPalette>0</showPalette>
-    
-    
   </display2D>
 
   <scope>
@@ -1142,7 +1036,7 @@
 
 
   
-  <GeometryADI1x16Array>
+  <Geometry1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -1188,6 +1082,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </GeometryADI1x16Array>
+  </Geometry1x16Array>
   
 </config>
