@@ -862,7 +862,7 @@ if(${WANT_OPENCV_VIDEO})
 
 list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
 	"${OpenCV_INSTALL_PATH}/bin/release/opencv_world346.dll"
-	"$ENV{XIMEA_DIR}/API/x86/m3api.dll"
+#JYD	"$ENV{XIMEA_DIR}/API/x86/m3api.dll"
 	"$ENV{XIMEA_DIR}/API/x86/XIAPI32.dll"
 )
 
@@ -1034,13 +1034,15 @@ if(WIN32)
     set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES TRUE)
     set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
-    include(InstallRequiredSystemLibraries)
-        install(
-            PROGRAMS
-                ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-            DESTINATION 
-                ${INSTALL_BIN_DIR}
-        )
+
+	# under Windows 10, all API-MS*.dll are installed by default.  Do not install
+ #JYD   include(InstallRequiredSystemLibraries)
+ #JYD       install(
+ #JYD           PROGRAMS
+ #JYD               ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+ #JYD           DESTINATION 
+ #JYD               ${INSTALL_BIN_DIR}
+ #JYD       )
 endif()
 
 #############################################################################################
