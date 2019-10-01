@@ -252,22 +252,29 @@ endfunction()
 
 set(${PROJECT_NAME}_MAJOR_VERSION 1)
 set(${PROJECT_NAME}_MINOR_VERSION 4)
-set(${PROJECT_NAME}_PATCH_VERSION 0)
+set(${PROJECT_NAME}_PATCH_VERSION 1)
 set(${PROJECT_NAME}_VERSION
         ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_PATCH_VERSION})
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
-set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+
+
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+
+if(WIN32 AND NOT CYGWIN)
+	set(INSTALL_BIN_DIR ./ CACHE PATH "Installation directory for executables")
+else()
+	set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+endif()
 
 if(WIN32 AND NOT CYGWIN)
     set(DEF_INSTALL_CMAKE_DIR CMake)
 else()
     set(DEF_INSTALL_CMAKE_DIR lib/CMake/${PROJECT_NAME})
 endif()
-set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
-        "Installation directory for CMake files")
+
+set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
 
 
 #############################################################################################
@@ -948,40 +955,42 @@ configure_file(${PROJECT_NAME}ConfigVersion.cmake.in
         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" @ONLY)
 
 # Install the ${PROJECT_NAME}Config.cmake and ${PROJECT_NAME}ConfigVersion.cmake
-install(
-    FILES
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-    DESTINATION 
-        "${INSTALL_CMAKE_DIR}" 
-)
+#JYD install(
+#JYD     FILES
+#JYD         "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake"
+#JYD         "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+#JYD     DESTINATION 
+#JYD         "${INSTALL_CMAKE_DIR}"
+#JYD )
 
 include(GNUInstallDirs)
+
+
 
 install(
     TARGETS
         ${PROJECT_NAME}
     EXPORT
         ${PROJECT_NAME}Targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} 
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} 
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} 
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR} 
+    ARCHIVE DESTINATION ${INSTALL_LIB_DIR} 
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR} 
 )
 
 set_property(
     INSTALL
-        "${CMAKE_INSTALL_BINDIR}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
+        "${INSTALL_BIN_DIR}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
     PROPERTY CPACK_START_MENU_SHORTCUTS "${PROJECT_NAME}"
 )
 
-install(
-    EXPORT
-        ${PROJECT_NAME}Targets
-    FILE 
-        ${PROJECT_NAME}Targets.cmake
-    DESTINATION
-        ${INSTALL_CMAKE_DIR}
-)
+#JYD install(
+#JYD     EXPORT
+#JYD         ${PROJECT_NAME}Targets
+#JYD     FILE 
+#JYD         ${PROJECT_NAME}Targets.cmake
+#JYD     DESTINATION
+#JYD         ${INSTALL_CMAKE_DIR}
+#JYD )
 
 # Configuration file... needed for adequate runtime
 install(
@@ -991,13 +1000,13 @@ install(
        ${CUTEDEMO_QRESOURCES}
        LICENSE.txt
        README.txt
-    DESTINATION ${CMAKE_INSTALL_BINDIR}
+    DESTINATION ${INSTALL_BIN_DIR}
 )
     
 install(
     DIRECTORY
         Images/
-    DESTINATION ${CMAKE_INSTALL_BINDIR}/Images
+    DESTINATION ${INSTALL_BIN_DIR}/Images
 )
 
 # Installation of dll & other dependencies
@@ -1009,7 +1018,7 @@ if(WIN32)
             ${Qt5_INSTALLED_PATH}/plugins/imageformats
             ${Qt5_INSTALLED_PATH}/plugins/styles
         DESTINATION
-            ${CMAKE_INSTALL_BINDIR}
+            ${INSTALL_BIN_DIR}
     )
 
     # DLLs
@@ -1018,7 +1027,7 @@ if(WIN32)
         FILES
             ${${PROJECT_NAME}_DLL_TO_INSTALL}
         DESTINATION
-            ${CMAKE_INSTALL_BINDIR}
+            ${INSTALL_BIN_DIR}
     )
      
     # Custom installation of system requirements
@@ -1030,7 +1039,7 @@ if(WIN32)
             PROGRAMS
                 ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
             DESTINATION 
-                ${CMAKE_INSTALL_BINDIR}
+                ${INSTALL_BIN_DIR}
         )
 endif()
 
@@ -1046,7 +1055,7 @@ set(CPACK_PACKAGE_VERSION "${${PROJECT_NAME}_VERSION}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${${PROJECT_NAME}_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${${PROJECT_NAME}_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}")
-set(CPACK_MONOLITHIC_INSTALL TRUE)
+set(CPACK_MONOLITHIC_INSTALL FALSE)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME})
 
 string(TIMESTAMP TIMESTAMP_VALUE "%Y-%m-%dT%H-%M-%S")
