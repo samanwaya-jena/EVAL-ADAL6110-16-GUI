@@ -533,6 +533,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
                 ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.extraTab));
         }
 
+	if (ui.interfaceTabs->count() > 0) ui.interfaceTabs->setCurrentIndex(0);
+
 	    on_view2DActionToggled();
         on_viewTableViewActionToggled();
         on_viewAScanViewActionToggled();
