@@ -93,11 +93,10 @@
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are
-		       processed at AWL Unit Level -->
+        <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>255</channelMask>
-;
+      <channelMask>65535</channelMask>
+
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
@@ -170,12 +169,11 @@
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are
-		       processed at AWL Unit Level -->
+       <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>255</channelMask>
-;
-      <!-- Message mask flags: 
+      <channelMask>65535</channelMask>
+
+     <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
 		       be configured for track mode operation -->
@@ -244,12 +242,11 @@
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are
-		       processed at AWL Unit Level -->
+      <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>255</channelMask>
-;
-      <!-- Message mask flags: 
+      <channelMask>65535</channelMask>
+
+     <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
 		       be configured for track mode operation -->
@@ -570,7 +567,7 @@
     <alert0>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 127 </alertChannels>
+      <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 1.0</alertMin>  <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>2.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>1</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -579,7 +576,7 @@
     <alert1>
       <alertType>decelerationToStop</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 127 </alertChannels>
+       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 2.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>3.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>2</alertLevel><!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -588,7 +585,7 @@
     <alert2>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 127 </alertChannels>
+       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin>3.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax></alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->

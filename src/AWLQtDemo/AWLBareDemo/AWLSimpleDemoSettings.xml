@@ -95,8 +95,7 @@
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
-      <libUsbProductId>
-        30755</libUsbProductIdb>
+      <libUsbProductId>30755</libUsbProductId>
         <!-- The LibUSB input end point -->
         <libUsbEndPointIn>129</libUsbEndPointIn>
         <!-- The LibUSB output end point -->
@@ -126,7 +125,7 @@
         <!-- Channel mask: Controls which channels are
 		       processed at AWL Unit Level -->
         <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-        <channelMask>255</channelMask>
+        <channelMask>65535</channelMask>
         ;
         <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
