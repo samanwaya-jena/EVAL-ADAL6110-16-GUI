@@ -127,7 +127,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>0.0</displayedRangeMin>
-      <displayedRangeMax>20</displayedRangeMax>
+      <displayedRangeMax>60</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
 
@@ -203,7 +203,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>20</displayedRangeMax>
+      <displayedRangeMax>60</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver1>
 
@@ -1057,9 +1057,9 @@
       <y>0.0</y>
     </arrayOffset>
 
-    <maxRange>20.0</maxRange>
+    <maxRange>60.0</maxRange>
 
-    <maxAscanRange>48.0</maxAscanRange>
+    <maxAscanRange>60.0</maxAscanRange>
     
     <displayColor>
       <red>255</red>
