@@ -71,7 +71,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -146,7 +146,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
         <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -221,7 +221,7 @@
       <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>Geometry1x16Array</receiverChannelGeometry>
+      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
 
           <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -1033,7 +1033,7 @@
 
 
   
-  <Geometry1x16Array>
+   <GeometryADI1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
@@ -1045,8 +1045,8 @@
       <y>1</y>
     </arraySize>
     <arrayFOV>
-      <x>28</x>
-      <y>4.1</y>
+      <x>37.1</x>
+      <y>5.7</y>
     </arrayFOV>
     <pixelSpacing>
       <x>0.1</x>
@@ -1079,6 +1079,6 @@
       <blue>0</blue>
     </displayColorLine1>
 
-  </Geometry1x16Array>
+  </GeometryADI1x16Array>
   
 </config>
