@@ -55,7 +55,7 @@ closeCANReentryCount(0)
 
 {
 #ifdef FORCE_FRAME_RESYNC_PATCH
-	lastChannelMask.byteData = 0;
+	lastChannelMask.wordData = 0;
 	lastChannelID = 0;
 #endif
 	yearOffset = defaultYearOffset;
@@ -78,7 +78,7 @@ closeCANReentryCount(0)
 
 {
 #ifdef FORCE_FRAME_RESYNC_PATCH
-	lastChannelMask.byteData = 0;
+	lastChannelMask.wordData = 0;
 	lastChannelID = 0;
 #endif
 
@@ -487,7 +487,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	track->firstTimeStamp = currentFrame->timeStamp;
 	track->timeStamp = currentFrame->timeStamp;
 
-	track->trackChannels.byteData = *(uint8_t *)&inMsg.data[2];
+	track->trackChannels.wordData = *(uint8_t *)&inMsg.data[2];
 	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
 	uint16_t originalChannel = track->trackMainChannel;
 #if PATCH_CHANNEL_REORDER
@@ -502,10 +502,10 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	if (this->receiverChannelQty == 7)
 	{
 		track->trackMainChannel = 0;
-		uint8_t channelMask = 0x01;
+		uint16_t channelMask = 0x01;
 		for (int channel = 0; channel < 8; channel++)
 		{
-			if (track->trackChannels.byteData & channelMask)
+			if (track->trackChannels.wordData & channelMask)
 			{
 				track->trackMainChannel = channel;
 				break;
@@ -1237,7 +1237,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMas
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = AWLCANMSG_ID_CMD_PLAYBACK_RAW;
-	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops playback
+	message.data[1] = (uint8_t) channelMask.wordData;   // Channel mask. Mask at 0 stops playback
 
 	message.data[2] = 0x00; // Not used
 	message.data[3] = frameRate; // Frame rate in HZ. 00: Use actual
@@ -1262,7 +1262,7 @@ bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = AWLCANMSG_ID_CMD_PARAM_RECORD_FILENAME;
-	message.data[1] = channelMask.byteData;   // Channel mask. Mask at 0 stops record
+	message.data[1] = (uint8_t)channelMask.wordData;   // Channel mask. Mask at 0 stops record
 
 	message.data[2] = 0x00; // Not used
 	message.data[3] = frameRate; 
@@ -1344,7 +1344,7 @@ bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelM
 
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = AWLCANMSG_ID_CMD_RECORD_CALIBRATION;   // Record_Calibration
-	message.data[1] = channelMask.byteData;   
+	message.data[1] = (uint8_t)channelMask.wordData;   
 
 	message.data[2] = frameQty; // Number of frames
 	message.data[3] = 0; // Not used
@@ -1698,7 +1698,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
     message.len = AWLCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = AWLCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
 
-	message.data[1] = channelMask.byteData; // Channel mask
+	message.data[1] = (uint8_t)channelMask.wordData; // Channel mask
 	message.data[2] = 0;  // Reserved
 	message.data[3] = frameRate; // New frame rate. oo= use actual.
 	message.data[4] = messageMask.byteData; // Message mask
@@ -1712,7 +1712,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 	{
 		message.data[0] = AWLCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_raw enable flags
 
-		message.data[1] = channelMask.byteData; // Channel mask
+		message.data[1] = (uint8_t)channelMask.wordData; // Channel mask
 		message.data[2] = 0xFF;  // Reserved
 		message.data[3] = 0;
 		message.data[4] = 0;
@@ -2252,7 +2252,7 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 
 		if (msgID == 10)
 		{
-			uint8_t newChannelMask = *(uint8_t *)&inMsg.data[2];
+			uint16_t newChannelMask = *(uint8_t *)&inMsg.data[2];
 			uint16_t newChannelID = *(uint16_t *)&inMsg.data[3];
 #if 1
 			// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
@@ -2261,7 +2261,7 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 			if (newChannelMask && !newChannelID)
 			{
 				newChannelID = 0;
-				uint8_t channelMask = 0x01;
+				uint16_t channelMask = 0x01;
 				for (int channel = 0; channel < 8; channel++)
 				{
 					if (newChannelMask & channelMask)
@@ -2299,7 +2299,7 @@ void ReceiverCANCapture::ForceFrameResync(AWLCANMessage &inMsg)
 		if (msgID == 9)
 		{
 			ProcessCompletedFrame();
-			lastChannelMask.byteData = 0;
+			lastChannelMask.wordData = 0;
 			lastChannelID = 0;
 		}
 #endif

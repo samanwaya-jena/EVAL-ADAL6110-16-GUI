@@ -219,7 +219,7 @@ bool AWLSettings::StoreReceiverCalibration()
 			receiverNode.put<std::string>("receiverChannelGeometry", receiver.sReceiverGeometry);
 
 
-			receiverNode.put<uint8_t>("channelMask", receiver.receiverChannelMask);
+			receiverNode.put<uint16_t>("channelMask", receiver.receiverChannelMask);
 			receiverNode.put<uint8_t>("frameRate", receiver.receiverFrameRate);
 
 			// Geometry
@@ -338,7 +338,7 @@ void AWLSettings::GetAlertConditions(boost::property_tree::ptree &alertNode, Ale
 	}
 
 	alert.receiverID = alertNode.get<int>("alertReceiver", 0);
-	alert.alertChannelMask.byteData = alertNode.get<uint8_t>("alertChannels", 255);
+	alert.alertChannelMask.wordData = alertNode.get<uint16_t>("alertChannels", 255);
 	alert.minRange = alertNode.get<float>("alertMin", -std::numeric_limits<float>::max());
 	alert.maxRange = alertNode.get<float>("alertMax", std::numeric_limits<float>::max());
 	alert.threatLevel = (AlertCondition::ThreatLevel) alertNode.get<int>("alertLevel", AlertCondition::eThreatNone);

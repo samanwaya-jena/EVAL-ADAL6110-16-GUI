@@ -93,7 +93,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 					track->intensity = 1.00;
 					track->trackMainChannel = channel;
 
-					track->trackChannels.byteData = 0x01 << (track->trackMainChannel % 8);
+					track->trackChannels.wordData = 0x01 << (track->trackMainChannel % 8);
 					
 
 					track->velocity = 3;

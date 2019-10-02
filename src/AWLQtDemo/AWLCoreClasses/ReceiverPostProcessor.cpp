@@ -96,7 +96,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++)
 	{
 		ChannelMask channelMask;
-		channelMask.byteData = 0x01 << (channelIndex % 8);
+		channelMask.wordData = 0x01 << (channelIndex % 8);
 
 
 		// Re-Create detections from the coalesced tracks

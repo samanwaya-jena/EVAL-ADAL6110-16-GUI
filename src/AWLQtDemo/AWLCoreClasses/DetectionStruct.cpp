@@ -330,7 +330,7 @@ part3Entered(false),
 part4Entered(false)
 
 {
-	trackChannels.byteData = 0;
+	trackChannels.wordData = 0;
 	trackMainChannel = 0;
 }
 
@@ -359,9 +359,9 @@ AlertCondition::ThreatLevel AlertCondition::FindDetectionThreat(boost::shared_pt
 	{
 		AlertCondition::Ptr alert = *alertIterator;
 		AlertChannelMask theChannelMask;
-		theChannelMask.byteData = 0x01 << detection->channelID;
+		theChannelMask.wordData = 0x01 << (uint16_t)detection->channelID;
 
-		if (alert->receiverID == detection->receiverID && (alert->alertChannelMask.byteData & theChannelMask.byteData))
+		if (alert->receiverID == detection->receiverID && (alert->alertChannelMask.wordData & theChannelMask.wordData))
 		{
 			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
 			switch (alert->alertType) {
@@ -424,12 +424,12 @@ AlertCondition::ThreatLevel AlertCondition::FindTrackThreat(int inReceiverID, bo
 	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
 
 	AlertCondition::Vector::iterator  alertIterator = globalAlertsVector.begin();
-	uint16_t trackMask = 1 << track->trackMainChannel;
+	uint16_t trackMask = 1 << (uint16_t)track->trackMainChannel;
 
 	while (alertIterator != globalAlertsVector.end())
 	{
 		AlertCondition::Ptr alert = *alertIterator;
-		if (alert->receiverID == inReceiverID && (alert->alertChannelMask.byteData & trackMask))
+		if (alert->receiverID == inReceiverID  && (alert->alertChannelMask.wordData & trackMask))
 		{
 			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
 			switch (alert->alertType) {

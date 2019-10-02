@@ -56,7 +56,7 @@ class ChannelFrame;
 
 typedef union
 {
-	uint8_t byteData;
+	uint16_t wordData;
 	struct  {
 		bool channel0 : 1;
 		bool channel1 : 1;
@@ -66,8 +66,7 @@ typedef union
 		bool channel5 : 1;
 		bool channel6 : 1;
 		bool channel7 : 1;
-	} bitFieldData;
-
+	} bitFieldData;;
 } ChannelMask, AlertChannelMask;
 
 

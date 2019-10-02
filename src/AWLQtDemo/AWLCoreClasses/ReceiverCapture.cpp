@@ -40,7 +40,7 @@ const int ReceiverCapture::maximumSensorFrames(100);
 const std::string sDefaultReceiverType = "Generic";
 const std::string sDefaultReceiverRegisterSet = "registerDescription_RevC";
 const std::string sDefaultReceiverChannelGeometry = "GeometryAWL7";
-const uint8_t defaultChannelMaskValue = 127;
+const uint16_t defaultChannelMaskValue = 0xFFFF;
 const float defaultSignalToNoiseFloor = -10.0;
 
 
@@ -627,7 +627,7 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 
 		receiverStatus.frameRate =  receiverNode.get<uint8_t>("frameRate");	// Default frame rate is 100Hz
 
-		receiverStatus.channelMask.byteData = receiverNode.get<uint8_t>("channelMask");
+		receiverStatus.channelMask.wordData = receiverNode.get<uint16_t>("channelMask");
 
 		receiverStatus.messageMask.byteData = 0;
 		if (receiverNode.get<bool>("msgEnableObstacle")) receiverStatus.messageMask.bitFieldData.obstacle = 1;
