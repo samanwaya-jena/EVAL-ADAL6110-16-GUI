@@ -1060,12 +1060,12 @@ void AWLQtDemo::on_timerTimeout()
 	myTimer->stop();
 
 	bool bContinue = true;
-	
+
 #if defined (USE_OPENCV_VIDEO)
 	// Check that the cameras are still working.  Otherwise Stop everyting
 	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
-		if (videoCaptures[cameraID]->WasStopped()) 
+		if (videoCaptures[cameraID]->WasStopped())
 		{
 			bContinue = false;
 			break;
@@ -1076,7 +1076,7 @@ void AWLQtDemo::on_timerTimeout()
 	// Check that the cameras are still working.  Otherwise Stop everyting
 	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++)
 	{
-		if (apVideoCaptures[cameraID]->WasStopped()) 
+		if (apVideoCaptures[cameraID]->WasStopped())
 		{
 			bContinue = false;
 			break;
@@ -1084,7 +1084,7 @@ void AWLQtDemo::on_timerTimeout()
 	}
 #endif
 
-	
+
 	// For each receiver. Validate that the receiver exists.
 	// Then display the status flags.
 
@@ -1092,14 +1092,14 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 		{
-			if (!receiverCaptures[receiverID]) 
+			if (!receiverCaptures[receiverID])
 			{
 				bContinue = false;
 				break;
 			}
 
 			// Update the status information
-			if (receiverCaptures[receiverID]->receiverStatus.bUpdated) 
+			if (receiverCaptures[receiverID]->receiverStatus.bUpdated)
 			{
 				DisplayReceiverStatus(receiverID);
 			}
@@ -1111,11 +1111,11 @@ void AWLQtDemo::on_timerTimeout()
 	//     - The 2 view (pie chart)
 	//     - The camera views
 	//     - The table views
-	if (bContinue) 
+	if (bContinue)
 	{
 		Detection::Vector detectionData;
-		bool bNewDetections = GetLatestDetections(detectionData);		
-		
+		bool bNewDetections = GetLatestDetections(detectionData);
+
 		// Update the 2D view only if there is new data.
 		if (m2DScan && bNewDetections) m2DScan->slotDetectionDataChanged(detectionData);
 
@@ -1138,40 +1138,44 @@ void AWLQtDemo::on_timerTimeout()
 		// Update the table views only if there is new data
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
 
-    if (mAScanView && bNewDetections)
-    {
-      AScan::Vector aScanData;
-      aScanData.clear();
+		if (mAScanView && bNewDetections)
+		{
+			AScan::Vector aScanData;
+			aScanData.clear();
 
-      bool bNewAScans = GetLatestAScans(aScanData);
-      mAScanView->AScanDataChanged(aScanData);
-    }
+			bool bNewAScans = GetLatestAScans(aScanData);
+			mAScanView->AScanDataChanged(aScanData);
+		}
 	}
 
-  {
-    bool bConnected = receiverCaptures[0]->IsConnected();
-    int frameRate = receiverCaptures[0]->GetFrameRate();
+	// Update receiver status
+	bool bWasConnected = labelConnected->text().compare(QString("Connected")) == 0;
+	bool bConnected = receiverCaptures[0]->IsConnected();
+	int frameRate = receiverCaptures[0]->GetFrameRate();
 
+	{
+		QString str;
+		if (bConnected) 
 		{
-			QString str;
-			if (bConnected)
-				str = "Connected";
-			else
-				str = "Not connected";
-			labelConnected->setText(str);
-
-			if (bConnected)
-				str.sprintf("Framerate: %3d Hz", frameRate);
-			else
-				str = "";
-			labelFramerate->setText(str);
-
-			//ui.statusBar->showMessage(str);
+			str = "Connected";
+			if (!bWasConnected)  DisplayReceiverStatus();
 		}
+		else
+			str = "Not connected";
+		labelConnected->setText(str);
 
-  }
+		if (bConnected)
+			str.sprintf("Framerate: %3d Hz", frameRate);
+		else
+			str = "";
+		labelFramerate->setText(str);
 
-	if (bContinue) 
+		//ui.statusBar->showMessage(str);
+	}
+
+
+
+	if (bContinue)
 	{
 #if defined (USE_OPENCV_VIDEO)
 		// Always spin the video viewers.
@@ -1194,7 +1198,7 @@ void AWLQtDemo::on_timerTimeout()
 	{
 		myTimer->start(LOOP_RATE);
 	}
-	else 
+	else
 	{
 		this->close();
 	}
@@ -1328,7 +1332,8 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		ui.statusSaturationCheckBox->setChecked(status.status.bitFieldData.saturation);
 
 		// Registers
-		formattedString.sprintf("%04X", status.fpgaRegisterAddressRead / 4);
+
+		formattedString.sprintf("%04X", status.fpgaRegisterAddressRead);
 		ui.registerFPGAAddressGetLineEdit->setText(formattedString);
 
 		formattedString.sprintf("%08X", status.fpgaRegisterValueRead);
@@ -1339,6 +1344,10 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 
 		formattedString.sprintf("%08X", status.adcRegisterValueRead);
 		ui.registerADCValueGetLineEdit->setText(formattedString);
+
+		//AWLSettings* settings = AWLSettings::GetGlobalSettings();
+		//UpdateFPGAList(settings);
+		//FillADCList(settings);
 
 		UpdateGPIOList();
 		
@@ -2609,29 +2618,40 @@ void AWLQtDemo::on_viewAScanClose()
 }
 
 
-void AWLQtDemo::FillFPGAList(AWLSettings *settingsPtr)
+void AWLQtDemo::FillFPGAList(AWLSettings* settingsPtr)
 {
-  bool bAdvancedModeChecked = ui.checkBoxAdvanceMode->isChecked();
+	bool bAdvancedModeChecked = ui.checkBoxAdvanceMode->isChecked();
 
 	if (!receiverCaptures[0]->registersFPGALabel.empty())
 		ui.registerFPGAGroupBox->setTitle(receiverCaptures[0]->registersFPGALabel.c_str());
 
-  ui.registerFPGAAddressSetComboBox->clear();
+	ui.registerFPGAAddressSetComboBox->clear();
 
-	for (int i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++) 
+	for (int i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++)
 	{
-    if (!bAdvancedModeChecked && receiverCaptures[0]->registersFPGA[i].bAdvanced)
-      ; // Skip advanced register
-    else
-    {
-      QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
-      sLabel += ": ";
-      sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
-      ui.registerFPGAAddressSetComboBox->addItem(sLabel);
-    }
+		if (!bAdvancedModeChecked && receiverCaptures[0]->registersFPGA[i].bAdvanced)
+			; // Skip advanced register
+		else
+		{
+			QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
+			sLabel += ": ";
+			sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
+			ui.registerFPGAAddressSetComboBox->addItem(sLabel);
+		}
+	}
+
+	if (receiverCaptures[0]->registersFPGA.size() > 0) 
+	{
+		ui.registerFPGAAddressSetComboBox->setCurrentIndex(0);
+		on_registerFPGAAddressSetComboBox_indexChanged(0);
 	}
 }
 
+void AWLQtDemo::on_registerFPGAAddressSetComboBox_indexChanged(int)
+{
+	// On change of index, force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerFPGAGetPushButton_clicked();
+}
 
 void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 {
@@ -2773,8 +2793,18 @@ void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 		ui.registerADCAddressSetComboBox->addItem(sLabel);
 	}
 
+	if (receiverCaptures[0]->registersADC.size() > 0)
+	{
+		ui.registerADCAddressSetComboBox->setCurrentIndex(0);
+		on_registerADCAddressSetComboBox_indexChanged(0);
+	}
 }
 
+void AWLQtDemo::on_registerADCAddressSetComboBox_indexChanged(int)
+{
+	// On change of index, force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerADCGetPushButton_clicked();
+}
 
 void AWLQtDemo::on_registerADCSetPushButton_clicked()
 {

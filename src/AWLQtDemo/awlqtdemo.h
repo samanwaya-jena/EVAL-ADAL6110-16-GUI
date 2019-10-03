@@ -88,8 +88,13 @@ private slots:
 	void on_receiverCalibStorePushButton_clicked();
 	void on_calibratePushButton_clicked();
 
+	void on_registerFPGAAddressSetComboBox_indexChanged(int newIndex);
+
 	void on_registerFPGASetPushButton_clicked();
 	void on_registerFPGAGetPushButton_clicked();
+
+	void on_registerADCAddressSetComboBox_indexChanged(int newIndex);
+
 	void on_registerADCSetPushButton_clicked();
 	void on_registerADCGetPushButton_clicked();
 	void on_registerGPIOSetPushButton_clicked();

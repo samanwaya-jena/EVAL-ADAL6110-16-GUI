@@ -14,7 +14,7 @@
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
     <TabSettingControl>false</TabSettingControl>
-    <TabSettingStatus>flase</TabSettingStatus>
+    <TabSettingStatus>false</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>false</TabSettingGPIOs>
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
@@ -669,7 +669,6 @@
         <address>7</address>
         <description>TIMING</description>
       </register>
-
       <!-- Channel 0 -->
       <register>
         <index>R13</index>
