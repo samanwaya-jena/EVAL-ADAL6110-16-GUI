@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>972</width>
+    <width>964</width>
     <height>311</height>
    </rect>
   </property>
@@ -1242,7 +1242,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -1509,7 +1509,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
              <x>40</x>
              <y>170</y>
              <width>111</width>
-             <height>20</height>
+             <height>22</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -1862,7 +1862,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
             <x>770</x>
             <y>10</y>
             <width>161</width>
-            <height>111</height>
+            <height>201</height>
            </rect>
           </property>
           <property name="styleSheet">
@@ -2570,6 +2570,85 @@ background-color: #202020;
             <bool>false</bool>
            </property>
           </widget>
+          <widget class="QGroupBox" name="logFileGroupBox">
+           <property name="geometry">
+            <rect>
+             <x>6</x>
+             <y>104</y>
+             <width>151</width>
+             <height>90</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="title">
+            <string>Log File</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <widget class="QPushButton" name="logFileSelectButton">
+            <property name="geometry">
+             <rect>
+              <x>26</x>
+              <y>65</y>
+              <width>100</width>
+              <height>22</height>
+             </rect>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="text">
+             <string>Change Log File...</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QLabel" name="logFilePathLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>18</y>
+              <width>131</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="text">
+             <string>Path</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="logFileNameLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>38</y>
+              <width>131</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="text">
+             <string>File</string>
+            </property>
+           </widget>
+          </widget>
+          <zorder>logFileGroupBox</zorder>
+          <zorder>targetHintAngleLabel</zorder>
+          <zorder>targetHintAngleSpinBox</zorder>
+          <zorder>targetHintDistanceLabel</zorder>
+          <zorder>targetHintDistanceSpinBox</zorder>
+          <zorder>distanceLogFileCheckbox</zorder>
          </widget>
         </widget>
         <widget class="QWidget" name="controlTab">
@@ -5476,8 +5555,8 @@ color: rgb(255,255,255);</string>
    <slot>on_sensorHeightSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>116</y>
+     <x>189</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>193</x>
@@ -5492,8 +5571,8 @@ color: rgb(255,255,255);</string>
    <slot>on_sensorDepthSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>350</x>
-     <y>115</y>
+     <x>359</x>
+     <y>108</y>
     </hint>
     <hint type="destinationlabel">
      <x>327</x>
@@ -5508,8 +5587,8 @@ color: rgb(255,255,255);</string>
    <slot>on_measurementOffsetSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>182</x>
-     <y>246</y>
+     <x>189</x>
+     <y>239</y>
     </hint>
     <hint type="destinationlabel">
      <x>297</x>
@@ -5524,8 +5603,8 @@ color: rgb(255,255,255);</string>
    <slot>on_globalParametersGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>896</x>
-     <y>247</y>
+     <x>905</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>890</x>
@@ -5540,8 +5619,8 @@ color: rgb(255,255,255);</string>
    <slot>on_recordPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>258</y>
+     <x>123</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>91</x>
@@ -5556,8 +5635,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>176</y>
+     <x>171</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>127</x>
@@ -5572,8 +5651,8 @@ color: rgb(255,255,255);</string>
    <slot>on_playbackPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>206</x>
-     <y>258</y>
+     <x>203</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>156</x>
@@ -5588,8 +5667,8 @@ color: rgb(255,255,255);</string>
    <slot>on_stopPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>356</x>
-     <y>258</y>
+     <x>353</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
      <x>314</x>
@@ -5604,8 +5683,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibratePushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>712</x>
-     <y>244</y>
+     <x>709</x>
+     <y>237</y>
     </hint>
     <hint type="destinationlabel">
      <x>687</x>
@@ -5620,8 +5699,8 @@ color: rgb(255,255,255);</string>
    <slot>onRegisterFPGASetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>187</y>
+     <x>140</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
@@ -5636,8 +5715,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerFPGAGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>187</y>
+     <x>313</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
      <x>72</x>
@@ -5652,8 +5731,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerADCSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>596</x>
-     <y>187</y>
+     <x>593</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
      <x>697</x>
@@ -5668,8 +5747,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerADCGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>742</x>
-     <y>187</y>
+     <x>751</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
      <x>538</x>
@@ -5684,8 +5763,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerGPIOSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>247</y>
+     <x>139</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -5700,8 +5779,8 @@ color: rgb(255,255,255);</string>
    <slot>on_registerGPIOGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>247</y>
+     <x>264</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
@@ -5716,8 +5795,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algoParametersGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>486</x>
-     <y>247</y>
+     <x>483</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
@@ -5732,8 +5811,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algoParametersSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>326</x>
-     <y>247</y>
+     <x>323</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>325</x>
@@ -5748,8 +5827,8 @@ color: rgb(255,255,255);</string>
    <slot>on_globalParametersSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>736</x>
-     <y>247</y>
+     <x>745</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>840</x>
@@ -5764,8 +5843,8 @@ color: rgb(255,255,255);</string>
    <slot>on_targetHintDistanceSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>932</x>
-     <y>96</y>
+     <x>929</x>
+     <y>89</y>
     </hint>
     <hint type="destinationlabel">
      <x>940</x>
@@ -5780,8 +5859,8 @@ color: rgb(255,255,255);</string>
    <slot>on_targetHintAngleSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>932</x>
-     <y>126</y>
+     <x>929</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>937</x>
@@ -5796,8 +5875,8 @@ color: rgb(255,255,255);</string>
    <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>892</x>
-     <y>151</y>
+     <x>901</x>
+     <y>144</y>
     </hint>
     <hint type="destinationlabel">
      <x>882</x>
@@ -5812,8 +5891,8 @@ color: rgb(255,255,255);</string>
    <slot>on_calibrationRangeMaxSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>176</y>
+     <x>321</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>374</x>
@@ -5828,8 +5907,8 @@ color: rgb(255,255,255);</string>
    <slot>on_algoSelectComboBox_indexChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>116</y>
+     <x>159</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>305</x>
@@ -5865,7 +5944,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>555</x>
-     <y>284</y>
+     <y>282</y>
     </hint>
    </hints>
   </connection>
@@ -5881,7 +5960,7 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>824</x>
-     <y>308</y>
+     <y>287</y>
     </hint>
    </hints>
   </connection>
@@ -5929,7 +6008,23 @@ color: rgb(255,255,255);</string>
     </hint>
     <hint type="destinationlabel">
      <x>597</x>
-     <y>299</y>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>logFileSelectButton</sender>
+   <signal>pressed()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_logFileSelectorButton_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>858</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>747</x>
+     <y>298</y>
     </hint>
    </hints>
   </connection>
@@ -5984,5 +6079,6 @@ color: rgb(255,255,255);</string>
   <slot>on_comboBoxMaxRange_indexChanged(int)</slot>
   <slot>on_registerFPGAAddressSetComboBox_indexChanged(int)</slot>
   <slot>on_registerADCAddressSetComboBox_indexChanged(int)</slot>
+  <slot>on_logFileSelectorButton_pressed()</slot>
  </slots>
 </ui>

@@ -58,6 +58,8 @@
 #include <QListWidget>
 #include <QStandardPaths>
 #include <QDir>
+#include <QFileDialog>
+#include <QFileInfo>
 
 
 #include <string>
@@ -124,22 +126,29 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		debugAndLogDir.mkpath(".");
 	}
 
+#if 1
+	sDebugAndLogPath = QString(".");
+#endif
+
 	// Append the last "/", which Qt does not do.
 	sDebugAndLogPath += "/";
-#if 1
-	sDebugAndLogPath = QString("");
-#endif
-	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString().c_str());
 
+	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString());
+	SetLogFileName(std::string("distanceLog.csv"));
 
 	// Read the settigs from the configuration file
 	//
-	// First, ask Qt for the existence of the file
+	// First, ask Qt for the existence of the file.  Add the "/" that Qt does not integrate.
 	QString sSettingsPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-	sSettingsPath += "/";
-#if 1
-	sSettingsPath = QString("");
+
+#if 1 // Override the default windows directory.  Run in the 
+	sSettingsPath = QString(".");
 #endif
+
+	// Append the last "/", which Qt does not do.
+	sSettingsPath += "/";
+
+
 	//  if the file does not exist, use the current directory.
 	QFile settingsFile(QString("AWLDemoSettings.xml"));
 
@@ -468,6 +477,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
+	ui.logFilePathLabel->setText(QString(GetLogAndDebugFilePath().c_str()));
+	ui.logFileNameLabel->setText(QString(GetLogFileName().c_str()));
 
 	// Initialize the AScan window
 	mAScanView = new AWLPlotScan();
@@ -1055,6 +1066,30 @@ void AWLQtDemo::on_distanceLogCheckBox_setChecked(bool  bChecked)
 	}
 }
 
+void AWLQtDemo::on_logFileSelectorButton_pressed()
+{
+	//QCoreApplication::processEvents();
+	ui.logFileSelectButton->setEnabled(false);
+
+	QString dialogFileName = QFileDialog::getSaveFileName(this,
+		tr("Set Log File Path"), QString(GetLogAndDebugFilePath().c_str()), tr("Distance Log Files (*.csv)"));
+
+	if (!dialogFileName.isEmpty())
+	{
+		QFileInfo fileInfo(dialogFileName);
+
+		// Append the last "/", which Qt does not do.
+		QString path = fileInfo.absolutePath() + "/";
+		QString fileName = fileInfo.fileName();
+		SetLogAndDebugFilePath(path.toStdString());
+		SetLogFileName(fileName.toStdString());
+		ui.logFilePathLabel->setText(path);
+		ui.logFileNameLabel->setText(fileName);
+	}
+
+	ui.logFileSelectButton->setEnabled(true);
+}
+
 void AWLQtDemo::on_timerTimeout()
 {
 	myTimer->stop();
@@ -1158,7 +1193,13 @@ void AWLQtDemo::on_timerTimeout()
 		if (bConnected) 
 		{
 			str = "Connected";
-			if (!bWasConnected)  DisplayReceiverStatus();
+			if (!bWasConnected)
+			{
+				// Reupdate the lists
+				FillFPGAList(AWLSettings::GetGlobalSettings());
+				FillADCList(AWLSettings::GetGlobalSettings());
+				DisplayReceiverStatus();
+			}
 		}
 		else
 			str = "Not connected";

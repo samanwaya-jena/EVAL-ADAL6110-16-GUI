@@ -127,7 +127,24 @@ bool CloseLogFile(ofstream &logFile);
 * \note By default the log and debug files are set to the application directory.
 */
 
-bool SetLogAndDebugFilePath(const char *newFilePath);
+bool SetLogAndDebugFilePath(std::string newFilePath);
+
+/** \brief Returns the current path for the log and debug files.
+* \note By default the log and debug files are set to the application directory.
+*/
+std::string GetLogAndDebugFilePath();
+
+
+/** \brief Changes the default fileName for the log file.
+* \param[in] new fileName.
+*/
+
+bool SetLogFileName(std::string newFileName);
+
+/** \brief Returns the current fileName for the log file.
+*/
+std::string GetLogFileName();
+
 } // namespace AWL          
 
 #endif

@@ -41,6 +41,8 @@ const char *sDebugFileName = "debug.dbg";
 // Per default is empty string, which amounts to writing to the application directory
 std::string sFilePath("");
 
+std::string sLogFileName("distanceLog.csv");
+
 // Field separator used in debug files.
 const char cFieldSeparator = ';'; 
 
@@ -51,8 +53,6 @@ const bool bIsInDebug = false;
 #endif
 
 const int maxStrLen = 1024;
-
-bool CreateDebugAndLogFileDirectory(const char *sFilePath);
 
 void DebugFilePrintf(const char *format, ...)
 {
@@ -229,10 +229,28 @@ void LogFilePrintf(ofstream &logFile, const char *format, ...)
 	}
 }
 
-bool SetLogAndDebugFilePath(const char *newFilePath)
+bool SetLogAndDebugFilePath(std::string newFilePath)
 {
 	sFilePath = newFilePath;
 	return(true);
 }
+
+std::string GetLogAndDebugFilePath()
+{
+	return(sFilePath);
+}
+
+bool SetLogFileName(std::string newFileName)
+{
+	sLogFileName = newFileName;
+	return(true);
+}
+
+std::string GetLogFileName()
+{
+	return(sLogFileName);
+}
+
+
 
 }  // namespace awl

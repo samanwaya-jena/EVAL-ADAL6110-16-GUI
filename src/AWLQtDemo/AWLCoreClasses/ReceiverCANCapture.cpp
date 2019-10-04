@@ -65,7 +65,7 @@ closeCANReentryCount(0)
 		rawBuffers[i] = 0;
 	}
 
-	OpenDebugFile(debugFile, "CanBusLog.dat");
+	OpenDebugFile(debugFile, "CanBusLog.csv");
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
 }
@@ -94,7 +94,7 @@ closeCANReentryCount(0)
 		rawBuffers[i] = 0;
 	}
 
-	OpenDebugFile(debugFile, "CanBusLog.dat");
+	OpenDebugFile(debugFile, "CanBusLog.csv");
 
 	DebugFilePrintf(debugFile, "StartProgram %d", 22);
 }
@@ -1433,6 +1433,7 @@ bool ReceiverCANCapture::EnableLaser(bool on)
 	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
+
 bool ReceiverCANCapture::EnableAutoGain(bool on)
 {
 	AWLCANMessage message;
@@ -1449,6 +1450,7 @@ bool ReceiverCANCapture::EnableAutoGain(bool on)
 	bMessageOk = WriteMessage(message);
    	return(bMessageOk);
 }
+
 bool ReceiverCANCapture::EnableDCBalance(bool on)
 {
 	AWLCANMessage message;

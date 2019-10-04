@@ -84,6 +84,7 @@ private slots:
 	void on_targetHintDistanceSpin_editingFinished();
 	void on_targetHintAngleSpin_editingFinished();
 	void on_distanceLogCheckBox_setChecked(bool  bChecked);
+	void on_logFileSelectorButton_pressed();
 
 	void on_receiverCalibStorePushButton_clicked();
 	void on_calibratePushButton_clicked();
