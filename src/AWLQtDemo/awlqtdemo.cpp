@@ -1345,10 +1345,6 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		formattedString.sprintf("%08X", status.adcRegisterValueRead);
 		ui.registerADCValueGetLineEdit->setText(formattedString);
 
-		//AWLSettings* settings = AWLSettings::GetGlobalSettings();
-		//UpdateFPGAList(settings);
-		//FillADCList(settings);
-
 		UpdateGPIOList();
 		
 		// Record / play / stop buttons
@@ -2365,7 +2361,7 @@ void AWLQtDemo::on_viewSettingsActionToggled()
 		actionSettingsButton->setChecked(false);
 	}
 
-	on_resizeActionToggled();
+	ui.gridDisplayLayout->update();
 }
 
 
@@ -2586,8 +2582,7 @@ void AWLQtDemo::on_checkBoxAutoScaleToggled()
 void AWLQtDemo::on_resizeActionToggled()
 {
 	if (actionResizeButton->isChecked()) 
-	{
-	
+	{ 
 		showFullScreen();
 		actionResizeButton->setIcon(*actionResizeRestoreDownIcon);
 		actionResizeButton->setToolTip(actionResizeRestoreDownString);
