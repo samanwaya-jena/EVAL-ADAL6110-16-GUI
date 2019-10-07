@@ -336,6 +336,30 @@
     <ClInclude Include=".\AWLQtScope\signaldata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverLibUSBCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverPolledCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="APVideoCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="APVideoViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverPosixTTYCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverPosixUDPCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverSocketCANCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverTCPCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CuteDemo.rc" />

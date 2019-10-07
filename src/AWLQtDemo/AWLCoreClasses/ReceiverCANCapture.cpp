@@ -716,6 +716,11 @@ void ReceiverCANCapture::ParseParameterResponse(AWLCANMessage &inMsg)
 	case AWLCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME:
 		ParseParameterPlaybackResponse(inMsg);
 		break;
+
+	case AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC:
+		ParseParameterSensorSpecificResponse(inMsg);
+		break;
+
 	default:
 		break;
 	}
@@ -766,6 +771,12 @@ void ReceiverCANCapture::ParseParameterError(AWLCANMessage &inMsg)
 	case AWLCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME:
 		ParseParameterPlaybackError(inMsg);
 		break;
+
+	case AWLCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC:
+		ParseParameterSensorSpecificError(inMsg);
+		break;
+
+
 	default:
 		break;
 	}
@@ -980,6 +991,15 @@ void ReceiverCANCapture::ParseParameterPlaybackResponse(AWLCANMessage &inMsg)
 	// Otherwise it is not used. We ignore the message for the moment.
 }
 
+void ReceiverCANCapture::ParseParameterSensorSpecificResponse(AWLCANMessage& inMsg)
+{
+	// Message should be sent as a response when we set sensor specific parameter.
+	// Otherwise it is not used. We ignore the message for the moment.
+	uint16_t parameterAddress = *(uint16_t*)& inMsg.data[2];
+	uint32_t parameterValue = *(uint32_t*)& inMsg.data[4];
+
+}
+
 
 void ReceiverCANCapture::ParseParameterAlgoSelectError(AWLCANMessage &inMsg)
 {
@@ -1099,6 +1119,16 @@ void ReceiverCANCapture::ParseParameterPlaybackError(AWLCANMessage &inMsg)
 	rawLock.unlock();
 	DebugFilePrintf(debugFile, "Control command error.  Type %x", inMsg.data[1]);
 }
+
+void ReceiverCANCapture::ParseParameterSensorSpecificError(AWLCANMessage& inMsg)
+{
+	boost::mutex::scoped_lock rawLock(GetMutex());
+	receiverStatus.bUpdated = true;
+	receiverStatus.lastCommandError = inMsg.data[1];
+	rawLock.unlock();
+	DebugFilePrintf(debugFile, "Control command error.  Type %x %x", inMsg.data[1], inMsg.data[2]);
+}
+
 
 
 bool ReceiverCANCapture::WriteCurrentDateTime()
@@ -1381,7 +1411,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 }
 
 
-bool ReceiverCANCapture::SspSetFrameRate(int FrameRate )
+bool ReceiverCANCapture::SetSSPFrameRate(int FrameRate )
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1400,7 +1430,7 @@ bool ReceiverCANCapture::SspSetFrameRate(int FrameRate )
 }
 
 
-bool ReceiverCANCapture::EnableSystem(bool on)
+bool ReceiverCANCapture::SetSSPSystemEnable(bool on)
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1417,7 +1447,7 @@ bool ReceiverCANCapture::EnableSystem(bool on)
    	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::EnableLaser(bool on)
+bool ReceiverCANCapture::SetSSPLaserEnable(bool on)
 {	
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1434,7 +1464,7 @@ bool ReceiverCANCapture::EnableLaser(bool on)
    	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::EnableAutoGain(bool on)
+bool ReceiverCANCapture::SetSSPAutoGainEnable(bool on)
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1451,7 +1481,7 @@ bool ReceiverCANCapture::EnableAutoGain(bool on)
    	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::EnableDCBalance(bool on)
+bool ReceiverCANCapture::SetSSPDCBalanceEnable(bool on)
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1755,7 +1785,7 @@ bool ReceiverCANCapture::QueryAlgorithm()
 }
 
 
-bool ReceiverCANCapture::SspGetFrameRate()
+bool ReceiverCANCapture::QuerySSPFrameRate()
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1768,10 +1798,11 @@ bool ReceiverCANCapture::SspGetFrameRate()
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
 	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.SspFrameRatePendingUpdates = updateStatusPendingUpdate;
+	receiverStatus.storedSSPFrameRatePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
-bool ReceiverCANCapture::StatusSystem()
+
+bool ReceiverCANCapture::QuerySSPSystemEnable()
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1784,10 +1815,10 @@ bool ReceiverCANCapture::StatusSystem()
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
 	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.StatusSystemPendingUpdates = updateStatusPendingUpdate;
+	receiverStatus.storedSSPSystemEnablePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
-bool ReceiverCANCapture::StatusLaser()
+bool ReceiverCANCapture::QuerySSPLaserEnable()
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1800,10 +1831,10 @@ bool ReceiverCANCapture::StatusLaser()
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
 	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.StatusLaserPendingUpdates = updateStatusPendingUpdate;
+	receiverStatus.storedSSPLaserEnablePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
-bool ReceiverCANCapture::StatusAutoGain()
+bool ReceiverCANCapture::QuerySSPAutoGainEnable()
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1816,10 +1847,10 @@ bool ReceiverCANCapture::StatusAutoGain()
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
 	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.StatusAutoGainPendingUpdates = updateStatusPendingUpdate;
+	receiverStatus.storedSSPAutoGainEnablePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
-bool ReceiverCANCapture::StatusDCBalance()
+bool ReceiverCANCapture::QuerySSPDCBalanceEnable()
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1832,7 +1863,7 @@ bool ReceiverCANCapture::StatusDCBalance()
 	bool bMessageOk = false;
 	bMessageOk = WriteMessage(message);
 	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.StatusDCBalancePendingUpdates = updateStatusPendingUpdate;
+	receiverStatus.storedSSPDCBalanceEnablePendingUpdates = updateStatusPendingUpdate;
    	return(bMessageOk);
 }
 

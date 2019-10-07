@@ -203,16 +203,16 @@ public:
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
 
-	uint32_t SspFrameRate;
-	uint32_t SspFrameRatePendingUpdates;
-	uint32_t StatusSystem;
-	uint32_t StatusSystemPendingUpdates;
-	uint32_t StatusLaser;
-	uint32_t StatusLaserPendingUpdates;
-	uint32_t StatusAutoGain;
-	uint32_t StatusAutoGainPendingUpdates;
-	uint32_t StatusDCBalance;
-	uint32_t StatusDCBalancePendingUpdates;
+	uint32_t storedSSPFrameRate;
+	uint32_t storedSSPFrameRatePendingUpdates;
+	uint32_t storedSSPSystemEnable;
+	uint32_t storedSSPSystemEnablePendingUpdates;
+	uint32_t storedSSPLaserEnable;
+	uint32_t storedSSPLaserEnablePendingUpdates;
+	uint32_t storedSSPAutoGainEnable;
+	uint32_t storedSSPAutoGainEnablePendingUpdates;
+	uint32_t storedSSPDCBalanceEnable;
+	uint32_t storedSSPDCBalanceEnablePendingUpdates;
 
 
 	uint16_t currentTracker;
@@ -597,31 +597,31 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-        virtual bool SspSetFrameRate(int FrameRate ) = 0;
+        virtual bool SetSSPFrameRate(int FrameRate ) = 0;
 
         /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
         * \return true if success.  false on error.
         */
 
-	virtual bool EnableSystem(bool on) = 0;
+	virtual bool SetSSPSystemEnable(bool on) = 0;
 
 	/** \brief Issues the command to enable the sensor.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableLaser(bool on) = 0;
+	virtual bool SetSSPLaserEnable(bool on) = 0;
 
 	/** \brief Issues the command to enable the Laser.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableAutoGain(bool on) = 0;
+	virtual bool SetSSPAutoGainEnable(bool on) = 0;
 
 	/** \brief Issues the command to enable the Auto Gain.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableDCBalance(bool on) = 0;
+	virtual bool SetSSPDCBalanceEnable(bool on) = 0;
 
 	/** \brief Issues the command to enable the DC Balance.
 	* \return true if success.  false on error.
@@ -691,31 +691,31 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-        virtual bool SspGetFrameRate() = 0;
+        virtual bool QuerySSPFrameRate() = 0;
 
         /** \brief Issues the command to get the frame rate.
         * \return true if success.  false on error.
         */
 
-	virtual bool StatusSystem() = 0;
+	virtual bool QuerySSPSystemEnable() = 0;
 
 	/** \brief Issues the command know if the sensor is on.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusLaser() = 0;
+	virtual bool QuerySSPLaserEnable() = 0;
 
 	/** \brief Issues the command to know if the Laser is on.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusAutoGain() = 0;
+	virtual bool QuerySSPAutoGainEnable() = 0;
 
 	/** \brief Issues the command to know if the Auto Gain is on.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusDCBalance() = 0;
+	virtual bool QuerySSPDCBalanceEnable() = 0;
 
 	/** \brief Issues the command to know if the DC Balance is on.
 	* \return true if success.  false on error.

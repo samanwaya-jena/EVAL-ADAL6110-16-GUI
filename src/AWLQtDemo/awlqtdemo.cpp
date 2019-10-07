@@ -1007,7 +1007,7 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 
 void AWLQtDemo::on_pushButton_FR_clicked()
 {
-		receiverCaptures[0]->SspSetFrameRate(ui.spinBox_FR->value());
+		receiverCaptures[0]->SetSSPFrameRate(ui.spinBox_FR->value());
 		fprintf(stderr, "Frame rate: %d\n",ui.spinBox_FR->value());
 }
 
@@ -2465,32 +2465,38 @@ void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
 
 	if(ui.misc_checkBox_System->isChecked()) {
 		fprintf(stderr, "System enable message\n");
-		receiverCaptures[0]->EnableSystem(true);
+		receiverCaptures[0]->SetSSPSystemEnable(true);
 	} else {
 		fprintf(stderr, "System disable message\n");
-		receiverCaptures[0]->EnableSystem(false);
+		receiverCaptures[0]->SetSSPSystemEnable(false);
+
+		receiverCaptures[0]->QuerySSPSystemEnable();
 	}
+
+
 }
 
 void AWLQtDemo::on_checkBoxMiscLaserSelToggled()
 {
 	if(ui.misc_checkBox_Laser->isChecked()) {
 		fprintf(stderr, "Laser enable message\n");
-		receiverCaptures[0]->EnableLaser(true);
+		receiverCaptures[0]->SetSSPLaserEnable(true);
 	} else {
 		fprintf(stderr, "Laser disable message\n");
-		receiverCaptures[0]->EnableLaser(false);
+		receiverCaptures[0]->SetSSPLaserEnable(false);
 	}
+
+	receiverCaptures[0]->QuerySSPLaserEnable();
 }
 
 void AWLQtDemo::on_checkBoxMiscGainSelToggled()
 {
 	if(ui.misc_checkBox_Gain->isChecked()) {
 		fprintf(stderr, "Gain enable message\n");
-		receiverCaptures[0]->EnableAutoGain(true);
+		receiverCaptures[0]->SetSSPAutoGainEnable(true);
 	} else {
 		fprintf(stderr, "Gain disable message\n");
-		receiverCaptures[0]->EnableAutoGain(false);
+		receiverCaptures[0]->SetSSPAutoGainEnable(false);
 	}
 }
 
@@ -2820,6 +2826,9 @@ void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 {
 	if (!receiverCaptures[0]->registersADCLabel.empty())
 		ui.registerADCGroupBox->setTitle(receiverCaptures[0]->registersADCLabel.c_str());
+
+
+	ui.registerADCAddressSetComboBox->clear();
 
 	for (int i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
 	{

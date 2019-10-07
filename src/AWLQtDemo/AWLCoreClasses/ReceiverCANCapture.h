@@ -194,31 +194,31 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SspSetFrameRate(int FrameRate );
+	virtual bool SetSSPFrameRate(int FrameRate );
 
 	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableSystem(bool on);
+	virtual bool SetSSPSystemEnable(bool on);
 	
 	/** \brief Issues the command to enable the sensor.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableLaser(bool on);
+	virtual bool SetSSPLaserEnable(bool on);
 	
 	/** \brief Issues the command to enable the Laser.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableAutoGain(bool on);
+	virtual bool SetSSPAutoGainEnable(bool on);
 	
 	/** \brief Issues the command to enable the Auto Gain.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool EnableDCBalance(bool on);
+	virtual bool SetSSPDCBalanceEnable(bool on);
 	
 	/** \brief Issues the command to enable the DC Balance.
 	* \return true if success.  false on error.
@@ -295,31 +295,31 @@ public:
 	*/
 
 
-	virtual bool SspGetFrameRate();
+	virtual bool QuerySSPFrameRate();
 
 	/** \brief Issues the command to get the frame rate.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusSystem();
+	virtual bool QuerySSPSystemEnable();
 	
 	/** \brief Issues the command to enable the sensor.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusLaser();
+	virtual bool QuerySSPLaserEnable();
 	
 	/** \brief Issues the command to enable the Laser.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusAutoGain();
+	virtual bool QuerySSPAutoGainEnable();
 	
 	/** \brief Issues the command to enable the Auto Gain.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool StatusDCBalance();
+	virtual bool QuerySSPDCBalanceEnable();
 	
 	/** \brief Issues the command to enable the DC Balance.
 	* \return true if success.  false on error.
@@ -490,6 +490,7 @@ protected:
 	void ParseParameterDateTimeResponse(AWLCANMessage &inMsg);
 	void ParseParameterRecordResponse(AWLCANMessage &inMsg);
 	void ParseParameterPlaybackResponse(AWLCANMessage &inMsg);
+	void ParseParameterSensorSpecificResponse(AWLCANMessage& inMsg);
 
 	void ParseParameterAlgoSelectError(AWLCANMessage &inMsg);
 	void ParseParameterAlgoParameterError(AWLCANMessage &inMsg);
@@ -504,6 +505,7 @@ protected:
 	void ParseParameterDateTimeError(AWLCANMessage &inMsg);
 	void ParseParameterRecordError(AWLCANMessage &inMsg);
 	void ParseParameterPlaybackError(AWLCANMessage &inMsg);
+	void ParseParameterSensorSpecificError(AWLCANMessage& inMsg);
 
 	/** \brief Open the CAN port
 	  * \returns true if the port is successfully opened, false otherwise.

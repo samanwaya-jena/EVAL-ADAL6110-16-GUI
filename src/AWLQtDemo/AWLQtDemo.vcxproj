@@ -293,6 +293,22 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="APVideoCapture.h" />
+    <ClInclude Include="APVideoViewer.h" />
+    <ClInclude Include="AWLCoreClasses\ReceiverLibUSBCapture.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverPolledCapture.h" />
+    <ClInclude Include="AWLCoreClasses\ReceiverPosixTTYCapture.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverPosixUDPCapture.h" />
+    <ClInclude Include="AWLCoreClasses\ReceiverSocketCANCapture.h" />
+    <ClInclude Include="AWLCoreClasses\ReceiverTCPCapture.h" />
     <ClInclude Include="AWLSettings.h" />
     <CustomBuild Include="fov_2dscan.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

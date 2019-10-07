@@ -114,31 +114,31 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 	
-        virtual bool SspSetFrameRate(int FrameRate ) { return(true); };
+        virtual bool SetSSPFrameRate(int FrameRate ) { return(true); };
 
         /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
         * \return true if success.  false on error.
         */
 
-        virtual bool EnableSystem(bool on) { return(true); };
+        virtual bool SetSSPSystemEnable(bool on) { return(true); };
 
         /** \brief Issues the command to enable the sensor.
         * \return true if success.  false on error.
         */
 
-        virtual bool EnableLaser(bool on) { return(true); };
+        virtual bool SetSSPLaserEnable(bool on) { return(true); };
 
         /** \brief Issues the command to enable the Laser.
         * \return true if success.  false on error.
         */
 
-        virtual bool EnableAutoGain(bool on) { return(true); };
+        virtual bool SetSSPAutoGainEnable(bool on) { return(true); };
 
         /** \brief Issues the command to enable the Auto Gain.
         * \return true if success.  false on error.
         */
 
-        virtual bool EnableDCBalance(bool on) { return(true); };
+        virtual bool SetSSPDCBalanceEnable(bool on) { return(true); };
 
         /** \brief Issues the command to enable the DC Balance.
         * \return true if success.  false on error.
@@ -254,31 +254,31 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
 
-        virtual bool SspGetFrameRate() { return(true); };
+        virtual bool QuerySSPFrameRate() { return(true); };
 
         /** \brief Issues the command to get the frame rate.
         * \return true if success.  false on error.
         */
 
-        virtual bool StatusSystem() { return(true); };
+        virtual bool QuerySSPSystemEnable() { return(true); };
 
         /** \brief Issues the command to know if the sensor.
         * \return true if success.  false on error.
         */
 
-        virtual bool StatusLaser() { return(true); };
+        virtual bool QuerySSPLaserEnable() { return(true); };
 
         /** \brief Issues the command to know if the Laser is on.
         * \return true if success.  false on error.
         */
 
-        virtual bool StatusAutoGain() { return(true); };
+        virtual bool QuerySSPAutoGainEnable() { return(true); };
 
         /** \brief Issues the command to know if the Auto Gain is on.
         * \return true if success.  false on error.
         */
 
-        virtual bool StatusDCBalance() { return(true); };
+        virtual bool QuerySSPDCBalanceEnable() { return(true); };
 
         /** \brief Issues the command to know if the DC Balance is on.
         * \return true if success.  false on error.
