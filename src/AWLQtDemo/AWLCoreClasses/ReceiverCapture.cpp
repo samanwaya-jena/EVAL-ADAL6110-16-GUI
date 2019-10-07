@@ -529,11 +529,14 @@ bool ReceiverCapture::BeginDistanceLog()
 		OpenLogFile(logFile, GetLogFileName().c_str(), true);
 	}
 
-	LogFilePrintf(logFile, "Start distance log");
+	LogFilePrintf(logFile, ",Comment,Type, Track ID, Channel, ChannelID,Type Specific");
+	LogFilePrintf(logFile, ",,Start distance log");
 	// Title Line
-	LogFilePrintf(logFile, "Track Description:,Track,trackID,_,__,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
-	LogFilePrintf(logFile, "Distance Description:,Dist,_,__,Channel,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
-	
+	LogFilePrintf(logFile, ",Track Description:,Track,trackID,Channel,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
+	LogFilePrintf(logFile, ",Distance Description:,Dist,_,__,Channel,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
+	LogFilePrintf(logFile, ",Footer Description:,Footer,_,_,_,_,FooterData");
+	LogFilePrintf(logFile, ",Wave Description: ,Wave,_,_,Channel,ChannelID,point0,point1,point3,etc");
+
 	return(true);
 }
 
@@ -558,8 +561,9 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 		if (track->IsComplete()) 
 		{
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;intensity,speed;acceleration;probability;timeToCollision);
-			LogFilePrintf(logFile, " ,Track,%d, , , ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
+			LogFilePrintf(logFile, ", ,Track,%d,Channel,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 				track->trackID,
+				track->trackMainChannel,
 				targetHintDistance,
 				targetHintAngle,
 				track->distance,
@@ -591,7 +595,7 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
 		Detection::Ptr detection = *detectionIterator;
-		LogFilePrintf(logFile, " ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
+		LogFilePrintf(logFile, " , ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
 			detection->channelID, 
 			detection->detectionID,
 			targetHintDistance,
@@ -608,6 +612,7 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 		detectionIterator++;
 	}
 }
+
 
 // Configuration file related functions
 

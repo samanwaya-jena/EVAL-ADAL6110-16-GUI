@@ -17,6 +17,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "DebugPrintf.h"
+#include "AWLSettings.h"
+
 #include "ReceiverPolledCapture.h"
 
 
@@ -161,47 +164,20 @@ bool ReceiverPolledCapture::DoOneLoop()
 		bReadSuccess = ReadDataFromUSB((char*)dataFifo, payloadSize, dwCount);
 
 
-		if (m_pFile)
-		{
-			boost::mutex::scoped_lock rawLock(m_Mutex);
 
-			if (m_pFile) // Check again for m_pFile now that we have the mutex
+		if (AWLSettings::GetGlobalSettings()->bWriteLogFile)
 			{
-				int cycle, ch, i, j;
+				boost::mutex::scoped_lock rawLock(m_Mutex);
 
-				for (cycle = 0; cycle < dwCount; cycle++)
+				if (AWLSettings::GetGlobalSettings()->bWriteLogFile) // Check again for m_pFile now that we have the mutex
 				{
-					for (ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
+					for (int cycle = 0; cycle < dwCount; cycle++)
 					{
-						short* pData = &dataFifo[cycle].AcqFifo[ch * GUARDIAN_SAMPLING_LENGTH];
-						for (i = 0; i < GUARDIAN_SAMPLING_LENGTH; i++)
-						{
-							char str[128];
-							if (ch == (GUARDIAN_NUM_CHANNEL - 1) && i == (GUARDIAN_SAMPLING_LENGTH - 1))
-								//sprintf(str, "%d\n", *pData++);
-								sprintf(str, "%d,", *pData++);
-							else
-								sprintf(str, "%d,", *pData++);
-							fwrite(str, strlen(str), 1, m_pFile);
-						}
-					}
-					char footer[128];
-					short* pFooter = &dataFifo[cycle].footer[0];
-					for (i = 0; i < GORDON_FOOTER_SIZE; i++)
-					{
-						if (i == GORDON_FOOTER_SIZE - 1) {
-							sprintf(footer, "%d\n", *pFooter++);
-						}
-						else
-						{
-							sprintf(footer, "%d,", *pFooter++);
-						}
-						fwrite(footer, strlen(footer), 1, m_pFile);
+						LogWaveform(logFile, cycle);
 					}
 				}
-				fflush(m_pFile);
+
 			}
-		}
 
 		ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
 	}
@@ -385,6 +361,40 @@ void * ReceiverPolledCapture::GetHandle(void) {
 void ReceiverPolledCapture::SetHandle(void *h)
 {
 	swap_handle = h;
+}
+
+void ReceiverPolledCapture::LogWaveform(ofstream& logFile, int cycle)
+{
+	for (int ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
+	{
+		std::string theWaveString(", ,Wave,,Channel,");
+		theWaveString += std::to_string(ch) + ", ,";
+
+		short* pData = &dataFifo[cycle].AcqFifo[ch * GUARDIAN_SAMPLING_LENGTH];
+		for (int i = 0; i < GUARDIAN_SAMPLING_LENGTH; i++)
+		{
+			if (i == (GUARDIAN_SAMPLING_LENGTH - 1))
+				theWaveString += std::to_string(*pData++);
+			else
+				theWaveString += std::to_string(*pData++) + ",";
+
+		}
+		LogFilePrintf(logFile, theWaveString.c_str());
+	}
+
+	short* pFooter = &dataFifo[cycle].footer[0];
+	std::string theFooterString(", ,Footer,,,,,");
+	for (int i = 0; i < GORDON_FOOTER_SIZE; i++)
+	{
+		if (i == GORDON_FOOTER_SIZE - 1) {
+			theFooterString += std::to_string(*pFooter++);
+		}
+		else
+		{
+			theFooterString += std::to_string(*pFooter++) + ",";
+		}
+	}
+	LogFilePrintf(logFile, theFooterString.c_str());
 }
 
 

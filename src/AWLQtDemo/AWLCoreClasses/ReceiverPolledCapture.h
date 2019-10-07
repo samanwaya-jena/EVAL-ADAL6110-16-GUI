@@ -72,6 +72,7 @@ protected:
 	* \throws  Throws boost error on read of the property keys.
 	*/
   virtual bool ReadConfigFromPropTree(boost::property_tree::ptree& propTree);
+  void LogWaveform(ofstream& logFile, int cycle);
 
 
 // Protected variables
