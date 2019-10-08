@@ -76,59 +76,59 @@ ClassificationEntry classificationEntries[] =
 	{channel0Mask | channel1Mask | channel2Mask | channel3Mask | channel4Mask|channel5Mask|channel6Mask, 0, 300, 0, 100.00, eClassifyMiner},
 #endif
 	// Long range
-	{channel4Mask|channel5Mask|channel6Mask, 0.5, 2.5, 73.50, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 2.5, 3.5, 69.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 3.5, 4.5, 67.50, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 4.5, 5.5, 63.50, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 5.5, 6.5, 60.50, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 6.5, 7.5, 59.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 7.5, 8.5, 54.50, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 8.5, 9.5, 51.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 9.5, 10.5, 47.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 10.5, 11.5, 44.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 11.5, 12.5, 44.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 12.5, 13.5, 44.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 13.5, 14.5, 48.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 14.5, 15.5, 47.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 15.5, 16.5, 44.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 16.5, 17.5, 43.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 17.5, 18.5, 36.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 18.5, 19.5, 36.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 19.5, 20.5, 32.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 20.5, 21.5, 31.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 21.5, 22.5, 32.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 22.5, 23.5, 29.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 23.5, 24.5, 26.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 24.5, 25.5, 21.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 25.5, 26.5, 22.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 26.5, 27.5, 20.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 27.5, 28.5, 19.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 28.5, 29.5, 15.00, 80.00, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 29.5, 30.5, 11.00, 80.00, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 0.5f, 2.5f, 73.50f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 2.5f, 3.5f, 69.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 3.5f, 4.5f, 67.50f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 4.5f, 5.5f, 63.50f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 5.5f, 6.5f, 60.50f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 6.5f, 7.5f, 59.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 7.5f, 8.5f, 54.50f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 8.5f, 9.5f, 51.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 9.5f, 10.5f, 47.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 10.5f, 11.5f, 44.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 11.5f, 12.5f, 44.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 12.5f, 13.5f, 44.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 13.5f, 14.5f, 48.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 14.5f, 15.5f, 47.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 15.5f, 16.5f, 44.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 16.5f, 17.5f, 43.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 17.5f, 18.5f, 36.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 18.5f, 19.5f, 36.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 19.5f, 20.5f, 32.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 20.5f, 21.5f, 31.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 21.5f, 22.5f, 32.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 22.5f, 23.5f, 29.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 23.5f, 24.5f, 26.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 24.5f, 25.5f, 21.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 25.5f, 26.5f, 22.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 26.5f, 27.5f, 20.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 27.5f, 28.5f, 19.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 28.5f, 29.5f, 15.00f, 80.00f, eClassifyMiner},
+	{channel4Mask|channel5Mask|channel6Mask, 29.5f, 30.5f, 11.00f, 80.00f, eClassifyMiner},
 
 	// Side short-range
-	{channel0Mask|channel3Mask, 0.5, 2.5, 58.80, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 2.5, 3.5, 55.20, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 3.5, 4.5, 54.00, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 4.5, 5.5, 50.80, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 5.5, 6.5, 48.4, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 6.5, 7.5, 47.20, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 7.5, 8.5, 45.60, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 8.5, 9.5, 40.8, 80.00, eClassifyMiner},
-	{channel0Mask|channel3Mask, 9.5, 10.5, 36.80, 80.00, eClassifyMiner},
+	{channel0Mask|channel3Mask, 0.5f, 2.5f, 58.80f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 2.5f, 3.5f, 55.20f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 3.5f, 4.5f, 54.00f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 4.5f, 5.5f, 50.80f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 5.5f, 6.5f, 48.4f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 6.5f, 7.5f, 47.20f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 7.5f, 8.5f, 45.60f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 8.5f, 9.5f, 40.8f, 80.00f, eClassifyMiner},
+	{channel0Mask|channel3Mask, 9.5f, 10.5f, 36.80f, 80.00f, eClassifyMiner},
 
 	// Center short-range
-	{channel1Mask|channel2Mask, 0.5, 2.5, 58.80, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 2.5, 3.5, 55.20, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 3.5, 4.5, 54.50, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 4.5, 5.5, 52.80, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 5.5, 6.5, 50.4, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 6.5, 7.5, 49.20, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 7.5, 8.5, 47.6, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 8.5, 9.5, 42.8, 80.00, eClassifyMiner},
-	{channel1Mask|channel2Mask, 9.5, 10.5, 38.80, 80.00, eClassifyMiner},
+	{channel1Mask|channel2Mask, 0.5f, 2.5f, 58.80f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 2.5f, 3.5f, 55.20f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 3.5f, 4.5f, 54.50f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 4.5f, 5.5f, 52.80f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 5.5f, 6.5f, 50.4f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 6.5f, 7.5f, 49.20f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 7.5f, 8.5f, 47.6f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 8.5f, 9.5f, 42.8f, 80.00f, eClassifyMiner},
+	{channel1Mask|channel2Mask, 9.5f, 10.5f, 38.80f, 80.00f, eClassifyMiner},
 
-	{0, 0, 0, 0, 0, eClassifyUnknown}
+	{0, 0.0f, 0.0f, 0.0f, 0.0f, eClassifyUnknown}
 };
 
 ClassificationType classifyFromIntensity(int channel, float distance, float intensity)
@@ -138,11 +138,6 @@ ClassificationType classifyFromIntensity(int channel, float distance, float inte
 
 	for (ClassificationEntry *entry = &classificationEntries[0]; entry->channelMask != 0; entry++) 
 	{
-		if (distance >=8.0 && distance <= 9.0)
-		{
-			int test = 1;
-		}
-
 		if (entry->channelMask & channelMask) {
 			if (distance >= entry->minDistance && distance < entry->maxDistance) {
 				if (intensity >= entry->minIntensity && intensity < entry->maxIntensity)
@@ -196,8 +191,8 @@ const int logoLeftMargin = 55; // Do not place logo to muh to the left of the sc
 const int logoRightMargin = 10; // Do not place logo to muh to the left of the screen
 const int logoTopMargin = 10; // Do not place logo to muh to the left of the screen
 
-double zeroY = 0.0;
-double zeroX = 0.0;
+float zeroY = 0.0;
+float zeroX = 0.0;
 const int topInPixels = 50;
 const int rightInPixels = 200;
 
@@ -574,7 +569,7 @@ void FOV_2DScan::slotConfigChanged()
 		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
 		config.maxSensorsRange = max(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
 
-		config.spareDepth = min(config.spareDepth, -receiverPosition.position.forward);
+		config.spareDepth = min(config.spareDepth, -receiverPosition.position.bodyRelative.forward);
 		
 		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelQty; channelID++)
@@ -613,7 +608,7 @@ QSize FOV_2DScan::minimumSizeHint() const
 { 
 	float maxHeight = 300;
 
-	double totalDistance = config.maxSensorsRange+config.spareDepth;
+	float totalDistance = config.maxSensorsRange+config.spareDepth;
 	float hintRatio = (maxHeight-topInPixels) / totalDistance;
 
 	float angleInRad = DEG2RAD((config.maxAngularSpan/2)+180);
@@ -633,7 +628,7 @@ QSize FOV_2DScan::maximumSizeHint() const
 }
 
 
-void FOV_2DScan::resizeEvent(QResizeEvent * theEvent)
+void FOV_2DScan::resizeEvent(QResizeEvent * /*theEvent*/)
 {
 	calculateResize();
 }
@@ -642,7 +637,7 @@ void FOV_2DScan::calculateResize()
 {
 
 	// For default mode where we are eDisplayZommModeFront
-	double totalDistance = config.maxSensorsRange+config.spareDepth;
+	float totalDistance = config.maxSensorsRange+config.spareDepth;
 //printf("MaxRange: %f %d\n", config.maxSensorsRange, config.spareDepth);
 	if (config.maxSensorsRange+config.spareDepth < 0.000000000000000001) return;
 
@@ -701,7 +696,7 @@ void FOV_2DScan::calculateResize()
 	logoLabel->move(logoLeftMargin, height() - labelHeight);
 }
 
-void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
+void FOV_2DScan::paintEvent(QPaintEvent * /*paintEvent*/)
 {
 #ifdef USE_FPS_FOV_2DSCAN
   ++nFrames;
@@ -711,8 +706,6 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 #endif
 
     QPainter painter(this);
-	int maxWidth = width();
-	int maxHeight = height();
 
 	// Draw ruler
 
@@ -803,7 +796,7 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 			// All distances are relative to bumper, subtract the sensor depth  
 			// Angles are drawn from sensor position add the sensor depth
 			drawPie(&painter, startAngle, -channelConfig.fovWidth, channelConfig.maxRange,
-				-receiverPosition.position.left, -receiverPosition.position.forward);
+				-receiverPosition.position.bodyRelative.left, -receiverPosition.position.bodyRelative.forward);
 		}
 	}
 
@@ -919,9 +912,8 @@ void FOV_2DScan::paintEvent(QPaintEvent *paintEvent)
 #endif //USE_FPS_FOV_2DSCAN
 }
 
-void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool drawBoundingBox, bool drawTarget, bool drawLegend)
+void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& inData, bool drawBoundingBox, bool drawTarget, bool drawLegend)
 {
-	int index;
 	float sphericalDistanceMin = config.maxSensorsRange;
 	float sphericalDistanceMax = 0;
 	float sphericalDistanceAverage = 0;
@@ -941,7 +933,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 
 	QPolygon poly;
 
-	BOOST_FOREACH(const Detection::Ptr detection, data)
+	BOOST_FOREACH(const Detection::Ptr detection, inData)
 	{
 		if (detection->relativeToVehicleSpherical.rho > sphericalDistanceMax)
 			sphericalDistanceMax = detection->relativeToVehicleSpherical.rho;
@@ -949,17 +941,17 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 			sphericalDistanceMin = detection->relativeToVehicleSpherical.rho;
 		sphericalDistanceAverage += detection->relativeToVehicleSpherical.rho;
 
-		if (detection->relativeToVehicleCart.left > leftMax)
-			leftMax = detection->relativeToVehicleCart.left;
-		if (detection->relativeToVehicleCart.left < leftMin)
-			leftMin = detection->relativeToVehicleCart.left;
+		if (detection->relativeToVehicleCart.bodyRelative.left > leftMax)
+			leftMax = detection->relativeToVehicleCart.bodyRelative.left;
+		if (detection->relativeToVehicleCart.bodyRelative.left < leftMin)
+			leftMin = detection->relativeToVehicleCart.bodyRelative.left;
 
 
-		if (detection->relativeToVehicleCart.forward > forwardMax)
-			forwardMax = detection->relativeToVehicleCart.forward;
-		if (detection->relativeToVehicleCart.forward < forwardMin)
-			forwardMin = detection->relativeToVehicleCart.forward;
-		distanceForwardAverage += detection->relativeToVehicleCart.forward;
+		if (detection->relativeToVehicleCart.bodyRelative.forward > forwardMax)
+			forwardMax = detection->relativeToVehicleCart.bodyRelative.forward;
+		if (detection->relativeToVehicleCart.bodyRelative.forward < forwardMin)
+			forwardMin = detection->relativeToVehicleCart.bodyRelative.forward;
+		distanceForwardAverage += detection->relativeToVehicleCart.bodyRelative.forward;
 
 		if (detection->velocity < velocityMin) velocityMin = detection->velocity;
 
@@ -973,10 +965,10 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 		if (detection->threatLevel > threatLevelMax) threatLevelMax = detection->threatLevel;
 	} // BOOST_FOREACH (detection)
 
-	if (data.size()) 
+	if (inData.size()) 
 	{
-		sphericalDistanceAverage /= data.size(); 
-		distanceForwardAverage /= data.size();
+		sphericalDistanceAverage /= inData.size(); 
+		distanceForwardAverage /= inData.size();
 	}
 
 	QString velocityLabel = " m/s";
@@ -1035,7 +1027,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& data, bool
 			textToDisplay = "X:" + QString::number(-(leftMin+(leftMax-leftMin/2)), 'f', 1)+" Y:"+ QString::number(distanceDisplayed, 'f', 1)+ " V:"+ QString::number(velocityDisplayed, 'f', 1)+ velocityLabel;
 
 		// Draw the detection, but without the legend
-		const Detection::Ptr detection = data.at(0);
+		const Detection::Ptr detection = inData.at(0);
 		drawTextDetection(p, detection, textToDisplay, backColor, backPattern, lineColor, textColor, drawTarget, drawLegend);
 	}
 
@@ -1074,7 +1066,7 @@ void FOV_2DScan::drawAngularRuler(QPainter* p)
 {
 	p->setPen(QPen(rgbRulerText));
 
-	double pos = config.maxSensorsRange;
+	float pos = config.maxSensorsRange;
 
 	drawArc(p, -config.maxAngularSpan/2, config.maxAngularSpan, pos + (5.0/Ratio));
 	for (int i = config.maxAngularSpan; i >= 0; i-=5)
@@ -1097,7 +1089,7 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 	if (measureMode == eMeasureRadial)
 		distanceToDisplay = detection->relativeToVehicleSpherical.rho;
 	else
-		distanceToDisplay = detection->relativeToVehicleCart.forward;
+		distanceToDisplay = detection->relativeToVehicleCart.bodyRelative.forward;
 
 	if (AWLSettings::GetGlobalSettings()->velocityUnits == eVelocityUnitsMS)
 	{
@@ -1113,7 +1105,7 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 	if (measureMode != eMeasureCartesian)
 		textToDisplay = "Dist: " + QString::number(distanceToDisplay, 'f', 1)+" m | Vel: "+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
 	else
-		textToDisplay = "X:" + QString::number(-detection->relativeToVehicleCart.left, 'f', 1)+" Y:"+ QString::number(detection->relativeToVehicleCart.forward, 'f', 1)+ " V:"+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
+		textToDisplay = "X:" + QString::number(-detection->relativeToVehicleCart.bodyRelative.left, 'f', 1)+" Y:"+ QString::number(detection->relativeToVehicleCart.bodyRelative.forward, 'f', 1)+ " V:"+ QString::number(velocityToDisplay, 'f', 1)+ velocityLabel;
 
 	QColor backColor;
 	Qt::BrushStyle backPattern;
@@ -1151,19 +1143,15 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, detection->channelID);
 
 
-	// Window dimensions
-	int windowWidth = width();
-	int windowHeight = height();
-
 	// Linewith is between 2 and 5 pixels, depening on screen size
 	const int  lineWidth = min(max(0.15F * Ratio, 3.0F), 6.0F);
 
 
 	// Our detection Y axis is positive left, so we negate the lateral coordinate.
 	// Drawing coordinate system is reversed vertically , (0,0) is top left, so we negate Y position as well;
-	QPoint detectionPoint(-detection->relativeToVehicleCart.left * Ratio, -(detection->relativeToVehicleCart.forward) * Ratio);
+	QPoint detectionPoint(-detection->relativeToVehicleCart.bodyRelative.left * Ratio, -(detection->relativeToVehicleCart.bodyRelative.forward) * Ratio);
 	// Offset that position to fit within the widget coordinates
-	detectionPoint += QPoint(windowWidth / 2, zeroY);
+	detectionPoint += QPoint(width() / 2, zeroY);
 
 	// Set the basic drawing attributes for the next operations
 	QColor lineLineColor = lineColor;
@@ -1189,7 +1177,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 			legendRect.moveCenter(QPoint(legendRect.center().x(), lastRightTextHeight - legendRect.height()));
 		}
 
-		legendRect.moveCenter(QPoint(windowWidth - (legendRect.width() / 2) - 5, legendRect.bottom() - 6));
+		legendRect.moveCenter(QPoint(width() - (legendRect.width() / 2) - 5, legendRect.bottom() - 6));
 
 		// Next polygon draws a broken line between the target and the distance indicator
 		p->setPen(lineLineColor);
@@ -1208,7 +1196,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		// Draw the ellipse around the distance indication text
 		p->setPen(lineColor);
 		p->setBrush(QBrush(backColor));
-		p->drawEllipse(QPoint(windowWidth - (legendRect.width() / 2) - 5, legendRect.bottom() - legendRect.size().height() / 2), legendRect.size().width() / 2, legendRect.size().height() / 2);
+		p->drawEllipse(QPoint(width() - (legendRect.width() / 2) - 5, legendRect.bottom() - legendRect.size().height() / 2), legendRect.size().width() / 2, legendRect.size().height() / 2);
 
 
 		// Write the distance text
@@ -1225,11 +1213,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		QPen thePen(lineColor);
 		thePen.setBrush(QBrush(backColor, backPattern));
 
-		// Angle of the channel within the drawing
-		float channelTiltAngle = RAD2DEG(receiverPosition.orientation.yaw) + RAD2DEG(channelPosition.orientation.yaw);
-
-
-		// Dimensions of the arrow 
+	    // Dimensions of the arrow 
 		const int arrowWidth = 2 * lineWidth;
 		float arrowHeight = 0;
 		bool bDrawArrow = false;
@@ -1292,7 +1276,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 
 		float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
 		drawArc(p, startAngle, -channelConfig.fovWidth, detection->distance,
-			-receiverPosition.position.left, -receiverPosition.position.forward);
+			-receiverPosition.position.bodyRelative.left, -receiverPosition.position.bodyRelative.forward);
 	}
 }
 
@@ -1417,7 +1401,7 @@ void FOV_2DScan::getColorFromVelocity(float velocity, QColor &backColor, Qt::Bru
 	QImage myImage(10, maxAbsVelocity+2, QImage::Format_RGB32);
 
 	velocity = -velocity;
-	if (velocity < 0.0) velocity = 0.1;
+	if (velocity < 0.0) velocity =  0.1f;
 	if (velocity > maxAbsVelocity-1) velocity = maxAbsVelocity-1;
 
     myStopPoints.append(QGradientStop(0.0,Qt::blue));
@@ -1506,8 +1490,7 @@ void FOV_2DScan::getColorFromThreatLevel(AlertCondition::ThreatLevel threatLevel
 	}
 #endif
 	backStyle = Qt::SolidPattern;
-	int lightness = backColor.lightness();
-
+	
 	if (backColor.lightness() > transitionLightness) 
 	{
 		lineColor = backColor.darker(120);
@@ -1536,7 +1519,6 @@ void FOV_2DScan::getColorFromChannel(int receiverID, int channelID, QColor &back
 	}
 
 	backStyle = Qt::SolidPattern;
-	int lightness = backColor.lightness();
 
 	if (backColor.lightness() > transitionLightness) 
 	{
@@ -1622,9 +1604,9 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 
 { 
 	// Same X (forward)  position, sort from left to right
-	if (left->relativeToVehicleCart.forward == right->relativeToVehicleCart.forward)
+	if (left->relativeToVehicleCart.bodyRelative.forward == right->relativeToVehicleCart.bodyRelative.forward)
 	{
-		if (left->relativeToVehicleCart.left == right->relativeToVehicleCart.left)
+		if (left->relativeToVehicleCart.bodyRelative.left == right->relativeToVehicleCart.bodyRelative.left)
 		{
 			if (left->channelID < right->channelID)
 			{
@@ -1636,7 +1618,7 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 			}
 		}
 		// Remember vehicle Y is positive going left, So we reverse the < operator.
-		if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
+		if (left->relativeToVehicleCart.bodyRelative.left > right->relativeToVehicleCart.bodyRelative.left)
 		{
 				return(false);
 		}
@@ -1645,7 +1627,7 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 			return(true);
 		}
 	}
-	else if (left->relativeToVehicleCart.forward < right->relativeToVehicleCart.forward)
+	else if (left->relativeToVehicleCart.bodyRelative.forward < right->relativeToVehicleCart.bodyRelative.forward)
 	{
 		return(true);
 	}
@@ -1657,14 +1639,13 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 
 }
 
-void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
+void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& inData)
 {
     Detection::Vector::const_iterator i;
-    int index;
 
 	// Make a copy of the provided Detection::Vector to work with
     copyData.clear();
-	copyData = data;
+	copyData = inData;
 
 
 	//Ordering detection from bottom left to top right of 2D view. It's to simplify algo to draw detection in view.
@@ -1677,9 +1658,9 @@ void FOV_2DScan::slotDetectionDataChanged(const Detection::Vector& data)
 
 void FOV_2DScan::mergeDetection()
 {
-	int indexMerged;
-	int index;
-	int indexPoint;
+	size_t indexMerged;
+	size_t index;
+	size_t indexPoint;
 	bool found;
 
 	mergedData.clear();
@@ -1738,15 +1719,15 @@ bool FOV_2DScan::isInRange(const Detection::Ptr &detection1, const Detection::Pt
 	bool distInRange = false;
 	bool lateralInRange = false;
 
-	if ((detection1->relativeToVehicleCart.left < (detection2->relativeToVehicleCart.left + mergeAcceptanceX)) && 
-		(detection1->relativeToVehicleCart.left > (detection2->relativeToVehicleCart.left - mergeAcceptanceX)))
+	if ((detection1->relativeToVehicleCart.bodyRelative.left < (detection2->relativeToVehicleCart.bodyRelative.left + mergeAcceptanceX)) &&
+		(detection1->relativeToVehicleCart.bodyRelative.left > (detection2->relativeToVehicleCart.bodyRelative.left - mergeAcceptanceX)))
 	{
 			lateralInRange = true;
 	}
 
 
-	if ((detection1->relativeToVehicleCart.forward < (detection2->relativeToVehicleCart.forward + mergeAcceptanceY)) && 
-		(detection1->relativeToVehicleCart.forward > (detection2->relativeToVehicleCart.forward - mergeAcceptanceY)))
+	if ((detection1->relativeToVehicleCart.bodyRelative.forward < (detection2->relativeToVehicleCart.bodyRelative.forward + mergeAcceptanceY)) &&
+		(detection1->relativeToVehicleCart.bodyRelative.forward > (detection2->relativeToVehicleCart.bodyRelative.forward - mergeAcceptanceY)))
 	{
 		distInRange = true;
 	}
@@ -1754,7 +1735,7 @@ bool FOV_2DScan::isInRange(const Detection::Ptr &detection1, const Detection::Pt
 	return (lateralInRange && distInRange);
 }
 
-void FOV_2DScan::closeEvent(QCloseEvent * event)
+void FOV_2DScan::closeEvent(QCloseEvent * /*event*/)
 {
 	emit closed();
 }

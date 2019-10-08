@@ -88,12 +88,12 @@ Track::Ptr AcquisitionSequence::MakeUniqueTrack(SensorFrame::Ptr currentFrame, T
 	return(track);
 }
 
-bool AcquisitionSequence::FindSensorFrame(FrameID frameID, SensorFrame::Ptr &outSensorFrame)
+bool AcquisitionSequence::FindSensorFrame(FrameID inFrameID, SensorFrame::Ptr &outSensorFrame)
 {
 	for (uint16_t i = 0; i < sensorFrames.size(); i++) 
 	{
 		SensorFrame::Ptr sensorFrame = sensorFrames.at(i);
-		if (sensorFrame->GetFrameID() == frameID) 
+		if (sensorFrame->GetFrameID() == inFrameID) 
 		{
 			outSensorFrame = sensorFrame;
 			return(true);
@@ -147,14 +147,14 @@ bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChanne
 	return(false);
 }
 
-AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int receiverID, int channelID)
+AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int inReceiverID, int channelID)
 
 {
 	AScan::Ptr aScan;
-	bool bExists = FindAScan(aScanVector, receiverID, channelID, aScan);
+	bool bExists = FindAScan(aScanVector, inReceiverID, channelID, aScan);
 	if (!bExists) 
 	{
-		aScan = AScan::Ptr(new AScan(receiverID, channelID));
+		aScan = AScan::Ptr(new AScan(inReceiverID, channelID));
 		aScanVector.push_back(aScan);
 	}
 
@@ -167,7 +167,7 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 	int16_t *i16;
 	uint32_t *u32;
 	int32_t *i32;
-	int i;
+	
 
 	u16 = (uint16_t*)samples;
 	i16 = (int16_t*)samples;
@@ -183,6 +183,7 @@ void AScan::FindMinMaxMean(float *min, float *max, float *mean)
 		*max = 0;
 	}
 
+	size_t i = 0;
 	for (i = (int)sampleOffset; i < sampleCount ; i ++) {
 		switch (sampleSize) {
 		default:
@@ -314,7 +315,7 @@ relativeToWorldSpherical()
 }
 
 
-Track::Track(int inTrackID):
+Track::Track(TrackID inTrackID):
 distance(0.0f),
 velocity(NAN),
 acceleration(NAN),

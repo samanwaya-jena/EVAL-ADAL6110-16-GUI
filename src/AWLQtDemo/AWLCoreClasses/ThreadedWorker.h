@@ -83,14 +83,13 @@ protected:
 	volatile bool mWorkerRunning;
 
 	/** \brief Stop the lidar data projection thread
-	 *         The Stop() method should call StopThread(false)
-	 *         All calls to stop from within the thread should call
-	 *		   StopThread(true).
+	 *         The Stop() method should call StopThread()
+	 
 	 *         In some threads, the internal Stopping management may be different
 	 *		   depending on the calling thread.
 	 *		   (That is the case with some OpenCV objects).
      */
-	virtual void  StopThread(bool bCalledFromThread = false); 
+	virtual void  StopThread(); 
 	}; // ThreadedWorker
 
 } // namespace awl

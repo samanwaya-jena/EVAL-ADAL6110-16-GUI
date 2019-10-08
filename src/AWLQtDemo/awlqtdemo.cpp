@@ -185,7 +185,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Create the receiver communication objects
 	size_t receiverQty = globalSettings->receiverSettings.size();
 	receiverCaptures.resize(receiverQty);
-	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
 
@@ -255,7 +255,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	int videoCaptureQty = 0;
 	int opencvCameraID =  0;
+#if defined (USE_AP_VIDEO)
 	int apCameraID = 0;
+#endif
 #if defined (USE_OPENCV_VIDEO) || defined (USE_AP_VIDEO)
 	// Create the video capture objects
 	videoCaptureQty = globalSettings->cameraSettings.size();
@@ -288,9 +290,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 #endif
 
 	// Fill the parameters  tables from the settings
-	FillFPGAList(globalSettings);
-	FillADCList(globalSettings);
-	FillGPIOList(globalSettings);
+	FillFPGAList();
+	FillADCList();
+	FillGPIOList();
 
 	// Prepare the parameters view
 	PrepareAlgoParametersView();
@@ -302,9 +304,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.channelMaskGroupBox->setVisible(false);
 
 	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
-	ui.sensorHeightSpinBox->setValue(sensorPosition.position.up);
-	ui.sensorDepthSpinBox->setValue(sensorPosition.position.forward);
-	double measurementOffset;
+	ui.sensorHeightSpinBox->setValue(sensorPosition.position.bodyRelative.up);
+	ui.sensorDepthSpinBox->setValue(sensorPosition.position.bodyRelative.forward);
+	float measurementOffset;
 	receiverCaptures[0]->GetMeasurementOffset(measurementOffset);
 	ui.measurementOffsetSpinBox->setValue(measurementOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
@@ -317,8 +319,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
 
 	// Default values, currently unused
-	ChannelMask channelMask;
-
 	if (receiverCaptures[0]) 
 	{
 		ui.recordChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
@@ -364,7 +364,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Fill in the algo select combo box
 	ui.algoSelectComboBox->clear();
 	size_t algoQty = receiverCaptures[0]->parametersAlgos.algorithms.size();
-	for (int i = 1; i < algoQty; i++)
+	for (size_t i = 1; i < algoQty; i++)
 	{
 		QString algoLabel = QString(receiverCaptures[0]->parametersAlgos.algorithms[i].sAlgoName.c_str());
 		uint16_t algoID = receiverCaptures[0]->parametersAlgos.algorithms[i].algoID;
@@ -377,7 +377,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Fill in the tracker select combo box
 	ui.trackerSelectComboBox->clear();
 	size_t trackerQty = receiverCaptures[0]->parametersTrackers.algorithms.size();
-	for (int i = 0; i < trackerQty; i++)
+	for (size_t i = 0; i < trackerQty; i++)
 	{
 		QString trackerLabel = QString(receiverCaptures[0]->parametersTrackers.algorithms[i].sAlgoName.c_str());
 		uint16_t trackerID = receiverCaptures[0]->parametersTrackers.algorithms[i].algoID;
@@ -450,7 +450,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   ui.groupBox_5->hide();
   if (receiverCaptures.size() > 1) {
 	bool show = true;
-	for (int i = 0; i < receiverCaptures.size(); i++) {
+	for (size_t i = 0; i < receiverCaptures.size(); i++) {
 		if (globalSettings->receiverSettings[i].sReceiverType != std::string( "LibUSB")) show = false;
 	}
 	if (show) {
@@ -559,8 +559,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	QRect scr = QApplication::desktop()->availableGeometry(QApplication::desktop()->primaryScreen());
 	QRect frame = frameGeometry();
 	QRect client = geometry();
-	int verticalDecorationsHeight = frame.height() - client.height();
-	int horizontalDecorationsWidth = frame.width() - client.width();
 	move(scr.right() - (frame.width()+1),  scr.bottom()-(frame.height()+33)); 
 
 	if (globalSettings->sDisplayShowSize == std::string("FullScreen"))
@@ -579,14 +577,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 #if 1
 	// Start the threads for background  receiver capture objects
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		receiverCaptures[receiverID]->Go();
 	}
 
 #if defined (USE_OPENCV_VIDEO)
 	// Start the threads for background video capture objects
-	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
+	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
 		videoCaptures[cameraID]->Go();
 	}
@@ -632,7 +630,7 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 	// to reflect the maximum of all its channel ranges.
 	size_t receiverQty = globalSettings->receiverSettings.size();
 	//long absoluteMaxRange = 0.0;
-	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		long absoluteMaxRangeForReceiver = 0.0;
 		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
@@ -735,7 +733,7 @@ void AWLQtDemo::SetupDisplayGrid()
 #endif
 #if defined (USE_AP_VIDEO)
         videoViewerQty = apVideoCaptures.size();
-	for (int videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
+	for (size_t videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
 	{
 		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID + videoCaptures.size(), 2, Qt::AlignTop);
 	}
@@ -745,19 +743,19 @@ void AWLQtDemo::SetupDisplayGrid()
 void AWLQtDemo::on_destroy()
 {
 #if defined (USE_OPENCV_VIDEO)
-	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
 	}
 #endif
 #if defined (USE_AP_VIDEO)
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++) 
+	for (size_t cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++) 
 	{
 		if (apVideoCaptures[cameraID]) apVideoCaptures[cameraID]->Stop();
 	}
 #endif
 
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
@@ -825,7 +823,7 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 
 void AWLQtDemo::on_pushButtonSwap_clicked()
 {	
-	int r1, r2;
+	size_t r1, r2;
 	void *h1, *h2;
 	size_t cnt = receiverCaptures.size();
 	r1 = ui.spinBoxReceiver1->value();
@@ -868,10 +866,10 @@ void AWLQtDemo::on_stopPushButton_clicked()
 
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
-	double height = ui.sensorHeightSpinBox->value();
+	float height = (float) ui.sensorHeightSpinBox->value();
 	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
-	if (abs(height-sensorPosition.position.up) < 0.001) return;
-	sensorPosition.position.up = height;
+	if (abs(height-sensorPosition.position.bodyRelative.up) < 0.001) return;
+	sensorPosition.position.bodyRelative.up = height;
 
 	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
 
@@ -892,11 +890,11 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
-	double forward = ui.sensorDepthSpinBox->value();
+	float forward = (float) ui.sensorDepthSpinBox->value();
 	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
-	if (abs(forward - sensorPosition.position.forward) < 0.001) return;
+	if (abs(forward - sensorPosition.position.bodyRelative.forward) < 0.001) return;
 
-	sensorPosition.position.forward = forward;
+	sensorPosition.position.bodyRelative.forward = forward;
 	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
 
 
@@ -922,7 +920,7 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	QApplication::processEvents();
 
 	// Update the settings
-	double range = ui.sensorRangeMinSpinBox->value();
+	float range = ui.sensorRangeMinSpinBox->value();
 	AWLSettings::GetGlobalSettings()->receiverSettings[0].displayedRangeMin = range;
 
 	// Calculate the absolute max distance from the settings
@@ -938,7 +936,7 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	setCursor(Qt::ArrowCursor);
 }
 
-void AWLQtDemo::ChangeRangeMax(int channelID, double range)
+void AWLQtDemo::ChangeRangeMax(int channelID, float range)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Wait Cursor
@@ -950,7 +948,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
         size_t receiverQty = globalSettings->receiverSettings.size();
 
-        for (int receiverID = 0; receiverID < receiverQty; receiverID++)
+        for (size_t receiverID = 0; receiverID < receiverQty; receiverID++)
         {
 
 
@@ -973,11 +971,11 @@ void AWLQtDemo::ChangeRangeMax(int channelID, double range)
 
 void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 {
-	double range = ui.sensorRangeMaxSpinBox->value();
+	float range = (float) ui.sensorRangeMaxSpinBox->value();
 
 	// Calculate the absolute max distance from the settings
 	size_t channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	for (size_t channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
 		QListWidgetItem *listItem = ui.channelSelectListWidget->item(channelIndex);
 		Qt::CheckState checkState = listItem->checkState();
@@ -991,7 +989,7 @@ void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 
 void AWLQtDemo::on_measurementOffsetSpin_editingFinished()
 {
-	double offset = ui.measurementOffsetSpinBox->value();
+	float offset = (float) ui.measurementOffsetSpinBox->value();
 
 	if (receiverCaptures[0]) 
 	{
@@ -1015,7 +1013,7 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 
 {
 	uint8_t frameQty = ui.calibrationFrameQtySpinBox->value();
-	float   beta = ui.calibrationBetaDoubleSpinBox->value();
+	float   beta = (float) ui.calibrationBetaDoubleSpinBox->value();
 	ChannelMask channelMask;
 
 	channelMask.bitFieldData.channel0 = ui.calibrationChannel1CheckBox->isChecked();
@@ -1038,14 +1036,14 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 
 void AWLQtDemo::on_targetHintDistanceSpin_editingFinished()
 {
-	double distance = ui.targetHintDistanceSpinBox->value();
+	float distance = (float) ui.targetHintDistanceSpinBox->value();
 
 	receiverCaptures[0]->targetHintDistance = distance;
 }
 
 void AWLQtDemo::on_targetHintAngleSpin_editingFinished()
 {
-	double angle = ui.targetHintAngleSpinBox->value();
+	float angle = (float) ui.targetHintAngleSpinBox->value();
 
 	receiverCaptures[0]->targetHintAngle = angle;
 }
@@ -1098,7 +1096,7 @@ void AWLQtDemo::on_timerTimeout()
 
 #if defined (USE_OPENCV_VIDEO)
 	// Check that the cameras are still working.  Otherwise Stop everyting
-	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
+	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
 	{
 		if (videoCaptures[cameraID]->WasStopped())
 		{
@@ -1125,7 +1123,7 @@ void AWLQtDemo::on_timerTimeout()
 
 	if (bContinue)
 	{
-		for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+		for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 		{
 			if (!receiverCaptures[receiverID])
 			{
@@ -1156,14 +1154,14 @@ void AWLQtDemo::on_timerTimeout()
 
 #if defined (USE_OPENCV_VIDEO)
 		// Update the data for the camera views. Only if detections have changed have changed.
-		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID] && bNewDetections) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
 		}
 #endif
 #if defined (USE_AP_VIDEO)
 		// Update the data for the camera views. Only if detections have changed have changed.
-		for (int viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
 		{
 			if (apVideoViewers[viewerID] && bNewDetections) apVideoViewers[viewerID]->slotDetectionDataChanged(detectionData);
 		}
@@ -1178,7 +1176,7 @@ void AWLQtDemo::on_timerTimeout()
 			AScan::Vector aScanData;
 			aScanData.clear();
 
-			bool bNewAScans = GetLatestAScans(aScanData);
+			GetLatestAScans(aScanData);
 			mAScanView->AScanDataChanged(aScanData);
 		}
 	}
@@ -1196,8 +1194,8 @@ void AWLQtDemo::on_timerTimeout()
 			if (!bWasConnected)
 			{
 				// Reupdate the lists
-				FillFPGAList(AWLSettings::GetGlobalSettings());
-				FillADCList(AWLSettings::GetGlobalSettings());
+				FillFPGAList();
+				FillADCList();
 				DisplayReceiverStatus();
 			}
 		}
@@ -1220,14 +1218,14 @@ void AWLQtDemo::on_timerTimeout()
 	{
 #if defined (USE_OPENCV_VIDEO)
 		// Always spin the video viewers.
-		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) videoViewers[viewerID]->slotImageChanged();
 		}
 #endif
 #if defined (USE_AP_VIDEO)
 		// Always spin the video viewers.
-		for (int viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
 		{
 			if (apVideoViewers[viewerID]) apVideoViewers[viewerID]->slotImageChanged();
 		}
@@ -1247,17 +1245,14 @@ void AWLQtDemo::on_timerTimeout()
 
 bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 {
-	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 	bool bNew = false;
 
 	ReceiverPostProcessor postProcessor;
 
 	// Build the list of detections that need to be updated
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
-		ReceiverSettings &receiverSettings = settings->receiverSettings[receiverID];
-
 
 		// Use the frame snapped by the main display timer as the current frame
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
@@ -1289,7 +1284,7 @@ bool AWLQtDemo::GetLatestDetections(Detection::Vector &detectionData)
 bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 {
 	bool bNew = false;
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		// Use the frame snapped by the main display timer as the current frame
@@ -1311,7 +1306,7 @@ void AWLQtDemo::DisplayReceiverStatus()
 {
 
 	size_t receiverQty = receiverCaptures.size();
-	 for (int receiverID = 0; receiverID < receiverQty; receiverID++) 
+	 for (size_t receiverID = 0; receiverID < receiverQty; receiverID++) 
 	 {
 		DisplayReceiverStatus(receiverID);
 	 }
@@ -1330,7 +1325,7 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		bEnableButtons = true;
 
 		ReceiverStatus status;
-		receiverCaptures[receiverID]->CopyReceiverStatusData(status, receiverCaptureSubscriberIDs[receiverID]);
+		receiverCaptures[receiverID]->CopyReceiverStatusData(status);
 		
 		QString formattedString;
 		formattedString.sprintf("%d.%d", status.version.major, status.version.minor);
@@ -1487,7 +1482,7 @@ void AWLQtDemo::on_algoSelectComboBox_indexChanged(int newIndex)
 	if (newIndex < 0) return;
 
 	size_t receiverCount = receiverCaptures.size();
-	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
 		uint16_t algoID = ui.algoSelectComboBox->itemData(newIndex).value<int>();
 		receiverCaptures[receiverID]->SetAlgorithm(algoID);
@@ -1538,7 +1533,7 @@ void AWLQtDemo::PrepareAlgoParametersView()
 	ui.algoParametersTable->setColumnWidth(eParameterConfirmColumn, 60);
 		
 	// Put the contents in the table
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
 		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
@@ -1607,7 +1602,7 @@ void AWLQtDemo::UpdateAlgoParametersView()
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	
 	size_t rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
@@ -1686,7 +1681,7 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	size_t rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
@@ -1715,14 +1710,14 @@ void AWLQtDemo::on_algoParametersSetPushButton_clicked()
 			if (algoParameters[row].paramType == eAlgoParamInt)
 			{
 				int intValue = 0;
-				sscanf(sValueText.toStdString().c_str(), "%d", &intValue);
+				intValue = sValueText.toInt(NULL);
 				// Send to the parameter value as uint32_t
 				parameterValue = (uint32_t) intValue;
 			}
 			else
 			{
 				float floatValue = 0;
-				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
+				floatValue = sValueText.toFloat(NULL);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
@@ -1747,13 +1742,12 @@ void AWLQtDemo::on_algoParametersGetPushButton_clicked()
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
 	size_t rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
 		// If the checkbox is checked, then we will set that parameter.
 		QTableWidgetItem *checkItem = ui.algoParametersTable->item(row, eParameterCheckColumn);
-		QTableWidgetItem *valueItem = ui.algoParametersTable->item(row, eParameterValueColumn);
 		QTableWidgetItem *confirmItem = ui.algoParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
@@ -1814,7 +1808,7 @@ void AWLQtDemo::PrepareGlobalParametersView()
 	ui.globalParametersTable->setColumnWidth(eParameterConfirmColumn, 60);
 		
 	// Put the contents in the table
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
 		QTableWidgetItem *newItem = new QTableWidgetItem(algoParameters[row].sIndex.c_str());
@@ -1873,7 +1867,7 @@ void AWLQtDemo::UpdateGlobalParametersView()
 
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 	size_t rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++)
+	for (size_t row = 0; row < rowCount; row++)
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
@@ -1952,7 +1946,7 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
 	size_t rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
@@ -1981,14 +1975,15 @@ void AWLQtDemo::on_globalParametersSetPushButton_clicked()
 			if (algoParameters[row].paramType == eAlgoParamInt)
 			{
 				int intValue = 0;
-				sscanf(sValueText.toStdString().c_str(), "%d", &intValue);
+				intValue = sValueText.toInt(NULL);
+
 				// Send to the parameter value as uint32_t
 				parameterValue = (uint32_t) intValue;
 			}
 			else
 			{
 				float floatValue = 0;
-				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
+				floatValue = sValueText.toFloat(NULL);
 				parameterValue = * (uint32_t *) &floatValue;
 			}
 
@@ -2012,13 +2007,12 @@ void AWLQtDemo::on_globalParametersGetPushButton_clicked()
 	AlgorithmParameterVector algoParameters = algoDescription->parameters;
 
 	size_t rowCount = algoParameters.size();
-	for (int row = 0; row < rowCount; row++) 
+	for (size_t row = 0; row < rowCount; row++) 
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
 		// If the checkbox is checked, then we will set that parameter.
 		QTableWidgetItem *checkItem = ui.globalParametersTable->item(row, eParameterCheckColumn);
-		QTableWidgetItem *valueItem = ui.globalParametersTable->item(row, eParameterValueColumn);
 		QTableWidgetItem *confirmItem = ui.globalParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
@@ -2093,7 +2087,7 @@ void AWLQtDemo::PrepareTrackerParametersView()
 	ui.trackerParametersTable->setColumnWidth(eParameterConfirmColumn, 60);
 
 	// Put the contents in the table
-	for (int row = 0; row < rowCount; row++)
+	for (size_t row = 0; row < rowCount; row++)
 	{
 		// Column 0 is "Select" row:  Editable checkbox.
 		QTableWidgetItem *newItem = new QTableWidgetItem(trackerParameters[row].sIndex.c_str());
@@ -2161,7 +2155,7 @@ void AWLQtDemo::UpdateTrackerParametersView()
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
 	size_t rowCount = trackerParameters.size();
-	for (int row = 0; row < rowCount; row++)
+	for (size_t row = 0; row < rowCount; row++)
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
@@ -2241,7 +2235,7 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
 	size_t rowCount = trackerParameters.size();
-	for (int row = 0; row < rowCount; row++)
+	for (size_t row = 0; row < rowCount; row++)
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
@@ -2270,14 +2264,14 @@ void AWLQtDemo::on_trackerParametersSetPushButton_clicked()
 			if (trackerParameters[row].paramType == eAlgoParamInt)
 			{
 				int intValue = 0;
-				sscanf(sValueText.toStdString().c_str(), "%d", &intValue);
+				intValue = sValueText.toInt(NULL);
 				// Send to the parameter value as uint32_t
 				parameterValue = (uint32_t)intValue;
 			}
 			else
 			{
 				float floatValue = 0;
-				sscanf(sValueText.toStdString().c_str(), "%f", &floatValue);
+				floatValue = sValueText.toFloat(NULL);
 				parameterValue = *(uint32_t *)&floatValue;
 			}
 
@@ -2302,13 +2296,12 @@ void AWLQtDemo::on_trackerParametersGetPushButton_clicked()
 	AlgorithmParameterVector trackerParameters = trackerDescription->parameters;
 
 	size_t rowCount = trackerParameters.size();
-	for (int row = 0; row < rowCount; row++)
+	for (size_t row = 0; row < rowCount; row++)
 	{
 
 		// Column 0 is "Select" row:  Editable checkbox.
 		// If the checkbox is checked, then we will set that parameter.
 		QTableWidgetItem *checkItem = ui.trackerParametersTable->item(row, eParameterCheckColumn);
-		QTableWidgetItem *valueItem = ui.trackerParametersTable->item(row, eParameterValueColumn);
 		QTableWidgetItem *confirmItem = ui.trackerParametersTable->item(row, eParameterConfirmColumn);
 
 		Qt::CheckState originalCheckState = checkItem->checkState();
@@ -2384,7 +2377,7 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-	msgBox.setText("QtDemo 1.4.1<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+	msgBox.setText("QtDemo 1.4.2<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
 	msgBox.exec();
 }
 
@@ -2412,7 +2405,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 	if (actionCameraButton->isChecked())
 	{
 #ifdef USE_OPENCV_VIDEO
-		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) {
 				videoViewers[viewerID]->show();
@@ -2420,7 +2413,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 		}
 #endif
 #ifdef USE_AP_VIDEO
-		for (int viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
 		{
 			if (apVideoViewers[viewerID]) {
 				apVideoViewers[viewerID]->show();
@@ -2432,7 +2425,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 	else
 	{
 #ifdef USE_OPENCV_VIDEO
-		for (int viewerID = 0; viewerID < videoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) 
 			{
@@ -2441,7 +2434,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 		}
 #endif
 #ifdef USE_AP_VIDEO
-		for (int viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
+		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
 		{
 			if (apVideoViewers[viewerID]) 
 			{
@@ -2456,8 +2449,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 
 void AWLQtDemo::on_checkBoxAdvanceModeToggled()
 {
-  AWLSettings *settings = AWLSettings::GetGlobalSettings();
-  FillFPGAList(settings);
+  FillFPGAList();
 }
 
 void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
@@ -2660,7 +2652,7 @@ void AWLQtDemo::on_viewAScanClose()
 }
 
 
-void AWLQtDemo::FillFPGAList(AWLSettings* settingsPtr)
+void AWLQtDemo::FillFPGAList()
 {
 	bool bAdvancedModeChecked = ui.checkBoxAdvanceMode->isChecked();
 
@@ -2669,7 +2661,7 @@ void AWLQtDemo::FillFPGAList(AWLSettings* settingsPtr)
 
 	ui.registerFPGAAddressSetComboBox->clear();
 
-	for (int i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++)
+	for (size_t i = 0; i < receiverCaptures[0]->registersFPGA.size(); i++)
 	{
 		if (!bAdvancedModeChecked && receiverCaptures[0]->registersFPGA[i].bAdvanced)
 			; // Skip advanced register
@@ -2701,7 +2693,7 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	QString sValue;
 	uint32_t registerValue;
 
-	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
+	size_t comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
 	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
@@ -2736,7 +2728,7 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 	uint16_t registerAddress;
 
 
-	int comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
+	size_t comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
 	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
@@ -2822,7 +2814,7 @@ void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
   }
 }
 
-void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
+void AWLQtDemo::FillADCList()
 {
 	if (!receiverCaptures[0]->registersADCLabel.empty())
 		ui.registerADCGroupBox->setTitle(receiverCaptures[0]->registersADCLabel.c_str());
@@ -2830,7 +2822,7 @@ void AWLQtDemo::FillADCList(AWLSettings *settingsPtr)
 
 	ui.registerADCAddressSetComboBox->clear();
 
-	for (int i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
 	{
 		QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
 		sLabel += ": ";
@@ -2857,7 +2849,7 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	QString sValue;
 	uint32_t registerValue;
 
-	int comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
+	size_t comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
 	if (comboIndex >= receiverCaptures[0]->registersADC.size()) return;
@@ -2891,7 +2883,7 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 	uint16_t registerAddress;
 
 
-	int comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
+	size_t comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
 	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
@@ -2909,9 +2901,9 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 }
 
 
-void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
+void AWLQtDemo::FillGPIOList()
 {
-	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
 		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
 		sLabel += ": ";
@@ -2932,7 +2924,7 @@ void AWLQtDemo::FillGPIOList(AWLSettings *settingsPtr)
 
 void AWLQtDemo::UpdateGPIOList()
 {
-	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
 
@@ -2961,7 +2953,7 @@ void AWLQtDemo::UpdateGPIOList()
 void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 {
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
 		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
 		uint32_t registerValue = 0;
@@ -2996,7 +2988,7 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 {
 	// Update all of the MIOs at the same time
-	for (int i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
 	{
 		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
 
@@ -3021,10 +3013,10 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 	}
 }
 
-void AWLQtDemo::closeEvent(QCloseEvent * event)
+void AWLQtDemo::closeEvent(QCloseEvent * /*event*/)
 {
 #if defined (USE_OPENCV_VIDEO)
-	for (int cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
+	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
 	}
@@ -3037,7 +3029,7 @@ void AWLQtDemo::closeEvent(QCloseEvent * event)
 #endif
 
 
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}

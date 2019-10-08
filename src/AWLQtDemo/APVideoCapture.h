@@ -70,13 +70,13 @@ public:
 	/** \brief Return the camera ID.
       * \return cameraID (also is the index of the camera in our structures).
       */
-	double GetCameraID() {return(cameraID);};
+	int GetCameraID() {return(cameraID);};
 
 
 	/** \brief Return the video frame rate.
       * \return video acquisition frame rate in FPS.
       */
-	double GetFrameRate() {return(frameRate);};
+	float GetFrameRate() {return(frameRate);};
 
 	/** \brief Copy the current frame to the targetFrame.  The current frame is thread-locked during transfer
       * \param[out] targetFrame pointer to the target frame that will get copied to.
@@ -132,7 +132,7 @@ protected:
 	volatile bool mStopRequested;
 
 	/** \brief Current video stram frame rate in FPS.  For still video, it defaults to 33FPS. */
-	double frameRate;
+	float frameRate;
 
 	/** \brief Set cameraFlip to true for 180 degree rotation of the camera image. */
 	bool bCameraFlip;

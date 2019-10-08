@@ -49,6 +49,13 @@ class Track;
 class SensorFrame;
 class ChannelFrame;
 
+
+/** \brief TimeStamp is the standard format for storing time elapsed
+* \author Jean-Yves Deschênes
+*/
+
+typedef double Timestamp;
+
 /** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
 *        and communications
 * \author Jean-Yves Deschênes
@@ -197,10 +204,10 @@ public:
 	float probability;
 
 	/** \brief Timestamp, in frames */
-	float timeStamp;
+	Timestamp timeStamp;
 
 	/** \brief First time stamp at which the target was acquired. */
-	float firstTimeStamp;
+	Timestamp firstTimeStamp;
 
 	/** \brief Track ID from which the detection was generated, if that is the case. */
 	TrackID	trackID;
@@ -289,7 +296,7 @@ public:
     typedef boost::shared_ptr<Track> ConstPtr;
 	typedef boost::container::vector<Track::Ptr> Vector;
 
-	Track(int trackID);
+	Track(TrackID trackID);
 
 	int	GetTrackID() {return(trackID);}
 
@@ -322,10 +329,10 @@ public:
 	float intensity;
 
 	/** \brief Timestamp, in frames */
-	float timeStamp;
+	Timestamp timeStamp;
 
 	/** \brief First time stamp at which the target was acquired. */
-	float firstTimeStamp;
+	Timestamp firstTimeStamp;
 
 	/** \brief Threat level associated to detection */
 	AlertCondition::ThreatLevel	threatLevel;
@@ -356,6 +363,7 @@ public:
 	typedef boost::shared_ptr<SensorFrame> Ptr;
     typedef boost::shared_ptr<SensorFrame> ConstPtr;
 	typedef std::deque<SensorFrame::Ptr> Queue;
+
 public:
 	SensorFrame(int inReceiverID, FrameID inFrameID, int inChannelQty);
 	virtual ~SensorFrame() {};
@@ -381,7 +389,7 @@ public:
 	Track::Vector tracks; 
 
 	// Timestamp im milliseconds, elapsed from start of thread.
-	double timeStamp;
+	Timestamp timeStamp;
 
 };
 

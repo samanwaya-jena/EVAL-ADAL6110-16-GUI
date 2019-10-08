@@ -123,7 +123,7 @@ AWLSimpleDemo::AWLSimpleDemo()
 
 AWLSimpleDemo::~AWLSimpleDemo()
 {
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		if (receiverCaptures[receiverID]) receiverCaptures[receiverID]->Stop();
 	}
@@ -133,14 +133,14 @@ int AWLSimpleDemo::exec()
 
 {
 	// Start the threads for background  receiver capture objects
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++) 
 	{ 
 		receiverCaptures[receiverID]->Go();
 	}
 
 
 	// And loop to display all the detections like crazy
-	while (!kbhit()) 
+	while (!_kbhit()) 
 	{
 		DoOneLoopIteration();
 	}
@@ -173,7 +173,7 @@ bool AWLSimpleDemo::GetLatestDetections(Detection::Vector &detectionData)
 	//		Pass the receiver through the ReceiverPostPorocessor to 
 	//		acquire the raw data and complete it with complementary information.
 
-	for (int receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
 		ReceiverCapture::Ptr receiver = receiverCaptures[receiverID];
 		ReceiverSettings &receiverSettings = settings->receiverSettings[receiverID];
@@ -216,7 +216,7 @@ bool AWLSimpleDemo::OutputDetections(const Detection::Vector &detectionData)
 
 		// For mat the detection information
 		char detectionString[255];
-		sprintf(detectionString, "Receiver %02d;Channel %02d;Distance from sensor %02.2f;Distance from car %02.2f", detection->receiverID, detection->channelID, detection->relativeToSensorCart.x,  detection->relativeToVehicleCart.x);
+		sprintf_s(detectionString, 255, "Receiver %02d;Channel %02d;Distance from sensor %02.2f;Distance from car %02.2f", detection->receiverID, detection->channelID, detection->relativeToSensorCart.cartesian.x,  detection->relativeToVehicleCart.cartesian.x);
 
 		timeStr += detectionString;
 		timeStr += "\n";

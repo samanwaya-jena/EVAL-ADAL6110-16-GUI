@@ -38,7 +38,7 @@ const uint16_t		defaultYearOffset = 1900;		// On AWL, all CAN Dates are sent as 
 const uint16_t		defaultMonthOffset = 1;		// On AWL, all CAN months start at 0.  Posix months start at 1.
 const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::canRate1Mbps;
 
-#define ConvertIntensityToSNR(v) (((v)/2.0) - 21.0)
+#define ConvertIntensityToSNR(v) (((v)/2.0f) - 21.0f)
 
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
@@ -240,10 +240,10 @@ void ReceiverCANCapture::ParseSensorStatus(AWLCANMessage &inMsg)
 	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	int iTemperature = intDataPtr[0];
-	receiverStatus.temperature =  iTemperature / 10.0;
+	receiverStatus.temperature =  iTemperature / 10.0f;
 
 	unsigned int  uiVoltage = uintDataPtr[1];
-	receiverStatus.voltage = uiVoltage;
+	receiverStatus.voltage = (float) uiVoltage;
 
 	receiverStatus.frameRate = byteDataPtr[4];
 
@@ -265,9 +265,7 @@ void ReceiverCANCapture::ParseSensorStatus(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseSensorBoot(AWLCANMessage &inMsg)
 
 {
-	uint16_t *uintDataPtr = (uint16_t *) inMsg.data;
 	uint8_t *byteDataPtr = (uint8_t *) inMsg.data;
-	int16_t *intDataPtr = (int16_t *) inMsg.data;
 
 	if (inMsg.id != AWLCANMSG_ID_SENSORBOOT) return;
 
@@ -489,7 +487,6 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 
 	track->trackChannels.wordData = *(uint8_t *)&inMsg.data[2];
 	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
-	uint16_t originalChannel = track->trackMainChannel;
 #if PATCH_CHANNEL_REORDER
 	track->trackMainChannel = channelReorder[track->trackMainChannel];
 
@@ -503,7 +500,7 @@ void ReceiverCANCapture::ParseObstacleTrack(AWLCANMessage &inMsg)
 	{
 		track->trackMainChannel = 0;
 		uint16_t channelMask = 0x01;
-		for (int channel = 0; channel < 8; channel++)
+		for (uint16_t channel = 0; channel < 8; channel++)
 		{
 			if (track->trackChannels.wordData & channelMask)
 			{
@@ -541,10 +538,10 @@ void ReceiverCANCapture::ParseObstacleVelocity(AWLCANMessage &inMsg)
 	track->distance += measurementOffset;
 
 	int16_t velocity = (*(int16_t *) &inMsg.data[4]);
-	track->velocity = velocity / 100.0; // Convert the velocity from cm/s to m/s
+	track->velocity = velocity / 100.0f; // Convert the velocity from cm/s to m/s
 
 	int16_t acceleration = (*(int16_t *) &inMsg.data[6]);
-	track->acceleration = acceleration / 100.0; // Convert the velocity from cm/s to m/s
+	track->acceleration = acceleration / 100.0f; // Convert the velocity from cm/s to m/s
 	track->part2Entered = true;
 
 	rawLock.unlock();
@@ -786,7 +783,6 @@ void ReceiverCANCapture::ParseParameterError(AWLCANMessage &inMsg)
 void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 {
 
-	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];  // Unused
 	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
 	
 	AlgorithmDescription *algoDescription = NULL;
@@ -796,7 +792,7 @@ void ReceiverCANCapture::ParseParameterAlgoSelectResponse(AWLCANMessage &inMsg)
 	// Algo canot be 0, because 0 is reserved for GLOBAL_ALGO_ID 
 	if (registerValue >= 1 && (algoDescription != NULL))  
 	{
-		receiverStatus.currentAlgo = registerValue;
+		receiverStatus.currentAlgo = (uint16_t) registerValue;
 		receiverStatus.currentAlgoPendingUpdates --;
 	}
 	else
@@ -829,7 +825,6 @@ void ReceiverCANCapture::ParseParameterAlgoParameterResponse(AWLCANMessage &inMs
 void ReceiverCANCapture::ParseParameterTrackerSelectResponse(AWLCANMessage &inMsg)
 {
 
-	uint16_t registerAddress = *(uint16_t *)&inMsg.data[2];  // Unused
 	uint32_t registerValue = *(uint32_t *)&inMsg.data[4];
 
 	AlgorithmDescription *trackerDescription = NULL;
@@ -839,7 +834,7 @@ void ReceiverCANCapture::ParseParameterTrackerSelectResponse(AWLCANMessage &inMs
 	// Check that the tracker is valid (just in case communication goes crazy)
 	if (trackerDescription != NULL)
 	{
-		receiverStatus.currentTracker = registerValue;
+		receiverStatus.currentTracker = (uint16_t) registerValue;
 		receiverStatus.currentTrackerPendingUpdates--;
 	}
 	else
@@ -894,7 +889,7 @@ void ReceiverCANCapture::ParseParameterFPGARegisterResponse(AWLCANMessage &inMsg
 	rawLock.unlock();
 }
 
-void ReceiverCANCapture::ParseParameterBiasResponse(AWLCANMessage &inMsg)
+void ReceiverCANCapture::ParseParameterBiasResponse(AWLCANMessage & /*inMsg*/)
 {
 	// Message not used. We ignore the message for the moment.
 }
@@ -924,6 +919,7 @@ void ReceiverCANCapture::ParseParameterADCRegisterResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterPresetResponse(AWLCANMessage &inMsg)
 {
+	(void)inMsg;
 	// Message not used. We ignore the message for the moment.
 }
 
@@ -931,7 +927,6 @@ void ReceiverCANCapture::ParseParameterGlobalParameterResponse(AWLCANMessage &in
 {
 	uint16_t parameterAddress = *(uint16_t *) &inMsg.data[2];
 	uint32_t parameterValue=  *(uint32_t *) &inMsg.data[4];
-	int globalAlgo = 0; // Just so we know....
 
 	AlgorithmParameter *parameter = FindAlgoParamByAddress(GLOBAL_PARAMETERS_ID, parameterAddress);
 
@@ -974,12 +969,15 @@ void ReceiverCANCapture::ParseParameterGPIORegisterResponse(AWLCANMessage &inMsg
 
 void ReceiverCANCapture::ParseParameterDateTimeResponse(AWLCANMessage &inMsg)
 {
+	(void)inMsg; // Parameter not used;
 	// Message should be sent as a response when we change the date.
 	// Otherwise it is not used. We ignore the message for the moment.
 }
 
 void ReceiverCANCapture::ParseParameterRecordResponse(AWLCANMessage &inMsg)
 {
+	(void)inMsg; // Parameter not used;
+
 	// Message should be sent as a response when we set record filename.
 	// Otherwise it is not used. We ignore the message for the moment.
 }
@@ -987,17 +985,18 @@ void ReceiverCANCapture::ParseParameterRecordResponse(AWLCANMessage &inMsg)
 
 void ReceiverCANCapture::ParseParameterPlaybackResponse(AWLCANMessage &inMsg)
 {
+	(void)inMsg; // Parameter not used;
+
 	// Message should be sent as a response when we set playbackfilename.
 	// Otherwise it is not used. We ignore the message for the moment.
 }
 
 void ReceiverCANCapture::ParseParameterSensorSpecificResponse(AWLCANMessage& inMsg)
 {
+	(void)inMsg; // Parameter not used;
+
 	// Message should be sent as a response when we set sensor specific parameter.
 	// Otherwise it is not used. We ignore the message for the moment.
-	uint16_t parameterAddress = *(uint16_t*)& inMsg.data[2];
-	uint32_t parameterValue = *(uint32_t*)& inMsg.data[4];
-
 }
 
 
@@ -1411,7 +1410,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 }
 
 
-bool ReceiverCANCapture::SetSSPFrameRate(int FrameRate )
+bool ReceiverCANCapture::SetSSPFrameRate(int frameRate )
 {
 	AWLCANMessage message;
 	message.id = AWLCANMSG_ID_COMMANDMESSAGE;       // Message id: AWLCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1421,8 +1420,8 @@ bool ReceiverCANCapture::SetSSPFrameRate(int FrameRate )
 	*(int16_t *)&message.data[2] =  AWLCANMSG_ID_CMD_SSP_FRAME_RATE;
 
 	bool bMessageOk = false;
-	if ((( FrameRate % 5) == 0) && ( FrameRate >=10) && ( FrameRate <= 50)) {
-		*(int32_t *)&message.data[4] = FrameRate;
+	if ((( frameRate % 5) == 0) && ( frameRate >=10) && ( frameRate <= 50)) {
+		*(int32_t *)&message.data[4] = frameRate;
 		bMessageOk = WriteMessage(message);
 	}
 
@@ -1655,7 +1654,7 @@ bool ReceiverCANCapture::SetAlgoParameter(int algoID, uint16_t registerAddress, 
 		// Hack:  Update the SNR Cutoff in status when trying to set in algo parameters. 
 		if (!parameter->sDescription.compare("SNR Cutoff (dB)"))
 		{
-			receiverStatus.signalToNoiseFloor = parameter->floatValue-4.0;
+			receiverStatus.signalToNoiseFloor = parameter->floatValue-4.0f;
 		}
 	}
 
@@ -2064,9 +2063,7 @@ bool ReceiverCANCapture::ReadConfigFromPropTree(boost::property_tree::ptree &pro
 {
 		ReceiverCapture::ReadConfigFromPropTree(propTree);
 
-		char receiverKeyString[32];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-		std::string receiverKey = receiverKeyString;
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);;
 
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
@@ -2100,7 +2097,8 @@ bool ReceiverCANCapture::ReadRegistersFromPropTree( boost::property_tree::ptree 
 		configurationNodePtr =  &propTree.get_child(registerDescKey);
 	}
 	catch (boost::exception &e) 
-	{ 
+	{   
+		(void)e; // Unused
 		return (false);
 	}
 

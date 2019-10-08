@@ -256,8 +256,6 @@ void AWLScopePlot::replot()
 	// If distance is displayed and the maxRange has changed, redo the axes
 	if (settings->bDisplayScopeDistance)
 	{
-		float displayedRangeMax = settings->receiverSettings[0].displayedRangeMax;
-		float scaleUpperBound = axisScaleDiv(QwtPlot::yLeft).upperBound();
 		if (abs(settings->receiverSettings[0].displayedRangeMax - axisScaleDiv(QwtPlot::yLeft).upperBound()) > 0.001)
 		{
 			bRescale = true;
@@ -308,7 +306,7 @@ void AWLScopePlot::setIntervalLength( double interval )
 bool AWLScopePlot::doTimeUpdate()
 
 {
-    const double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
+    const Timestamp elapsed = d_receiverCapture->GetElapsed() / 1000.0;
 
 	// 20180719-JYD
 #if	1
@@ -333,10 +331,10 @@ void AWLScopePlot::updateCurve()
 {
 	for (int i = 0; i < d_distanceCurve.size(); i++)
 	{
-		CurveData *data = getDistanceCurveData(i);
-		data->values().lock();
+		CurveData *curveData = getDistanceCurveData(i);
+		curveData->values().lock();
 
-		const int numPoints = data->size();
+		const int numPoints = curveData->size();
 		int paintedPoints = d_paintedPoints[i];
 		if (numPoints > paintedPoints )
 		{
@@ -354,7 +352,7 @@ void AWLScopePlot::updateCurve()
 				const QwtScaleMap xMap = canvasMap( d_distanceCurve[i]->xAxis() );
 				const QwtScaleMap yMap = canvasMap( d_distanceCurve[i]->yAxis() );
 
-				QRectF br = qwtBoundingRect( *data,
+				QRectF br = qwtBoundingRect( *curveData,
 					paintedPoints  - 1, numPoints - 1 );
 
 				const QRect clipRect = QwtScaleMap::transform( xMap, yMap, br ).toRect();
@@ -371,32 +369,32 @@ void AWLScopePlot::updateCurve()
 			d_paintedPoints[i] = numPoints;
 		}
 
-		data->values().unlock();
+		curveData->values().unlock();
 	}
 }
 
 void AWLScopePlot::incrementInterval()
 {
-	double elapsed = d_receiverCapture->GetElapsed() / 1000.0;
+	Timestamp elapsed = d_receiverCapture->GetElapsed() / 1000.0;
 	elapsed = ceil(elapsed);
 
-	double minValue = ((elapsed - d_interval.width()));
+	Timestamp minValue = ((elapsed - d_interval.width()));
 
 	if (minValue < 0.0) minValue = 0.0;
-	double maxValue = minValue + d_interval.width();
+	Timestamp maxValue = minValue + d_interval.width();
 	d_interval = QwtInterval(minValue, maxValue);
 
 
 	for (int i = 0; i < d_distanceCurveData.size(); i++)
 	{
-		CurveData *data = getDistanceCurveData(i);
-		data->values().clearStaleValues(d_interval.minValue());
+		CurveData *curveData = getDistanceCurveData(i);
+		curveData->values().clearStaleValues(d_interval.minValue());
 	}
 
 	for (int i = 0; i < d_velocityCurveData.size(); i++)
 	{
-		CurveData *data = getVelocityCurveData(i);
-		data->values().clearStaleValues(d_interval.minValue());
+		CurveData *curveData = getVelocityCurveData(i);
+		curveData->values().clearStaleValues(d_interval.minValue());
 	}
 
 	setAxisScale(QwtPlot::xBottom, d_interval.minValue(), d_interval.maxValue());

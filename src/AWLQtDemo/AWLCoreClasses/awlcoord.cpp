@@ -127,7 +127,6 @@ bool AWLCoordinates::SensorToCameraXY(int receiverID, int channelID, int cameraI
 {
 	bool bInFront = false;
 
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Channel description pointer
 	TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelID);
 	
@@ -146,8 +145,7 @@ bool AWLCoordinates::WorldToCameraXY(int cameraID, const CameraCalibration &came
 {
 	bool bInFront = false;
 
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	
+
 	// Camera FOV description
 	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
 	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, worldCoord);		 // Convert to camera
@@ -171,9 +169,8 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		// Get to the receiver in the configuration tree. It will be our anchor in the loop
-		char receiverKeyString[32];
-		sprintf(receiverKeyString,  "config.receivers.receiver%d", receiverID);
-		std::string receiverKey = receiverKeyString;
+
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 		boost::property_tree::ptree &receiverPropNode = propTree.get_child(receiverKey);
 
 
@@ -194,9 +191,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 		{
 			for (int channelID = 0; channelID < channelQty; channelID++)
 			{
-				char channelKeyString[32];
-				sprintf(channelKeyString, "channel%d", channelID);
-				std::string channelKey = channelKeyString;
+				std::string channelKey = std::string("channel") + std::to_string(channelID);
 				boost::property_tree::ptree &channelPropNode = channelGeometryPropNode.get_child(channelKey);
 
 				// Make the transformation node and add it to the tree
@@ -204,7 +199,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 				receiverGeometryNode->AddChild(channelGeometryNode);
 			}
 		}
-		else
+		else //Channel qty == -1
 		{
 			float columnsFloat(0.0);
 			float rowsFloat(0.0);
@@ -227,8 +222,8 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 			float pixelWidth = (fovX - ((columns - 1)*spacingX)) / columns;
 			float pixelHeight = (fovY - ((rows - 1)*spacingY)) / rows;
 
-			int channelQty = columns * rows;
-			for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+			int matrixChannelQty = columns * rows;
+			for (int channelIndex = 0; channelIndex < matrixChannelQty; channelIndex++)
 			{
 				int column = channelIndex % columns;
 				int row = channelIndex / columns;
@@ -255,9 +250,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 	int cameraQty = propTree.get<int>("config.cameras.cameraQty");
 	for (int cameraID = 0; cameraID < cameraQty; cameraID++)
 	{
-		char cameraKeyString[32];
-		sprintf(cameraKeyString, "config.cameras.camera%d", cameraID);
-		std::string cameraKey = cameraKeyString;
+		std::string cameraKey = std::string("config.cameras.camera") + std::to_string(cameraID);
 
 		boost::property_tree::ptree &cameraPropNode =  propTree.get_child(cameraKey);			
 		TransformationNode::Ptr cameraGeometryNode = GetGeometryFromPropertyNode(cameraPropNode);
@@ -282,9 +275,9 @@ TransformationNode::Ptr AWLCoordinates::GetGeometryFromPropertyNode(boost::prope
 		float rollDegree = 0.0; // Read from ini file in degrees
 		float pitchDegree = 0.0; // Read from ini file in degrees
 		float yawDegree = 0.0; // Read from ini file in degrees
-
+		
 		AWLSettings::GetGeometry(propNode, 
-			        position.forward, position.left, position.up,
+			        position.bodyRelative.forward, position.bodyRelative.left, position.bodyRelative.up,
 					pitchDegree, yawDegree, rollDegree);
 
 		Orientation orientation(DEG2RAD(rollDegree), 
@@ -300,8 +293,6 @@ TransformationNode::Ptr AWLCoordinates::GetGeometryFromPropertyNode(boost::prope
 TransformationNode::Ptr AWLCoordinates::GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode)
 
 {
-		float fovWidth(0.0);
-		float fovHeight(0.0);
 		float centerY(0.0);
 		float centerX(0.0);
 		float roll(0.0);  

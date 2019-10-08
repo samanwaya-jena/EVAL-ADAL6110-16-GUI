@@ -45,7 +45,7 @@ const float defaultSignalToNoiseFloor = -10.0;
 
 
 ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+					   uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers):
@@ -201,7 +201,7 @@ int ReceiverCapture::GetFrameQty()
 int ReceiverCapture::GetFrameRate()
 {
   // timestamp the currentFrame
-  double elapsed = GetElapsed();
+  Timestamp elapsed = GetElapsed();
 
   if (elapsed - m_FrameRateMS > 1000.0)
   {
@@ -264,7 +264,7 @@ bool ReceiverCapture::CopyReceiverAScans(FrameID inFrameID,  AScan::Vector &outA
 
 
 
-bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID)
+bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus)
 {
 	boost::mutex::scoped_lock updateLock(GetMutex()); 
 
@@ -277,9 +277,9 @@ bool ReceiverCapture::CopyReceiverStatusData(ReceiverStatus &outStatus, Publishe
 FrameID ReceiverCapture::GetFrameID(uint16_t  inFrameIndex)
 {
 	boost::mutex::scoped_lock updateLock(GetMutex());
-	FrameID frameID;
+	FrameID localFrameID;
 
-	if (inFrameIndex > (int) acquisitionSequence->sensorFrames.size()-1) frameID = 0xFFFFFFFF;
+	if (inFrameIndex > (int) acquisitionSequence->sensorFrames.size()-1) localFrameID = 0xFFFFFFFF;
 	else 
 	{ 
 		SensorFrame::Ptr sensorFrame = acquisitionSequence->sensorFrames.at(inFrameIndex);
@@ -290,12 +290,12 @@ FrameID ReceiverCapture::GetFrameID(uint16_t  inFrameIndex)
 	return(frameID);
 }
 
-void ReceiverCapture::SetMeasurementOffset(double inMeasurementOffset)
+void ReceiverCapture::SetMeasurementOffset(float inMeasurementOffset)
 {
 	measurementOffset = inMeasurementOffset;
 }
 
-void ReceiverCapture::GetMeasurementOffset(double &outMeasurementOffset)
+void ReceiverCapture::GetMeasurementOffset(float &outMeasurementOffset)
 {
 	outMeasurementOffset = measurementOffset;
 }
@@ -312,13 +312,13 @@ bool ReceiverCapture::SetRecordFileName(std::string inRecordFileName)
 	return(true);
 }
 
-bool ReceiverCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
+bool ReceiverCapture::StartPlayback(uint8_t /*frameRate*/, ChannelMask /*channelMask*/)
 {
 	receiverStatus.bInPlayback = true;
 	return(true);
 }
 
-bool ReceiverCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
+bool ReceiverCapture::StartRecord(uint8_t /*frameRate*/, ChannelMask /*channelMask*/)
 {
 	receiverStatus.bInRecord = true;
 	return(true);
@@ -337,7 +337,7 @@ bool ReceiverCapture::StopRecord()
 }
 
 
-bool ReceiverCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+bool ReceiverCapture::SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
 
 {
    return(true);
@@ -357,12 +357,12 @@ void ReceiverCapture::DoOneThreadIteration()
 	} // while (!WasStoppped)
 }
 
-double ReceiverCapture::GetElapsed()
+Timestamp ReceiverCapture::GetElapsed()
 
 {
 	boost::posix_time::ptime nowTime(boost::posix_time::microsec_clock::local_time());
 	boost::posix_time::time_duration msdiff = nowTime - startTime;
-    return(msdiff.total_microseconds() / 1000.0);
+    return((float)(msdiff.total_microseconds() / 1000.0));
 }
 
 void ReceiverCapture::InvalidateFrame()
@@ -378,7 +378,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 	boost::mutex::scoped_lock rawLock(GetMutex());
 
 	// timestamp the currentFrame
-	double elapsed = GetElapsed();
+	Timestamp elapsed = GetElapsed();
 
   ++m_nbrCompletedFrame;
   ++m_nbrCompletedFrameCumul;
@@ -424,8 +424,8 @@ void ReceiverCapture::ProcessCompletedFrame()
 	}
 	
 	// Create a new current frame.
-	FrameID frameID = acquisitionSequence->AllocateFrameID();
-	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, frameID, receiverChannelQty));
+	FrameID localFrameID = acquisitionSequence->AllocateFrameID();
+	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, localFrameID, receiverChannelQty));
 	bFrameInvalidated = false;
 
 	rawLock.unlock();
@@ -550,7 +550,7 @@ bool ReceiverCapture::EndDistanceLog()
 }
 
 
-void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
+void ReceiverCapture::LogTracks(ofstream &inLogFile, SensorFrame::Ptr sourceFrame)
 {
 	// Update the coaslesced tracks
    Track::Vector::iterator  trackIterator = sourceFrame->tracks.begin();
@@ -561,7 +561,7 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 		if (track->IsComplete()) 
 		{
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;intensity,speed;acceleration;probability;timeToCollision);
-			LogFilePrintf(logFile, ", ,Track,%d,Channel,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
+			LogFilePrintf(inLogFile, ", ,Track,%d,Channel,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 				track->trackID,
 				track->trackMainChannel,
 				targetHintDistance,
@@ -589,13 +589,13 @@ void ReceiverCapture::LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame)
 	} // while (trackIterator...
 } 
 
-void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFrame)
+void ReceiverCapture::LogDistances(ofstream &inLogFile, SensorFrame::Ptr sourceFrame)
 {
 	Detection::Vector::iterator  detectionIterator = sourceFrame->rawDetections.begin();
 	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
 		Detection::Ptr detection = *detectionIterator;
-		LogFilePrintf(logFile, " , ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
+		LogFilePrintf(inLogFile, " , ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
 			detection->channelID, 
 			detection->detectionID,
 			targetHintDistance,
@@ -619,9 +619,7 @@ void ReceiverCapture::LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFra
 
 bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
-		char receiverKeyString[32];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-		std::string receiverKey = receiverKeyString;
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
@@ -667,6 +665,7 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 	}
 	catch (boost::exception &e)
 	{
+		(void)e;
 		return (false);
 	}
 
@@ -679,8 +678,6 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 	receiverRowQty = 1;
 	if (receiverChannelQty == -1)
 	{
-		float columns(0);
-		float rows(0);
 		receiverColumnQty = geometryNodePtr->get<int>("arraySize.x", -1);
 		receiverRowQty = geometryNodePtr->get<int>("arraySize.y", -1);
 		receiverChannelQty = ((int)receiverColumnQty) * ((int)receiverRowQty);
@@ -689,7 +686,7 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 	return(true);
 }
 
-bool ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree &propTree)
+bool ReceiverCapture::ReadRegistersFromPropTree(boost::property_tree::ptree & /*propTree*/)
 {
 	return(true);
 }

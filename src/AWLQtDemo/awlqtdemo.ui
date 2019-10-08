@@ -1020,7 +1020,7 @@ QSpinBox::down-button:pressed {
    top:1;
 }
 
-/* Customize double spin boxes. */
+/* Customize float spin boxes. */
 
 QAbstractSpinBox { 
     padding-right: 5px;
@@ -1509,7 +1509,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
              <x>40</x>
              <y>170</y>
              <width>111</width>
-             <height>22</height>
+             <height>24</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -2597,7 +2597,7 @@ background-color: #202020;
               <x>26</x>
               <y>65</y>
               <width>100</width>
-              <height>22</height>
+              <height>24</height>
              </rect>
             </property>
             <property name="focusPolicy">

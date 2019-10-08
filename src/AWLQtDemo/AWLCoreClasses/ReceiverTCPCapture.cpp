@@ -96,7 +96,6 @@ int ReceiverTCPCapture::WriteBytes(uint8_t * pData, int num)
 
 bool  ReceiverTCPCapture::OpenCANPort()
 {
-  int ret = 0;
 
   reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 
@@ -217,9 +216,7 @@ bool ReceiverTCPCapture::ReadConfigFromPropTree(boost::property_tree::ptree &pro
 {
 	ReceiverPolledCapture::ReadConfigFromPropTree(propTree);
 
-	char receiverKeyString[32];
-	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-	std::string receiverKey = receiverKeyString;
+	std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters

@@ -46,7 +46,6 @@ ReceiverPostProcessor::ReceiverPostProcessor()
 bool ReceiverPostProcessor::CompleteTrackInfo(SensorFrame::Ptr currentFrame)
 {
 	bool bAllTracksComplete = true;
-	AWLSettings *settings = AWLSettings::GetGlobalSettings();
 
 	// Update the coaslesced tracks
    Track::Vector::iterator  trackIterator = currentFrame->tracks.begin();
@@ -100,7 +99,6 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 
 
 		// Re-Create detections from the coalesced tracks
-		int trackQty = currentFrame->tracks.size();
 
 		Track::Vector::iterator  trackIterator = currentFrame->tracks.begin();
 		while (trackIterator != currentFrame->tracks.end()) 
@@ -117,7 +115,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 				int lineIndex = 0;
 				int columnIndex = 0;
 
-				lineIndex = track->distance / receiver->lineWrapAround;
+				lineIndex = (int) (track->distance / receiver->lineWrapAround);
 				if (lineIndex > (receiver->receiverRowQty - 1))
 				{
 					lineIndex = 0;
@@ -154,7 +152,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 
 				// Place the coordinates relative to all their respective reference systems
 				TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(detection->receiverID, channelIndex);
-				SphericalCoord sphericalPointInChannel(detection->distance, M_PI_2, 0);
+				SphericalCoord sphericalPointInChannel(detection->distance, (float) M_PI_2, 0);
 				detection->relativeToSensorCart = channelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
 				detection->relativeToVehicleCart = channelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
 				detection->relativeToWorldCart = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
@@ -241,7 +239,7 @@ float ReceiverPostProcessor::PredictDistance(float currentDistance, float relati
 
 	// Distance of vehicle at "time"
 	float at2 = (acceleration * time * time);
-	float predictedDistance = currentDistance + (relativeSpeed * time) + (0.5 * at2);
+	float predictedDistance = currentDistance + (relativeSpeed * time) + (0.5f * at2);
 
 	return (predictedDistance);
 
@@ -273,7 +271,7 @@ float ReceiverPostProcessor::CalculateAccelerationToStop(float currentDistance, 
 }
 
 
-float ReceiverPostProcessor::PredictTTC(float distance, float speed, float acceleration, float time)  // Value for acceleration should be negative when 
+float ReceiverPostProcessor::PredictTTC(float /*distance*/, float speed, float acceleration, float time)  // Value for acceleration should be negative when 
 {
 	if (isNAN(acceleration)) acceleration = 0;
 

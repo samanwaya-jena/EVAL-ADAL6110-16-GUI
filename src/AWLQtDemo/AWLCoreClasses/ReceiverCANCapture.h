@@ -194,7 +194,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SetSSPFrameRate(int FrameRate );
+	virtual bool SetSSPFrameRate(int frameRate );
 
 	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
 	* \return true if success.  false on error.

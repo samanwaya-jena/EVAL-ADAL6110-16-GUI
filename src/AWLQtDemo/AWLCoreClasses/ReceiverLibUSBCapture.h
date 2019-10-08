@@ -79,8 +79,8 @@ protected:
 
 		int usbVendorId;
 		int usbProductId;
-		int usbEndPointIn;
-		int usbEndPointOut;
+		unsigned char usbEndPointIn;
+		unsigned char  usbEndPointOut;
 		int usbTimeOut;
 
 

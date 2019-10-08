@@ -38,7 +38,7 @@ public:
 
     virtual QRectF boundingRect() const;
 
-	QPointF addValue(double x, double y);
+	QPointF addValue(float x, float	 y);
 	QPointF addValue(const QPointF &point);
 
 protected:

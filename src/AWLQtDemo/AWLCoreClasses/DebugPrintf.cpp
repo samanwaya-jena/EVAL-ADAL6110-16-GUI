@@ -67,7 +67,6 @@ void DebugFilePrintf(const char *format, ...)
 
 
 		// Format the string and output
-		char str[maxStrLen];
 
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 
@@ -75,11 +74,17 @@ void DebugFilePrintf(const char *format, ...)
 		timeStr += " ";
 
 		va_list argList;
-		va_start (argList, format);
-		vsprintf(str, format, argList);
+		va_start(argList, format);
+		size_t len = std::vsnprintf(NULL, 0, format, argList);
 		va_end(argList);
 
-		timeStr += str;
+		std::vector<char> vec(len + 1);
+		va_start(argList, format);
+		std::vsnprintf(&vec[0], len + 1, format, argList);
+		va_end(argList);
+
+
+		timeStr += std::string(vec.data());
 		timeStr += "\n";
 
 		debugFile << timeStr;
@@ -94,7 +99,6 @@ void DebugFilePrintf(ofstream &debugFile, const char *format, ...)
 	if (AWLSettings::GetGlobalSettings()->bWriteDebugFile) 
 	{
 		if (!debugFile.is_open()) return;
-		char str[maxStrLen];
 
 		boost::posix_time::ptime myTime(boost::posix_time::microsec_clock::local_time());
 
@@ -103,11 +107,17 @@ void DebugFilePrintf(ofstream &debugFile, const char *format, ...)
 		timeStr += cFieldSeparator;
 
 		va_list argList;
-		va_start (argList, format);
-		vsprintf(str, format, argList);
+		va_start(argList, format);
+		size_t len = std::vsnprintf(NULL, 0, format, argList);
 		va_end(argList);
 
-		timeStr += str;
+		std::vector<char> vec(len + 1);
+		va_start(argList, format);
+		std::vsnprintf(&vec[0], len + 1, format, argList);
+		va_end(argList);
+
+
+		timeStr += std::string(vec.data());
 		timeStr += "\n";
 
 		debugFile << timeStr;

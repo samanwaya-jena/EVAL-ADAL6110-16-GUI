@@ -88,7 +88,7 @@ public:
 
 	/** \brief Current frame rate. May not be reported accurately during playback.
       */
-	int frameRate;
+	uint8_t frameRate;
 
 	/** \brief Hardware error flags.
       */
@@ -408,7 +408,7 @@ public:
 		*/
 
 	ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
-					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+					   uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers);
@@ -471,10 +471,9 @@ public:
      * \param[in] inFrameID frame identificator of the requiested frame
      * \param[in] inChannelID index of the required channel
 	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
-	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
      * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
      */
-	virtual bool CopyReceiverStatusData(ReceiverStatus &outStatus, Publisher::SubscriberID inSubscriberID);
+	virtual bool CopyReceiverStatusData(ReceiverStatus &outStatus);
 
 	/** \brief Return the current frame identification number for informational purposes 
      * \return Current frame identification number.
@@ -499,18 +498,18 @@ public:
 	/** \brief Return the time elapsed, in milliseconds, since the start of thread.
 	    \return time in milliseconds since tthe start of thread.
      */
-	 double GetElapsed();
+	Timestamp GetElapsed();
 
 	/** \brief Add an offet to the distance measurements.  This is different from the sensor depth, which is distance from bumper.
       * \param[in] inMeasurementOffset measurementOffset introduced by detection algorithm
       * \remark measurement offset is an offset in distance from sensor caused by the nature of algorithm used.
       */
-	void SetMeasurementOffset(double inMeasurementOffset);
+	void SetMeasurementOffset(float inMeasurementOffset);
 
 	/** \brief Get the measurement offset  in meters.
       * \param[out] outMeasurementOffset measurementOffset introduced by detection algorithm.
       */
-	void GetMeasurementOffset(double &outMeasurementOffset);
+	void GetMeasurementOffset(float &outMeasurementOffset);
 
 	/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.
@@ -531,7 +530,7 @@ public:
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(uint8_t frameRate, ChannelMask channelMask);
+	virtual bool StartPlayback(uint8_t /*frameRate*/, ChannelMask /*channelMask*/);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
@@ -540,7 +539,7 @@ public:
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
+	virtual bool StartRecord(uint8_t /*frameRate*/, ChannelMask /*channelMask*/);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -597,7 +596,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-        virtual bool SetSSPFrameRate(int FrameRate ) = 0;
+        virtual bool SetSSPFrameRate(int frameRate ) = 0;
 
         /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
         * \return true if success.  false on error.
@@ -679,48 +678,44 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask) = 0;
+	virtual bool SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/) = 0;
 
 
-	/** \  an asynchronous query command to get the current algorithm.
+
+	/** \brief Issues the command to get the frame rate.
 	* \return true if success.  false on error.
-	*/
-	virtual bool QueryAlgorithm() = 0;
+	*/   
+	virtual bool QuerySSPFrameRate() = 0;
 
-	/** \  an asynchronous query command to get the current tracker.
-	* \return true if success.  false on error.
-	*/
 
-        virtual bool QuerySSPFrameRate() = 0;
 
-        /** \brief Issues the command to get the frame rate.
-        * \return true if success.  false on error.
-        */
-
+/** \brief Issues the command know if the sensor is on.
+* \return true if success.  false on error.
+*/
 	virtual bool QuerySSPSystemEnable() = 0;
 
-	/** \brief Issues the command know if the sensor is on.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool QuerySSPLaserEnable() = 0;
 
 	/** \brief Issues the command to know if the Laser is on.
 	* \return true if success.  false on error.
 	*/
+	virtual bool QuerySSPLaserEnable() = 0;
 
-	virtual bool QuerySSPAutoGainEnable() = 0;
 
 	/** \brief Issues the command to know if the Auto Gain is on.
 	* \return true if success.  false on error.
 	*/
+	virtual bool QuerySSPAutoGainEnable() = 0;
 
-	virtual bool QuerySSPDCBalanceEnable() = 0;
 
 	/** \brief Issues the command to know if the DC Balance is on.
 	* \return true if success.  false on error.
 	*/
+	virtual bool QuerySSPDCBalanceEnable() = 0;
 
+
+	/** \  an asynchronous query command to get the current tracker.
+	* \return true if success.  false on error.
+	*/
 	virtual bool QueryTracker() = 0;
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
@@ -983,7 +978,7 @@ protected:
 	  * \returns Returns false in case of a read of the property tree, when all the register description is absent or not found.  Returns true otherwise.
 	  * \throws  Throws boost error on read of the property keys orther than the root key.
       */
-	virtual bool ReadRegistersFromPropTree( boost::property_tree::ptree &propTree);
+	virtual bool ReadRegistersFromPropTree( boost::property_tree::ptree & /*propTree*/);
 
 // Protected variables
 protected:
@@ -1000,7 +995,7 @@ protected:
 	boost::posix_time::ptime startTime;
 
 	/** \brief  measurement offset from sensor, introduced by detection algorithm */
-	double  measurementOffset;
+	float  measurementOffset;
 
 	/** \brief  Pointer to the current frame information during frame acquisition */
 	SensorFrame::Ptr currentFrame;
@@ -1016,7 +1011,7 @@ protected:
 
   private:
 
-    double m_FrameRateMS;
+    Timestamp m_FrameRateMS;
 
   public:
     int m_nbrCompletedFrameCumul;

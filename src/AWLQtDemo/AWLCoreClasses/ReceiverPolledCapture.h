@@ -42,11 +42,6 @@ public:
   virtual void  Stop();
   virtual bool IsConnected();
 
-	// For LibUSB, recording is supported ONLY on the host PC software
-	virtual bool SetRecordFileName(std::string inRecordFileName);
-	virtual bool StartRecord(uint8_t frameRate, ChannelMask channelMask);
-	virtual bool StopRecord();
-
   void * GetHandle(void);
   void SetHandle(void *);
 
@@ -56,10 +51,10 @@ protected:
   bool DoOneLoop();
 	virtual void DoOneThreadIteration();
 
-  bool LidarQuery(uint32_t * pdwCount, uint32_t * pdwReadPending);
-  bool ReadDataFromUSB(char * ptr, int uiCount, uint32_t dwCount);
+  bool LidarQuery(size_t & cycleCount, size_t & messageCount);
+  bool ReadDataFromUSB(char * dataBuffer, int payloadSize, uint32_t cycleCount);
 	virtual bool WriteMessage(const AWLCANMessage &inMsg);
-  bool PollMessages(uint32_t dwNumMsg);
+  bool PollMessages(size_t messageCount);
 
   bool SendSoftwareReset();
 
@@ -88,8 +83,6 @@ protected:
 
 
     boost::mutex m_Mutex;
-
-    FILE * m_pFile;
 };
 
 } // namespace AWL

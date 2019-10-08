@@ -50,7 +50,7 @@ QRectF CurveData::boundingRect() const
     return signalData->boundingRect();
 }
 
-QPointF CurveData::addValue(double x, double y)
+QPointF CurveData::addValue(float x, float y)
 
 {
 	    const QPointF s(x, y );

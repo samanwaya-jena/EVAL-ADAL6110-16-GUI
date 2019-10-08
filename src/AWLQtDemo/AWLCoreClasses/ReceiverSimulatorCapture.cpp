@@ -36,7 +36,7 @@ using namespace awl;
 
 
 ReceiverSimulatorCapture::ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+	uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
 	const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO,
 	const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers) :
 ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,
@@ -71,18 +71,18 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	if (!WasStopped())
 	{
 		// Simulate some tracks for debug purposes
-		double elapsed = GetElapsed();
+		Timestamp elapsed = GetElapsed();
 
-		trackDistance += 0.0001;
+		trackDistance += 0.0001f;
 		if (trackDistance > 10.0) trackDistance = 0.0;
 
-		for (int channel = 0; channel < 16; channel++)
+		for (uint16_t channel= 0; channel < 16; channel++)
 		{
-			for (int detection = 0; detection < 8; detection++)
+			for (uint16_t detection = 0; detection < 8; detection++)
 			{
 				// Only display even on even lines and odd on odd lines
-				int lineIndex = (channel / this->receiverColumnQty);
-				int lineQty = (GetChannelQty() / this->receiverColumnQty);  
+				size_t lineIndex = (channel / this->receiverColumnQty);
+				size_t lineQty = (GetChannelQty() / this->receiverColumnQty);  
 				if (lineIndex == (channel%lineQty)) 
 				{
 					Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 8) + detection);
@@ -117,7 +117,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 }
 
 
-bool ReceiverSimulatorCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+bool ReceiverSimulatorCapture::SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
 
 {
 	return(true);

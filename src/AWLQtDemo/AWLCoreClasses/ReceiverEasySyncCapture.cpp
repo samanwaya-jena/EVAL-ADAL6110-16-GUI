@@ -386,16 +386,16 @@ bool ReceiverEasySyncCapture::WriteMessage(const AWLCANMessage &inMsg)
 
 	outResponse += "t";
 
-	sprintf(outString, "%01x%02x", (inMsg.id / 256),  inMsg.id & 0xFF);
+	sprintf_s(outString, 10, "%01x%02x", (inMsg.id / 256),  inMsg.id & 0xFF);
 	outResponse +=outString;
 
-	sprintf(outString, "%01x", inMsg.len);
+	sprintf_s(outString, 10, "%01x", inMsg.len);
 	outResponse +=outString;
 
 
 	for (int i = 0; i < inMsg.len; i++) 
 	{
-		sprintf(outString, "%02x", inMsg.data[i]);
+		sprintf_s(outString, 10 , "%02x", inMsg.data[i]);
 		outResponse +=outString;
 	}
 
@@ -411,9 +411,7 @@ bool ReceiverEasySyncCapture::ReadConfigFromPropTree(boost::property_tree::ptree
 {
 		ReceiverCANCapture::ReadConfigFromPropTree(propTree);
 
-		char receiverKeyString[32];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-		std::string receiverKey = receiverKeyString;
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 		// Communication parameters

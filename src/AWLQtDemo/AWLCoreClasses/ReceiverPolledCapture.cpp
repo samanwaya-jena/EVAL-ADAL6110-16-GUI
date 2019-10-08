@@ -36,8 +36,6 @@ handle(NULL),
 swap_handle(NULL)
 {
   reconnectTime = boost::posix_time::microsec_clock::local_time();
-
-  m_pFile = NULL;
 }
 
 ReceiverPolledCapture::~ReceiverPolledCapture()
@@ -74,11 +72,12 @@ bool ReceiverPolledCapture::IsConnected()
   return (handle != NULL);
 }
 
-bool ReceiverPolledCapture::LidarQuery(uint32_t * pdwCount, uint32_t * pdwReadPending)
+bool ReceiverPolledCapture::LidarQuery(size_t& cycleCount, size_t& messageCount)
 {
-  int ret = 0;
   int transferred = 0;
   int received = 0;
+  uint32_t dwCount;
+  uint32_t dwReadPending;
 
   boost::mutex::scoped_lock rawLock(m_Mutex);
 
@@ -98,18 +97,20 @@ bool ReceiverPolledCapture::LidarQuery(uint32_t * pdwCount, uint32_t * pdwReadPe
   if (received != sizeof(AWLCANMessage))
     return false;
 
-  *pdwCount = *((uint32_t*)&resp.data[0]);
-  *pdwReadPending = *((uint32_t*)&resp.data[4]);
+  dwCount = *((uint32_t*)&resp.data[0]);
+  dwReadPending = *((uint32_t*)&resp.data[4]);
+
+  cycleCount = (size_t)dwCount;
+  messageCount = (size_t)dwReadPending;
 
   return true;
 }
 
 
-bool ReceiverPolledCapture::ReadDataFromUSB(char * ptr, int uiCount, uint32_t dwCount)
+bool ReceiverPolledCapture::ReadDataFromUSB(char * dataBuffer, int payloadSize, size_t cycleCount)
 {
   int transferred = 0;
   int received = 0;
-  int ret = 0;
 
   boost::mutex::scoped_lock rawLock(m_Mutex);
 
@@ -118,14 +119,14 @@ bool ReceiverPolledCapture::ReadDataFromUSB(char * ptr, int uiCount, uint32_t dw
 
   AWLCANMessage msg;
   msg.id = AWLCANMSG_ID_GETDATA;
-  msg.data[0] = (unsigned char) dwCount;
+  msg.data[0] = (unsigned char) cycleCount;
 
   transferred = WriteBytes((uint8_t*)&msg, sizeof(msg));
   if (transferred != sizeof(AWLCANMessage))
     return false;
 
-  received = ReadBytes((uint8_t*)ptr, uiCount);
-  if (received != uiCount)
+  received = ReadBytes((uint8_t*)dataBuffer, payloadSize);
+  if (received != payloadSize)
     return false;
 
   return true;
@@ -144,24 +145,24 @@ tDataFifo dataFifo[8];
 
 bool ReceiverPolledCapture::DoOneLoop()
 {
-	uint32_t dwCount = 0;
-	uint32_t dwReadPending = 0;
+	size_t cycleCount = 0;
+	size_t messageCount = 0;
 
-	bool bRet = LidarQuery(&dwCount, &dwReadPending);
+	bool bRet = LidarQuery(cycleCount, messageCount);
 
 	if (!bRet)
 		return false;
 
-	if (dwCount)
+	if (cycleCount)
 	{
 		bool bReadSuccess = true;
 
-		size_t payloadSize = dwCount * sizeof(tDataFifo);
+		size_t payloadSize = cycleCount * sizeof(tDataFifo);
 		if (!xmitsFooterData)
 		{
 			payloadSize -= GORDON_FOOTER_SIZE * sizeof(short);
 		}
-		bReadSuccess = ReadDataFromUSB((char*)dataFifo, payloadSize, dwCount);
+		bReadSuccess = ReadDataFromUSB((char*)dataFifo, payloadSize, cycleCount);
 
 
 
@@ -169,9 +170,9 @@ bool ReceiverPolledCapture::DoOneLoop()
 			{
 				boost::mutex::scoped_lock rawLock(m_Mutex);
 
-				if (AWLSettings::GetGlobalSettings()->bWriteLogFile) // Check again for m_pFile now that we have the mutex
+				if (AWLSettings::GetGlobalSettings()->bWriteLogFile) // Check again for file handle now that we have the mutex
 				{
-					for (int cycle = 0; cycle < dwCount; cycle++)
+					for (size_t cycle = 0; cycle < cycleCount; cycle++)
 					{
 						LogWaveform(logFile, cycle);
 					}
@@ -182,14 +183,14 @@ bool ReceiverPolledCapture::DoOneLoop()
 		ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
 	}
 
-	if (dwReadPending)
+	if (messageCount)
 	{
-		bRet = PollMessages(dwReadPending);
+		bRet = PollMessages(messageCount);
 		if (!bRet)
 			return false;
 	}
 
-	if (!dwCount && !dwReadPending)
+	if (!cycleCount && !messageCount)
 	{
 		boost::this_thread::sleep(boost::posix_time::milliseconds(5));
 	}
@@ -237,35 +238,33 @@ void ReceiverPolledCapture::DoThreadLoop()
   } // while (!WasStoppped)
 }
 
-bool ReceiverPolledCapture::PollMessages(uint32_t dwNumMsg)
+bool ReceiverPolledCapture::PollMessages(size_t messageCount)
 {
-  AWLCANMessage canReq;
   AWLCANMessage canResp[MAX_POLL_CAN_MESSAGES];
   int transferred = 0;
   int received = 0;
-  int ret;
 
   boost::mutex::scoped_lock rawLock(m_Mutex);
 
   if (!handle)
     return false;
 
-  if (dwNumMsg > MAX_POLL_CAN_MESSAGES)
-    dwNumMsg = MAX_POLL_CAN_MESSAGES;
+  if (messageCount > MAX_POLL_CAN_MESSAGES)
+    messageCount = MAX_POLL_CAN_MESSAGES;
 
   AWLCANMessage msg;
   msg.id = AWLCANMSG_ID_POLLMESSAGES;
-  msg.data[0] = (unsigned char) dwNumMsg;
+  msg.data[0] = (unsigned char) messageCount;
 
   transferred = WriteBytes((uint8_t*)&msg, sizeof(msg));
   if (transferred != sizeof(msg))
     return false;
 
-  received = ReadBytes((uint8_t*) &canResp[0], dwNumMsg * sizeof(AWLCANMessage));
-  if (received != dwNumMsg * sizeof(AWLCANMessage))
+  received = ReadBytes((uint8_t*) &canResp[0], messageCount * sizeof(AWLCANMessage));
+  if (received != (int) (messageCount * sizeof(AWLCANMessage)))
     return false;
 
-  for (uint32_t i=0; i<dwNumMsg; i++)
+  for (uint32_t i=0; i<messageCount; i++)
   {
     if (canResp[i].id)
       ParseMessage(canResp[i]);
@@ -279,7 +278,6 @@ bool ReceiverPolledCapture::WriteMessage(const AWLCANMessage &inMsg)
   AWLCANMessage canResp;
   int transferred = 0;
   int received = 0;
-  int ret;
 
   if (!handle)
     return false;
@@ -320,39 +318,6 @@ bool ReceiverPolledCapture::SendSoftwareReset()
   return WriteMessage(msg);
 }
 
-bool ReceiverPolledCapture::SetRecordFileName(std::string inRecordFileName)
-{
-	receiverStatus.sRecordFileName = inRecordFileName;
-	return true;
-}
-
-bool ReceiverPolledCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
-{
-	boost::mutex::scoped_lock rawLock(m_Mutex);
-
-	if (!m_pFile && !receiverStatus.sRecordFileName.empty())
-	{
-		m_pFile = fopen(receiverStatus.sRecordFileName.c_str(), "a");
-		receiverStatus.bInRecord = true;
-	}
-
-	return true;
-}
-
-bool ReceiverPolledCapture::StopRecord()
-{
-	boost::mutex::scoped_lock rawLock(m_Mutex);
-
-	if (m_pFile)
-	{
-		fclose(m_pFile);
-		m_pFile = NULL;
-	}
-
-	receiverStatus.bInRecord = false;
-
-	return true;
-}
 
 void * ReceiverPolledCapture::GetHandle(void) {
 	return handle;
@@ -363,7 +328,7 @@ void ReceiverPolledCapture::SetHandle(void *h)
 	swap_handle = h;
 }
 
-void ReceiverPolledCapture::LogWaveform(ofstream& logFile, int cycle)
+void ReceiverPolledCapture::LogWaveform(ofstream& inLogFile, int cycle)
 {
 	for (int ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
 	{
@@ -379,7 +344,7 @@ void ReceiverPolledCapture::LogWaveform(ofstream& logFile, int cycle)
 				theWaveString += std::to_string(*pData++) + ",";
 
 		}
-		LogFilePrintf(logFile, theWaveString.c_str());
+		LogFilePrintf(inLogFile, theWaveString.c_str());
 	}
 
 	short* pFooter = &dataFifo[cycle].footer[0];
@@ -394,7 +359,7 @@ void ReceiverPolledCapture::LogWaveform(ofstream& logFile, int cycle)
 			theFooterString += std::to_string(*pFooter++) + ",";
 		}
 	}
-	LogFilePrintf(logFile, theFooterString.c_str());
+	LogFilePrintf(inLogFile, theFooterString.c_str());
 }
 
 
@@ -402,9 +367,8 @@ bool ReceiverPolledCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 {
 	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
 
-	char receiverKeyString[32];
-	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-	std::string receiverKey = receiverKeyString;
+
+	std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters

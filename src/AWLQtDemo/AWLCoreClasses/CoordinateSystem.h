@@ -88,11 +88,13 @@ eCoordLevel;
 
 /** \brief Structure holding the values of a 4x4 homogeneous 3D transformation matrix. 
 */
-typedef float (TransformationArray)[4][4];
+//typedef float (TransformationArray)[4][4];
+ typedef float(TransformationArray)[4][4];
 
 /** \brief Structure holding the a vector (row or column) of a 1x4 homogeneous coordinate. 
 */
-typedef float (TransformationRow)[4];
+//typedef float (TransformationRow)[4];
+ typedef float (TransformationRow)[4];
 
 /** \brief The CartesianCoord class defines a position, in cartesian coordinates. 
   * \Notes uses coordinate conventions as defined in PCL / ROS.
@@ -149,7 +151,7 @@ public:
 			float x;
 			float y;
 			float z;
-		};
+		} cartesian;
 
 		// The alternate "relative to body" naming convention can be useful for 
 		// code that wants non-equivocal naming and avoid confusion,
@@ -159,7 +161,7 @@ public:
 			float forward;
 			float left;
 			float up;
-		};
+		} bodyRelative;
 
 	};
 
@@ -408,8 +410,8 @@ public:
 	 *           as FOV may be constrained by mechanical constraints on some devices 
 	 */
 	float fovHeight;
-	float frameWidthInPixels; /** \brief Camera frame width in pixels */
-	float frameHeightInPixels; /** \brief Camera frame height in pixels */
+	int frameWidthInPixels; /** \brief Camera frame width in pixels */
+	int frameHeightInPixels; /** \brief Camera frame height in pixels */
 	float focalLengthX; /** \brief Camera focal length and scaling (accounts for pixel size in x direction) */
 	float focalLengthY;/** \brief Camera focal length and scaling (accounts for pixel size in y direction) */
 	float centerX; /** \brief sensorCenter offset in x direction*/
@@ -421,7 +423,7 @@ public:
 	float tangentialP2; /** \brief tangential distorsion (keystone) parameter 2*/
 };
 
-bool CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY, double barrelK1 = 0.0, double barrelK2 = 0.0);
+bool CameraCoordToFrameXY(float cameraFovWidthInRad, float cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY, float barrelK1 = 0.0, float barrelK2 = 0.0);
 
 } // namespace awl
 #endif // AWL_COORDINATESYSTEM_H

@@ -150,7 +150,7 @@ void AWLPlotScan::PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, i
     x1 = left;
     y1 = top;
     //printf ("%d %d\n", sampleCount, width);
-    if (pAscan->sampleCount > width) {
+    if (pAscan->sampleCount > static_cast<size_t>(width)) {
       if (width > m_numPts)
       {
         m_numPts = width;
@@ -184,7 +184,7 @@ void AWLPlotScan::PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, i
       p->drawPolyline(m_pPts, width);
     }
     else {
-      if (pAscan->sampleCount > m_numPts)
+      if (pAscan->sampleCount > static_cast<size_t>(m_numPts))
       {
         m_numPts = pAscan->sampleCount;
         m_pPts = (QPoint*)malloc(m_numPts * sizeof(QPoint));
@@ -198,7 +198,7 @@ void AWLPlotScan::PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, i
       b16 = (int16_t *)(pAscan->samples);
       b32 = (int32_t *)(pAscan->samples);
 
-      for (int x = 0; x < pAscan->sampleCount; x++) {
+      for (size_t x = 0; x < pAscan->sampleCount; x++) {
         i = x * xScaleFactor;
         x1 = left + i;
         switch (pAscan->sampleSize) {
@@ -220,11 +220,11 @@ void AWLPlotScan::PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, i
   }
 }
 
-void AWLPlotScan::AScanDataChanged(const AScan::Vector& data)
+void AWLPlotScan::AScanDataChanged(const AScan::Vector& inData)
 {
-  if (data.size() > 0)
+  if (inData.size() > 0)
   {
-    aScanData = data;
+    aScanData = inData;
     update();
   }
 }
@@ -316,6 +316,8 @@ void AWLPlotScan::plotAScans(QPainter* p)
 
 void AWLPlotScan::paintEvent(QPaintEvent *p)
 {
+  Q_UNUSED(p);
+
   QPainter painter(this);
 
   plotAScans(&painter);
@@ -323,11 +325,13 @@ void AWLPlotScan::paintEvent(QPaintEvent *p)
 
 void AWLPlotScan::closeEvent(QCloseEvent * event)
 {
+	Q_UNUSED(event);
   emit closed();
 }
 
 void AWLPlotScan::resizeEvent(QResizeEvent * event)
 {
+	Q_UNUSED(event);
 	update();
 }
 

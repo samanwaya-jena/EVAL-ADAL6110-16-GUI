@@ -128,18 +128,18 @@ void TableView::slotConfigChanged()
 	AdjustTableSize();
 }
 
-void TableView::slotDetectionDataChanged(const Detection::Vector &data)
+void TableView::slotDetectionDataChanged(const Detection::Vector &inData)
 
 {
-	DisplayReceiverValues(data);
+	DisplayReceiverValues(inData);
 }
 
-void TableView::closeEvent(QCloseEvent * event)
+void TableView::closeEvent(QCloseEvent * /*event*/)
 {
 	emit closed();
 }
 
-void TableView::resizeEvent(QResizeEvent * event)
+void TableView::resizeEvent(QResizeEvent * /*event*/)
 {
 
 }
@@ -197,7 +197,6 @@ QSize TableView::minimumSizeHint() const
 	//Calculate height
 	QTableWidget *tableWidget = ui.distanceTable;
 	int rowCount = 4;
-	int tableHeight = 0;
 	newSize.setHeight(rowCount * (tableWidget->rowHeight(1)+1) + tableWidget->horizontalHeader()->height());
 
 	// Calculate the size of the frame around it.
@@ -308,7 +307,6 @@ void TableView::PrepareTableViews()
 
 	// Create the table widgets that will hold the data.  If required, add additional rows.
 	int row = 0;
-	int tableHeight = 0;
 	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
@@ -345,12 +343,11 @@ void TableView::AdjustTableSize()
 	setMaximumSize(maximumSizeHint());
 }
 
-void TableView::DisplayReceiverValues(const Detection::Vector &data)
+void TableView::DisplayReceiverValues(const Detection::Vector &inData)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 
 	QTableWidget *tableWidget = ui.distanceTable;
-	int rowCount = tableWidget->rowCount();
 	// Fill the table with blanks
 	int receiverCount = globalSettings->receiverSettings.size();
 	int tableRow = 0;
@@ -367,7 +364,7 @@ void TableView::DisplayReceiverValues(const Detection::Vector &data)
 	} // for receiverID
 
 	// Place the receiver data
-	BOOST_FOREACH(const Detection::Ptr & detection, data)
+	BOOST_FOREACH(const Detection::Ptr & detection, inData)
 	{
 		tableRow = detection->detectionID + (detection->channelID * displayedDetectionsPerChannel) + receiverFirstRow.at(detection->receiverID); 
 		if (detection->detectionID < displayedDetectionsPerChannel) AddDistanceToText(tableRow, tableWidget, detection);
@@ -411,6 +408,10 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 	QColor  threatBackgroundColor;
 	QColor  threatTextColor(Qt::white);
 	QColor  threatEmptyColor = Qt::transparent;
+
+	(void)acceleration;  // Not used
+	(void)timeToCollision;  // Not used
+	(void)decelerationToStop;  // Not used
 
 	if (rowIndex >= pTable->rowCount()) return;
 

@@ -182,17 +182,17 @@ protected:
 	// Return true if the data has changed since last request.
 	bool GetLatestDetections(Detection::Vector &detectionData);
 	bool GetLatestAScans(AScan::Vector &aScanData);
-	void closeEvent(QCloseEvent * event);
+	void closeEvent(QCloseEvent * /*event*/);
 
 	void FillChannelSelectList();
 
-	void FillFPGAList(AWLSettings *settingsPtr);
-	void FillADCList(AWLSettings *settingsPtr);
-	void FillGPIOList(AWLSettings *settingsPtr);
+	void FillFPGAList();
+	void FillADCList();
+	void FillGPIOList();
 
 	void UpdateGPIOList();
 
-	void ChangeRangeMax(int channelID, double range);
+	void ChangeRangeMax(int channelID, float range);
 
   //void  DoThreadLoop();
 

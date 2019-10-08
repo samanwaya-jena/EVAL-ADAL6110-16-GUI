@@ -170,8 +170,6 @@ void VideoViewer::ShowContextMenu(const QPoint& pos) // this is a slot
 
 void VideoViewer::slotVideoOptionsChangedAction()
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-
 	if (crosshairOptionAction->isChecked())
 	{
 		bDisplayCrosshair = true;
@@ -293,14 +291,12 @@ void VideoViewer::paintEvent(QPaintEvent* /*event*/)
 {
 	// Display the image
     QPainter painter(this);
-	int newWidth = width();
-	int newHeight = height();
 
     painter.drawImage(QPoint(0,0), qtEnhancedFrame.scaled(size(), Qt::KeepAspectRatio));
     painter.end();
 }
 
-void VideoViewer::resizeEvent(QResizeEvent * theEvent)
+void VideoViewer::resizeEvent(QResizeEvent * /*theEvent*/)
 {
 	displayScaleFactor = 1.0;
 	setBaseSize(sizeHint());
@@ -329,10 +325,10 @@ bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right)
 	if (left->threatLevel == right->threatLevel)
 	{
 		// Same distance from vehicle, sort from left to right
-		if (abs(left->relativeToVehicleCart.forward - right->relativeToVehicleCart.forward) < 0.01)
+		if (abs(left->relativeToVehicleCart.bodyRelative.forward - right->relativeToVehicleCart.bodyRelative.forward) < 0.01)
 		{
 			// Remember vehicle Y is positive going left, So we reverse the < operator.
-			if (left->relativeToVehicleCart.left > right->relativeToVehicleCart.left)
+			if (left->relativeToVehicleCart.bodyRelative.left > right->relativeToVehicleCart.bodyRelative.left)
 			{
 				return(true);
 			}
@@ -342,7 +338,7 @@ bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right)
 			}
 		}
 		// Not same depth, compare forward
-		else if (left->relativeToVehicleCart.forward < right->relativeToVehicleCart.forward)
+		else if (left->relativeToVehicleCart.bodyRelative.forward < right->relativeToVehicleCart.bodyRelative.forward)
 		{
 			return(true);
 		}
@@ -361,11 +357,11 @@ bool SortDetectionsInThreatLevel (Detection::Ptr &left, Detection::Ptr &right)
 	}
 }
 
-void VideoViewer::slotDetectionDataChanged(const Detection::Vector& data)
+void VideoViewer::slotDetectionDataChanged(const Detection::Vector& inData)
 {
 	// Make a copy of the provided Detection::Vector to work with
     detectionData.clear();
-	detectionData = data;
+	detectionData = inData;
 
 	// Sort the detection DataVect in threatLevel order
 	// This insures that most urgent threats are displayed last.
@@ -385,14 +381,8 @@ void VideoViewer::DisplayReceiverValues(QImage &sourceFrame, QPainter &painter, 
 
 void VideoViewer::DisplayTarget(QImage &sourceFrame, QPainter &painter, const Detection::Ptr &detection)
 {
-	int top;
-	int left;
-	int bottom;
-	int right;
-
 	CvRect rect;
 	QColor colorEnhance(Qt::black);
-	bool bFlash = false;
 	int thickness = -1;
 	GetDetectionColors(detection, colorEnhance, thickness);
 
@@ -554,7 +544,7 @@ void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  flo
 	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
-	lineCart = SphericalCoord(10, M_PI_2, DEG2RAD(-tickAngle));
+	lineCart = SphericalCoord(10., (float) M_PI_2, (float) DEG2RAD(-tickAngle));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
 	startPoint.y = (videoCapture->calibration.frameHeightInPixels - tickLength) / 2;
 	endPoint.y = startPoint.y + tickLength;
@@ -605,7 +595,6 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &co
 		bFlash = true;
 	}
 
-	int channelID = detection->channelID;
 	AlertCondition::ThreatLevel threatLevel = detection->threatLevel;
 
 	switch (threatLevel) 
@@ -659,10 +648,8 @@ void VideoViewer::GetDetectionColors(const Detection::Ptr &detection, QColor &co
 bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight)
 {	
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	AWLCoordinates *globalCoordinates = AWLCoordinates::GetGlobalCoordinates();
 	bool bSomePointsInFront = false;
 
-	float x, y;
 	int receiverID = detection->receiverID;
 	int channelID = detection->channelID;
 	int cameraID = videoCapture->GetCameraID();
@@ -724,7 +711,7 @@ void VideoViewer::DrawDetectionLine(QImage &sourceFrame, QPainter &painter, cons
 	painter.drawLine(QPoint(startPoint.x, startPoint.y), QPoint(endPoint.x, endPoint.y));
 }
 
-void VideoViewer::DrawVideoText(QImage &sourceFrame, QPainter &painter, const QRect &textRect, const QString &text)
+void VideoViewer::DrawVideoText(QImage & /*sourceFrame*/, QPainter &painter, const QRect &textRect, const QString &text)
 
 {
 	QFont font("Arial", 18);

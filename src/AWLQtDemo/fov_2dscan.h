@@ -113,9 +113,9 @@ public slots:
 
 
 protected :
-    void paintEvent(QPaintEvent *p);
-	void closeEvent(QCloseEvent * event);
-	void resizeEvent(QResizeEvent * event);
+    void paintEvent(QPaintEvent * /*p*/);
+	void closeEvent(QCloseEvent * /*event*/);
+	void resizeEvent(QResizeEvent * /*event*/);
 private:
 	//Action Item
 	Ui::FOV_2DScanFrame ui;

@@ -74,9 +74,7 @@ bool AWLSettings::ReadSettings()
 	receiverSettings.resize(receiverQty);
 	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
-		char receiverKeyString[128];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverIndex);
-		std::string receiverKey = receiverKeyString;
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverIndex);
 
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 
@@ -100,9 +98,7 @@ bool AWLSettings::ReadSettings()
 	cameraSettings.resize(cameraQty);
 	for (int cameraIndex = 0; cameraIndex < cameraQty; cameraIndex++)
 	{
-		char cameraKeyString[32];
-		sprintf(cameraKeyString, "config.cameras.camera%d", cameraIndex);
-		std::string cameraKey = cameraKeyString;
+		std::string cameraKey = std::string("config.cameras.camera") + std::to_string(cameraIndex);
 
 		boost::property_tree::ptree &cameraNode =  propTree.get_child(cameraKey);
 		CameraSettings *cameraPtr = &cameraSettings[cameraIndex];
@@ -179,9 +175,7 @@ bool AWLSettings::ReadSettings()
 	int alertConditionQty = propTree.get<int>("config.dynamicTesting.alertQty");
 	for (int alertConditionIndex = 0; alertConditionIndex < alertConditionQty; alertConditionIndex++)
 	{
-		char alertKeyString[32];
-		sprintf(alertKeyString, "config.dynamicTesting.alert%d", alertConditionIndex);
-		std::string alertKey = alertKeyString;
+		std::string alertKey = std::string("config.dynamicTesting.alert") + std::to_string(alertConditionIndex);
 
 		boost::property_tree::ptree &alertNode = propTree.get_child(alertKey);
 		AlertCondition::Ptr newAlert = AlertCondition::Ptr(new AlertCondition());
@@ -198,16 +192,16 @@ bool AWLSettings::StoreReceiverCalibration()
 {
 	// Create an empty property tree object
     using boost::property_tree::ptree;
-    ptree propTree;
+    ptree localPropTree;
 
 	// Load the XML file into the property tree. If reading fails
     // (cannot open file, parse error), an exception is thrown.
-    read_xml(sFileName, propTree);
+    read_xml(sFileName, localPropTree);
 
 
 #if 0
 	// Loop for all Receiver Configurations
-	BOOST_FOREACH(ptree::value_type &receiversNode, propTree.get_child("config.receivers"))
+	BOOST_FOREACH(ptree::value_type &receiversNode, localPropTree.get_child("config.receivers"))
 	{
 		if( receiversNode.first == "receiver" ) 
 		{
@@ -258,12 +252,12 @@ bool AWLSettings::StoreReceiverCalibration()
 		} // If receiversNode.first == "receiver"
 		receiversNode.put_child(receiverNode);
 	} // BOOST_FOREACH(ptree::value_type &receiversNode, propT
-	proptree->put_child(receiversNode);
+	localProptree->put_child(receiversNode);
 
 	// Write the XML file into the property tree. If reading fails
     // (cannot open file, parse error), an exception is thrown.
 	 boost::property_tree::xml_writer_settings<char> set(' ', 4);
-	write_xml("test.xml", propTree, std::locale(), set);
+	write_xml("test.xml", localPropTree, std::locale(), set);
 #endif
 	return (true);
 }
@@ -360,9 +354,8 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometr
 
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
-		char channelKeyString[32];
-		sprintf(channelKeyString, "channel%d", channelIndex);
-		std::string channelKey = channelKeyString;
+
+		std::string channelKey = std::string("channel") + std::to_string(channelIndex);
 
 		boost::property_tree::ptree &channelNode = channelGeometryNode.get_child(channelKey);
 
@@ -399,8 +392,8 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 
 	// Range Wraparound trick
 	Get2DPoint(channelGeometryNode.get_child("arraySize"), columnsFloat, rowsFloat);
-	columns = columnsFloat;
-	rows = rowsFloat;
+	columns = (int) columnsFloat;
+	rows = (int) rowsFloat;
 
 	Get2DPoint(channelGeometryNode.get_child("arrayFOV"), fovX, fovY);
 	Get2DPoint(channelGeometryNode.get_child("pixelSpacing"), spacingX, spacingY);
@@ -420,11 +413,8 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree &channelGe
 
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
-		int column = channelIndex % columns;
 		int row = channelIndex / columns;
-		char channelKeyString[32];
-		sprintf(channelKeyString, "displayColorLine%d", row);
-		std::string sColorKey = channelKeyString;
+		std::string sColorKey = std::string("displayColorLine") + std::to_string(row);
 		GetColor(channelGeometryNode.get_child(sColorKey), displayColorRed, displayColorGreen, displayColorBlue);
 
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
@@ -471,9 +461,9 @@ void AWLSettings::PutGeometry(boost::property_tree::ptree &geometryNode, float f
 
 void AWLSettings::PutColor(boost::property_tree::ptree &colorNode, uint8_t red, uint8_t green, uint8_t blue)
 {
-	colorNode.get<uint8_t>("red");
-	colorNode.get<uint8_t>("green");
-	colorNode.get<uint8_t>("blue");
+	colorNode.put<uint8_t>("red", red);
+	colorNode.put<uint8_t>("green", green);
+	colorNode.put<uint8_t>("blue", blue);
 }
 
 
@@ -487,16 +477,13 @@ void AWLSettings::PutChannelGeometry(boost::property_tree::ptree &channelGeometr
 
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
-		char channelKeyString[32];
-		sprintf(channelKeyString, "channel%d", channelIndex);
-		std::string channelKey = channelKeyString;
+		std::string channelKey = std::string("channel") + std::to_string(channelIndex);
 
 		boost::property_tree::ptree &channelNode = channelGeometryNode.put_child(channelKey, boost::property_tree::ptree(""));
 
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
 		channelConfigPtr->channelIndex = channelIndex;
 		Put2DPoint(channelNode.put_child("fov", boost::property_tree::ptree("")), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		float roll;
 		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
 
 		PutColor(channelNode.put_child("displayColor", boost::property_tree::ptree("")),

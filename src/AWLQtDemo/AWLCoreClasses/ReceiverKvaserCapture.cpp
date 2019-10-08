@@ -262,7 +262,7 @@ void ReceiverKvaserCapture::DoOneThreadIteration()
 
 				msg.id = (unsigned long)inMessage.id;
 				msg.timestamp = (unsigned long)inMessage.timestamp;
-				msg.len = (int)inMessage.len;
+				msg.len = (uint8_t)inMessage.len;
 				for (int i = 0; i < 8; i++)
 				{
 					msg.data[i] = inMessage.data[i];
@@ -311,9 +311,7 @@ bool ReceiverKvaserCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 {
 		ReceiverCANCapture::ReadConfigFromPropTree(propTree);
 
-		char receiverKeyString[32];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-		std::string receiverKey = receiverKeyString;
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 		boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 		// Communication parameters

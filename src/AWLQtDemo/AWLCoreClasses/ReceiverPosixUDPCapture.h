@@ -68,7 +68,7 @@ public:
       */
 
 	ReceiverPosixUDPCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-		               const std::string &inAddress, int inUDPPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
+		               const std::string &inAddress, int inUDPPort, const ReceiverCANCapture::eReceiverCANRate /*inCANBitRate*/,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,

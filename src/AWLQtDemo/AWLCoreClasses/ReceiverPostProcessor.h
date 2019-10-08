@@ -103,7 +103,7 @@ protected:
 	  * \return Time to collision predicted at (currentTime + deltaTime)
 	  * \remarks  arguments use acceleration, not deceleration! Positive acceleration means object is moving away.
       */
-	float PredictTTC(float distance, float speed, float acceleration, float deltaTime);
+	float PredictTTC(float /*distance*/, float speed, float acceleration, float deltaTime);
 
 
 };

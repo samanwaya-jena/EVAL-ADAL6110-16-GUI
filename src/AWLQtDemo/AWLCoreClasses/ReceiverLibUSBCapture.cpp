@@ -179,7 +179,7 @@ bool  ReceiverLibUSBCapture::CloseCANPort()
 
   if (handle)
   {
-    int ret = libusb_release_interface((libusb_device_handle *)handle, 0);
+    libusb_release_interface((libusb_device_handle *)handle, 0);
 
     libusb_close((libusb_device_handle *)handle);
 
@@ -197,17 +197,15 @@ bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 {
 	ReceiverPolledCapture::ReadConfigFromPropTree(propTree);
 
-	char receiverKeyString[32];
-	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-	std::string receiverKey = receiverKeyString;
+	std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters
 
 	usbVendorId =  receiverNode.get<int>("libUsbVendorId", 1419);
 	usbProductId =  receiverNode.get<int>("libUsbProductId",80);
-	usbEndPointIn =  receiverNode.get<int>("libUsbEndPointIn", 129);
-	usbEndPointOut =  receiverNode.get<int>("libUsbEndPointOut", 2);
+	usbEndPointIn =  (unsigned char) receiverNode.get<int>("libUsbEndPointIn", 129);
+	usbEndPointOut =  (unsigned char) receiverNode.get<int>("libUsbEndPointOut", 2);
 	usbTimeOut =  receiverNode.get<int>("libUsbTimeOut", 1000);
 
 

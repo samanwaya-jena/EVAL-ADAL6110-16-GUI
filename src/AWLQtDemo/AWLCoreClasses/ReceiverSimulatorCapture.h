@@ -66,7 +66,7 @@ public:
       */
 
 	ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+					   uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers);
 
@@ -89,7 +89,10 @@ public:
       * \return true if success.  false on error
 	  * \remarks In Simulation, does nothing. Returns true.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask) {return(true);};
+	virtual bool StartCalibration(uint8_t /*frameQty*/, float /*beta*/, ChannelMask /*channelMask*/) 
+	{ 
+		return(true); 
+	};
 
 		/** \brief Issues the command to set the current algorithm in the sensor.
 	  *\param[in] algorigthmID  ID of the selected algorithm.
@@ -97,7 +100,10 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 		
-	virtual bool SetAlgorithm(uint16_t algorithmID) {return(true);};
+	virtual bool SetAlgorithm(uint16_t /*algorithmID*/)
+	{
+		return(true);
+	};
 
 	/** \brief Issues the command to set the current Tracker in the sensor.
 	*\param[in] trackerID  ID of the selected algorithm.
@@ -105,48 +111,52 @@ public:
 	* \remarks In Simulation, does nothing. Returns true.
 	*/
 
-	virtual bool SetTracker(uint16_t trackerID) { return(true); };
+	virtual bool SetTracker(uint16_t /*trackerID*/)
+	{
+		return(true);
+	};
 
-	/** \brief Sets an internal FPGA register to the value sent as argument. 
-	  *\param[in] registerAddress Adrress of the register to change.
-	  *\param[in] registerValue Value to put into register.
+
+	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
+   *  \return true if success.  false on error.
+   */
+	virtual bool SetSSPFrameRate(int /*frameRate*/ ) {
+			return(true); };
+
+   
+	/** \brief Issues the command to enable the sensor.
+	 * \return true if success.  false on error.
+	 */
+	virtual bool SetSSPSystemEnable(bool /*on*/) { return(true); };
+
+  
+	/** \brief Issues the command to enable the Laser.
+	   * \return true if success.  false on error.
+	   */
+	virtual bool SetSSPLaserEnable(bool /*on*/) { return(true); };
+
+   
+	/** \brief Issues the command to enable the Auto Gain.
+   * \return true if success.  false on error.
+   */
+	virtual bool SetSSPAutoGainEnable(bool /*on*/) { return(true); };
+
+ 
+	/** \brief Issues the command to enable the DC Balance.
 	* \return true if success.  false on error.
-	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-	
-        virtual bool SetSSPFrameRate(int FrameRate ) { return(true); };
+	virtual bool SetSSPDCBalanceEnable(bool /*on*/) { return(true); };
 
-        /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
-        * \return true if success.  false on error.
-        */
+  
 
-        virtual bool SetSSPSystemEnable(bool on) { return(true); };
+		/** \brief Sets an internal FPGA register to the value sent as argument.
+		  *\param[in] registerAddress Adrress of the register to change.
+		  *\param[in] registerValue Value to put into register.
+		* \return true if success.  false on error.
+		  * \remarks In Simulation, does nothing. Returns true.
+		*/
 
-        /** \brief Issues the command to enable the sensor.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool SetSSPLaserEnable(bool on) { return(true); };
-
-        /** \brief Issues the command to enable the Laser.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool SetSSPAutoGainEnable(bool on) { return(true); };
-
-        /** \brief Issues the command to enable the Auto Gain.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool SetSSPDCBalanceEnable(bool on) { return(true); };
-
-        /** \brief Issues the command to enable the DC Balance.
-        * \return true if success.  false on error.
-        */
-
-
-
-	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) {return(true);};
+	virtual bool SetFPGARegister(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets an ADC register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -154,7 +164,7 @@ public:
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-	virtual bool SetADCRegister(uint16_t registerAddress, uint32_t registerValue) {return(true);};
+	virtual bool SetADCRegister(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets an internal GPIO register to the value sent as argument. 
 	  *\param[in] registerAddress Adrress of the register to change.
@@ -163,7 +173,7 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 		
-	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue) {return(true);};
+	virtual bool SetGPIORegister(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets algorithm parameters to the value sent as argument. 
 	  *\param[in] algoID ID of the detection algo affected by the change.
@@ -173,7 +183,7 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 		
-	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue) {return(true);};
+	virtual bool SetAlgoParameter(int /*algoID*/, uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
@@ -183,7 +193,7 @@ public:
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
 		
-	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) {return(true);};
+	virtual bool SetGlobalAlgoParameter(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets tracker parameters to the value sent as argument.
 	*\param[in] trackerID ID of the tracker algo affected by the change.
@@ -193,7 +203,7 @@ public:
 	* \remarks In Simulation, does nothing. Returns true.
 	*/
 
-	virtual bool SetTrackerParameter(int trackerID, uint16_t registerAddress, uint32_t registerValue) { return(true); };
+	virtual bool SetTrackerParameter(int /*trackerID*/, uint16_t /*registerAddress*/, uint32_t /*registerValue*/) { return(true); };
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
 	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -202,7 +212,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask);
+	virtual bool SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/);
 
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.
@@ -223,21 +233,21 @@ public:
 	  * \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
-	virtual bool QueryFPGARegister(uint16_t registerAddress) {return(true);};
+	virtual bool QueryFPGARegister(uint16_t /*registerAddress*/) {return(true);};
 
 	/** \brief Send an asynchronous query command for an ADC register. 
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
-	virtual bool QueryADCRegister(uint16_t registerAddress) {return(true);};
+	virtual bool QueryADCRegister(uint16_t /*registerAddress*/) {return(true);};
 
 	/** \brief Send an asynchronous query command for a GPIO register. 
 		 *\param[in] registerAddress Adrress of the register to query.
 	  * \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
-	virtual bool QueryGPIORegister(uint16_t registerAddress) {return(true);};
+	virtual bool QueryGPIORegister(uint16_t /*registerAddress*/) {return(true);};
 
 	/** \brief Send an asynchronous query command for an algorithm parameter. 
 		  *\param[in] algoID ID of the detection algo for which we want to query.
@@ -245,7 +255,7 @@ public:
 	  * \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 		*/
-	virtual bool QueryAlgoParameter(int algoID, uint16_t registerAddress) {return(true);};
+	virtual bool QueryAlgoParameter(int /*algoID*/, uint16_t /*registerAddress*/) {return(true);};
 
 		/** \brief Send an asynchronous query command for a global algorithm parameter. 
 		  *\param[in] algoID ID of the detection algo for which we want to query.
@@ -284,7 +294,7 @@ public:
         * \return true if success.  false on error.
         */
 
-	virtual bool QueryGlobalAlgoParameter(uint16_t registerAddress) {return(true);};
+	virtual bool QueryGlobalAlgoParameter(uint16_t /*registerAddress*/) {return(true);};
 
 	/** \brief Send an asynchronous query command for a Tracker parameter.
 	*\param[in] trackerID ID of the Tracker algo for which we want to query.
@@ -292,7 +302,7 @@ public:
 	* \return true if success.  false on error.
 	* \remarks In Simulation, does nothing. Returns true.
 	*/
-	virtual bool QueryTrackerParameter(int algoID, uint16_t registerAddress) { return(true); };
+	virtual bool QueryTrackerParameter(int /*algoID*/, uint16_t /*registerAddress*/) { return(true); };
 
 // Protected methods
 protected:

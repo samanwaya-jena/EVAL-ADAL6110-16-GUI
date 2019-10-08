@@ -81,7 +81,7 @@ public Q_SLOTS:
     virtual void timerEvent( QTimerEvent * );
 
 protected:
-	void	closeEvent(QCloseEvent * event);
+	void	closeEvent(QCloseEvent * /*event*/);
 
 	void updateCurveDataRaw();
 

@@ -108,7 +108,7 @@ protected:
 
 	/** \brief Resize the window to fit the screen.
       */
-	void resizeEvent(QResizeEvent * event);
+	void resizeEvent(QResizeEvent * /*event*/);
 
 	void DisplayReceiverValues(QImage &sourceFame, QPainter& painter, const Detection::Vector & data);
 

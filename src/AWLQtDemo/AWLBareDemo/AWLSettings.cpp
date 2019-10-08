@@ -73,9 +73,7 @@ bool AWLSettings::ReadSettings()
 	receiverSettings.resize(receiverQty);
 	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
-		char receiverKeyString[128];
-		sprintf(receiverKeyString, "config.receivers.receiver%d", receiverIndex);
-		std::string receiverKey = receiverKeyString;
+		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverIndex);
 
 		boost::property_tree::ptree& receiverNode = propTree.get_child(receiverKey);
 
@@ -99,9 +97,7 @@ bool AWLSettings::ReadSettings()
 	cameraSettings.resize(cameraQty);
 	for (int cameraIndex = 0; cameraIndex < cameraQty; cameraIndex++)
 	{
-		char cameraKeyString[32];
-		sprintf(cameraKeyString, "config.cameras.camera%d", cameraIndex);
-		std::string cameraKey = cameraKeyString;
+		std::string cameraKey = std::string("config.cameras.camera") + std::to_string(cameraIndex);
 
 		boost::property_tree::ptree& cameraNode = propTree.get_child(cameraKey);
 		CameraSettings* cameraPtr = &cameraSettings[cameraIndex];
@@ -178,9 +174,7 @@ bool AWLSettings::ReadSettings()
 	int alertConditionQty = propTree.get<int>("config.dynamicTesting.alertQty");
 	for (int alertConditionIndex = 0; alertConditionIndex < alertConditionQty; alertConditionIndex++)
 	{
-		char alertKeyString[32];
-		sprintf(alertKeyString, "config.dynamicTesting.alert%d", alertConditionIndex);
-		std::string alertKey = alertKeyString;
+		std::string alertKey = std::string("config.dynamicTesting.alert") + std::to_string(alertConditionIndex);
 
 		boost::property_tree::ptree& alertNode = propTree.get_child(alertKey);
 		AlertCondition::Ptr newAlert = AlertCondition::Ptr(new AlertCondition());
@@ -359,9 +353,7 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree& channelGeometr
 
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
-		char channelKeyString[32];
-		sprintf(channelKeyString, "channel%d", channelIndex);
-		std::string channelKey = channelKeyString;
+		std::string channelKey = std::string("channel") + std::to_string(channelIndex);
 
 		boost::property_tree::ptree& channelNode = channelGeometryNode.get_child(channelKey);
 
@@ -398,8 +390,8 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree& channelGe
 
 	// Range Wraparound trick
 	Get2DPoint(channelGeometryNode.get_child("arraySize"), columnsFloat, rowsFloat);
-	columns = columnsFloat;
-	rows = rowsFloat;
+	columns = (int) columnsFloat;
+	rows = (int) rowsFloat;
 
 	Get2DPoint(channelGeometryNode.get_child("arrayFOV"), fovX, fovY);
 	Get2DPoint(channelGeometryNode.get_child("pixelSpacing"), spacingX, spacingY);
@@ -421,9 +413,7 @@ void AWLSettings::GetChannelGeometryArray(boost::property_tree::ptree& channelGe
 	{
 		int column = channelIndex % columns;
 		int row = channelIndex / columns;
-		char channelKeyString[32];
-		sprintf(channelKeyString, "displayColorLine%d", row);
-		std::string sColorKey = channelKeyString;
+		std::string sColorKey = std::string("displayColorLine") + std::to_string(row);
 		GetColor(channelGeometryNode.get_child(sColorKey), displayColorRed, displayColorGreen, displayColorBlue);
 
 		ChannelConfig* channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
@@ -486,16 +476,13 @@ void AWLSettings::PutChannelGeometry(boost::property_tree::ptree& channelGeometr
 
 	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
 	{
-		char channelKeyString[32];
-		sprintf(channelKeyString, "channel%d", channelIndex);
-		std::string channelKey = channelKeyString;
+		std::string channelKey = std::string("channel") + std::to_string(channelIndex);
 
 		boost::property_tree::ptree& channelNode = channelGeometryNode.put_child(channelKey, boost::property_tree::ptree(""));
 
 		ChannelConfig* channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
 		channelConfigPtr->channelIndex = channelIndex;
 		Put2DPoint(channelNode.put_child("fov", boost::property_tree::ptree("")), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		float roll;
 		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
 
 		PutColor(channelNode.put_child("displayColor", boost::property_tree::ptree("")),

@@ -63,7 +63,7 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds ev
 const size_t bufferSize = 5192;
 
 ReceiverPosixUDPCapture::ReceiverPosixUDPCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-	                   const std::string &inAddress, int inUDPPort, const ReceiverCANCapture::eReceiverCANRate inCANBitRate,
+	                   const std::string &inAddress, int inUDPPort, const ReceiverCANCapture::eReceiverCANRate /*inCANBitRate*/,
 					   int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers) :
@@ -148,14 +148,12 @@ bool  ReceiverPosixUDPCapture::OpenCANPort()
 	memset(udp_srv_addr, 0, sizeof(sockaddr_in));
 	udp_srv_addr->sin_family = AF_INET;
 	udp_srv_addr->sin_addr.s_addr = inet_addr(serverAddress.c_str());
-	udp_srv_addr->sin_port = htons(serverUDPPort);
+	udp_srv_addr->sin_port = (USHORT) htons((USHORT)serverUDPPort);
 
 	memset(udp_cli_addr, 0, sizeof(sockaddr_in));
 	udp_cli_addr->sin_family = AF_INET;
 	udp_cli_addr->sin_addr.s_addr = htonl(INADDR_ANY);
 	udp_cli_addr->sin_port = htons(0);
-
-	printf("UDP Using interface %s port %d\n", serverAddress.c_str(), serverUDPPort);
 
 	ret = ::bind(fd, (struct sockaddr*)udp_cli_addr, (int) sizeof(sockaddr_in));
 	if (ret < 0) {
@@ -239,7 +237,7 @@ void ReceiverPosixUDPCapture::DoOneThreadIteration()
 			msg.id  = buffer[0];
 			//printf ("UDP %08x\n", msg.id);
 			if (msg.id < 0x60) {
-				msg.len = ret - sizeof(uint32_t);
+				msg.len = (uint8_t) (ret - sizeof(uint32_t));
 				for (int i = 0; i < 8 && i < msg.len; i ++) {
 					msg.data[i] = buffer[sizeof(uint32_t)+i];
 				}
@@ -257,7 +255,6 @@ bool ReceiverPosixUDPCapture::WriteMessage(const AWLCANMessage &inMsg)
 {
 	uint8_t buffer[256];
 	uint32_t* buf32;
-	size_t size = sizeof(buffer);
 	size_t offset = 0;
 	int ret;
 
@@ -285,9 +282,7 @@ bool ReceiverPosixUDPCapture::ReadConfigFromPropTree(boost::property_tree::ptree
 {
 	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
 
-	char receiverKeyString[32];
-	sprintf(receiverKeyString, "config.receivers.receiver%d", receiverID);
-	std::string receiverKey = receiverKeyString;
+	std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);
 
 	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
 	// Communication parameters

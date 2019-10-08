@@ -34,25 +34,27 @@ using namespace awl;
 #define M_PI_2     1.57079632679489661923
 #endif
 
-CartesianCoord::CartesianCoord():
-x(0.0),
-y(0.0),
-z(0.0)
+CartesianCoord::CartesianCoord()
+
 {
+	cartesian.x = 0.0;
+	cartesian.y = 0.0;
+	cartesian.z = 0.0;
 }
 
-CartesianCoord::CartesianCoord(float inX, float inY, float inZ):
-x(inX),
-y(inY),
-z(inZ)
+CartesianCoord::CartesianCoord(float inX, float inY, float inZ)
+
 {
+	cartesian.x = inX;
+	cartesian.y = inY;
+	cartesian.z = inZ;
 }
 
 CartesianCoord::CartesianCoord(const CartesianCoord &inCartesian)
 {
-	x = inCartesian.x;
-	y = inCartesian.y;
-	z = inCartesian.z;
+	cartesian.x = inCartesian.cartesian.x;
+	cartesian.y = inCartesian.cartesian.y;
+	cartesian.z = inCartesian.cartesian.z;
 }
 
 CartesianCoord::CartesianCoord(const SphericalCoord &inSpherical)
@@ -62,16 +64,16 @@ CartesianCoord::CartesianCoord(const SphericalCoord &inSpherical)
 
 CartesianCoord::CartesianCoord(const TransformationVector &inVect)
 {
-	x = inVect.vect[0];
-	y = inVect.vect[1];
-	z = inVect.vect[2];
+	cartesian.x = inVect.vect[0];
+	cartesian.y = inVect.vect[1];
+	cartesian.z = inVect.vect[2];
 }
 
 void CartesianCoord::Set(float inX, float inY, float inZ)
 {
-	x = inX;
-	y = inY;
-	z = inZ;
+	cartesian.x = inX;
+	cartesian.y = inY;
+	cartesian.z = inZ;
 }
 
 // Convert from cartesian to spherical 
@@ -82,16 +84,16 @@ SphericalCoord CartesianCoord::ToSpherical(const CartesianCoord &inCartesian)
 {
 	SphericalCoord spherical;
 
-	spherical.rho = sqrt((inCartesian.x*inCartesian.x) + (inCartesian.y*inCartesian.y) + (inCartesian.z * inCartesian.z));
+	spherical.rho = sqrt((inCartesian.cartesian.x*inCartesian.cartesian.x) + (inCartesian.cartesian.y*inCartesian.cartesian.y) + (inCartesian.cartesian.z * inCartesian.cartesian.z));
 
 	if (spherical.rho != 0.0)
 	{
-		spherical.theta = acos(inCartesian.z/spherical.rho);
+		spherical.theta = acos(inCartesian.cartesian.z/spherical.rho);
 	}
 
-	if (inCartesian.x != 0.0) 
+	if (inCartesian.cartesian.x != 0.0) 
 	{
-		spherical.phi = atan(inCartesian.y / inCartesian.x);
+		spherical.phi = atan(inCartesian.cartesian.y / inCartesian.cartesian.x);
 	}
 
 	return(spherical);
@@ -107,9 +109,9 @@ CartesianCoord& CartesianCoord::operator=(const SphericalCoord &sourceSpherical)
 CartesianCoord& CartesianCoord::operator=(const TransformationVector &inVector)
 
 {
-	x = inVector.vect[0];
-	y = inVector.vect[1];
-	z = inVector.vect[2];
+	cartesian.x = inVector.vect[0];
+	cartesian.y = inVector.vect[1];
+	cartesian.z = inVector.vect[2];
 	return(*this);
 }
 
@@ -164,12 +166,12 @@ void SphericalCoord::Set(float inRho, float inTheta, float inPhi)
 
 CartesianCoord SphericalCoord::ToCartesian(const SphericalCoord &inSpherical)
 {
-	CartesianCoord cartesian;
+	CartesianCoord localCartesian;
 	float sinTheta = sin(inSpherical.theta);
-	cartesian.x = inSpherical.rho * cos(inSpherical.phi) * sinTheta;
-	cartesian.y = inSpherical.rho * sin(inSpherical.phi)* sinTheta;
-	cartesian.z = inSpherical.rho * cos(inSpherical.theta);
-	return(cartesian);
+	localCartesian.cartesian.x = inSpherical.rho * cos(inSpherical.phi) * sinTheta;
+	localCartesian.cartesian.y = inSpherical.rho * sin(inSpherical.phi)* sinTheta;
+	localCartesian.cartesian.z = inSpherical.rho * cos(inSpherical.theta);
+	return(localCartesian);
 }
 
 CartesianCoord SphericalCoord::ToCartesian() const 
@@ -313,15 +315,15 @@ TransformationMatrix::TransformationMatrix(const CartesianCoord &inCartesian, co
 	 matrix[0][0] = cosAlpha * cosBeta;
 	 matrix[0][1] = (cosAlpha * sinBeta * sinGamma) - (sinAlpha * cosGamma);
 	 matrix[0][2] = (cosAlpha * sinBeta *cosGamma) + (sinAlpha * sinGamma);
-	 matrix[0][3] = inCartesian.x;       
+	 matrix[0][3] = inCartesian.cartesian.x;
 	 matrix[1][0] = sinAlpha * cosBeta;
 	 matrix[1][1] = (sinAlpha * sinBeta * sinGamma) + (cosAlpha * cosGamma);
 	 matrix[1][2] = (sinAlpha * sinBeta * cosGamma) - (cosAlpha * sinGamma);     
-	 matrix[1][3] = inCartesian.y;       
+	 matrix[1][3] = inCartesian.cartesian.y;
 	 matrix[2][0] = -sinBeta;     
 	 matrix[2][1] = cosBeta * sinGamma;     
 	 matrix[2][2] = cosBeta * cosGamma;
-	 matrix[2][3] = inCartesian.z;       
+	 matrix[2][3] = inCartesian.cartesian.z;
 	 matrix[3][0] = 0.0;     
 	 matrix[3][1] = 0.0;     
 	 matrix[3][2] = 0.0;     
@@ -338,15 +340,15 @@ TransformationMatrix& TransformationMatrix::operator=(const CartesianCoord &inCa
 	matrix[0][0] = 1;
 	matrix[0][1] = 0;
 	matrix[0][2] = 0;
-	matrix[0][3] = inCartesian.x;       
+	matrix[0][3] = inCartesian.cartesian.x;
 	matrix[1][0] = 0;
 	matrix[1][1] = 1;
 	matrix[1][2] = 0;     
-	matrix[1][3] = inCartesian.y;       
+	matrix[1][3] = inCartesian.cartesian.y;
 	matrix[2][0] = 0;     
 	matrix[2][1] = 0;     
 	matrix[2][2] = 1;
-	matrix[2][3] = inCartesian.z;       
+	matrix[2][3] = inCartesian.cartesian.z;
 	matrix[3][0] = 0.0;     
 	matrix[3][1] = 0.0;     
 	matrix[3][2] = 0.0;     
@@ -362,15 +364,15 @@ TransformationMatrix& TransformationMatrix::operator=(const SphericalCoord &inSp
 	matrix[0][0] = 1;
 	matrix[0][1] = 0;
 	matrix[0][2] = 0;
-	matrix[0][3] = cartesian.x;       
+	matrix[0][3] = cartesian.cartesian.x;
 	matrix[1][0] = 0;
 	matrix[1][1] = 1;
 	matrix[1][2] = 0;     
-	matrix[1][3] = cartesian.y;       
+	matrix[1][3] = cartesian.cartesian.y;
 	matrix[2][0] = 0;     
 	matrix[2][1] = 0;     
 	matrix[2][2] = 1;
-	matrix[2][3] = cartesian.z;       
+	matrix[2][3] = cartesian.cartesian.z;
 	matrix[3][0] = 0.0;     
 	matrix[3][1] = 0.0;     
 	matrix[3][2] = 0.0;     
@@ -420,15 +422,15 @@ TransformationMatrix& TransformationMatrix::operator=(const RelativePosition &in
 	 matrix[0][0] = cosAlpha * cosBeta;
 	 matrix[0][1] = (cosAlpha * sinBeta * sinGamma) - (sinAlpha * cosGamma);
 	 matrix[0][2] = (cosAlpha * sinBeta *cosGamma) + (sinAlpha * sinGamma);
-	 matrix[0][3] = inRelativePosition.position.x;       
+	 matrix[0][3] = inRelativePosition.position.cartesian.x;
 	 matrix[1][0] = sinAlpha * cosBeta;
 	 matrix[1][1] = (sinAlpha * sinBeta * sinGamma) + (cosAlpha * cosGamma);
 	 matrix[1][2] = (sinAlpha * sinBeta * cosGamma) - (cosAlpha * sinGamma);     
-	 matrix[1][3] = inRelativePosition.position.y;       
+	 matrix[1][3] = inRelativePosition.position.cartesian.y;
 	 matrix[2][0] = -sinBeta;     
 	 matrix[2][1] = cosBeta * sinGamma;     
 	 matrix[2][2] = cosBeta * cosGamma;
-	 matrix[2][3] = inRelativePosition.position.z;       
+	 matrix[2][3] = inRelativePosition.position.cartesian.z;
 	 matrix[3][0] = 0.0;     
 	 matrix[3][1] = 0.0;     
 	 matrix[3][2] = 0.0;     
@@ -485,9 +487,9 @@ TransformationVector::TransformationVector()
 
 TransformationVector::TransformationVector(const CartesianCoord &inCartesian)
 {
-	vect[0] = inCartesian.x;
-	vect[1] = inCartesian.y;
-	vect[2] = inCartesian.z;
+	vect[0] = inCartesian.cartesian.x;
+	vect[1] = inCartesian.cartesian.y;
+	vect[2] = inCartesian.cartesian.z;
 	vect[3] = 1.0;
 }
 
@@ -503,9 +505,9 @@ TransformationVector::TransformationVector(const Orientation &inOrientation)
 
 TransformationVector& TransformationVector::operator=(const CartesianCoord &inCartesian)
 {
-	vect[0] = inCartesian.x;
-	vect[1] = inCartesian.y;
-	vect[2] = inCartesian.z;
+	vect[0] = inCartesian.cartesian.x;
+	vect[1] = inCartesian.cartesian.y;
+	vect[2] = inCartesian.cartesian.z;
 	vect[3] = 1.0;
 
 	return(*this);
@@ -516,9 +518,9 @@ TransformationVector& TransformationVector::operator=(const SphericalCoord &inSp
 {
 	CartesianCoord cartesian(inSpherical);
 
-	vect[0] = cartesian.x;
-	vect[1] = cartesian.y;
-	vect[2] = cartesian.z;
+	vect[0] = cartesian.cartesian.x;
+	vect[1] = cartesian.cartesian.y;
+	vect[2] = cartesian.cartesian.z;
 	vect[3] = 1.0;
 
 	return(*this);
@@ -753,12 +755,12 @@ CartesianCoord TransformationNode::FromReferenceCoord(eCoordLevel inLevel, const
 
 
 
-bool awl::CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY,  double barrelK1, double barrelK2)
+bool awl::CameraCoordToFrameXY(float cameraFovWidthInRad, float /*cameraFovHeightInRad*/, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY,  float barrelK1, float barrelK2)
 
 {
 	bool bInFront = false;
 
-	if (coordInCameraCart.x < 0)
+	if (coordInCameraCart.cartesian.x < 0)
 	{
 		bInFront = false;
 	}
@@ -769,14 +771,14 @@ bool awl::CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeigh
 
 	
 	// Insert all of the known camera parameters 
-	double focal = 1/(tan(cameraFovWidthInRad/2.0));
-	double principalX = 0; // Ignored. We assume sensor is centered perfectly in FOV
-	double principalY = 0; // Ignored.  We assume sensor is centered perfectly in FOV
-	double aspectRatioX = 1; // Ignored. We assume square pixels
-	double aspectRatioY = 1; // Ignored.  We assume square pixels.
-	double skew = 0.0;	// Ignored.  We assume perpendicular plane always
-	double far = -(coordInCameraCart.x * 1.5);
-	double near = -0.01;
+	float focal = (float) (1/(tan(cameraFovWidthInRad/2.0)));
+	float principalX = 0; // Ignored. We assume sensor is centered perfectly in FOV
+	float principalY = 0; // Ignored.  We assume sensor is centered perfectly in FOV
+	float aspectRatioX = 1; // Ignored. We assume square pixels
+	float aspectRatioY = 1; // Ignored.  We assume square pixels.
+	float skew = 0.0;	// Ignored.  We assume perpendicular plane always
+	float far = (float) (-(coordInCameraCart.cartesian.x * 1.5));
+	float near = (float) -0.01;
 
 	// Make the Camera perpective transformation matrix
 	TransformationMatrix cameraMatrix;
@@ -801,9 +803,9 @@ bool awl::CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeigh
 	// Most of our camera projection equations areright handed, with Z facing behind camera.
 	// But here is the case were we use the 
 	TransformationVector position;
-	position.vect[0] = -coordInCameraCart.left;
-	position.vect[1] = coordInCameraCart.up;
-	position.vect[2] = -coordInCameraCart.forward;
+	position.vect[0] = -coordInCameraCart.bodyRelative.left;
+	position.vect[1] = coordInCameraCart.bodyRelative.up;
+	position.vect[2] = -coordInCameraCart.bodyRelative.forward;
 	position.vect[3] = 1;
 
 	//	Normalize
@@ -811,18 +813,18 @@ bool awl::CameraCoordToFrameXY(double cameraFovWidthInRad, double cameraFovHeigh
 	if (result.vect[3] != 1.0) result = (1/result.vect[3]) * result ;
 
 	//	Calculate the barrel parameters
-	double xCalc = result.vect[0];
-	double yCalc = result.vect[1];
+	float xCalc = result.vect[0];
+	float yCalc = result.vect[1];
 
-	double r2 = (xCalc * xCalc) + (yCalc * yCalc);
+	float r2 = (xCalc * xCalc) + (yCalc * yCalc);
 
-	double xBarrelled = xCalc * (1 + (barrelK1 * r2) + (barrelK2 * r2 * r2));
-	double yBarrelled = yCalc * (1 + (barrelK1 * r2) + (barrelK2 * r2 * r2));
+	float xBarrelled = xCalc * (1 + (barrelK1 * r2) + (barrelK2 * r2 * r2));
+	float yBarrelled = yCalc * (1 + (barrelK1 * r2) + (barrelK2 * r2 * r2));
 
 	// Convert to camera pixels
 
-	cameraX = (xBarrelled+1) * 0.5 * frameWidthInPixels;
-	cameraY = (1-(yBarrelled)) * 0.5 *  frameHeightInPixels;
+	cameraX = (int) (((xBarrelled+1) * 0.5) * frameWidthInPixels);
+	cameraY = (int) (((1-(yBarrelled)) * 0.5) * frameHeightInPixels);
 
 	return(bInFront);
 }
@@ -835,7 +837,7 @@ CameraCalibration::CameraCalibration(int inFrameWidthInPixels, int inFrameHeight
 					  float inRadialK1, float inRadialK2, float inRadialK3, 
 					  float inTangentialP1, float inTangentialP2):
 frameWidthInPixels(inFrameWidthInPixels),
-frameHeightInPixels(inFrameHeightInPixels),
+frameHeightInPixels( inFrameHeightInPixels),
 focalLengthX(inFocalLengthX),
 focalLengthY(inFocalLengthY),
 centerX(inCenterX),
@@ -846,20 +848,22 @@ radialK3(inRadialK3),
 tangentialP1(inTangentialP1),
 tangentialP2(inTangentialP2)
 {
+	(void)inFovHeight;
+	(void)inFovWidth;
 }
 
 void CameraCalibration::CalculateFocalLengthsFromFOVs()
 
 {
-	focalLengthX = 1/(tan(fovWidth/2.0));  // Right now, assume square pixels
-	focalLengthY = 1/(tan(fovWidth/2.0)); // Right now, assume square pixels. And symmetrical lens/sensor. This is why we use width on Y axis.
+	focalLengthX = (float) (1/(tan(fovWidth/2.0)));  // Right now, assume square pixels
+	focalLengthY = (float) (1/(tan(fovWidth/2.0))); // Right now, assume square pixels. And symmetrical lens/sensor. This is why we use width on Y axis.
 }
 
 bool CameraCalibration::ToFrameXY(const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY) const
 {
 	bool bInFront = false;
 
-	if (coordInCameraCart.x < 0)
+	if (coordInCameraCart.cartesian.x < 0)
 	{
 		bInFront = false;
 	}
@@ -870,8 +874,8 @@ bool CameraCalibration::ToFrameXY(const CartesianCoord &coordInCameraCart, int &
 
 	
 	// Insert all of the known camera parameters 
-	float far = -(coordInCameraCart.x * 1.5);
-	float near = -0.01;
+	float far = (float) (-(coordInCameraCart.cartesian.x * 1.5));
+	float near = (float) -0.01;
 
 	// Make the Camera perpective transformation matrix
 	TransformationMatrix cameraMatrix;
@@ -896,9 +900,9 @@ bool CameraCalibration::ToFrameXY(const CartesianCoord &coordInCameraCart, int &
 	// Most of our camera projection equations are left handed, with X facing outside camera.
 	// But our local equations have 
 	TransformationVector position;
-	position.vect[0] = -coordInCameraCart.left;
-	position.vect[1] = coordInCameraCart.up;
-	position.vect[2] = -coordInCameraCart.forward;
+	position.vect[0] = -coordInCameraCart.bodyRelative.left;
+	position.vect[1] = coordInCameraCart.bodyRelative.up;
+	position.vect[2] = -coordInCameraCart.bodyRelative.forward;
 	position.vect[3] = 1;
 
 	//	Normalize
@@ -922,8 +926,8 @@ bool CameraCalibration::ToFrameXY(const CartesianCoord &coordInCameraCart, int &
 
 	// Convert to camera pixel
 
-	cameraX = (xTangential+1) * 0.5 * frameWidthInPixels;
-	cameraY = (frameHeightInPixels/2.0) - (yTangential * frameWidthInPixels / 2.0);  // Remember: we assume square pixels. So we use witdh here also.
+	cameraX = (int) ((xTangential+1) * 0.5 * frameWidthInPixels);
+	cameraY = (int) ((frameHeightInPixels/2.0) - (yTangential * frameWidthInPixels / 2.0));  // Remember: we assume square pixels. So we use witdh here also.
 
 	return(bInFront);
 }

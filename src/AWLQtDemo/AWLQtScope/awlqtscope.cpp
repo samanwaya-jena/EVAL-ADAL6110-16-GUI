@@ -41,7 +41,7 @@ int timerInterval = 30; // In ms.  So 30FPS
 
 const QwtPlotCurve::CurveStyle defaultCurveStyle = QwtPlotCurve::Dots;
 
-const double intervalLength = 15.0; // seconds
+const Timestamp intervalLength = 15.0; // seconds
 
 AWLQtScope::AWLQtScope(QWidget *parent)
 // 2018-07-19 - JYD:  The Scope should be a QFrame
@@ -207,7 +207,6 @@ void AWLQtScope::updateCurveDataRaw()
 
 
 	AWLSettings *settings = AWLSettings::GetGlobalSettings();
-	float minDistance = settings->receiverSettings[d_receiverCapture->receiverID].displayedRangeMin;
 	// y Scale for velocities
 	float maxVelocity =  settings->maxVelocity2D;
 	if (settings->velocityUnits != eVelocityUnitsMS)
@@ -311,7 +310,7 @@ void AWLQtScope::on_scopeDisplayVelocity_toggled(bool bChecked)
 }
 
 
-void AWLQtScope::closeEvent(QCloseEvent * event)
+void AWLQtScope::closeEvent(QCloseEvent * /*event*/)
 {
 	stop();
 	emit closed();

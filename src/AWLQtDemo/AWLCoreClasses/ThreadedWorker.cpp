@@ -54,7 +54,7 @@ bool  ThreadedWorker::WasStopped()
 	return(false);
 }
 
-void  ThreadedWorker::StopThread(bool bCalledFromThread)
+void  ThreadedWorker::StopThread()
 {
 	if (!mWorkerRunning) return;
     mWorkerRunning = false;
@@ -75,7 +75,7 @@ void ThreadedWorker::DoThreadLoop()
 		DoOneThreadIteration();
 		if (someCondition)
 		{
-			StopThread(true);
+			StopThread();
 		}
 
 	} // while (!WasStoppped)

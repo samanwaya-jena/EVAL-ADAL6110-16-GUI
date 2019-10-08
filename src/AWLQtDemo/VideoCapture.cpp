@@ -83,7 +83,6 @@ calibration(),
 cameraID(inCameraID)
 
 {
-	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	mStopRequested = false;
 
 	// Initialize HighGUI
@@ -241,12 +240,9 @@ void VideoCapture::DoThreadIteration()
 void VideoCapture::ListCameras()
 
 {
-	HANDLE hMV;
-
 	AWLSettings::GetGlobalSettings()->bWriteDebugFile = true;
 
 	DebugFilePrintf("Requested Camera: %s", sCameraName.c_str());
-	DWORD dwNumDevices;												
 	//num of connected SHT devices	
 #ifdef XIFORWINDOWS	
 	if(xiGetNumberDevices(&dwNumDevices) == XI_OK)
@@ -314,10 +310,10 @@ bool VideoCapture::OpenCamera()
 
 		calibration.frameWidthInPixels = (int) cam.get(cv::CAP_PROP_FRAME_WIDTH);
 		calibration.frameHeightInPixels = (int) cam.get(cv::CAP_PROP_FRAME_HEIGHT);
-		double framesPerSecond = cam.get(cv::CAP_PROP_FPS);
+		float framesPerSecond = (float) cam.get(cv::CAP_PROP_FPS);
 
  		if (framesPerSecond < 1) framesPerSecond = FRAME_RATE;  // cv::CAP_PROP_FPS may reurn 0;
-		frameRate = (double) 1.0/framesPerSecond;
+		frameRate = (float) 1.0/framesPerSecond;
 		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
 
 		return(true);
@@ -328,7 +324,7 @@ bool VideoCapture::OpenCamera()
 		calibration.frameWidthInPixels = 640;
 		calibration.frameHeightInPixels = 480;
 
-		frameRate = (double) 1.0/30.0;
+		frameRate =  1.0f/30.0f;
 		reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenCameraDelaylMillisec);
 
 		return(false);
@@ -337,9 +333,7 @@ bool VideoCapture::OpenCamera()
 
 bool VideoCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
-	char cameraKeyString[32];
-	sprintf(cameraKeyString, "config.cameras.camera%d", cameraID);
-	std::string cameraKey = cameraKeyString;
+	std::string cameraKey = std::string("config.cameras.camera") + std::to_string(cameraID);
 
 	boost::property_tree::ptree &cameraNode =  propTree.get_child(cameraKey);
 

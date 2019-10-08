@@ -43,7 +43,7 @@ public:
 	void stop();
   void setChannelMask(uint32_t chMask);
   void selectReceiver(int receiver);
-  void AScanDataChanged(const AScan::Vector& data);
+  void AScanDataChanged(const AScan::Vector& inData);
   void ShowAScan(bool show) { showAScan = show; }
   void SetMaxRange(float maxRange) { m_maxRange = maxRange; }
 
