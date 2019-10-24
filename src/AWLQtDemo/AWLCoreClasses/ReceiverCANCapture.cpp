@@ -2420,8 +2420,10 @@ int aChIdxArray[16] = {
 
 void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size_t size)
 {
+	(void)size;  // Unreferenced parameter.
+
 	int channel = -1;
-	int msg_id = -1;
+
 	size_t sampleOffset = 0;
 	size_t sampleDrop = 0;
 	size_t sampleSize = 1;
@@ -2443,98 +2445,46 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t *rawData, size
 */
 
 	switch (provider) {
-		default:
-		case rawFromLibUSB:
-      channel = 0;
-      sampleOffset = 0;
-      sampleSize = 2;
-      sampleSigned = true;
-      sampleCount = 100;
-      sampleDrop = 1;
+	default:
+	case rawFromLibUSB:
+		channel = 0;
+		sampleOffset = 0;
+		sampleSize = 2;
+		sampleSigned = true;
+		sampleCount = 100;
+		sampleDrop = 1;
 
-      for (channel = 0; channel < 16; channel++)
-      {
-        int chIdxArray = aChIdxArray[channel];
+		for (channel = 0; channel < 16; channel++)
+		{
+			int chIdxArray = aChIdxArray[channel];
 
-        int chIdx = aChIdxWagner[chIdxArray];
+			int chIdx = aChIdxWagner[chIdxArray];
 
-        if (!rawBuffers[channel])
-          rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+			if (!rawBuffers[channel])
+				rawBuffers[channel] = new uint8_t[maxRawBufferSize];
 
-        rawBufferCount++;
+			rawBufferCount++;
 
-        memcpy(rawBuffers[channel], rawData + chIdx * (100 * 2), 100 * 2);
-      }
+			memcpy(rawBuffers[channel], rawData + chIdx * (100 * 2), 100 * 2);
+		}
 
-      {
-        boost::mutex::scoped_lock rawLock(GetMutex());
+		{
+			boost::mutex::scoped_lock rawLock(GetMutex());
 
-        for (channel = 0; channel < 16; channel++)
-        {
-          AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, channel);
-          aScan->samples = rawBuffers[channel];
-          aScan->sampleSize = sampleSize;
-          aScan->rawProvider = provider;
-          aScan->sampleOffset = sampleOffset;
-          aScan->sampleCount = sampleCount - sampleDrop;
-          aScan->sampleSigned = sampleSigned;
-        }
-      }
-
-      break;
-
-		case rawFromPosixTTY:
-			msg_id = rawData[0];
-			if (msg_id != 0xb0) return;
-			channel = rawData16[1];
-			channel &= 0xff;
-			if (channel >= maxRawBufferCount) break;
-			sampleOffset = 12;
-			sampleDrop = 0;
-			sampleSize = 2;
-			sampleSigned = true;
-			if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
-			rawBufferCount ++;
-			if (size > maxRawBufferSize) size = maxRawBufferSize;
-			memcpy (rawBuffers[channel], rawData, size);
-			sampleCount = size / 2 - sampleOffset;
-			transmit = true;
-			if (channel > max_channel) max_channel = channel;
-			if (channel == max_channel) transmit = true;
-			break;	
-		case rawFromPosixUDP:
-			msg_id = rawData[0];
-			channel = rawData16[1];
-			channel &= 0xff;
-			if (channel >= maxRawBufferCount) break;
-			if (msg_id > 0xbf) return;
-			sampleOffset = 16;
-			sampleDrop = 100;
-			sampleSize = 4;
-			sampleSigned = true;
-			switch (msg_id) {
-			default:
-				break;
-			case 0x80:
-			case 0x81:
-				if (! rawBuffers[channel]) rawBuffers[channel] = new uint8_t[maxRawBufferSize];
-				rawBufferCount ++;
-				if (size > maxRawBufferSize) size = maxRawBufferSize;
-				memcpy (rawBuffers[channel], rawData, size);
-				sampleCount = size / 4 - sampleOffset;
-				break;
-			case 0x82:
-			case 0x83:
-			case 0x84:
-				if (channel < 0) return;
-				if (size > maxRawBufferSize / 4) size = maxRawBufferSize / 4;
-				memcpy (rawBuffers[channel] + size * (msg_id - 0x81), rawData, size);
-				sampleCount += size / 4 - sampleOffset;
-				break;
+			for (channel = 0; channel < 16; channel++)
+			{
+				AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, channel);
+				aScan->samples = rawBuffers[channel];
+				aScan->sampleSize = sampleSize;
+				aScan->rawProvider = provider;
+				aScan->sampleOffset = sampleOffset;
+				aScan->sampleCount = sampleCount - sampleDrop;
+				aScan->sampleSigned = sampleSigned;
 			}
-			if (msg_id > max_msg_id) max_msg_id = msg_id;
-			if (msg_id == 0x80 || msg_id == max_msg_id) transmit = true;
-	}	
+		}
+
+		break;
+	}
 	//printf("ascan %02x %02x %d %d %d\n", msg_id, max_msg_id, channel, size, sampleCount);
 
 	if (transmit) {

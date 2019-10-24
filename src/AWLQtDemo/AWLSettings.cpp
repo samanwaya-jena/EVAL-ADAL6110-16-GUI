@@ -70,7 +70,7 @@ bool AWLSettings::ReadSettings()
     // (cannot open file, parse error), an exception is thrown.
     read_xml(sFileName, propTree);
 
-	int receiverQty = propTree.get<int>("config.receivers.receiverQty");
+	int receiverQty = propTree.get<int>("config.receivers.receiverQty", 0);
 	receiverSettings.resize(receiverQty);
 	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
@@ -84,8 +84,8 @@ bool AWLSettings::ReadSettings()
 		receiverPtr->sReceiverChannelGeometry = receiverNode.get<std::string>("receiverChannelGeometry");
 
 		// Display
-		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin");
-		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax");
+		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin", (float)0.0);
+		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax", (float) 60.0);
 
 		// Get the Channel configuration Node
 		std::string channelGeometryKey = "config." + receiverPtr->sReceiverChannelGeometry;
@@ -94,7 +94,7 @@ bool AWLSettings::ReadSettings()
 	} // for (int receiverIndex = 0; 
 
 
-	int cameraQty = propTree.get<int>("config.cameras.cameraQty");
+	int cameraQty = propTree.get<int>("config.cameras.cameraQty", 0);
 	cameraSettings.resize(cameraQty);
 	for (int cameraIndex = 0; cameraIndex < cameraQty; cameraIndex++)
 	{
@@ -103,9 +103,9 @@ bool AWLSettings::ReadSettings()
 		boost::property_tree::ptree &cameraNode =  propTree.get_child(cameraKey);
 		CameraSettings *cameraPtr = &cameraSettings[cameraIndex];
 
-		cameraPtr->sCameraName = cameraNode.get<std::string>("cameraName");
+		cameraPtr->sCameraName = cameraNode.get<std::string>("cameraName", "0");
 		cameraPtr->sCameraAPI = cameraNode.get<std::string>("cameraAPI", "OpenCV");
-		cameraPtr->cameraFlip = cameraNode.get<bool>("cameraFlip");
+		cameraPtr->cameraFlip = cameraNode.get<bool>("cameraFlip", false);
 		Get2DPoint(cameraNode.get_child("fov"), cameraPtr->cameraFovWidthDegrees, cameraPtr->cameraFovHeightDegrees);
 		cameraPtr->barrelK1 = 0.0;
 		cameraPtr->barrelK2 = 0.0;
@@ -115,64 +115,58 @@ bool AWLSettings::ReadSettings()
 	}
 
 	// Debug and log file control
-	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile");
-	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile");
+	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile", false);
+	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile", false);
 
 	// Other settings
 	bDisplaySettingsWindow = propTree.get<bool>("config.layout.displaySettingsWindow",false);
-	bDisplay3DWindow = propTree.get<bool>("config.layout.display3DWindow",false);
 	bDisplay2DWindow = propTree.get<bool>("config.layout.display2DWindow",false);
 	bDisplayTableViewWindow = propTree.get<bool>("config.layout.displayTableViewWindow",false);
 	bDisplayAScanViewWindow = propTree.get<bool>("config.layout.displayAScanViewWindow",false);
-	bDisplayScopeWindow = propTree.get<bool>("config.layout.displayScopeWindow",false);
 	bDisplayCameraWindow = propTree.get<bool>("config.layout.displayCameraWindow",false);
 	bDisplayAboutWindow = propTree.get<bool>("config.layout.displayAboutWindow",false);
 
-        bTabSettingCalibration = propTree.get<bool>("config.layout.TabSettingCalibration",false);
-        bTabSettingControl = propTree.get<bool>("config.layout.TabSettingControl",false);
-        bTabSettingStatus = propTree.get<bool>("config.layout.TabSettingStatus",false);
-        bTabSettingRegisters = propTree.get<bool>("config.layout.TabSettingRegisters",false);
-        bTabSettingGPIOs = propTree.get<bool>("config.layout.TabSettingGPIOs",false);
-        bTabSettingAlgoControl = propTree.get<bool>("config.layout.TabSettingAlgoControl",false);
-        bTabSettingTrackerControl = propTree.get<bool>("config.layout.TabSettingTrackerControl",false);
-        bTabSettingAScan = propTree.get<bool>("config.layout.TabSettingAScan",false);
-        bTabSettingMisc = propTree.get<bool>("config.layout.TabSettingMisc",false);
+	bTabSettingCalibration = propTree.get<bool>("config.layout.TabSettingCalibration", false);
+	bTabSettingControl = propTree.get<bool>("config.layout.TabSettingControl", false);
+	bTabSettingStatus = propTree.get<bool>("config.layout.TabSettingStatus", false);
+	bTabSettingRegisters = propTree.get<bool>("config.layout.TabSettingRegisters", false);
+	bTabSettingGPIOs = propTree.get<bool>("config.layout.TabSettingGPIOs", false);
+	bTabSettingAlgoControl = propTree.get<bool>("config.layout.TabSettingAlgoControl", false);
+	bTabSettingTrackerControl = propTree.get<bool>("config.layout.TabSettingTrackerControl", false);
+	bTabSettingAScan = propTree.get<bool>("config.layout.TabSettingAScan", false);
+	bTabSettingMisc = propTree.get<bool>("config.layout.TabSettingMisc", false);
 
-	velocityUnits = (VelocityUnits) propTree.get<int>("config.layout.velocityUnits");
+	velocityUnits = (VelocityUnits) propTree.get<int>("config.layout.velocityUnits", 1);
 
 	sLogoFileName = propTree.get<std::string>("config.layout.logoFileName");
 	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
 	sDisplayShowSize = propTree.get<std::string>("config.layout.displayShowSize", "Normal");
 
-	displayedDetectionsPerChannelInTableView = propTree.get<int>("config.displayTableView.displayedDetectionsPerChannelInTableView");
+	displayedDetectionsPerChannelInTableView = propTree.get<int>("config.displayTableView.displayedDetectionsPerChannelInTableView", 2);
 
-	carWidth = propTree.get<float>("config.display2D.carWidth");
-	carLength = propTree.get<float>("config.display2D.carLength");
-	carHeight = propTree.get<float>("config.display2D.carHeight");
-	laneWidth = propTree.get<float>("config.display2D.laneWidth");
+	carWidth = propTree.get<float>("config.display2D.carWidth", (float) 1.78);
+	carLength = propTree.get<float>("config.display2D.carLength", (float) 4.53 );
+	carHeight = propTree.get<float>("config.display2D.carHeight", (float) 1.44);
+	laneWidth = propTree.get<float>("config.display2D.laneWidth", (float) -1);
 
-	showPalette = propTree.get<int>("config.display2D.showPalette");
-	mergeDisplayMode = propTree.get<int>("config.display2D.mergeDisplayMode");
-	measureMode = propTree.get<int>("config.display2D.measureMode");
+	showPalette = propTree.get<int>("config.display2D.showPalette", 0);
+	mergeDisplayMode = propTree.get<int>("config.display2D.mergeDisplayMode", 0);
+	measureMode = propTree.get<int>("config.display2D.measureMode", 1);
 	Get2DPoint(propTree.get_child("config.display2D.mergeAcceptance"), mergeAcceptanceX, mergeAcceptanceY);
-	colorCode2D = propTree.get<int>("config.display2D.colorCode");
-	maxVelocity2D = propTree.get<float>("config.display2D.maxVelocity");
-	zeroVelocity = propTree.get<float>("config.display2D.zeroVelocity");
-	displayDistanceMode2D = propTree.get<int>("config.display2D.displayDistances");
-	displayZoomMode2D = propTree.get<int>("config.display2D.displayZoom");
+	colorCode2D = propTree.get<int>("config.display2D.colorCode", 4);
+	maxVelocity2D = propTree.get<float>("config.display2D.maxVelocity", (float) 30.0);
+	zeroVelocity = propTree.get<float>("config.display2D.zeroVelocity", (float) 1.0);
+	displayDistanceMode2D = propTree.get<int>("config.display2D.displayDistances", 0);
+	displayZoomMode2D = propTree.get<int>("config.display2D.displayZoom", 0);
 
-	scopeTimerInterval = propTree.get<int>("config.scope.timerInterval");
-	bDisplayScopeDistance = propTree.get<bool>("config.scope.displayScopeDistance");
-	bDisplayScopeVelocity = propTree.get<bool>("config.scope.displayScopeVelocity");
+	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration", (float) 5.096);
+	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed", (float)33.32);
 
-	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration");
-	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed");
-
-	bDisplayVideoCrosshair = propTree.get<bool>("config.video.displayCrosshair");
-	bDisplayVideoTime = propTree.get<bool>("config.video.displayTime");
+	bDisplayVideoCrosshair = propTree.get<bool>("config.video.displayCrosshair", false);
+	bDisplayVideoTime = propTree.get<bool>("config.video.displayTime", true);
 
 	// Alert conditions
-	int alertConditionQty = propTree.get<int>("config.dynamicTesting.alertQty");
+	int alertConditionQty = propTree.get<int>("config.dynamicTesting.alertQty", 0);
 	for (int alertConditionIndex = 0; alertConditionIndex < alertConditionQty; alertConditionIndex++)
 	{
 		std::string alertKey = std::string("config.dynamicTesting.alert") + std::to_string(alertConditionIndex);
@@ -265,22 +259,22 @@ bool AWLSettings::StoreReceiverCalibration()
 
 void AWLSettings::GetPosition(boost::property_tree::ptree &node, float &forward, float &left, float&up)
 {
-	forward = node.get<float>("forward");
-	left = node.get<float>("left");
-	up = node.get<float>("up");
+	forward = node.get<float>("forward", (float)0.0);
+	left = node.get<float>("left", (float)0.0);
+	up = node.get<float>("up", (float)0.0);
 }
 
 void AWLSettings::GetOrientation(boost::property_tree::ptree &node, float &pitch, float &yaw, float &roll)
 {
-	pitch = node.get<float>("pitch");
-	yaw = node.get<float>("yaw");
-	roll = node.get<float>("roll");
+	pitch = node.get<float>("pitch", (float)0.0);
+	yaw = node.get<float>("yaw", (float)0.0);
+	roll = node.get<float>("roll", (float)0.0);
 }
 
 void AWLSettings::Get2DPoint(boost::property_tree::ptree &node, float &x, float &y)
 {
-	x = node.get<float>("x");
-	y = node.get<float>("y");
+	x = node.get<float>("x", (float)0.0);
+	y = node.get<float>("y", (float)0.0);
 }
 
 void AWLSettings::GetGeometry(boost::property_tree::ptree &geometryNode, float &forward, float &left, float &up, float &pitch, float &yaw, float &roll)
@@ -293,15 +287,15 @@ void AWLSettings::GetGeometry(boost::property_tree::ptree &geometryNode, float &
 
 void AWLSettings::GetColor(boost::property_tree::ptree &colorNode, uint8_t &red, uint8_t &green, uint8_t &blue)
 {
-	red = colorNode.get<uint8_t>("red");
-	green = colorNode.get<uint8_t>("green");
-	blue = colorNode.get<uint8_t>("blue");
+	red = colorNode.get<uint8_t>("red", 255);
+	green = colorNode.get<uint8_t>("green", 255);
+	blue = colorNode.get<uint8_t>("blue", 255);
 }
 
 void AWLSettings::GetAlertConditions(boost::property_tree::ptree &alertNode, AlertCondition &alert)
 
 {
-	std::string sAlertType = alertNode.get<std::string>("alertType");
+	std::string sAlertType = alertNode.get<std::string>("alertType", "Invalid");
 	if (sAlertType.compare("distanceWithin") == 0)
 	{
 		alert.alertType = AlertCondition::eAlertDistanceWithin;
@@ -335,7 +329,7 @@ void AWLSettings::GetAlertConditions(boost::property_tree::ptree &alertNode, Ale
 	alert.alertChannelMask.wordData = alertNode.get<uint16_t>("alertChannels", 255);
 	alert.minRange = alertNode.get<float>("alertMin", -std::numeric_limits<float>::max());
 	alert.maxRange = alertNode.get<float>("alertMax", std::numeric_limits<float>::max());
-	alert.threatLevel = (AlertCondition::ThreatLevel) alertNode.get<int>("alertLevel", AlertCondition::eThreatNone);
+	alert.threatLevel = (AlertCondition::ThreatLevel) (alertNode.get<int>("alertLevel", AlertCondition::eThreatNone));
 }
 
 void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometryNode, ReceiverSettings *receiverPtr)
@@ -362,7 +356,7 @@ void AWLSettings::GetChannelGeometry(boost::property_tree::ptree &channelGeometr
 		ChannelConfig *channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
 		channelConfigPtr->channelIndex = channelIndex;
 		Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
+		channelConfigPtr->maxRange = channelNode.get<float>("maxRange", std::numeric_limits<float>::max());
 
 		GetColor(channelNode.get_child("displayColor"),
 			channelConfigPtr->displayColorRed, channelConfigPtr->displayColorGreen, channelConfigPtr->displayColorBlue);

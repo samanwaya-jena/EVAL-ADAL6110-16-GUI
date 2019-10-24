@@ -8,7 +8,7 @@ set(CMAKE_COLOR_MAKEFILE ON)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%     > to simplify reading and writing           %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%P%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 include(CheckCXXCompilerFlag)
 function(enable_cxx_compiler_flag_if_supported flag)
@@ -462,55 +462,11 @@ enable_cxx_compiler_flag_if_supported("-permissive-")
 enable_cxx_compiler_flag_if_supported("-opt:REF")
 
 #############################################################################################
-###    Qwt      #############################################################################
-#############################################################################################
-if(WIN32)
-    set(Qwt_INSTALLED_PATH  "$ENV{QWTDIR}")
-else()
-    set(Qwt_INSTALLED_PATH "linux/path/to/QWT")
-endif()
-
-
-list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
-    "${Qwt_INSTALLED_PATH}/lib/qwt.dll"
-)
-
-
-file(GLOB Qwt_ROOT_DIR "${Qwt_INSTALLED_PATH}")
-file(GLOB Qwt_INCLUDE_DIRS "${Qwt_ROOT_DIR}/include")
-file(GLOB Qwt_LIBRARY_DIRS "${Qwt_INSTALLED_PATH}/lib/qwt.lib")
-
-# This function will search in different places, but ${CMAKE_FIND_ROOT_PATH} is targetted here
-# source : https://cmake.org/cmake/help/latest/command/find_library.html#command:find_library
-set(OLD_CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH})
-set(CMAKE_FIND_ROOT_PATH ${Qwt_ROOT_DIR})
-set(Qwt_LIBRARY_NAME "qwt.lib")
-
-#find_library(
-#    Qwt_LIBRARIES             # Variable in which the lib will be stored
-#    ${Qwt_LIBRARY_NAME}       # Name to look for
-#)
-
-set(Qwt_LIBRARIES  "${Qwt_ROOT_DIR}/lib/qwt.lib")
-
-if(NOT Qwt_LIBRARIES)
-    message(STATUS "For Qwt... if you need to ")
-    message(STATUS "           - download --> https://sourceforge.net/projects/qwt/files/qwt/")
-    message(STATUS "           -  install --> https://qwt.sourceforge.io/qwtinstall.html")
-endif()
-
-set(CMAKE_FIND_ROOT_PATH ${OLD_CMAKE_FIND_ROOT_PATH})
-include_directories(${Qwt_INCLUDE_DIRS})
-
- 
-#############################################################################################
 ###    CuteDemo    ##########################################################################
 #############################################################################################
 
 set(CORE_FILES_DIR "AWLCoreClasses")
-set(SCOPE_FILES_DIR "AWLQtScope")
 include_directories(include ${CORE_FILES_DIR})
-include_directories(include ${SCOPE_FILES_DIR})
 
 set(CUTEDEMO_MAIN_FILES "")
 list(APPEND CUTEDEMO_MAIN_FILES 
@@ -546,17 +502,6 @@ list(APPEND CUTEDEMO_CORE_FILES
         ${CORE_FILES_DIR}/LoopedWorker.cpp
 )
 
-set(CUTEDEMO_SCOPE_FILES "")
-list(APPEND CUTEDEMO_SCOPE_FILES 
-        ${SCOPE_FILES_DIR}/awlqtscope.cpp
-        ${SCOPE_FILES_DIR}/knob.cpp
-        ${SCOPE_FILES_DIR}/awlscopeplot.cpp
-        ${SCOPE_FILES_DIR}/signaldata.cpp
-        ${SCOPE_FILES_DIR}/curvedata.cpp
-        ${SCOPE_FILES_DIR}/wheelbox.cpp
-        ${SCOPE_FILES_DIR}/awlqtscope.ui
-)
-
 set(CUTEDEMO_RESOURCES CuteDemo.rc)
 set(CUTEDEMO_QRESOURCES awlqtdemo.qrc)
 if(WIN32)
@@ -566,7 +511,6 @@ if(WIN32)
         ${CUTEDEMO_MAIN_FILES}
         ${CUTEDEMO_QT_UI_FILES}
         ${CUTEDEMO_CORE_FILES}
-        ${CUTEDEMO_SCOPE_FILES}
         ${CUTEDEMO_RESOURCES}
         ${CUTEDEMO_QRESOURCES}
     )
@@ -575,7 +519,6 @@ if(WIN32)
         ${PROJECT_NAME}
             PUBLIC 
                 WINDOWS 
-                QWT_DLL
     )
 else()
     ADD_EXECUTABLE(
@@ -583,15 +526,8 @@ else()
         ${CUTEDEMO_MAIN_FILES}
         ${CUTEDEMO_QT_UI_FILES}
         ${CUTEDEMO_CORE_FILES}
-        ${CUTEDEMO_SCOPE_FILES}
         ${CUTEDEMO_RESOURCES}
         ${CUTEDEMO_QRESOURCES}
-    )
-
-    TARGET_COMPILE_DEFINITIONS(
-        ${PROJECT_NAME}
-        PUBLIC 
-            QWT_DLL
     )
 
 endif()
@@ -602,12 +538,7 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILE_DIR}>
         $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILE_DIR}>
 )
-target_include_directories(
-    ${PROJECT_NAME}
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${SCOPE_FILE_DIR}>
-        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${SCOPE_FILE_DIR}>
-)
+
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
@@ -618,158 +549,17 @@ target_include_directories(
 #############################################################################################
 ###    Option description       #############################################################
 #############################################################################################
-# Set WANT_EASY_SYNC_SUPPORT to `1` to enable EasySync support
-set(WANT_EASY_SYNC_SUPPORT 0)
-
-# TODO: Compatibility for windows for this one
-# Set WANT_KVASER_SUPPORT to `1` to enable Kvaser support
-set(WANT_KVASER_SUPPORT 0)
-
-# TODO: Compatibility for windows for this one
-# Set WANT_SOCKET_CAN_SUPPORT to `1` to enable SocketCAN support WARNING Linux Only
-set(WANT_SOCKET_CAN_SUPPORT 0)
-
-# TODO: Compatibility for windows for this one
-# Set WANT_POSIX_UDP_SUPPORT to `1` to enable PosixUDP support WARNING Linux Only
-set(WANT_POSIX_UDP_SUPPORT 0)
-
-# TODO: Compatibility for windows for this one
-# Set WANT_POSIX_TTY_SUPPORT to `1` to enable PosixTTY support WARNING Linux Only
-set(WANT_POSIX_TTY_SUPPORT 0)
 
 # Set WANT_LIBUSB_SUPPORT to `1` to enable LibUSB support
 set(WANT_LIBUSB_SUPPORT 1)
-
-# TODO: Compatibility for windows for this one
-# Set WANT_TCP_SUPPORT to `1` to enable TCP_SUPPORT
-set(WANT_TCP_SUPPORT 0)
 
 # TODO: complete this one 
 ### (PS : opencv needs to be recompiled with the option that activates XIMEA in it (see -DWITH_XIMEA:BOOL=ON in CMakeLists.txt file of "D:\opencv\opencv\CMakeLists.txt"))
 # Set WANT_OPENCV_VIDEO true to enable OpenCV Video (and OpenCV in general)
 set(WANT_OPENCV_VIDEO 1)
 
-# TODO: Compatibility for windows for this one
-# Set WANT_AP_VIDEO to `1` to enable AP video
-set(WANT_AP_VIDEO 0)
 
-#############################################################################################
-###    EasySync    ##########################################################################
-#############################################################################################
-
-print_option_wanted_status("WANT_EASY_SYNC_SUPPORT")
-if(${WANT_EASY_SYNC_SUPPORT})
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo
-        PUBLIC 
-            USE_CAN_EASYSYNC 
-    )
-    TARGET_SOURCES(
-        CuteDemo
-    PRIVATE 
-            ${CORE_FILES_DIR}/ReceiverEasySyncCapture.cpp 
-    )
-endif()
-
-#############################################################################################
-###    Kvaser (canlib)    ###################################################################
-#############################################################################################
-
-print_option_wanted_status("WANT_KVASER_SUPPORT")
-if(${WANT_KVASER_SUPPORT})
-    file(
-        GLOB
-        CAN_INCLUDE_DIR 
-            "$ENV{CANLIB_DIR}/INC"
-    )
-    file(
-        GLOB
-        CAN_LIBRARIES 
-            "$ENV{CANLIB_DIR}/IN/MS"
-    )
-    include_directories(
-        include
-        ${CAN_INCLUDE_DIR}
-    )
-
-
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo
-        PUBLIC 
-            USE_CAN_KVASER 
-    )
-
-    TARGET_SOURCES(
-        CuteDemo
-    PRIVATE 
-            ${CORE_FILES_DIR}/ReceiverKvaserCapture.cpp 
-    )
-
-    TARGET_LINK_LIBRARIES(
-        CuteDemo
-        ${CAN_LIBRARIES}
-    )
-	
-	list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
-    "$ENV{CANLIB_DIR}/Bin/canlib32.dll"
-)
-endif()
-
-#############################################################################################
-###    socket can    ########################################################################
-#############################################################################################
-
-print_option_wanted_status("WANT_SOCKET_CAN_SUPPORT")
-if(${WANT_SOCKET_CAN_SUPPORT})
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo
-        PUBLIC 
-            USE_CAN_SOCKETCAN 
-    )
-    TARGET_SOURCES(
-        CuteDemo
-    PRIVATE 
-            ${CORE_FILES_DIR}/ReceiverSocketCANCapture.cpp 
-    )
-endif()
-
-
-#############################################################################################
-###    POSIX UDP    #########################################################################
-#############################################################################################
-
-print_option_wanted_status("WANT_POSIX_UDP_SUPPORT")
-if(${WANT_POSIX_UDP_SUPPORT})
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo
-        PUBLIC 
-            USE_POSIXUDP 
-    )
-    TARGET_SOURCES(
-        CuteDemo
-    PRIVATE 
-            ${CORE_FILES_DIR}/ReceiverPosixUDPCapture.cpp 
-    )
-endif()
-
-
-#############################################################################################
-###    POSIX TTY    #########################################################################
-#############################################################################################
-
-print_option_wanted_status("WANT_POSIX_TTY_SUPPORT")
-if(${WANT_POSIX_TTY_SUPPORT})
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo
-        PUBLIC 
-            USE_POSIXTTY 
-    )
-    TARGET_SOURCES(
-        CuteDemo
-    PRIVATE 
-            ${CORE_FILES_DIR}/ReceiverPosixTTYCapture.cpp 
-    )
-endif()
+#
 
 #############################################################################################
 ###    libusb    ############################################################################
@@ -812,23 +602,6 @@ if(${WANT_LIBUSB_SUPPORT})
     )
 endif()
 
-#############################################################################################
-###    TCP    ###############################################################################
-#############################################################################################
-
-print_option_wanted_status("WANT_TCP_SUPPORT")
-if(${WANT_TCP_SUPPORT})
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo 
-        PUBLIC 
-            USE_TCP
-    )
-    TARGET_SOURCES(
-        CuteDemo
-    PRIVATE
-            ${CORE_FILES_DIR}/ReceiverTCPCapture.cpp
-    )
-endif()
 
 #############################################################################################
 ###    OpenCV    ############################################################################
@@ -862,41 +635,11 @@ if(${WANT_OPENCV_VIDEO})
 
 list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
 	"${OpenCV_INSTALL_PATH}/bin/release/opencv_world346.dll"
-#JYD	"$ENV{XIMEA_DIR}/API/x86/m3api.dll"
-	"$ENV{XIMEA_DIR}/API/x86/XIAPI32.dll"
 )
 
-include_directories("$ENV{XIMEA_DIR}/API")
 endif()
 
-#############################################################################################
-###    AP Video    ##########################################################################
-#############################################################################################
 
-print_option_wanted_status("WANT_AP_VIDEO")
-if(${WANT_AP_VIDEO})
-    set(AP_FILES_DIR "AP")
-    TARGET_COMPILE_DEFINITIONS(
-        CuteDemo 
-        PUBLIC
-            USE_AP_VIDEO 
-    )
-    file(GLOB
-        AP_LIBRARIES 
-    "${AP_FILES_DIR}/lib/*"
-    )
-    TARGET_SOURCES( 
-        CuteDemo 
-    PRIVATE 
-            APVideoCapture.cpp
-            APVideoViewer.cpp 
-    )
-    TARGET_LINK_LIBRARIES(
-        CuteDemo ${AP_LIBRARIES} 
-    )
-
-    INCLUDE_DIRECTORIES(${AP_FILES_DIR}/include)
-endif()
 
 #############################################################################################
 ###    Final linking...    ##################################################################

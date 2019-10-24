@@ -23,27 +23,10 @@
 #include "awlcoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
-#ifdef USE_CAN_EASYSYNC
-#include "ReceiverEasySyncCapture.h"
-#endif
-#ifdef USE_CAN_SOCKETCAN
-#include "ReceiverSocketCANCapture.h"
-#endif
-#ifdef USE_POSIXUDP
-#include "ReceiverPosixUDPCapture.h"
-#endif
-#ifdef USE_POSIXTTY
-#include "ReceiverPosixTTYCapture.h"
-#endif
 #ifdef USE_LIBUSB
 #include "ReceiverLibUSBCapture.h"
 #endif
-#ifdef USE_TCP
-#include "ReceiverTCPCapture.h"
-#endif
-#ifdef USE_CAN_KVASER
-#include "ReceiverKvaserCapture.h"
-#endif
+
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
 
@@ -60,14 +43,9 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
-
-
 #include <string>
 
-
 #include "TableView.h"
-
-#include "awlqtscope.h"
 
 
 using namespace std;
@@ -91,7 +69,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	action2DButton(NULL),
 	actionTableButton(NULL),
 	actionAScanButton(NULL),
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	actionCameraButton(NULL),
 #endif
 	actionResizeButton(NULL),
@@ -189,54 +167,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
 
-#ifdef USE_CAN_EASYSYNC
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("EasySyncCAN"))
-		{
-			// EasySync CAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else
-#endif
-#ifdef USE_CAN_KVASER
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "KvaserLeaf"))
-		{
-			// Kvaser Leaf CAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else
-#endif
-#ifdef USE_CAN_SOCKETCAN
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "SocketCAN"))
-		{
-			// SocketCAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSocketCANCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-#endif
-#ifdef USE_POSIXUDP
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "PosixUDP"))
-		{
-			// PosixUDP Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixUDPCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-#endif
-#ifdef USE_POSIXTTY
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "PosixTTY"))
-		{
-			// PosixTTY Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixTTYCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-#endif
-#ifdef USE_TCP
-    if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("TCP"))
-    {
-      // PosixTTY Capture is used if defined in the ini file
-      receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverTCPCapture(receiverID, globalSettings->GetPropTree()));
-    }
-    else
-#endif
+
 #ifdef USE_LIBUSB
 		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "LibUSB"))
 		{
@@ -255,37 +186,23 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	int videoCaptureQty = 0;
 	int opencvCameraID =  0;
-#if defined (USE_AP_VIDEO)
-	int apCameraID = 0;
-#endif
-#if defined (USE_OPENCV_VIDEO) || defined (USE_AP_VIDEO)
+
+#if defined (USE_OPENCV_VIDEO)
 	// Create the video capture objects
 	videoCaptureQty = globalSettings->cameraSettings.size();
 	for (int cameraID = 0; cameraID < videoCaptureQty; cameraID++)
 	{
-		QString cameraName(this->windowTitle()+" Camera");
+		QString cameraName(this->windowTitle() + " Camera");
 		cameraName.append(QString().sprintf(" %02d", cameraID));
 
-		printf ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI.c_str());
-#if defined (USE_AP_VIDEO)
-		if ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI == std::string( "AP")) {
-			apVideoCaptures.push_back(APVideoCapture::Ptr(new APVideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
-	// Create the video viewer to display the camera image
-	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-			APVideoViewer *viewer =  new APVideoViewer(cameraName.toStdString(), apVideoCaptures[apCameraID]);
-			apVideoViewers.push_back(APVideoViewer::Ptr(viewer));
-			apCameraID ++;
-		} else {
-#endif
-			videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
-	// Create the video viewer to display the camera image
-	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-			VideoViewer *viewer =  new VideoViewer(cameraName.toStdString(), videoCaptures[opencvCameraID]);
-			videoViewers.push_back(VideoViewer::Ptr(viewer));
-			opencvCameraID ++;
-#if defined (USE_AP_VIDEO)
-		}
-#endif
+		printf("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI.c_str());
+		
+		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv, globalSettings->GetPropTree())));
+		// Create the video viewer to display the camera image
+		// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
+		VideoViewer* viewer = new VideoViewer(cameraName.toStdString(), videoCaptures[opencvCameraID]);
+		videoViewers.push_back(VideoViewer::Ptr(viewer));
+		opencvCameraID++;
 	}
 #endif
 
@@ -549,7 +466,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	    on_view2DActionToggled();
         on_viewTableViewActionToggled();
         on_viewAScanViewActionToggled();
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
         on_viewCameraActionToggled();
 #endif
         on_viewSettingsActionToggled();
@@ -575,7 +492,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	else
 		showNormal();
 
-#if 1
+
 	// Start the threads for background  receiver capture objects
 	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
@@ -589,15 +506,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoCaptures[cameraID]->Go();
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-	// Start the threads for background video capture objects
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++)
-	{
-		apVideoCaptures[cameraID]->Go();
-	}
-#endif
 
-#endif
 
 	
 	// Set size of statusbar & font
@@ -668,7 +577,7 @@ void AWLQtDemo::SetupToolBar()
 	actionAScanButton->setChecked(globalSettings->bDisplayAScanViewWindow);
 	ui.mainToolBar->addAction(actionAScanButton);
 
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	actionCameraButton = new QAction(QIcon("./Images/ButtonBitmaps/Camera.png"), "Camera View", 0);
 	actionCameraButton->setCheckable(true);
 	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
@@ -704,7 +613,7 @@ void AWLQtDemo::SetupToolBar()
 	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
 	connect(actionAScanButton, SIGNAL(toggled(bool )), this, SLOT(on_viewAScanViewActionToggled()));
 	connect(actionAboutButton, SIGNAL(triggered(bool )), this, SLOT(on_viewAboutActionTriggered()));
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
 #endif
 	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
@@ -731,13 +640,6 @@ void AWLQtDemo::SetupDisplayGrid()
 		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 2, Qt::AlignTop);
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-        videoViewerQty = apVideoCaptures.size();
-	for (size_t videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID + videoCaptures.size(), 2, Qt::AlignTop);
-	}
-#endif
 }
 
 void AWLQtDemo::on_destroy()
@@ -746,12 +648,6 @@ void AWLQtDemo::on_destroy()
 	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
-	}
-#endif
-#if defined (USE_AP_VIDEO)
-	for (size_t cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++) 
-	{
-		if (apVideoCaptures[cameraID]) apVideoCaptures[cameraID]->Stop();
 	}
 #endif
 
@@ -1105,18 +1001,6 @@ void AWLQtDemo::on_timerTimeout()
 		}
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-	// Check that the cameras are still working.  Otherwise Stop everyting
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++)
-	{
-		if (apVideoCaptures[cameraID]->WasStopped())
-		{
-			bContinue = false;
-			break;
-		}
-	}
-#endif
-
 
 	// For each receiver. Validate that the receiver exists.
 	// Then display the status flags.
@@ -1159,14 +1043,6 @@ void AWLQtDemo::on_timerTimeout()
 			if (videoViewers[viewerID] && bNewDetections) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
 		}
 #endif
-#if defined (USE_AP_VIDEO)
-		// Update the data for the camera views. Only if detections have changed have changed.
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID] && bNewDetections) apVideoViewers[viewerID]->slotDetectionDataChanged(detectionData);
-		}
-#endif
-
 
 		// Update the table views only if there is new data
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
@@ -1221,13 +1097,6 @@ void AWLQtDemo::on_timerTimeout()
 		for (size_t viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) videoViewers[viewerID]->slotImageChanged();
-		}
-#endif
-#if defined (USE_AP_VIDEO)
-		// Always spin the video viewers.
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID]) apVideoViewers[viewerID]->slotImageChanged();
 		}
 #endif
 	}
@@ -2399,7 +2268,7 @@ void AWLQtDemo::on_viewSettingsActionToggled()
 }
 
 
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 void AWLQtDemo::on_viewCameraActionToggled()
 {
 	if (actionCameraButton->isChecked())
@@ -2412,14 +2281,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 			}
 		}
 #endif
-#ifdef USE_AP_VIDEO
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID]) {
-				apVideoViewers[viewerID]->show();
-			}
-		}
-#endif
+
 		actionCameraButton->setChecked(true);
 	}
 	else
@@ -2433,15 +2295,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 			}
 		}
 #endif
-#ifdef USE_AP_VIDEO
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID]) 
-			{
-				apVideoViewers[viewerID]->hide();
-			}
-		}
-#endif
+
 		actionCameraButton->setChecked(false);
 	}
 }
@@ -3021,13 +2875,6 @@ void AWLQtDemo::closeEvent(QCloseEvent * /*event*/)
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++) 
-	{
-		if (apVideoCaptures[cameraID]) apVideoCaptures[cameraID]->Stop();
-	}
-#endif
-
 
 	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{

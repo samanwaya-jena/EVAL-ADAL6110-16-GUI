@@ -60,9 +60,6 @@
     <ClInclude Include="..\AWLCoreClasses\ReceiverCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AWLCoreClasses\ReceiverEasySyncCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,7 +75,10 @@
     <ClInclude Include="AWLSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AWLCoreClasses\ReceiverKvaserCapture.h">
+    <ClInclude Include="..\AWLCoreClasses\ReceiverLibUSBCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverPolledCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,16 +131,10 @@
     <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AWLCoreClasses\ReceiverKvaserCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverLibUSBCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixUDPCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -230,8 +230,6 @@ public:
 
 enum RawProvider{
 	rawFromNothing,
-	rawFromPosixUDP,
-	rawFromPosixTTY,
 	rawFromLibUSB
 }; 
 

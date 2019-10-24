@@ -101,8 +101,8 @@
     <ClInclude Include="..\AWLCoreClasses\Publisher.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverCANCapture.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverCapture.h" />
-    <ClInclude Include="..\AWLCoreClasses\ReceiverEasySyncCapture.h" />
-    <ClInclude Include="..\AWLCoreClasses\ReceiverKvaserCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverLibUSBCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverPolledCapture.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverSimulatorCapture.h" />
     <ClInclude Include="..\AWLCoreClasses\Subscription.h" />
@@ -121,10 +121,8 @@
     <ClCompile Include="..\AWLCoreClasses\Publisher.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverCANCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverCapture.cpp" />
-    <ClCompile Include="..\AWLCoreClasses\ReceiverKvaserCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverLibUSBCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp" />
-    <ClCompile Include="..\AWLCoreClasses\ReceiverPosixUDPCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\Subscription.cpp" />

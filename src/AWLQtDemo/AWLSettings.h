@@ -140,27 +140,23 @@ public:
 
 	// Layout
 	bool bDisplaySettingsWindow;
-	bool bDisplay3DWindow;
 	bool bDisplay2DWindow;
 	bool bDisplayTableViewWindow;
 	bool bDisplayAScanViewWindow;
 	bool bDisplayAboutWindow;
-	bool bDisplayScopeWindow;
 	bool bDisplayCameraWindow;
 
-        bool bTabSettingCalibration;
-        bool bTabSettingControl;
-        bool bTabSettingStatus;
-        bool bTabSettingRegisters;
-        bool bTabSettingGPIOs;
-        bool bTabSettingAlgoControl;
-        bool bTabSettingTrackerControl;
-        bool bTabSettingAScan;
-        bool bTabSettingMisc;
+	bool bTabSettingCalibration;
+	bool bTabSettingControl;
+	bool bTabSettingStatus;
+	bool bTabSettingRegisters;
+	bool bTabSettingGPIOs;
+	bool bTabSettingAlgoControl;
+	bool bTabSettingTrackerControl;
+	bool bTabSettingAScan;
+	bool bTabSettingMisc;
 
 
-	bool bDisplayScopeDistance;
-	bool bDisplayScopeVelocity;
 	std::string sDisplayShowSize;
 
 	VelocityUnits velocityUnits; 
@@ -193,8 +189,6 @@ public:
 	bool bDisplayVideoCrosshair;
 	bool bDisplayVideoTime;
 
-	// Scope
-	int scopeTimerInterval;
 
 	// Dynamic testing
 	float brakingDeceleration;

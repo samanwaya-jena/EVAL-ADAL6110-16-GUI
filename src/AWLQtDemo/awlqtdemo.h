@@ -32,16 +32,12 @@
 #include "VideoCapture.h"
 #include "VideoViewer.h"
 #endif
-#ifdef USE_AP_VIDEO
-#include "APVideoCapture.h"
-#include "APVideoViewer.h"
-#endif
+
 
 #include "ReceiverCapture.h"
 
 #include "fov_2dscan.h"
 #include "TableView.h"
-#include "awlqtscope.h"
 #include "awlplotscan.h"
 
 
@@ -144,7 +140,7 @@ private slots:
 	void on_viewAScanViewActionToggled();
 	void on_viewAboutActionTriggered();
 
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	void on_viewCameraActionToggled();
 #endif
 	void on_resizeActionToggled();
@@ -212,7 +208,7 @@ private:
 	QAction *actionTableButton;
 	QAction *actionAScanButton;
 	QAction *actionAboutButton;
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	QAction *actionCameraButton;
 #endif
 	QAction *actionResizeButton;
@@ -225,10 +221,6 @@ private:
 #if defined (USE_OPENCV_VIDEO)
 	VideoCapture::List videoCaptures;
 	VideoViewer::List  videoViewers;
-#endif
-#if defined(USE_AP_VIDEO)
-	APVideoCapture::List apVideoCaptures;
-	APVideoViewer::List  apVideoViewers;
 #endif
 
 	QLabel * labelConnected;

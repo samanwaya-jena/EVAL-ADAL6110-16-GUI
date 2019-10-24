@@ -34,7 +34,6 @@
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "xiapi.h"
 
 using namespace std;
 using namespace awl;
@@ -42,38 +41,11 @@ using namespace awl;
 // Frame rate, in frame per seconds
 #define FRAME_RATE	33.0
 
-const int ximeaDefaultBinningMode  = 4; // Binning mode on the ximea camera for 648x486 resolution
 const int reopenCameraDelaylMillisec = 5000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
 boost::posix_time::ptime reconnectTime;
 
-class CvCaptureCAM_XIMEA
-{
-public:
-    CvCaptureCAM_XIMEA() { init(); }
-    virtual ~CvCaptureCAM_XIMEA() { close(); }
-
-    virtual bool open( int index );
-    virtual void close();
-    virtual double getProperty(int);
-    virtual bool setProperty(int, double);
-    virtual bool grabFrame();
-    virtual IplImage* retrieveFrame(int);
-    virtual int getCaptureDomain() { return cv::CAP_XIAPI; } // Return the type of the capture object: cv::CAP_VFW, etc...
-
-public:
-    void init();
-    void errMsg(const char* msg, int errNum);
-    void resetCvImage();
-    int  getBpp();
-    IplImage* frame;
-
-    HANDLE    hmv;
-    DWORD     numDevices;
-    int       timeout;
-    XI_IMG    image;
-};
 
 
 VideoCapture::VideoCapture(int inCameraID, int argc, char** argv, boost::property_tree::ptree &propTree):
@@ -194,15 +166,6 @@ void VideoCapture::DoThreadIteration()
 
 		if (!bufferFrame.empty()) 
 		{
-#if 1  // Patch: Do not remove JYD 2014-07-07
-			// Force-set the bufferFrame dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera, after downsampling
-			bufferFrame.cols = calibration.frameWidthInPixels;
-			bufferFrame.rows = calibration.frameHeightInPixels;
-			bufferFrame.step = bufferFrame.cols*(bufferFrame.channels());
-			// End of the Ximea patch
-#endif
-
-
 			boost::mutex::scoped_lock currentLock(GetMutex());
 			if (bCameraFlip) 
 			{
@@ -243,27 +206,8 @@ void VideoCapture::ListCameras()
 	AWLSettings::GetGlobalSettings()->bWriteDebugFile = true;
 
 	DebugFilePrintf("Requested Camera: %s", sCameraName.c_str());
-	//num of connected SHT devices	
-#ifdef XIFORWINDOWS	
-	if(xiGetNumberDevices(&dwNumDevices) == XI_OK)
-	{
-		int dwSerial = 0;
-
-		if(xiOpenDevice( 0, &hMV) != XI_OK)
-		{ 
-			DebugFilePrintf("Cannot Open Ximea Cam");
-		}
-
-		xiGetParamInt( hMV, XI_PRM_DEVICE_SN, &dwSerial);
 	
-		char camName[512];
-	
-		xiGetParamString( hMV, XI_PRM_DEVICE_NAME, camName, 256);
-				
-		DebugFilePrintf("%s %08X", camName, dwSerial);
-	}
-#endif
-
+	//max num of conected devices is 2000	
 
 	for (int i = 0; i < 2000; i++) 
 	{
@@ -298,16 +242,6 @@ bool VideoCapture::OpenCamera()
 		
 	if (cam.isOpened()) 
 	{
-		// interpret preferred interface (0 = autodetect). This tells us what type of marea capabilities to expect
-		int pref = (inputID / 100) * 100;
-
-		// If we are using the Ximea driver, set the downsampling for a 640x480 image
-		if (pref == cv::CAP_XIAPI)
-		{
-			// Set the amount of downsampling to get decent frame rate.
-			cam.set(cv::CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
-		}
-
 		calibration.frameWidthInPixels = (int) cam.get(cv::CAP_PROP_FRAME_WIDTH);
 		calibration.frameHeightInPixels = (int) cam.get(cv::CAP_PROP_FRAME_HEIGHT);
 		float framesPerSecond = (float) cam.get(cv::CAP_PROP_FPS);

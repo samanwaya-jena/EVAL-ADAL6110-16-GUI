@@ -4,17 +4,16 @@
   <layout>
     <!-- default layout at startup.  Tells which windows and parts of
 	       screen are displayed. -->
-    <displaySettingsWindow>true</displaySettingsWindow>
+    <displaySettingsWindow>false</displaySettingsWindow>
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
-    <display3DWindow>false</display3DWindow>
-    <displayCameraWindow>true</displayCameraWindow>
+    <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
     <TabSettingControl>false</TabSettingControl>
-    <TabSettingStatus>flase</TabSettingStatus>
+    <TabSettingStatus>false</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>false</TabSettingGPIOs>
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
@@ -60,7 +59,7 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+		       Valid values currently possible are "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
       <receiverType>LibUSB</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
@@ -121,7 +120,7 @@
          </position>
         <orientation>
           <pitch>0.0</pitch>
-          <roll>10</roll>
+          <roll>0.0</roll>
           <yaw>0.0</yaw>
         </orientation>
       </sensorGeometry>
@@ -169,7 +168,7 @@
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
+        <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>65535</channelMask>
 
@@ -241,6 +240,7 @@
 
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
+
       <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
       <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
       <channelMask>65535</channelMask>
@@ -288,8 +288,7 @@
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
-       A non-numeric camera name can be used to specify a video file.-->
+       XIMEA Cameras (if supported by code), add 1100 to the camera index (default XIMEA camera would be "1100").-->
       <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
@@ -311,66 +310,12 @@
         <yaw>0.0</yaw>
       </orientation>
 
-      <!-- Comment out unused cameras
-		< MS_LIFECAM_CINEMA >
-		<fov>
-			<x>47.4</x>
-			<y>30.6</y>
-		</fov>
-
-		< MS_LIFECAM_HD6000 @640x360 >
-		<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-
-		< MS_LIFECAM_HD5000 @640x360 >
-			<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-    
-     < LOGITECH_C270 @640 x 480 >
-    <fov>
-      <x>42.0</x>
-      <y>27.0</y>
-    </fov>
-
-     < XIMEA with 3.6mm lensing (M12 Lenses PT-03618MP)>
-    <fov>
-      <x>96.75</x>
-      <y>72.5</y>
-     </fov>
-     < radial distorsion correction parameters >
-     <radialCorrectionK1>-.16</radialCorrectionK1>
-     <radialCorrectionK2>0.0</radialCorrectionK2>
-
-
-     < XIMEA with 6mm lensing (M12 Lenses PT-0620BMP) >
-      <fov>
-        <x>54.6</x>
-        <y>41.3</y>
-      </fov>
-      <radialCorrectionK1>-.06</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-  
-  
-     < XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) >
+      <!-- MS_LIFECAM_HD5000 @640x360 -->
       <fov>
         <x>45.0</x>
-        <y>34.0</y>
+        <y>39.0</y>
       </fov>
-      <radialCorrectionK1>-.04</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-
-      End Comment out unused cameras -->
-
-
-      <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
-      <fov>
-        <x>82.1</x>
-        <y>52.2</y>
-      </fov>
+      <!-- radial distorsion correction parameters -->
       <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
@@ -380,8 +325,7 @@
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
-       A non-numeric camera name can be used to specify a video file.-->
+       XIMEA Cameras (if supported by code), add 1100 to the camera index (default XIMEA camera would be "1100").-->
       <cameraName>1</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
@@ -412,47 +356,6 @@
       <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </cameraWebcamSample>
-
-
-    <cameraXimea3_6mmSample>
-      <!-- cameraName:
-	    Camera index, as used in openCV.
-       Indexes start at 0, up to 99. 
-       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index.
-       An non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName> <!-- Camera #1100 is first Ximea in a 2 camera setup -->
-
-      <!-- cameraFlip:
-       if true, 180 degree rotation of the camera image, 
- 
-     for cameras that need to be fixed upside down. -->
-      <cameraFlip>true</cameraFlip>
-
-      <position>
-        <!-- positionFromBumper -->
-        <forward>0</forward>
-        <!-- lateral offet -->
-        <left>0.0</left>
-        <!-- height -->
-        <up>0</up>
-      </position>
-      <orientation>
-        <pitch>0.0</pitch>
-        <roll>0.0</roll>
-        <yaw>0.0</yaw>
-      </orientation>
-
-      <!-- XIMEA with 3.6mm lensing. F1.8 -->
-      <fov>
-        <x>96.75</x>
-        <y>72.5</y>
-      </fov>
-      <!-- radial distorsion correction parameters -->
-      <radialCorrectionK1>-.16</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-    </cameraXimea3_6mmSample>
-
   </cameras>
   
 
@@ -539,13 +442,6 @@
     <showPalette>0</showPalette>
   </display2D>
 
-  <scope>
-    <!-- interval in ms -->
-    <timerInterval>30</timerInterval>
-    <!-- scope window:determine what curves are displayed -->
-    <displayScopeDistance>true</displayScopeDistance>
-    <displayScopeVelocity>true</displayScopeVelocity>
-  </scope>
 
 
   <dynamicTesting>
@@ -566,7 +462,7 @@
     <alert0>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+      <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 1.0</alertMin>  <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>2.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>1</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -575,7 +471,7 @@
     <alert1>
       <alertType>decelerationToStop</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 2.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>3.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>2</alertLevel><!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -627,9 +523,6 @@
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert6Ignored>
   </dynamicTesting>
-
-
-
 
 
   <registerDescription_ADI>
@@ -1121,7 +1014,6 @@
       <defaultTracker>1</defaultTracker>
     </trackers>
   </registerDescription_ADI>
-
 
 
   <GeometryADI1x16Array>
