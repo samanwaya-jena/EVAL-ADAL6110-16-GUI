@@ -634,56 +634,67 @@
 
 
   <registerDescription_ADI>
-  
+
     <!-- Registers for Wagner evaluation board based on ADI Gordon -->
     <registersFPGA label="ADAL6110-16 Registers">
 
       <register>
-        <index>R0</index>
+        <index>Rx00</index>
         <address>0</address>
         <description>DEVICE</description>
       </register>
       <register>
-        <index>R1</index>
+        <index>Rx01</index>
         <address>1</address>
         <description>CONTROL_0</description>
       </register>
       <register>
-        <index>R2</index>
+        <index>Rx02</index>
         <address>2</address>
         <description>CONTROL_1</description>
       </register>
       <register>
-        <index>R3</index>
+        <index>Rx03</index>
         <address>3</address>
         <description>SRAM_READ</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R4</index>
+        <index>Rx04</index>
         <address>4</address>
         <description>FLASH_DELAY</description>
       </register>
       <register>
-        <index>R7</index>
-        <address>7</address>
-        <description>TIMING</description>
+        <index>Rx05</index>
+        <address>5</address>
+        <description>CHANNEL_ENABLE</description>
       </register>
+      <register>
+        <index>Rx06</index>
+        <address>6</address>
+        <description>DATA_ACQ_MODE</description>
+      </register>
+      <register>
+        <index>Rx07</index>
+        <address>7</address>
+        <description>TRIGGER_OUT</description>
+      </register>
+
       <!-- Channel 0 -->
       <register>
-        <index>R13</index>
+        <index>Rx0D</index>
         <address>13</address>
         <description>CH0_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R14</index>
+        <index>Rx0E</index>
         <address>14</address>
         <description>CH0_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R15</index>
+        <index>Rx0F</index>
         <address>15</address>
         <description>CH0_CONTROL_2</description>
         <advanced>1</advanced>
@@ -691,19 +702,19 @@
 
       <!-- Channel 1 -->
       <register>
-        <index>R17</index>
+        <index>Rx11</index>
         <address>17</address>
         <description>CH1_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R18</index>
+        <index>Rx12</index>
         <address>18</address>
         <description>CH1_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R19</index>
+        <index>Rx13</index>
         <address>19</address>
         <description>CH1_CONTROL_2</description>
         <advanced>1</advanced>
@@ -711,19 +722,19 @@
 
       <!-- Channel 2 -->
       <register>
-        <index>R21</index>
+        <index>Rx15</index>
         <address>21</address>
         <description>CH2_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R22</index>
+        <index>Rx16</index>
         <address>22</address>
         <description>CH2_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R23</index>
+        <index>Rx17</index>
         <address>23</address>
         <description>CH2_CONTROL_2</description>
         <advanced>1</advanced>
@@ -731,19 +742,19 @@
 
       <!-- Channel 3 -->
       <register>
-        <index>R25</index>
+        <index>Rx19</index>
         <address>25</address>
         <description>CH3_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R26</index>
+        <index>Rx1A</index>
         <address>26</address>
         <description>CH3_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R27</index>
+        <index>Rx1B</index>
         <address>27</address>
         <description>CH3_CONTROL_2</description>
         <advanced>1</advanced>
@@ -751,19 +762,19 @@
 
       <!-- Channel 4 -->
       <register>
-        <index>R29</index>
+        <index>Rx1D</index>
         <address>29</address>
         <description>CH4_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R30</index>
+        <index>Rx1E</index>
         <address>30</address>
         <description>CH4_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R31</index>
+        <index>Rx1F</index>
         <address>31</address>
         <description>CH4_CONTROL_2</description>
         <advanced>1</advanced>
@@ -771,19 +782,19 @@
 
       <!-- Channel 5 -->
       <register>
-        <index>R33</index>
+        <index>Rx21</index>
         <address>33</address>
         <description>CH5_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R34</index>
+        <index>Rx22</index>
         <address>34</address>
         <description>CH5_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R35</index>
+        <index>Rx23</index>
         <address>35</address>
         <description>CH5_CONTROL_2</description>
         <advanced>1</advanced>
@@ -791,19 +802,19 @@
 
       <!-- Channel 6 -->
       <register>
-        <index>R37</index>
+        <index>Rx25</index>
         <address>37</address>
         <description>CH6_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R38</index>
+        <index>Rx26</index>
         <address>38</address>
         <description>CH6_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R39</index>
+        <index>Rx27</index>
         <address>39</address>
         <description>CH6_CONTROL_2</description>
         <advanced>1</advanced>
@@ -811,19 +822,19 @@
 
       <!-- Channel 7 -->
       <register>
-        <index>R41</index>
+        <index>Rx29</index>
         <address>41</address>
         <description>CH7_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R42</index>
+        <index>Rx2A</index>
         <address>42</address>
         <description>CH7_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R43</index>
+        <index>R2B</index>
         <address>43</address>
         <description>CH7_CONTROL_2</description>
         <advanced>1</advanced>
@@ -831,19 +842,19 @@
 
       <!-- Channel 8 -->
       <register>
-        <index>R45</index>
+        <index>Rx2D</index>
         <address>45</address>
         <description>CH8_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R46</index>
+        <index>Rx2E</index>
         <address>46</address>
         <description>CH8_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R47</index>
+        <index>Rx2F</index>
         <address>47</address>
         <description>CH8_CONTROL_2</description>
         <advanced>1</advanced>
@@ -851,19 +862,19 @@
 
       <!-- Channel 9 -->
       <register>
-        <index>R49</index>
+        <index>Rx31</index>
         <address>49</address>
         <description>CH9_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R50</index>
+        <index>Rx32</index>
         <address>50</address>
         <description>CH9_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R51</index>
+        <index>Rx33</index>
         <address>51</address>
         <description>CH9_CONTROL_2</description>
         <advanced>1</advanced>
@@ -871,19 +882,19 @@
 
       <!-- Channel 10 -->
       <register>
-        <index>R53</index>
+        <index>Rx35</index>
         <address>53</address>
         <description>CH10_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R54</index>
+        <index>Rx36</index>
         <address>54</address>
         <description>CH10_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R55</index>
+        <index>Rx37</index>
         <address>55</address>
         <description>CH10_CONTROL_2</description>
         <advanced>1</advanced>
@@ -891,19 +902,19 @@
 
       <!-- Channel 11 -->
       <register>
-        <index>R57</index>
+        <index>Rx39</index>
         <address>57</address>
         <description>CH11_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R58</index>
+        <index>Rx3A</index>
         <address>58</address>
         <description>CH11_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R59</index>
+        <index>Rx3B</index>
         <address>59</address>
         <description>CH11_CONTROL_2</description>
         <advanced>1</advanced>
@@ -911,19 +922,19 @@
 
       <!-- Channel 12 -->
       <register>
-        <index>R61</index>
+        <index>Rx3D</index>
         <address>61</address>
         <description>CH12_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R62</index>
+        <index>Rx3E</index>
         <address>62</address>
         <description>CH12_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R63</index>
+        <index>Rx3F</index>
         <address>63</address>
         <description>CH12_CONTROL_2</description>
         <advanced>1</advanced>
@@ -931,19 +942,19 @@
 
       <!-- Channel 13 -->
       <register>
-        <index>R65</index>
+        <index>Rx41</index>
         <address>65</address>
         <description>CH13_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R66</index>
+        <index>Rx42</index>
         <address>66</address>
         <description>CH13_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R67</index>
+        <index>Rx43</index>
         <address>67</address>
         <description>CH13_CONTROL_2</description>
         <advanced>1</advanced>
@@ -951,19 +962,19 @@
 
       <!-- Channel 14 -->
       <register>
-        <index>R69</index>
+        <index>Rx45</index>
         <address>69</address>
         <description>CH14_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R70</index>
+        <index>Rx46</index>
         <address>70</address>
         <description>CH14_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R71</index>
+        <index>Rx47</index>
         <address>71</address>
         <description>CH14_CONTROL_2</description>
         <advanced>1</advanced>
@@ -971,34 +982,116 @@
 
       <!-- Channel 15 -->
       <register>
-        <index>R73</index>
+        <index>Rx49</index>
         <address>73</address>
         <description>CH15_CONTROL_0</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R74</index>
+        <index>Rx4A</index>
         <address>74</address>
         <description>CH15_CONTROL_1</description>
         <advanced>1</advanced>
       </register>
       <register>
-        <index>R75</index>
+        <index>Rx4B</index>
         <address>75</address>
         <description>CH15_CONTROL_2</description>
         <advanced>1</advanced>
       </register>
 
+      <register>
+        <index>RxE1</index>
+        <address>225</address>
+        <description>THS_MAX</description>
+      </register>
+
+      <register>
+        <index>RxE2</index>
+        <address>226</address>
+        <description>THS_MIN</description>
+      </register>
+
+      <register>
+        <index>RxE3</index>
+        <address>227</address>
+        <description>AGC_DCB_CTRL</description>
+      </register>
+
+      <register>
+        <index>RxE4</index>
+        <address>228</address>
+        <description>AGC_EN</description>
+      </register>
+
+      <register>
+        <index>RxE5</index>
+        <address>229</address>
+        <description>DC_EN</description>
+      </register>
+
+      <register>
+        <index>RxE6</index>
+        <address>230</address>
+        <description>AGC_DCB_PID_0</description>
+      </register>
+
+      <register>
+        <index>RxE7</index>
+        <address>231</address>
+        <description>AGC_DCB_PID_1</description>
+      </register>
+
+      <register>
+        <index>RxE8</index>
+        <address>232</address>
+        <description>FRAME_DELAY</description>
+      </register>
+
+      <register>
+        <index>RxF5</index>
+        <address>245</address>
+        <description>SRAM_ADDR_POINTER</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>RxF6</index>
+        <address>246</address>
+        <description>SRAM_READY</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>RxF7</index>
+        <address>247</address>
+        <description>LFSR_SEED_L</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>RxF8</index>
+        <address>229</address>
+        <description>LFSR_SEED_H</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>RxFF</index>
+        <address>255</address>
+        <description>SRAM_DATA</description>
+        <advanced>1</advanced>
+      </register>
     </registersFPGA>
 
     <registersADC label="CPU Registers">
-    
+
       <register>
         <index>0</index>
         <address>0</address>
         <description>Software Reset</description>
       </register>
-      
+
       <register>
         <index>1</index>
         <address>1</address>
@@ -1024,14 +1117,13 @@
 
     <algos>
       <defaultAlgo>1</defaultAlgo>
-    </algos> 
+    </algos>
     <trackers>
-	    <defaultTracker>1</defaultTracker>
+      <defaultTracker>1</defaultTracker>
     </trackers>
   </registerDescription_ADI>
 
 
-  
   <GeometryADI1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
