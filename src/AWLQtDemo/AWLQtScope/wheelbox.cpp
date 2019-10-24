@@ -13,6 +13,9 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
+
+	Wheelbox widget is based in part on the work of the Qwt project(http://qwt.sf.net).
+
 */
 
 #include "wheelbox.h"
