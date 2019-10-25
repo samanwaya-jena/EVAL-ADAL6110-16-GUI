@@ -27,6 +27,8 @@ Open CV also makes use of FFmpeg, under a separate license "OpenCV_LICENSE_FFMPE
 
 BOOST license is in file "BOOST_LICENSE_1_0.txt"
 
+LibUSB license is provided in file "LibUSB_COPYING.txt"
+
 For Windows versions, Microsoft Redistributables are subject to the liicense terms outlined in "Microsoft Visual C++2015 Redistributable (x86) 14.23.27820"
 
 
