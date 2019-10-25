@@ -45,37 +45,38 @@ const float defaultSignalToNoiseFloor = -10.0;
 
 
 ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
-		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
-					   const AlgorithmSet &inParametersAlgos,
-					   const AlgorithmSet &inParametersTrackers):
-ThreadedWorker(),
-Publisher(),
-receiverID(receiverID),
-receiverChannelQty(inReceiverChannelQty),
-receiverColumnQty(inReceiverColumns),
-receiverRowQty(inReceiverRows), 
-lineWrapAround(inLineWrapAround),
-acquisitionSequence(new AcquisitionSequence()),
-frameID(0),
-currentFrame(new SensorFrame(receiverID, 0, inReceiverChannelQty)),
-measurementOffset(inRangeOffset),
-bFrameInvalidated(false),
-registersFPGA(inRegistersFPGA),
-registersADC(inRegistersADC),
-registersGPIO(inRegistersGPIO),
-parametersAlgos(inParametersAlgos),
-parametersTrackers(inParametersTrackers),
-sReceiverType(sDefaultReceiverType),
-sReceiverRegisterSet(sDefaultReceiverRegisterSet),
-sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
-targetHintDistance(0.0),
-targetHintAngle(0.0),
-m_FrameRate(0),
-m_FrameRateMS(0.0),
-m_nbrCompletedFrame(0),
-m_nbrCompletedFrameCumul(0),
-m_nbrRawCumul(0)
+	uint8_t inFrameRate, ChannelMask& inChannelMask, MessageMask& inMessageMask, float inRangeOffset,
+	const RegisterSet& inRegistersFPGA, const RegisterSet& inRegistersADC, const RegisterSet& inRegistersGPIO,
+	const AlgorithmSet& inParametersAlgos,
+	const AlgorithmSet& inParametersTrackers) :
+	ThreadedWorker(),
+	Publisher(),
+	receiverID(receiverID),
+	receiverChannelQty(inReceiverChannelQty),
+	receiverColumnQty(inReceiverColumns),
+	receiverRowQty(inReceiverRows),
+	lineWrapAround(inLineWrapAround),
+	acquisitionSequence(new AcquisitionSequence()),
+	frameID(0),
+	currentFrame(new SensorFrame(receiverID, 0, inReceiverChannelQty)),
+	measurementOffset(inRangeOffset),
+	bFrameInvalidated(false),
+	registersFPGA(inRegistersFPGA),
+	registersADC(inRegistersADC),
+	registersGPIO(inRegistersGPIO),
+	parametersAlgos(inParametersAlgos),
+	parametersTrackers(inParametersTrackers),
+	sReceiverType(sDefaultReceiverType),
+	sReceiverRegisterSet(sDefaultReceiverRegisterSet),
+	sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
+	targetHintDistance(0.0),
+	targetHintAngle(0.0),
+	m_FrameRate(0),
+	m_FrameRateMS(0.0),
+	m_nbrCompletedFrame(0),
+	m_nbrCompletedFrameCumul(0),
+	m_nbrRawCumul(0),
+	logFilePtr(NULL)
 
 {
 	// Initialize default status values
@@ -114,7 +115,8 @@ m_FrameRate(0),
 m_FrameRateMS(0.0),
 m_nbrCompletedFrame(0),
 m_nbrCompletedFrameCumul(0),
-m_nbrRawCumul(0)
+m_nbrRawCumul(0),
+logFilePtr(NULL)
 
 {
 	// Read the configuration from the configuration file
@@ -393,7 +395,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 	// Log Tracks?
 	if (receiverStatus.messageMask.bitFieldData.obstacle)
 	{
-		LogTracks(logFile, currentFrame);
+		LogTracks(currentFrame);
 	}
 
 	// Log Distances?
@@ -403,7 +405,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 		receiverStatus.messageMask.bitFieldData.intensity_5_8 ||
 		receiverStatus.messageMask.bitFieldData.distance_intensity)
 	{
-		LogDistances(logFile, currentFrame);
+		LogDistances(currentFrame);
 	}
 
 	FrameID completedFrameID = currentFrame->GetFrameID();
@@ -524,18 +526,27 @@ AlgorithmParameter * ReceiverCapture::FindTrackerParamByAddress(int inTrackerID,
 bool ReceiverCapture::BeginDistanceLog()
 
 {
-	if (!logFile.is_open())
+	logFileMutex.lock();
+
+	if (!logFilePtr)
 	{
-		OpenLogFile(logFile, GetLogFileName().c_str(), true);
+		logFilePtr = new ofstream();
+	}
+		
+	if (!logFilePtr->is_open())
+	{
+		OpenLogFile(*logFilePtr, GetLogFileName().c_str(), true);
 	}
 
-	LogFilePrintf(logFile, ",Comment,Type, Track ID, Channel, ChannelID,Type Specific");
-	LogFilePrintf(logFile, ",,Start distance log");
+	LogFilePrintf(*logFilePtr, ",Comment,Type, Track ID, Channel, ChannelID,Type Specific");
+	LogFilePrintf(*logFilePtr, ",,Start distance log");
 	// Title Line
-	LogFilePrintf(logFile, ",Track Description:,Track,trackID,Channel,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
-	LogFilePrintf(logFile, ",Distance Description:,Dist,_,__,Channel,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
-	LogFilePrintf(logFile, ",Footer Description:,Footer,_,_,_,_,FooterData");
-	LogFilePrintf(logFile, ",Wave Description: ,Wave,_,_,Channel,ChannelID,point0,point1,point3,etc");
+	LogFilePrintf(*logFilePtr, ",Track Description:,Track,trackID,Channel,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
+	LogFilePrintf(*logFilePtr, ",Distance Description:,Dist,_,__,Channel,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
+	LogFilePrintf(*logFilePtr, ",Footer Description:,Footer,_,_,_,_,FooterData");
+	LogFilePrintf(*logFilePtr, ",Wave Description: ,Wave,_,_,Channel,ChannelID,point0,point1,point3,etc");
+
+	logFileMutex.unlock();
 
 	return(true);
 }
@@ -544,14 +555,37 @@ bool ReceiverCapture::BeginDistanceLog()
 bool ReceiverCapture::EndDistanceLog()
 
 {
-	if (logFile.is_open())
-		CloseLogFile(logFile);
-	return(false);
+	logFileMutex.lock();
+
+	if (!logFilePtr)
+	{
+		logFileMutex.unlock();
+		return(false);
+	}
+
+	if (logFilePtr->is_open())
+	{
+		CloseLogFile(*logFilePtr);
+		delete(logFilePtr);
+		logFilePtr = NULL;
+	}
+
+	logFileMutex.unlock();
+	return(true);
 }
 
 
-void ReceiverCapture::LogTracks(ofstream &inLogFile, SensorFrame::Ptr sourceFrame)
+void ReceiverCapture::LogTracks(SensorFrame::Ptr sourceFrame)
 {
+	logFileMutex.lock();
+
+	if (!logFilePtr)
+	{
+		logFileMutex.unlock();
+		return;
+	}
+
+
 	// Update the coaslesced tracks
    Track::Vector::iterator  trackIterator = sourceFrame->tracks.begin();
 
@@ -561,7 +595,7 @@ void ReceiverCapture::LogTracks(ofstream &inLogFile, SensorFrame::Ptr sourceFram
 		if (track->IsComplete()) 
 		{
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;intensity,speed;acceleration;probability;timeToCollision);
-			LogFilePrintf(inLogFile, ", ,Track,%d,Channel,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
+			LogFilePrintf(*logFilePtr, ", ,Track,%d,Channel,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 				track->trackID,
 				track->trackMainChannel,
 				targetHintDistance,
@@ -587,15 +621,25 @@ void ReceiverCapture::LogTracks(ofstream &inLogFile, SensorFrame::Ptr sourceFram
 
 		trackIterator++;
 	} // while (trackIterator...
+
+	logFileMutex.unlock();
 } 
 
-void ReceiverCapture::LogDistances(ofstream &inLogFile, SensorFrame::Ptr sourceFrame)
+void ReceiverCapture::LogDistances(SensorFrame::Ptr sourceFrame)
 {
+	logFileMutex.lock();
+
+	if (!logFilePtr)
+	{
+		logFileMutex.unlock();
+		return;
+	}
+
 	Detection::Vector::iterator  detectionIterator = sourceFrame->rawDetections.begin();
 	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
 		Detection::Ptr detection = *detectionIterator;
-		LogFilePrintf(inLogFile, " , ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
+		LogFilePrintf(*logFilePtr, " , ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
 			detection->channelID, 
 			detection->detectionID,
 			targetHintDistance,
@@ -611,6 +655,8 @@ void ReceiverCapture::LogDistances(ofstream &inLogFile, SensorFrame::Ptr sourceF
 
 		detectionIterator++;
 	}
+
+	logFileMutex.unlock();
 }
 
 
