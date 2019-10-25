@@ -58,7 +58,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>USE_OPENCV_VIDEO;USE_LIBUSB;UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/include/opencv2/videostab;$(OPENCV_DIR)/include/opencv2/stitching;$(OPENCV_DIR)/include/opencv2/calib3d;$(OPENCV_DIR)/include/opencv2/features2d;$(OPENCV_DIR)/include/opencv2/photo;$(OPENCV_DIR)/include/opencv2/objdetect;$(OPENCV_DIR)/include/opencv2/video;$(OPENCV_DIR)/include/opencv2/ml;$(OPENCV_DIR)/include/opencv2/highgui;$(OPENCV_DIR)/include/opencv2/imgproc;$(OPENCV_DIR)/include/opencv2/flann;$(OPENCV_DIR)/include/opencv2/core;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;$(QWTDir)/src;.\AWLCoreClasses;.\AWLQtScope;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)\include;$(OPENCV_DIR)\;$(QWTDir)/src;.\AWLCoreClasses;.\AWLQtScope;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -74,11 +74,14 @@
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
+    <Manifest>
+      <AssemblyIdentity>1.4.4.0</AssemblyIdentity>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>USE_OPENCV_VIDEO;USE_LIBUSB;UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)/include/opencv2/videostab;$(OPENCV_DIR)/include/opencv2/stitching;$(OPENCV_DIR)/include/opencv2/calib3d;$(OPENCV_DIR)/include/opencv2/features2d;$(OPENCV_DIR)/include/opencv2/photo;$(OPENCV_DIR)/include/opencv2/objdetect;$(OPENCV_DIR)/include/opencv2/video;$(OPENCV_DIR)/include/opencv2/ml;$(OPENCV_DIR)/include/opencv2/highgui;$(OPENCV_DIR)/include/opencv2/imgproc;$(OPENCV_DIR)/include/opencv2/flann;$(OPENCV_DIR)/include/opencv2/core;$(OPENCV_DIR)/include;$(OPENCV_DIR)/;.\AWLCoreClasses;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)\include;$(OPENCV_DIR)\;$(QWTDir)/src;.\AWLCoreClasses;.\AWLQtScope;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -101,6 +104,9 @@
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
+    <Manifest>
+      <AssemblyIdentity>1.4.4.0</AssemblyIdentity>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include=".\AWLCoreClasses\awlcoord.cpp" />
