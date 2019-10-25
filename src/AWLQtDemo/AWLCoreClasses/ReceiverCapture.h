@@ -911,16 +911,14 @@ protected:
 	void TimestampDetections(SensorFrame::Ptr sourceFrame);
 
 	/** \brief Write all the tracks in the sourceFrameframe to the log file
- 	  * \param[in] logFile		file to which the log is injected
 	  * \param[in] sourceFrame  frame that contains the tracks to log
       */
-	virtual void LogTracks(ofstream &logFile, SensorFrame::Ptr sourceFrame);
+	virtual void LogTracks(SensorFrame::Ptr sourceFrame);
 
 	/** \brief Write all the distances in the sourceFrame to the log file
- 	  * \param[in] logFile		file to which the log is injected
 	  * \param[in] sourceFrame  frame that contains the tracks to log
       */
-	virtual void LogDistances(ofstream &logFile, SensorFrame::Ptr sourceFrame);
+	virtual void LogDistances(SensorFrame::Ptr sourceFrame);
 
 	/** \brief Do one iteration of the thread loop.
       */
@@ -1004,7 +1002,8 @@ protected:
 	ofstream debugFile;
 
 	/** \brief  Log file. */
-	ofstream logFile;
+	ofstream *logFilePtr;
+	boost::mutex logFileMutex;
 
   int m_FrameRate;
   int m_nbrCompletedFrame;

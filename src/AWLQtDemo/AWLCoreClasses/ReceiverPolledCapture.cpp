@@ -174,7 +174,7 @@ bool ReceiverPolledCapture::DoOneLoop()
 				{
 					for (size_t cycle = 0; cycle < cycleCount; cycle++)
 					{
-						LogWaveform(logFile, cycle);
+						LogWaveform(cycle);
 					}
 				}
 
@@ -328,8 +328,16 @@ void ReceiverPolledCapture::SetHandle(void *h)
 	swap_handle = h;
 }
 
-void ReceiverPolledCapture::LogWaveform(ofstream& inLogFile, int cycle)
+void ReceiverPolledCapture::LogWaveform(int cycle)
 {
+	logFileMutex.lock();
+
+	if (!logFilePtr)
+	{
+		logFileMutex.unlock();
+		return;
+	}
+
 	for (int ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
 	{
 		std::string theWaveString(", ,Wave,,Channel,");
@@ -344,7 +352,7 @@ void ReceiverPolledCapture::LogWaveform(ofstream& inLogFile, int cycle)
 				theWaveString += std::to_string(*pData++) + ",";
 
 		}
-		LogFilePrintf(inLogFile, theWaveString.c_str());
+		LogFilePrintf(*logFilePtr, theWaveString.c_str());
 	}
 
 	short* pFooter = &dataFifo[cycle].footer[0];
@@ -359,7 +367,9 @@ void ReceiverPolledCapture::LogWaveform(ofstream& inLogFile, int cycle)
 			theFooterString += std::to_string(*pFooter++) + ",";
 		}
 	}
-	LogFilePrintf(inLogFile, theFooterString.c_str());
+	LogFilePrintf(*logFilePtr, theFooterString.c_str());
+
+	logFileMutex.unlock();
 }
 
 
