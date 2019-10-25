@@ -66,3 +66,4 @@ src/AWLQtDemo/build3/CMakeCache.txt
 src/AWLQtDemo/build3/CMakeFiles/3.15.3/CMakeDetermineCompilerABI_C.bin
 src/AWLQtDemo/build3/CMakeFiles/3.15.3/CMakeDetermineCompilerABI_CXX.bin
 src/AWLQtDemo/CMakeLists.txt.backup
+*.csv
