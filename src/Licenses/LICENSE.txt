@@ -15,7 +15,8 @@
 	limitations under the License.
 */
 
-The program is developed using third party tools and libraries.  Each of the individual librairies is subject to its own license terms.
+The program is developed using third party tools and libraries, which are used without alteration to their source code.
+The use of each of the individual librairies is subject to its own license terms.
 
 QT portion of the application is developed using of the QT Open Source License (a LGPLV3 license). 
 Toolkit is Copyright (C) 2017 The Qt Company Ltd.
