@@ -75,7 +75,8 @@
       </IgnoreAllDefaultLibraries>
     </Link>
     <Manifest>
-      <AssemblyIdentity>1.4.4.0</AssemblyIdentity>
+      <AssemblyIdentity>
+      </AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,7 +106,8 @@
       </EntryPointSymbol>
     </Link>
     <Manifest>
-      <AssemblyIdentity>1.4.4.0</AssemblyIdentity>
+      <AssemblyIdentity>
+      </AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
