@@ -29,7 +29,7 @@
 #include <boost/foreach.hpp>
 
 
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "AWLSettings.h"
 
 #define _USE_MATH_DEFINES 1  // Makes sure we have access to all math constants, like M_PI
@@ -566,7 +566,7 @@ void FOV_2DScan::slotConfigChanged()
 
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+		RelativePosition receiverPosition = SensorCoordinates::GetReceiverPosition(receiverID);
 		config.maxSensorsRange = max(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
 
 		config.spareDepth = min(config.spareDepth, -receiverPosition.position.bodyRelative.forward);
@@ -576,7 +576,7 @@ void FOV_2DScan::slotConfigChanged()
 		{
 			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
 			ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
-			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, channelID);
+			RelativePosition channelPosition = SensorCoordinates::GetChannelPosition(receiverID, channelID);
 
 			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) +
 				RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
@@ -778,13 +778,13 @@ void FOV_2DScan::paintEvent(QPaintEvent * /*paintEvent*/)
 	int receiverQty = AWLSettings::GetGlobalSettings()->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+		RelativePosition receiverPosition = SensorCoordinates::GetReceiverPosition(receiverID);
 		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelQty; channelID++)
 		{
 			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
 			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
-			RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID,channelID);
+			RelativePosition channelPosition = SensorCoordinates::GetChannelPosition(receiverID,channelID);
 
 			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, fovTransparency);
 			painter.setBrush(QBrush(channelColor));
@@ -1137,10 +1137,10 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	bool drawTarget, bool drawLegend)
 {
 	int receiverID = detection->GetReceiverID();
-	RelativePosition receiverPosition = AWLCoordinates::GetReceiverPosition(receiverID);
+	RelativePosition receiverPosition = SensorCoordinates::GetReceiverPosition(receiverID);
 	ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
 	ChannelConfig channelConfig = receiverSettings.channelsConfig[detection->channelID];
-	RelativePosition channelPosition = AWLCoordinates::GetChannelPosition(receiverID, detection->channelID);
+	RelativePosition channelPosition = SensorCoordinates::GetChannelPosition(receiverID, detection->channelID);
 
 
 	// Linewith is between 2 and 5 pixels, depening on screen size

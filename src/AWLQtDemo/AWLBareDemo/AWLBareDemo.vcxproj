@@ -92,7 +92,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\AWLCoreClasses\awlcoord.h" />
     <ClInclude Include="..\AWLCoreClasses\BlockingReader.h" />
     <ClInclude Include="..\AWLCoreClasses\CoordinateSystem.h" />
     <ClInclude Include="..\AWLCoreClasses\DebugPrintf.h" />
@@ -105,6 +104,7 @@
     <ClInclude Include="..\AWLCoreClasses\ReceiverPolledCapture.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverSimulatorCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\SensorCoord.h" />
     <ClInclude Include="..\AWLCoreClasses\SensorSettings.h" />
     <ClInclude Include="..\AWLCoreClasses\Subscription.h" />
     <ClInclude Include="..\AWLCoreClasses\ThreadedWorker.h" />
@@ -114,7 +114,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AWLCoreClasses\awlcoord.cpp" />
     <ClCompile Include="..\AWLCoreClasses\CoordinateSystem.cpp" />
     <ClCompile Include="..\AWLCoreClasses\DebugPrintf.cpp" />
     <ClCompile Include="..\AWLCoreClasses\DetectionStruct.cpp" />
@@ -126,6 +125,7 @@
     <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\SensorCoord.cpp" />
     <ClCompile Include="..\AWLCoreClasses\SensorSettings.cpp" />
     <ClCompile Include="..\AWLCoreClasses\Subscription.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp" />

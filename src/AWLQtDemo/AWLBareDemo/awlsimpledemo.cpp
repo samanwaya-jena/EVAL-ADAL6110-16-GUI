@@ -22,7 +22,7 @@
 
 
 #include "AWLSettings.h" // Application specific
-#include "AWLCoord.h"
+#include "SensorCoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 
@@ -46,7 +46,7 @@ AWLSimpleDemo::AWLSimpleDemo()
 	globalSettings->ReadSettings();
 
 	// Build a reference coodinate system from the settings
-	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
+	SensorCoordinates *globalCoordinates = SensorCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings(globalSettings->GetPropTree());
 
 	// Create the receiver communication objects

@@ -20,7 +20,7 @@
 
 
 #include "AWLSettings.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
 #ifdef USE_LIBUSB
@@ -154,7 +154,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	// Build a reference coodinate system from the settings
-	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
+	SensorCoordinates *globalCoordinates = SensorCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings(globalSettings->GetPropTree());
 
 	// Adjust the default displayed ranges depending on the sensors capabilities
@@ -220,7 +220,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.calibrationChannelMaskGroupBox->setVisible(false);
 	ui.channelMaskGroupBox->setVisible(false);
 
-	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	ui.sensorHeightSpinBox->setValue(sensorPosition.position.bodyRelative.up);
 	ui.sensorDepthSpinBox->setValue(sensorPosition.position.bodyRelative.forward);
 	float measurementOffset;
@@ -763,11 +763,11 @@ void AWLQtDemo::on_stopPushButton_clicked()
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	float height = (float) ui.sensorHeightSpinBox->value();
-	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	if (abs(height-sensorPosition.position.bodyRelative.up) < 0.001) return;
 	sensorPosition.position.bodyRelative.up = height;
 
-	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
+	SensorCoordinates::SetReceiverPosition(0, sensorPosition);
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -787,11 +787,11 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	float forward = (float) ui.sensorDepthSpinBox->value();
-	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	if (abs(forward - sensorPosition.position.bodyRelative.forward) < 0.001) return;
 
 	sensorPosition.position.bodyRelative.forward = forward;
-	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
+	SensorCoordinates::SetReceiverPosition(0, sensorPosition);
 
 
 	// Wait Cursor

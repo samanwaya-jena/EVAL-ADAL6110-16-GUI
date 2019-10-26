@@ -17,7 +17,7 @@
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
 #include "DetectionStruct.h"
@@ -659,19 +659,19 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 
 	// Position of the topLeft corner of the channel FOV 
 	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
-	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topLeftInChannel, topLeft.x, topLeft.y);
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topLeftInChannel, topLeft.x, topLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2)); 
-    bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topRightInChannel, topRight.x, topRight.y);
+    bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topRightInChannel, topRight.x, topRight.y);
 
 	// Position of the bottomLeft corner of the channel FOV 
 	SphericalCoord bottomLeftInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
 	SphericalCoord bottomRightInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomRightInChannel, bottomRight.x, bottomRight.y);
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomRightInChannel, bottomRight.x, bottomRight.y);
 
 	if (bSomePointsInFront)
 	{

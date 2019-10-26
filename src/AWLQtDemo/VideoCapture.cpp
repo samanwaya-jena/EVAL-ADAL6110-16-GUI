@@ -23,7 +23,7 @@
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "DebugPrintf.h"
 
 #include "opencv2/core/core_c.h"

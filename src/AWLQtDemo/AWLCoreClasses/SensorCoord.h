@@ -1,5 +1,5 @@
-#ifndef AWL_COORD_H
-#define AWL_COORD_H
+#ifndef SENSOR_COORD_H
+#define SENSOR_COORD_H
 /*
 	Copyright 2014, 2015 Phantom Intelligence Inc.
 
@@ -32,15 +32,15 @@ using namespace std;
 
 namespace awl
 {
-/** \brief The AWLCoordinates class provides utility methods to perform  application-specific coordinates conversions.
+/** \brief The SensorCoordinates class provides utility methods to perform  application-specific coordinates conversions.
   * \author Jean-Yves Deschênes
   */
 
-class AWLCoordinates
+class SensorCoordinates
 {
 public:
-	static AWLCoordinates *InitCoordinates();
-	static AWLCoordinates *GetGlobalCoordinates();
+	static SensorCoordinates *InitCoordinates();
+	static SensorCoordinates *GetGlobalCoordinates();
 	static TransformationNode::Ptr GetFirstNode();
 	static TransformationNode::List GetReceivers();
 	static TransformationNode::Ptr GetReceiver(int receiverID);
@@ -50,8 +50,8 @@ public:
 	
 
 	// Constructor
-	AWLCoordinates();
-	AWLCoordinates(boost::property_tree::ptree &propTree);
+	SensorCoordinates();
+	SensorCoordinates(boost::property_tree::ptree &propTree);
 	bool BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree);
 
     
@@ -81,11 +81,11 @@ protected:
 	static TransformationNode::Ptr GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode);
 
 protected:
-	static AWLCoordinates *globalCoordinates;
+	static SensorCoordinates *globalCoordinates;
 	TransformationNode::Ptr	firstNode;
 
 	TransformationNode::List receivers;
 	TransformationNode::List cameras;
 };
 } // namespace awl
-#endif // AWL_COORD_H
+#endif // SENSOR_COORD_H

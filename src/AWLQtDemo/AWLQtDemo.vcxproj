@@ -111,7 +111,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include=".\AWLCoreClasses\awlcoord.cpp" />
     <ClCompile Include=".\AWLCoreClasses\CoordinateSystem.cpp" />
     <ClCompile Include=".\AWLCoreClasses\DebugPrintf.cpp" />
     <ClCompile Include=".\AWLCoreClasses\DetectionStruct.cpp" />
@@ -127,6 +126,7 @@
     <ClCompile Include=".\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
     <ClCompile Include=".\AWLCoreClasses\Subscription.cpp" />
     <ClCompile Include=".\AWLCoreClasses\ThreadedWorker.cpp" />
+    <ClCompile Include="AWLCoreClasses\SensorCoord.cpp" />
     <ClCompile Include="AWLCoreClasses\SensorSettings.cpp" />
     <ClCompile Include="awlplotscan.cpp" />
     <ClCompile Include="awlqtdemo.cpp" />
@@ -200,7 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\AWLCoreClasses\AWLCANMessageDef.h" />
-    <ClInclude Include=".\AWLCoreClasses\awlcoord.h" />
     <ClInclude Include=".\AWLCoreClasses\BlockingReader.h" />
     <ClInclude Include=".\AWLCoreClasses\CoordinateSystem.h" />
     <ClInclude Include=".\AWLCoreClasses\DebugPrintf.h" />
@@ -231,6 +230,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="AWLCoreClasses\ReceiverPolledCapture.h" />
+    <ClInclude Include="AWLCoreClasses\SensorCoord.h" />
     <ClInclude Include="AWLCoreClasses\SensorSettings.h" />
     <ClInclude Include="AWLSettings.h" />
     <CustomBuild Include="fov_2dscan.h">

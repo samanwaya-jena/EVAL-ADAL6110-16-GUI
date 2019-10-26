@@ -33,9 +33,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AWLCoreClasses\awlcoord.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\AWLCoreClasses\BlockingReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +81,9 @@
     <ClInclude Include="..\AWLCoreClasses\SensorSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\SensorCoord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AWLBareDemo.cpp">
@@ -96,9 +96,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AWLCoreClasses\awlcoord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\CoordinateSystem.cpp">
@@ -141,6 +138,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AWLCoreClasses\SensorSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AWLCoreClasses\SensorCoord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,4 @@
-/* AWLCoord.cpp */
+/* SensorCoord.cpp: Manage multiple sensors relative coordinates to World Coordinates */
 /*
 	Copyright 2014, 2015 Phantom Intelligence Inc.
 
@@ -19,7 +19,7 @@
 #include <iostream>
 #include <math.h>
 
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "DebugPrintf.h"
 #include "AWLSettings.h"
 
@@ -27,71 +27,71 @@ using namespace std;
 using namespace awl;
 
 
-AWLCoordinates *AWLCoordinates::globalCoordinates=NULL;
+SensorCoordinates *SensorCoordinates::globalCoordinates=NULL;
 
-AWLCoordinates::AWLCoordinates()
+SensorCoordinates::SensorCoordinates()
 {
 }
 
-AWLCoordinates * AWLCoordinates::InitCoordinates()
+SensorCoordinates * SensorCoordinates::InitCoordinates()
 {
-	globalCoordinates  = new AWLCoordinates();
+	globalCoordinates  = new SensorCoordinates();
 	return(globalCoordinates);
 }
 
-AWLCoordinates *AWLCoordinates::GetGlobalCoordinates()
+SensorCoordinates *SensorCoordinates::GetGlobalCoordinates()
 {
 	return(globalCoordinates);
 }
 
-TransformationNode::Ptr AWLCoordinates::GetFirstNode()
+TransformationNode::Ptr SensorCoordinates::GetFirstNode()
 {
 	return(globalCoordinates->firstNode);
 }
 
-TransformationNode::List AWLCoordinates::GetReceivers()
+TransformationNode::List SensorCoordinates::GetReceivers()
 {
 	return(globalCoordinates->receivers);
 }
 
-TransformationNode::Ptr AWLCoordinates::GetReceiver(int receiverID)
+TransformationNode::Ptr SensorCoordinates::GetReceiver(int receiverID)
 {
 	return(globalCoordinates->receivers[receiverID]);
 }
 
-TransformationNode::Ptr AWLCoordinates::GetChannel(int receiverID, int channelID)
+TransformationNode::Ptr SensorCoordinates::GetChannel(int receiverID, int channelID)
 {
 	return(globalCoordinates->receivers[receiverID]->children[channelID]);
 }
 
-TransformationNode::List AWLCoordinates::GetCameras()
+TransformationNode::List SensorCoordinates::GetCameras()
 {
 	return(globalCoordinates->cameras);
 }
 
-TransformationNode::Ptr AWLCoordinates::GetCamera(int cameraID)
+TransformationNode::Ptr SensorCoordinates::GetCamera(int cameraID)
 {
 	return(globalCoordinates->cameras[cameraID]);
 }
 
-RelativePosition AWLCoordinates::GetReceiverPosition(int receiverID)
+RelativePosition SensorCoordinates::GetReceiverPosition(int receiverID)
 {
 	return(GetReceiver(receiverID)->relativePosition);
 }
 
-RelativePosition AWLCoordinates::GetChannelPosition(int receiverID, int channelID)
+RelativePosition SensorCoordinates::GetChannelPosition(int receiverID, int channelID)
 {
 	return(GetChannel(receiverID, channelID)->relativePosition);
 }
 
-RelativePosition AWLCoordinates::GetCameraPosition(int cameraID)
+RelativePosition SensorCoordinates::GetCameraPosition(int cameraID)
 {
 	return(GetCamera(cameraID)->relativePosition);
 }
 
 
 
-RelativePosition AWLCoordinates::SetReceiverPosition(int receiverID, const RelativePosition &inPosition)
+RelativePosition SensorCoordinates::SetReceiverPosition(int receiverID, const RelativePosition &inPosition)
 {
 	TransformationNode::Ptr node = GetReceiver(receiverID);
 
@@ -101,7 +101,7 @@ RelativePosition AWLCoordinates::SetReceiverPosition(int receiverID, const Relat
 	return(node->relativePosition);
 }
 
-RelativePosition AWLCoordinates::SetChannelPosition(int receiverID, int channelID, const RelativePosition &inPosition)
+RelativePosition SensorCoordinates::SetChannelPosition(int receiverID, int channelID, const RelativePosition &inPosition)
 {
 	TransformationNode::Ptr node = GetChannel(receiverID, channelID);
 
@@ -112,7 +112,7 @@ RelativePosition AWLCoordinates::SetChannelPosition(int receiverID, int channelI
 }
 
 
-RelativePosition AWLCoordinates::SetCameraPosition(int cameraID, const RelativePosition &inPosition)
+RelativePosition SensorCoordinates::SetCameraPosition(int cameraID, const RelativePosition &inPosition)
 {
 	TransformationNode::Ptr node = GetCamera(cameraID);
 
@@ -123,15 +123,15 @@ RelativePosition AWLCoordinates::SetCameraPosition(int cameraID, const RelativeP
 }
 
 
-bool AWLCoordinates::SensorToCameraXY(int receiverID, int channelID, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
+bool SensorCoordinates::SensorToCameraXY(int receiverID, int channelID, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
 {
 	bool bInFront = false;
 
 	// Channel description pointer
-	TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(receiverID, channelID);
+	TransformationNode::Ptr channelCoords = SensorCoordinates::GetChannel(receiverID, channelID);
 	
 	// Camera FOV description
-	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
+	TransformationNode::Ptr cameraCoords = SensorCoordinates::GetCameras()[cameraID];
 	CartesianCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
 	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
 
@@ -141,13 +141,13 @@ bool AWLCoordinates::SensorToCameraXY(int receiverID, int channelID, int cameraI
 }
 
 
-bool AWLCoordinates::WorldToCameraXY(int cameraID, const CameraCalibration &camera, const CartesianCoord &worldCoord, int &cameraX, int &cameraY)
+bool SensorCoordinates::WorldToCameraXY(int cameraID, const CameraCalibration &camera, const CartesianCoord &worldCoord, int &cameraX, int &cameraY)
 {
 	bool bInFront = false;
 
 
 	// Camera FOV description
-	TransformationNode::Ptr cameraCoords = AWLCoordinates::GetCameras()[cameraID];
+	TransformationNode::Ptr cameraCoords = SensorCoordinates::GetCameras()[cameraID];
 	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, worldCoord);		 // Convert to camera
 
 	bInFront = camera.ToFrameXY(coordInCameraCart, cameraX, cameraY);
@@ -155,7 +155,7 @@ bool AWLCoordinates::WorldToCameraXY(int cameraID, const CameraCalibration &came
 	return (bInFront);
 }
 
-bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree)
+bool SensorCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &propTree)
 {
 	// If the firstNode was already created, cler it so that we can rebuild the whole coordinate tree.
 
@@ -265,7 +265,7 @@ bool AWLCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree &p
 
 
 
-TransformationNode::Ptr AWLCoordinates::GetGeometryFromPropertyNode(boost::property_tree::ptree &propNode)
+TransformationNode::Ptr SensorCoordinates::GetGeometryFromPropertyNode(boost::property_tree::ptree &propNode)
 
 {
 		// Read the geometry information and transform it into proper transformation node description
@@ -290,7 +290,7 @@ TransformationNode::Ptr AWLCoordinates::GetGeometryFromPropertyNode(boost::prope
 		return (destNode);
 }
 
-TransformationNode::Ptr AWLCoordinates::GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode)
+TransformationNode::Ptr SensorCoordinates::GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode)
 
 {
 		float centerY(0.0);

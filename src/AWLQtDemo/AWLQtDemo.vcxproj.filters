@@ -113,9 +113,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_awlplotscan.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\awlcoord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include=".\AWLCoreClasses\CoordinateSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,6 +153,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AWLCoreClasses\SensorSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AWLCoreClasses\SensorCoord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -213,9 +213,6 @@
     <ClInclude Include=".\AWLCoreClasses\AWLCANMessageDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\awlcoord.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include=".\AWLCoreClasses\BlockingReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -263,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="AWLCoreClasses\SensorSettings.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\SensorCoord.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@
 #include "AWLSettings.h"
 #include "DetectionStruct.h"
 #include "ReceiverPostProcessor.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "DebugPrintf.h"
 #include "ReceiverCapture.h"
 
@@ -151,7 +151,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 				detection->threatLevel = track->threatLevel;
 
 				// Place the coordinates relative to all their respective reference systems
-				TransformationNode::Ptr channelCoords = AWLCoordinates::GetChannel(detection->receiverID, channelIndex);
+				TransformationNode::Ptr channelCoords = SensorCoordinates::GetChannel(detection->receiverID, channelIndex);
 				SphericalCoord sphericalPointInChannel(detection->distance, (float) M_PI_2, 0);
 				detection->relativeToSensorCart = channelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
 				detection->relativeToVehicleCart = channelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);

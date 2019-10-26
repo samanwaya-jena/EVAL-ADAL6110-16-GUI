@@ -32,7 +32,7 @@
 #include <boost/foreach.hpp>
 
 
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "AWLSettings.h"
 
 #include <math.h>

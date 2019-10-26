@@ -488,18 +488,19 @@ list(APPEND CUTEDEMO_QT_UI_FILES
 
 set(CUTEDEMO_CORE_FILES "")
 list(APPEND CUTEDEMO_CORE_FILES 
-    ${CORE_FILES_DIR}/awlcoord.cpp
+    ${CORE_FILES_DIR}/Subscription.cpp
     ${CORE_FILES_DIR}/Publisher.cpp
-    ${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
+    ${CORE_FILES_DIR}/ThreadedWorker.cpp
+    ${CORE_FILES_DIR}/LoopedWorker.cpp
+    ${CORE_FILES_DIR}/DebugPrintf.cpp
     ${CORE_FILES_DIR}/CoordinateSystem.cpp
-        ${CORE_FILES_DIR}/ReceiverCANCapture.cpp
-        ${CORE_FILES_DIR}/ReceiverSimulatorCapture.cpp
-        ${CORE_FILES_DIR}/DebugPrintf.cpp
-        ${CORE_FILES_DIR}/ReceiverCapture.cpp
-        ${CORE_FILES_DIR}/Subscription.cpp
-        ${CORE_FILES_DIR}/DetectionStruct.cpp
-        ${CORE_FILES_DIR}/ThreadedWorker.cpp
-        ${CORE_FILES_DIR}/LoopedWorker.cpp
+    ${CORE_FILES_DIR}/SensorSettings.cpp
+    ${CORE_FILES_DIR}/Sensorcoord.cpp
+    ${CORE_FILES_DIR}/DetectionStruct.cpp
+    ${CORE_FILES_DIR}/ReceiverCapture.cpp
+    ${CORE_FILES_DIR}/ReceiverCANCapture.cpp
+    ${CORE_FILES_DIR}/ReceiverSimulatorCapture.cpp
+	${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
 )
 
 set(CUTEDEMO_RESOURCES CuteDemo.rc)
