@@ -23,7 +23,7 @@
 #include "ThreadedWorker.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
-#include "AWLCANMessageDef.h"
+#include "ReceiverCANMessageDef.h"
 
 using namespace std;
 

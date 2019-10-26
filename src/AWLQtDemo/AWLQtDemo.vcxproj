@@ -199,7 +199,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include=".\AWLCoreClasses\AWLCANMessageDef.h" />
     <ClInclude Include=".\AWLCoreClasses\BlockingReader.h" />
     <ClInclude Include=".\AWLCoreClasses\CoordinateSystem.h" />
     <ClInclude Include=".\AWLCoreClasses\DebugPrintf.h" />
@@ -223,6 +222,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="AWLCoreClasses\ReceiverCANCapture.h" />
+    <ClInclude Include="AWLCoreClasses\ReceiverCANMessageDef.h" />
     <ClInclude Include="AWLCoreClasses\ReceiverLibUSBCapture.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>

@@ -148,7 +148,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 		} while (ret == 0 && received > 0);
 
 		AWLCANMessage msg;
-		msg.id = AWLCANMSG_ID_LIDARQUERY;
+		msg.id = RECEIVERCANMSG_ID_LIDARQUERY;
 
 		AWLCANMessage resp;
 

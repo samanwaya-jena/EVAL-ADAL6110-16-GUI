@@ -84,6 +84,9 @@
     <ClInclude Include="..\AWLCoreClasses\SensorCoord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\AWLCoreClasses\ReceiverCANMessageDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AWLBareDemo.cpp">

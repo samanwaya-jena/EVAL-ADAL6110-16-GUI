@@ -98,7 +98,7 @@ bool ReceiverPolledCapture::LidarQuery(size_t& cycleCount, size_t& messageCount)
     return false;
 
   AWLCANMessage msg;
-  msg.id = AWLCANMSG_ID_LIDARQUERY;
+  msg.id = RECEIVERCANMSG_ID_LIDARQUERY;
 
   AWLCANMessage resp;
 
@@ -131,7 +131,7 @@ bool ReceiverPolledCapture::ReadDataFromUSB(char * dataBuffer, int payloadSize, 
     return false;
 
   AWLCANMessage msg;
-  msg.id = AWLCANMSG_ID_GETDATA;
+  msg.id = RECEIVERCANMSG_ID_GETDATA;
   msg.data[0] = (unsigned char) cycleCount;
 
   transferred = WriteBytes((uint8_t*)&msg, sizeof(msg));
@@ -255,7 +255,7 @@ bool ReceiverPolledCapture::PollMessages(size_t messageCount)
     messageCount = MAX_POLL_CAN_MESSAGES;
 
   AWLCANMessage msg;
-  msg.id = AWLCANMSG_ID_POLLMESSAGES;
+  msg.id = RECEIVERCANMSG_ID_POLLMESSAGES;
   msg.data[0] = (unsigned char) messageCount;
 
   transferred = WriteBytes((uint8_t*)&msg, sizeof(msg));
@@ -306,10 +306,10 @@ bool ReceiverPolledCapture::SendSoftwareReset()
     return false;
 
   AWLCANMessage msg;
-  msg.id = AWLCANMSG_ID_COMMANDMESSAGE;
-  msg.len = AWLCANMSG_LEN;
-  msg.data[0] = AWLCANMSG_ID_CMD_SET_PARAMETER;
-  msg.data[1] = AWLCANMSG_ID_CMD_PARAM_ADC_REGISTER;
+  msg.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;
+  msg.len = RECEIVERCANMSG_LEN;
+  msg.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
+  msg.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_ADC_REGISTER;
   msg.data[2] = 0x00;
   msg.data[3] = 0x00;
   msg.data[4] = 0x00;

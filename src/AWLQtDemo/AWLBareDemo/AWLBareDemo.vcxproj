@@ -104,6 +104,7 @@
     <ClInclude Include="..\AWLCoreClasses\ReceiverPolledCapture.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverSimulatorCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\ReceiverCANMessageDef.h" />
     <ClInclude Include="..\AWLCoreClasses\SensorCoord.h" />
     <ClInclude Include="..\AWLCoreClasses\SensorSettings.h" />
     <ClInclude Include="..\AWLCoreClasses\Subscription.h" />

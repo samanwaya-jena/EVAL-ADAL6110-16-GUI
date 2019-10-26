@@ -210,9 +210,6 @@
     <ClInclude Include="GeneratedFiles\ui_awlplotscan.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\AWLCANMessageDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include=".\AWLCoreClasses\BlockingReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -263,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="AWLCoreClasses\SensorCoord.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\ReceiverCANMessageDef.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
