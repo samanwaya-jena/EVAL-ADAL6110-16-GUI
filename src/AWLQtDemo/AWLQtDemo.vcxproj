@@ -127,6 +127,7 @@
     <ClCompile Include=".\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
     <ClCompile Include=".\AWLCoreClasses\Subscription.cpp" />
     <ClCompile Include=".\AWLCoreClasses\ThreadedWorker.cpp" />
+    <ClCompile Include="AWLCoreClasses\SensorSettings.cpp" />
     <ClCompile Include="awlplotscan.cpp" />
     <ClCompile Include="awlqtdemo.cpp" />
     <ClCompile Include="AWLSettings.cpp" />
@@ -230,6 +231,7 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="AWLCoreClasses\ReceiverPolledCapture.h" />
+    <ClInclude Include="AWLCoreClasses\SensorSettings.h" />
     <ClInclude Include="AWLSettings.h" />
     <CustomBuild Include="fov_2dscan.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

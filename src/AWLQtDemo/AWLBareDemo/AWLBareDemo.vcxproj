@@ -105,6 +105,7 @@
     <ClInclude Include="..\AWLCoreClasses\ReceiverPolledCapture.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverPostProcessor.h" />
     <ClInclude Include="..\AWLCoreClasses\ReceiverSimulatorCapture.h" />
+    <ClInclude Include="..\AWLCoreClasses\SensorSettings.h" />
     <ClInclude Include="..\AWLCoreClasses\Subscription.h" />
     <ClInclude Include="..\AWLCoreClasses\ThreadedWorker.h" />
     <ClInclude Include="AWLSettings.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="..\AWLCoreClasses\ReceiverPolledCapture.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverPostProcessor.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
+    <ClCompile Include="..\AWLCoreClasses\SensorSettings.cpp" />
     <ClCompile Include="..\AWLCoreClasses\Subscription.cpp" />
     <ClCompile Include="..\AWLCoreClasses\ThreadedWorker.cpp" />
     <ClCompile Include="AWLBareDemo.cpp" />

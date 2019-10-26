@@ -155,6 +155,9 @@
     <ClCompile Include=".\AWLCoreClasses\ThreadedWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AWLCoreClasses\SensorSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="awlqtdemo.h">
@@ -256,6 +259,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AWLCoreClasses\ReceiverCANCapture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWLCoreClasses\SensorSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
