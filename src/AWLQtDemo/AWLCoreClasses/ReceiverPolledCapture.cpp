@@ -27,7 +27,20 @@ using namespace std;
 using namespace awl;
 
 
-#define MAX_POLL_CAN_MESSAGES 32
+#define MAX_POLL_CAN_MESSAGES 32					// Message buffer size in the local polled capture structures
+#define WAVEFORM_POINT_QTY       100				// Number of points per A-SCan Waveform
+#define CHANNEL_QTY           16					// Number of channels in sensor
+#define WAVEFORM_FOOTER_SIZE             96			// Footer in AScan Message: Size  Footer is not interpreted
+
+
+typedef struct
+{
+	short AcqFifo[CHANNEL_QTY * WAVEFORM_POINT_QTY];
+	short footer[WAVEFORM_FOOTER_SIZE];
+} tDataFifo;
+
+tDataFifo dataFifo[8];
+
 
 
 ReceiverPolledCapture::ReceiverPolledCapture(int receiverID, boost::property_tree::ptree &propTree):
@@ -132,17 +145,6 @@ bool ReceiverPolledCapture::ReadDataFromUSB(char * dataBuffer, int payloadSize, 
   return true;
 }
 
-#include "algo.h"
-
-
-typedef struct
-{
-  short AcqFifo[GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH];
-  short footer[GORDON_FOOTER_SIZE];
-} tDataFifo;
-
-tDataFifo dataFifo[8];
-
 bool ReceiverPolledCapture::DoOneLoop()
 {
 	size_t cycleCount = 0;
@@ -160,7 +162,7 @@ bool ReceiverPolledCapture::DoOneLoop()
 		size_t payloadSize = cycleCount * sizeof(tDataFifo);
 		if (!xmitsFooterData)
 		{
-			payloadSize -= GORDON_FOOTER_SIZE * sizeof(short);
+			payloadSize -= WAVEFORM_FOOTER_SIZE * sizeof(short);
 		}
 		bReadSuccess = ReadDataFromUSB((char*)dataFifo, payloadSize, cycleCount);
 
@@ -180,7 +182,7 @@ bool ReceiverPolledCapture::DoOneLoop()
 
 			}
 
-		ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, GUARDIAN_NUM_CHANNEL * GUARDIAN_SAMPLING_LENGTH * sizeof(short));
+		ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, CHANNEL_QTY * WAVEFORM_POINT_QTY * sizeof(short));
 	}
 
 	if (messageCount)
@@ -338,15 +340,15 @@ void ReceiverPolledCapture::LogWaveform(int cycle)
 		return;
 	}
 
-	for (int ch = 0; ch < GUARDIAN_NUM_CHANNEL; ch++)
+	for (int ch = 0; ch < CHANNEL_QTY; ch++)
 	{
 		std::string theWaveString(", ,Wave,,Channel,");
 		theWaveString += std::to_string(ch) + ", ,";
 
-		short* pData = &dataFifo[cycle].AcqFifo[ch * GUARDIAN_SAMPLING_LENGTH];
-		for (int i = 0; i < GUARDIAN_SAMPLING_LENGTH; i++)
+		short* pData = &dataFifo[cycle].AcqFifo[ch * WAVEFORM_POINT_QTY];
+		for (int i = 0; i < WAVEFORM_POINT_QTY; i++)
 		{
-			if (i == (GUARDIAN_SAMPLING_LENGTH - 1))
+			if (i == (WAVEFORM_POINT_QTY - 1))
 				theWaveString += std::to_string(*pData++);
 			else
 				theWaveString += std::to_string(*pData++) + ",";
@@ -357,9 +359,9 @@ void ReceiverPolledCapture::LogWaveform(int cycle)
 
 	short* pFooter = &dataFifo[cycle].footer[0];
 	std::string theFooterString(", ,Footer,,,,,");
-	for (int i = 0; i < GORDON_FOOTER_SIZE; i++)
+	for (int i = 0; i < WAVEFORM_FOOTER_SIZE; i++)
 	{
-		if (i == GORDON_FOOTER_SIZE - 1) {
+		if (i == WAVEFORM_FOOTER_SIZE - 1) {
 			theFooterString += std::to_string(*pFooter++);
 		}
 		else
