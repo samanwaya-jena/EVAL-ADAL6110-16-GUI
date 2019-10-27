@@ -254,7 +254,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.calibrationChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
 		ui.calibrationChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
 
-		ui.frameRateSpinBox->setValue(receiverCaptures[0]->receiverStatus.frameRate);
+		ui.frameRateSpinBox->setValue((int) receiverCaptures[0]->receiverStatus.frameRate);
 	}
 	else
 	{
@@ -667,7 +667,7 @@ void AWLQtDemo::on_recordPushButton_clicked()
 
 {
 	std::string sRecordFileName(ui.recordFileNameEdit->text().toStdString());
-	uint8_t frameRate = ui.frameRateSpinBox->value();
+	ReceiverFrameRate frameRate = (ReceiverFrameRate) ui.frameRateSpinBox->value();
 	ChannelMask channelMask;
 
 	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
@@ -694,7 +694,7 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
-	uint8_t frameRate = ui.frameRateSpinBox->value();
+	ReceiverFrameRate frameRate = (ReceiverFrameRate)ui.frameRateSpinBox->value();
 	ChannelMask channelMask;
 
 	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
@@ -901,7 +901,7 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 
 void AWLQtDemo::on_pushButton_FR_clicked()
 {
-		receiverCaptures[0]->SetSSPFrameRate(ui.spinBox_FR->value());
+		receiverCaptures[0]->SetSSPFrameRate((ReceiverFrameRate) ui.spinBox_FR->value());
 		fprintf(stderr, "Frame rate: %d\n",ui.spinBox_FR->value());
 }
 
@@ -1060,7 +1060,7 @@ void AWLQtDemo::on_timerTimeout()
 	// Update receiver status
 	bool bWasConnected = labelConnected->text().compare(QString("Connected")) == 0;
 	bool bConnected = receiverCaptures[0]->IsConnected();
-	int frameRate = receiverCaptures[0]->GetFrameRate();
+	ReceiverFrameRate frameRate = receiverCaptures[0]->GetFrameRate();
 
 	{
 		QString str;
@@ -1080,7 +1080,7 @@ void AWLQtDemo::on_timerTimeout()
 		labelConnected->setText(str);
 
 		if (bConnected)
-			str.sprintf("Framerate: %3d Hz", frameRate);
+			str.sprintf("Framerate: %3d Hz", (int) frameRate);
 		else
 			str = "";
 		labelFramerate->setText(str);

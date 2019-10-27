@@ -16,10 +16,9 @@
 */
 
 #include <string>
+
 #ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
 #include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
 #endif
 
 #include "SensorCoreClassesGlobal.h"
@@ -42,7 +41,7 @@ const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::
 
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-					   eReceiverCANRate inCANRate, int inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers):
@@ -245,7 +244,7 @@ void ReceiverCANCapture::ParseSensorStatus(ReceiverCANMessage &inMsg)
 	unsigned int  uiVoltage = uintDataPtr[1];
 	receiverStatus.voltage = (float) uiVoltage;
 
-	receiverStatus.frameRate = byteDataPtr[4];
+	receiverStatus.frameRate = (ReceiverFrameRate) byteDataPtr[4];
 
 	receiverStatus.hardwareError.byteData = byteDataPtr[5];
 	receiverStatus.receiverError.byteData = byteDataPtr[6];
@@ -253,7 +252,7 @@ void ReceiverCANCapture::ParseSensorStatus(ReceiverCANMessage &inMsg)
 	receiverStatus.bUpdated = true;
 	rawLock.unlock();
 
-	DebugFilePrintf(debugFile, "Msg %lu - Val %u %d %u %u %u %u", inMsg.id, 
+	DebugFilePrintf(debugFile, "Msg %lu - Val %u %u %u %u %u %u", inMsg.id, 
 			iTemperature, uiVoltage, 
 			receiverStatus.frameRate, 
 			receiverStatus.hardwareError.byteData,
@@ -1181,18 +1180,18 @@ bool ReceiverCANCapture::WriteCurrentDateTime()
 	return(bMessageOk);
 } 
 
-const int nameBlockSize = 6;
+const size_t nameBlockSize = 6;
 
 bool ReceiverCANCapture::SetPlaybackFileName(std::string inPlaybackFileName)
 {
 	receiverStatus.sPlaybackFileName = inPlaybackFileName;
 
-	int nameLength = inPlaybackFileName.length();
+	size_t nameLength = inPlaybackFileName.length();
 	bool bMessageOk(true);
 	
 	// Write name strings in block of 6 characters.
 	// terminating NULL is end of message.
-	for (int blockOffset = 0; blockOffset < nameLength+1; blockOffset += nameBlockSize)
+	for (size_t blockOffset = 0; blockOffset < nameLength+1; blockOffset += nameBlockSize)
 	{
 		ReceiverCANMessage message;
 		message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1201,7 +1200,7 @@ bool ReceiverCANCapture::SetPlaybackFileName(std::string inPlaybackFileName)
 		message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
 		message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME;
 
-		for(int offset = 0; (offset < nameBlockSize)  && bMessageOk; offset++)
+		for(size_t offset = 0; (offset < nameBlockSize)  && bMessageOk; offset++)
 		{
 			if (blockOffset+offset < nameLength) 
 			{
@@ -1224,12 +1223,12 @@ bool ReceiverCANCapture::SetPlaybackFileName(std::string inPlaybackFileName)
 
 bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 {
-	int nameLength = inRecordFileName.length();
+	size_t nameLength = inRecordFileName.length();
 	bool bMessageOk(true);
 	
 	// Write name strings in block of 6 characters.
 	// terminating NULL is end of message.
-	for (int blockOffset = 0; blockOffset < nameLength+1; blockOffset += nameBlockSize)
+	for (size_t blockOffset = 0; blockOffset < nameLength+1; blockOffset += nameBlockSize)
 	{
 		ReceiverCANMessage message;
 		message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1238,7 +1237,7 @@ bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 		message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
 		message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_RECORD_FILENAME;
 
-		for(int offset = 0; (offset < nameBlockSize)  && bMessageOk; offset++)
+		for(size_t offset = 0; (offset < nameBlockSize)  && bMessageOk; offset++)
 		{
 			if (blockOffset+offset < nameLength) 
 			{
@@ -1257,7 +1256,7 @@ bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMask)
+bool ReceiverCANCapture::StartPlayback(ReceiverFrameRate frameRate, ChannelMask channelMask)
 {
 	ReceiverCANMessage message;
 	
@@ -1269,7 +1268,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMas
 	message.data[1] = (uint8_t) channelMask.wordData;   // Channel mask. Mask at 0 stops playback
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = frameRate; // Frame rate in HZ. 00: Use actual
+	message.data[3] = (uint8_t) frameRate; // Frame rate in HZ. 00: Use actual
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1282,7 +1281,7 @@ bool ReceiverCANCapture::StartPlayback(uint8_t frameRate, ChannelMask channelMas
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
+bool ReceiverCANCapture::StartRecord(ReceiverFrameRate frameRate, ChannelMask channelMask)
 {
 	ReceiverCANMessage message;
 	
@@ -1294,7 +1293,7 @@ bool ReceiverCANCapture::StartRecord(uint8_t frameRate, ChannelMask channelMask)
 	message.data[1] = (uint8_t)channelMask.wordData;   // Channel mask. Mask at 0 stops record
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = frameRate; 
+	message.data[3] = (uint8_t) frameRate; 
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1320,7 +1319,7 @@ bool ReceiverCANCapture::StopPlayback()
 	message.data[1] = 0x00;  // Mask at 0 stops the playback 
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = receiverStatus.frameRate; // Frame rate
+	message.data[3] = (uint8_t) receiverStatus.frameRate; // Frame rate
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1349,7 +1348,7 @@ bool ReceiverCANCapture::StopRecord()
 	message.data[1] = 0x00;  // Mask at 0 stops the recording 
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = receiverStatus.frameRate; // Frame rate
+	message.data[3] = (uint8_t) receiverStatus.frameRate; // Frame rate
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1410,7 +1409,7 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
 }
 
 
-bool ReceiverCANCapture::SetSSPFrameRate(int frameRate )
+bool ReceiverCANCapture::SetSSPFrameRate(ReceiverFrameRate  frameRate )
 {
 	ReceiverCANMessage message;
 	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
@@ -1421,7 +1420,7 @@ bool ReceiverCANCapture::SetSSPFrameRate(int frameRate )
 
 	bool bMessageOk = false;
 	if ((( frameRate % 5) == 0) && ( frameRate >=10) && ( frameRate <= 50)) {
-		*(int32_t *)&message.data[4] = frameRate;
+		*(int32_t *)&message.data[4] = (int32_t) frameRate;
 		bMessageOk = WriteMessage(message);
 	}
 
@@ -1719,7 +1718,7 @@ bool ReceiverCANCapture::SetTrackerParameter(int trackerID, uint16_t registerAdd
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channelMask, MessageMask messageMask)
+bool ReceiverCANCapture::SetMessageFilters(ReceiverFrameRate frameRate, ChannelMask channelMask, MessageMask messageMask)
 
 {
 	ReceiverCANMessage message;
@@ -1731,7 +1730,7 @@ bool ReceiverCANCapture::SetMessageFilters(uint8_t frameRate, ChannelMask channe
 
 	message.data[1] = (uint8_t)channelMask.wordData; // Channel mask
 	message.data[2] = 0;  // Reserved
-	message.data[3] = frameRate; // New frame rate. oo= use actual.
+	message.data[3] = (uint8_t) frameRate; // New frame rate. oo= use actual.
 	message.data[4] = messageMask.byteData; // Message mask
 	message.data[5] = 0;  // Reserved
 	message.data[6] = 0;  // Reserved

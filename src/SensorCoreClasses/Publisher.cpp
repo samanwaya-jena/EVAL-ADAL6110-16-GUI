@@ -89,8 +89,8 @@ void Publisher::UnlockNews(SubscriberID inSubscriber)
 
 void Publisher::PutNews()
 {
-	int subscriberQty = currentPublications.size();
-	for (int i = 0; i < subscriberQty; i++) 
+	size_t subscriberQty = currentPublications.size();
+	for (size_t i = 0; i < subscriberQty; i++) 
 	{
 		mMutex.lock();
 		IssueID issueID = currentPublications.at(i);
@@ -102,8 +102,8 @@ void Publisher::PutNews()
 
 void Publisher::PutNews(IssueID inIssueID)
 {
-	int subscriberQty = currentPublications.size();
-	for (int i = 0; i < subscriberQty; i++) 
+	size_t subscriberQty = currentPublications.size();
+	for (size_t i = 0; i < subscriberQty; i++) 
 	{
 		mMutex.lock();
 		currentPublications.at(i) = inIssueID;

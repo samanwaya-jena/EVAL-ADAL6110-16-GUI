@@ -16,13 +16,6 @@
 */
 
 #include <string>
-#ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
-#include <boost/asio.hpp> 
-#include <boost/asio/serial_port.hpp> 
-#include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
-#endif
 
 #include "SensorCoreClassesGlobal.h"
 #include "DebugPrintf.h"
@@ -35,7 +28,7 @@ SENSORCORE_USE_NAMESPACE
 
 
 ReceiverSimulatorCapture::ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+	ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
 	const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO,
 	const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers) :
 ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,
@@ -116,7 +109,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 }
 
 
-bool ReceiverSimulatorCapture::SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
+bool ReceiverSimulatorCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
 
 {
 	return(true);

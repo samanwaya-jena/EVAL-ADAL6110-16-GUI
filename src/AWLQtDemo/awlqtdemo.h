@@ -225,7 +225,7 @@ private:
 	QLabel * labelConnected;
 	QLabel * labelFramerate;
 	bool m_bConnected;
-	int m_frameRate;
+	ReceiverFrameRate m_frameRate;
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;

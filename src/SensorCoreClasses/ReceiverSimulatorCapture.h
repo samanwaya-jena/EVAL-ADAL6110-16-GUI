@@ -65,7 +65,7 @@ public:
       */
 
 	ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+					   ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers);
 
@@ -119,7 +119,7 @@ public:
 	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
    *  \return true if success.  false on error.
    */
-	virtual bool SetSSPFrameRate(int /*frameRate*/ ) {
+	virtual bool SetSSPFrameRate(ReceiverFrameRate /*frameRate*/ ) {
 			return(true); };
 
    
@@ -211,7 +211,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/);
+	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/);
 
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.

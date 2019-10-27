@@ -162,7 +162,7 @@ bool ReceiverPolledCapture::DoOneLoop()
 		{
 			payloadSize -= WAVEFORM_FOOTER_SIZE * sizeof(short);
 		}
-		bReadSuccess = ReadDataFromUSB((char*)dataFifo, payloadSize, cycleCount);
+		bReadSuccess = ReadDataFromUSB((char*)dataFifo, (int) payloadSize, cycleCount);
 
 
 
@@ -174,7 +174,7 @@ bool ReceiverPolledCapture::DoOneLoop()
 				{
 					for (size_t cycle = 0; cycle < cycleCount; cycle++)
 					{
-						LogWaveform(cycle);
+						LogWaveform((int) cycle);
 					}
 				}
 
@@ -260,7 +260,7 @@ bool ReceiverPolledCapture::PollMessages(size_t messageCount)
   if (transferred != sizeof(msg))
     return false;
 
-  received = ReadBytes((uint8_t*) &canResp[0], messageCount * sizeof(ReceiverCANMessage));
+  received = ReadBytes((uint8_t*) &canResp[0], (int) (messageCount * sizeof(ReceiverCANMessage)));
   if (received != (int) (messageCount * sizeof(ReceiverCANMessage)))
     return false;
 
@@ -328,7 +328,7 @@ void ReceiverPolledCapture::SetHandle(void *h)
 	swap_handle = h;
 }
 
-void ReceiverPolledCapture::LogWaveform(int cycle)
+void ReceiverPolledCapture::LogWaveform(size_t cycle)
 {
 	logFileMutex.lock();
 
@@ -344,7 +344,7 @@ void ReceiverPolledCapture::LogWaveform(int cycle)
 		theWaveString += std::to_string(ch) + ", ,";
 
 		short* pData = &dataFifo[cycle].AcqFifo[ch * WAVEFORM_POINT_QTY];
-		for (int i = 0; i < WAVEFORM_POINT_QTY; i++)
+		for (size_t i = 0; i < WAVEFORM_POINT_QTY; i++)
 		{
 			if (i == (WAVEFORM_POINT_QTY - 1))
 				theWaveString += std::to_string(*pData++);
@@ -357,7 +357,7 @@ void ReceiverPolledCapture::LogWaveform(int cycle)
 
 	short* pFooter = &dataFifo[cycle].footer[0];
 	std::string theFooterString(", ,Footer,,,,,");
-	for (int i = 0; i < WAVEFORM_FOOTER_SIZE; i++)
+	for (size_t i = 0; i < WAVEFORM_FOOTER_SIZE; i++)
 	{
 		if (i == WAVEFORM_FOOTER_SIZE - 1) {
 			theFooterString += std::to_string(*pFooter++);

@@ -458,7 +458,6 @@ enable_cxx_compiler_flag_if_supported("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 enable_cxx_compiler_flag_if_supported("-o2")
 enable_cxx_compiler_flag_if_supported("-fp:fast")
 enable_cxx_compiler_flag_if_supported("-Qfast_transcendentals")
-enable_cxx_compiler_flag_if_supported("-permissive-")
 enable_cxx_compiler_flag_if_supported("-opt:REF")
 
 #############################################################################################

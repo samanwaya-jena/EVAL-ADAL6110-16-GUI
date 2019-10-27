@@ -51,7 +51,7 @@ protected:
 	virtual void DoOneThreadIteration();
 
   bool LidarQuery(size_t & cycleCount, size_t & messageCount);
-  bool ReadDataFromUSB(char * dataBuffer, int payloadSize, uint32_t cycleCount);
+  bool ReadDataFromUSB(char * dataBuffer, int payloadSize, size_t cycleCount);
 	virtual bool WriteMessage(const ReceiverCANMessage &inMsg);
   bool PollMessages(size_t messageCount);
 
@@ -66,7 +66,7 @@ protected:
 	* \throws  Throws boost error on read of the property keys.
 	*/
   virtual bool ReadConfigFromPropTree(boost::property_tree::ptree& propTree);
-  void LogWaveform(int cycle);
+  void LogWaveform(size_t cycle);
 
 
 // Protected variables

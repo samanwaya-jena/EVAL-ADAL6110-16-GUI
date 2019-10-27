@@ -16,9 +16,7 @@
 */
 
 #ifndef Q_MOC_RUN
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
 #endif
 
 #include <fstream>
@@ -44,7 +42,7 @@ const float defaultSignalToNoiseFloor = -10.0;
 
 
 ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	uint8_t inFrameRate, ChannelMask& inChannelMask, MessageMask& inMessageMask, float inRangeOffset,
+	ReceiverFrameRate inFrameRate, ChannelMask& inChannelMask, MessageMask& inMessageMask, float inRangeOffset,
 	const RegisterSet& inRegistersFPGA, const RegisterSet& inRegistersADC, const RegisterSet& inRegistersGPIO,
 	const AlgorithmSet& inParametersAlgos,
 	const AlgorithmSet& inParametersTrackers) :
@@ -199,14 +197,14 @@ int ReceiverCapture::GetFrameQty()
 	return acquisitionSequence->sensorFrames.size();
 }
 
-int ReceiverCapture::GetFrameRate()
+ReceiverFrameRate ReceiverCapture::GetFrameRate()
 {
   // timestamp the currentFrame
   Timestamp elapsed = GetElapsed();
 
   if (elapsed - m_FrameRateMS > 1000.0)
   {
-    m_FrameRate = m_nbrCompletedFrame;
+    m_FrameRate = (ReceiverFrameRate) m_nbrCompletedFrame;
     m_nbrCompletedFrame = 0;
     m_FrameRateMS = elapsed;
   }
@@ -313,13 +311,13 @@ bool ReceiverCapture::SetRecordFileName(std::string inRecordFileName)
 	return(true);
 }
 
-bool ReceiverCapture::StartPlayback(uint8_t /*frameRate*/, ChannelMask /*channelMask*/)
+bool ReceiverCapture::StartPlayback(ReceiverFrameRate/*frameRate*/, ChannelMask /*channelMask*/)
 {
 	receiverStatus.bInPlayback = true;
 	return(true);
 }
 
-bool ReceiverCapture::StartRecord(uint8_t /*frameRate*/, ChannelMask /*channelMask*/)
+bool ReceiverCapture::StartRecord(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/)
 {
 	receiverStatus.bInRecord = true;
 	return(true);
@@ -338,7 +336,7 @@ bool ReceiverCapture::StopRecord()
 }
 
 
-bool ReceiverCapture::SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
+bool ReceiverCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
 
 {
    return(true);
@@ -673,7 +671,7 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 		sReceiverChannelGeometry = receiverNode.get<std::string>("receiverChannelGeometry");
 		measurementOffset = receiverNode.get<float>("rangeOffset");
 
-		receiverStatus.frameRate =  receiverNode.get<uint8_t>("frameRate");	// Default frame rate is 100Hz
+		receiverStatus.frameRate =  (ReceiverFrameRate) receiverNode.get<uint16_t>("frameRate");	// Default frame rate is 100Hz
 
 		receiverStatus.channelMask.wordData = receiverNode.get<uint16_t>("channelMask");
 

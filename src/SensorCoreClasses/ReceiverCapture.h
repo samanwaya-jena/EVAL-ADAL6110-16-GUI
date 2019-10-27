@@ -63,6 +63,13 @@ typedef union
 	} bitFieldData;
 } MessageMask;
 
+/** \brief FrameRate container type
+  * \author Jean-Yves Deschênes
+  */
+
+typedef uint16_t ReceiverFrameRate;
+
+
 /** \brief ReceiverStatus struct describes receiver operation status  
   * \author Jean-Yves Deschênes
   */
@@ -88,7 +95,7 @@ public:
 
 	/** \brief Current frame rate. May not be reported accurately during playback.
       */
-	uint8_t frameRate;
+	ReceiverFrameRate frameRate;
 
 	/** \brief Hardware error flags.
       */
@@ -408,7 +415,7 @@ public:
 		*/
 
 	ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
-					   uint8_t inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset, 
+						ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers);
@@ -437,7 +444,7 @@ public:
       */
 	int  GetFrameQty();
 
-  int  GetFrameRate();
+	ReceiverFrameRate  GetFrameRate();
 
   virtual bool IsConnected() { return true; }
 
@@ -530,7 +537,7 @@ public:
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(uint8_t /*frameRate*/, ChannelMask /*channelMask*/);
+	virtual bool StartPlayback(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
@@ -539,7 +546,7 @@ public:
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(uint8_t /*frameRate*/, ChannelMask /*channelMask*/);
+	virtual bool StartRecord(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -596,7 +603,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-        virtual bool SetSSPFrameRate(int frameRate ) = 0;
+        virtual bool SetSSPFrameRate(ReceiverFrameRate frameRate ) = 0;
 
         /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
         * \return true if success.  false on error.
@@ -678,7 +685,7 @@ public:
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetMessageFilters(uint8_t /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/) = 0;
+	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/) = 0;
 
 
 
@@ -1005,8 +1012,8 @@ protected:
 	std::ofstream *logFilePtr;
 	boost::mutex logFileMutex;
 
-  int m_FrameRate;
-  int m_nbrCompletedFrame;
+	ReceiverFrameRate m_FrameRate;
+	int m_nbrCompletedFrame;
 
   private:
 

@@ -120,10 +120,10 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 				ret = libusb_claim_interface((libusb_device_handle*)handle, 0);
 
 				if (!ret) {
-					fprintf(stderr, "%ld %ld usb_claim_interface %ld %p succeeded\n", receiverID, matches, i, handle);
+					fprintf(stderr, "%ld %d usb_claim_interface %ld %p succeeded\n", (long) receiverID, matches, (long)i, handle);
 				}
 				else {
-					fprintf(stderr, "%ld %ld usb_claim_interface %ld %p error %d\n", receiverID, matches, i, handle, ret);
+					fprintf(stderr, "%ld %d usb_claim_interface %ld %p error %d\n", (long)receiverID, matches, (long) i, handle, ret);
 					libusb_close((libusb_device_handle*)handle);
 					handle = NULL;
 				}

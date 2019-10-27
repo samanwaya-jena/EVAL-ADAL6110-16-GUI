@@ -169,7 +169,7 @@ bool SensorSettings::StoreReceiverCalibration()
 
 
 			receiverNode.put<uint16_t>("channelMask", receiver.receiverChannelMask);
-			receiverNode.put<uint8_t>("frameRate", receiver.receiverFrameRate);
+			receiverNode.put<uint16_t>("frameRate", (uint16_t) receiver.receiverFrameRate);
 
 			// Geometry
 			boost::property_tree::ptree& geometryNode = receiverNode.get_child("sensorGeometry");
