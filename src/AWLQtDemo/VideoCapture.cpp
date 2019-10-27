@@ -37,6 +37,7 @@
 
 using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 // Frame rate, in frame per seconds
 #define FRAME_RATE	33.0

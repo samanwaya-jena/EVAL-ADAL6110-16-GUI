@@ -24,11 +24,14 @@
 #include <QAction>
 #include <QActionGroup>
 #include "boost/chrono/system_clocks.hpp"
+
 #include "ReceiverCapture.h"
 #include "ui_awlplotscan.h"
 #include "DetectionStruct.h"
 
 //#define USE_FPS_AWLPLOTSCAN
+
+QT_BEGIN_NAMESPACE
 
 namespace awl
 {
@@ -39,11 +42,11 @@ class AWLPlotScan : public QFrame
 public:
 	AWLPlotScan(QWidget *parent = 0);
 	~AWLPlotScan();
-	void start(ReceiverCapture::Ptr inReceiverCapture);
+	void start(SENSORCORE_NAMESPACE_PREFIX::ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
   void setChannelMask(uint32_t chMask);
   void selectReceiver(int receiver);
-  void AScanDataChanged(const AScan::Vector& inData);
+  void AScanDataChanged(const SENSORCORE_NAMESPACE_PREFIX::AScan::Vector& inData);
   void ShowAScan(bool show) { showAScan = show; }
   void SetMaxRange(float maxRange) { m_maxRange = maxRange; }
 
@@ -53,10 +56,10 @@ public:
 
 private:
   bool showAScan;
-  AScan::Vector aScanData;
+  SENSORCORE_NAMESPACE_PREFIX::AScan::Vector aScanData;
 	Ui::AWLPlotScanFrame ui;
 	void plotAScans(QPainter* p);
-  void PlotAScan(QPainter* p, AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
+  void PlotAScan(QPainter* p, SENSORCORE_NAMESPACE_PREFIX::AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
 	void LabelAScan(QPainter* p);
 
 signals:

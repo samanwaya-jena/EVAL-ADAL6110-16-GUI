@@ -28,8 +28,9 @@
 #include "TableView.h"
 #include "DetectionStruct.h"
 
-using namespace std;
+//using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 TableView::TableView(QWidget *parent) :
     QFrame(parent)
@@ -250,7 +251,7 @@ QSize TableView::unconstrainedTableSize() const
 		QFontMetrics fm(headerItem->font());
 		int headerTextWidth = fm.width(headerItem->text());
 		int dataTextWidth = fm.width(columnSettings[column].columnFormat);
-		int headerWidth = max(headerTextWidth, dataTextWidth) + headerSpacing;
+		int headerWidth = std::max(headerTextWidth, dataTextWidth) + headerSpacing;
 		tableWidth += headerWidth;
 #endif
 	}
@@ -298,7 +299,7 @@ void TableView::PrepareTableViews()
 		QFontMetrics fm(headerItem->font());
 		int headerTextWidth = fm.width(headerItem->text());
 		int dataTextWidth = fm.width(columnSettings[column].columnFormat);
-		int headerWidth = max(headerTextWidth, dataTextWidth) + headerSpacing;
+		int headerWidth = std::max(headerTextWidth, dataTextWidth) + headerSpacing;
 
 		tableWidget->setColumnWidth(column, headerWidth);
 		tableWidth += headerWidth;

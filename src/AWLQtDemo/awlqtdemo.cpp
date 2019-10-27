@@ -33,6 +33,7 @@
 #include "DebugPrintf.h"
 #include "awlqtdemo.h"
 
+#include <QTableWidget.h>
 #include <QTableWidget>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -47,9 +48,8 @@
 
 #include "TableView.h"
 
-
-using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 // Text update rate, in frame per seconds
 #define LOOP_RATE	30

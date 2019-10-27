@@ -40,8 +40,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 
-using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 #ifdef _WIN32
   #include <windows.h>
@@ -500,7 +500,7 @@ void VideoViewer::DrawHorizontalTicks(QImage &sourceFrame, QPainter &painter, fl
 	CvPoint endPoint;
 
 	// Cartesian coord at the outer edge of screen
-	CartesianCoord lineCart(SphericalCoord(10, M_PI_2 - DEG2RAD(tickAngle), (videoCapture->calibration.fovWidth/2)));
+	CartesianCoord lineCart(SphericalCoord(10, M_SENSORCORE_2 - DEG2RAD(tickAngle), (videoCapture->calibration.fovWidth/2)));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);
 	startPoint.x = videoCapture->calibration.frameWidthInPixels-1;
 	endPoint.y = startPoint.y;
@@ -514,7 +514,7 @@ void VideoViewer::DrawHorizontalTicks(QImage &sourceFrame, QPainter &painter, fl
 	
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
-	lineCart = SphericalCoord(10, M_PI_2 - DEG2RAD(tickAngle), 0);
+	lineCart = SphericalCoord(10, M_SENSORCORE_2 - DEG2RAD(tickAngle), 0);
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
 	startPoint.x = (videoCapture->calibration.frameWidthInPixels- tickLength) /2;
 	endPoint.y = startPoint.y;
@@ -531,7 +531,7 @@ void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  flo
 	CvPoint endPoint;
 
 	// Cartesian coord at the outer edge of the screen
-	CartesianCoord lineCart(SphericalCoord(10, M_PI_2-(videoCapture->calibration.fovHeight/2), DEG2RAD(-tickAngle)));
+	CartesianCoord lineCart(SphericalCoord(10, M_SENSORCORE_2-(videoCapture->calibration.fovHeight/2), DEG2RAD(-tickAngle)));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);
 	startPoint.y = videoCapture->calibration.frameHeightInPixels-1;
 	endPoint.y = startPoint.y - tickLength;
@@ -544,7 +544,7 @@ void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  flo
 	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
-	lineCart = SphericalCoord(10., (float) M_PI_2, (float) DEG2RAD(-tickAngle));
+	lineCart = SphericalCoord(10., (float) M_SENSORCORE_2, (float) DEG2RAD(-tickAngle));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
 	startPoint.y = (videoCapture->calibration.frameHeightInPixels - tickLength) / 2;
 	endPoint.y = startPoint.y + tickLength;
@@ -658,19 +658,19 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 	ChannelConfig *channel = &globalSettings->receiverSettings[receiverID].channelsConfig[channelID];
 
 	// Position of the topLeft corner of the channel FOV 
-	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
+	SphericalCoord topLeftInChannel(detection->distance, M_SENSORCORE_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
 	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topLeftInChannel, topLeft.x, topLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
-	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2)); 
+	SphericalCoord topRightInChannel(detection->distance, M_SENSORCORE_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2)); 
     bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topRightInChannel, topRight.x, topRight.y);
 
 	// Position of the bottomLeft corner of the channel FOV 
-	SphericalCoord bottomLeftInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
+	SphericalCoord bottomLeftInChannel(detection->distance, M_SENSORCORE_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
 	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
 
 	// Position of the topRight corner of the channel FOV 
-	SphericalCoord bottomRightInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
+	SphericalCoord bottomRightInChannel(detection->distance, M_SENSORCORE_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
 	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomRightInChannel, bottomRight.x, bottomRight.y);
 
 	if (bSomePointsInFront)

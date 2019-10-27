@@ -23,9 +23,6 @@
 #include <iostream>
 
 
-
-using namespace std;
-
 #include <opencv2/core/core_c.h>
 #include <opencv2/core/core.hpp>
 
@@ -92,7 +89,7 @@ public slots:
 	void ShowContextMenu(const QPoint& pos);
 	/** \brief Update the detection positions.
       */
-	void slotDetectionDataChanged(const Detection::Vector & data);
+	void slotDetectionDataChanged(const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector & data);
 	void slotImageChanged();
 	void slotVideoOptionsChangedAction();
 
@@ -110,23 +107,23 @@ protected:
       */
 	void resizeEvent(QResizeEvent * /*event*/);
 
-	void DisplayReceiverValues(QImage &sourceFame, QPainter& painter, const Detection::Vector & data);
+	void DisplayReceiverValues(QImage &sourceFame, QPainter& painter, const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector & data);
 
 protected:
 	void paintEvent(QPaintEvent* /*event*/); 
 
-	void GetDetectionColors(const Detection::Ptr &detection, QColor &colorEnhance,  int &iThickness);
+	void GetDetectionColors(const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection, QColor &colorEnhance,  int &iThickness);
 	/** \brief get the four corners of the specified Detection's channel FOV, as projected at the Detection distance
 	  *         in the camera plane.
 	  *\return Returns false if all the points in the projection are behind the camera plane. Returns true
 	  *        if at least one of the points is in front of the camera.
       */
 
-	bool GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
+	bool GetChannelRect(const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
 
 	
 
-	void DisplayTarget(QImage &sourceFame, QPainter& painter, const Detection::Ptr &detection);
+	void DisplayTarget(QImage &sourceFame, QPainter& painter, const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection);
 
 	void DisplayCrossHairs(QImage &sourceFame, QPainter& painter);
 
@@ -163,13 +160,13 @@ protected:
 	VideoCapture::Ptr videoCapture; 
 
 	/** \brief Sunscriber identification to the video feed. */
-	Publisher::SubscriberID currentVideoSubscriberID;
+	SENSORCORE_NAMESPACE_PREFIX::Publisher::SubscriberID currentVideoSubscriberID;
 
 	/** \brief Time the object was created.  Used to calculate flashing rates */
 	boost::posix_time::ptime startTime;
 
 	/** \brief Vector containing the detections to be displayed */
-   Detection::Vector detectionData;
+	SENSORCORE_NAMESPACE_PREFIX::Detection::Vector detectionData;
 
    /** \brief Screen scale factor in Qt Widget */
    float displayScaleFactor;

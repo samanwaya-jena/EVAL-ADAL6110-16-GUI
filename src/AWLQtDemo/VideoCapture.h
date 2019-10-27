@@ -22,7 +22,6 @@
 #include <fstream>
 
 #include <boost/property_tree/ptree.hpp>
-using namespace std;
 
 #include <opencv2/core/core_c.h>
 #include <opencv2/core/core.hpp>
@@ -42,7 +41,7 @@ namespace awl
   *        The video capture thread is based on OpenCV.
   * \author Jean-Yves Deschênes
   */
-class VideoCapture: public ThreadedWorker, public Publisher
+class VideoCapture: public SENSORCORE_NAMESPACE_PREFIX::ThreadedWorker, public SENSORCORE_NAMESPACE_PREFIX::Publisher
 {
 public:
 	typedef boost::shared_ptr<cv::Mat> FramePtr;
@@ -84,10 +83,10 @@ public:
       * \param[out] targetFrame pointer to the target frame that will get copied to.
       * \note Locking of the target frame is under the responsibility of the calling thread.
       */
-	void CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID subscriberID = -1);
+	void CopyCurrentFrame(VideoCapture::FramePtr targetFrame,SENSORCORE_NAMESPACE_PREFIX::Publisher::SubscriberID subscriberID = -1);
 
 	/** \brief calibration information. */
-	CameraCalibration calibration;
+	SENSORCORE_NAMESPACE_PREFIX::CameraCalibration calibration;
 
 protected:
 	/** \brief Return the video acquisition thread status

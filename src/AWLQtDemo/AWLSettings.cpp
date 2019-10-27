@@ -27,7 +27,7 @@
 
 
 using namespace awl;
-using namespace std;
+SENSORCORE_USE_NAMESPACE
 
 const std::string sDefaultAWLSettingsFileName("AWLDemoSettings.xml");
 

@@ -38,6 +38,8 @@
 #include <math.h>
 
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
+
 const QColor rgbRulerLight(255, 255, 255, 128); // Transparent gray light
 const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
 const QColor rgbRulerText(255, 170, 0);

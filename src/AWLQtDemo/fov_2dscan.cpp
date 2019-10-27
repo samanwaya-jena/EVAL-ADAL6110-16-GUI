@@ -25,7 +25,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QEvent>
-
+QT_USE_NAMESPACE
 #include <boost/foreach.hpp>
 
 
@@ -567,9 +567,9 @@ void FOV_2DScan::slotConfigChanged()
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		RelativePosition receiverPosition = SensorCoordinates::GetReceiverPosition(receiverID);
-		config.maxSensorsRange = max(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
+		config.maxSensorsRange = std::max(config.maxSensorsRange, AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax);
 
-		config.spareDepth = min(config.spareDepth, -receiverPosition.position.bodyRelative.forward);
+		config.spareDepth = std::min(config.spareDepth, -receiverPosition.position.bodyRelative.forward);
 		
 		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
 		for (int channelID = 0; channelID < channelQty; channelID++)
@@ -580,8 +580,8 @@ void FOV_2DScan::slotConfigChanged()
 
 			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) +
 				RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
-			config.maxAngularSpan = max(config.maxAngularSpan, fabs(startAngle));
-			config.maxAngularSpan = max(config.maxAngularSpan, fabs(startAngle - channelConfig.fovWidth));
+			config.maxAngularSpan = std::max(config.maxAngularSpan, fabs(startAngle));
+			config.maxAngularSpan = std::max(config.maxAngularSpan, fabs(startAngle - channelConfig.fovWidth));
 		}
 	}
 
@@ -1144,7 +1144,7 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 
 
 	// Linewith is between 2 and 5 pixels, depening on screen size
-	const int  lineWidth = min(max(0.15F * Ratio, 3.0F), 6.0F);
+	const int  lineWidth = std::min(std::max(0.15F * Ratio, 3.0F), 6.0F);
 
 
 	// Our detection Y axis is positive left, so we negate the lateral coordinate.

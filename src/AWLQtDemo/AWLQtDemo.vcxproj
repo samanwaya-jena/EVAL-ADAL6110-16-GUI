@@ -58,7 +58,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>USE_OPENCV_VIDEO;USE_LIBUSB;UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)\include;$(OPENCV_DIR)\;$(QWTDir)/src;.\AWLCoreClasses;.\AWLQtScope;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)\include;$(OPENCV_DIR)\;..\SensorCoreClasses;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -70,7 +70,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\$(Configuration);$(BOOST_DIR)\lib32-msvc-14.0;$(SolutionDir)$(Platform)\$(Configuration);$(LIBUSB_DIR)/Win32/$(Configuration)/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libusb-1.0.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;opencv_world346d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SensorCoreClasses.lib;libusb-1.0.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;comdlg32.lib;opencv_world346d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
@@ -81,8 +81,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_OPENCV_VIDEO;USE_LIBUSB;UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)\include;$(OPENCV_DIR)\;$(QWTDir)/src;.\AWLCoreClasses;.\AWLQtScope;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_OPENCV_VIDEO;USE_LIBUSB;UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QT_NO_DEBUG;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(BOOST_DIR);$(OPENCV_DIR)\include;$(OPENCV_DIR)\;..\SensorCoreClasses;$(LIBUSB_DIR)/libusb</AdditionalIncludeDirectories>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OPENCV_DIR)\lib\$(Configuration);$(BOOST_DIR)\lib32-msvc-14.0;$(SolutionDir)$(Platform)\$(Configuration);$(LIBUSB_DIR)/Win32/$(Configuration)/dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>libusb-1.0.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;opencv_world346.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SensorCoreClasses.lib;libusb-1.0.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Widgets.lib;comdlg32.lib;opencv_world346.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <EntryPointSymbol>
@@ -111,23 +111,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include=".\AWLCoreClasses\CoordinateSystem.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\DebugPrintf.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\DetectionStruct.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\LoopedWorker.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\Publisher.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\ReceiverCANCapture.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\ReceiverCapture.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\ReceiverLibUSBCapture.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">USE_POSIXUDP;USE_OPENCV_VIDEO;USE_LIBUSB;USE_TCP;UNICODE;WIN32;QT_DLL;_WIN32_WINNT=0x0501;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CONCURRENT_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QWT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverPolledCapture.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\ReceiverPostProcessor.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\ReceiverSimulatorCapture.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\Subscription.cpp" />
-    <ClCompile Include=".\AWLCoreClasses\ThreadedWorker.cpp" />
-    <ClCompile Include="AWLCoreClasses\SensorCoord.cpp" />
-    <ClCompile Include="AWLCoreClasses\SensorSettings.cpp" />
     <ClCompile Include="awlplotscan.cpp" />
     <ClCompile Include="awlqtdemo.cpp" />
     <ClCompile Include="AWLSettings.cpp" />
@@ -199,18 +182,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include=".\AWLCoreClasses\BlockingReader.h" />
-    <ClInclude Include=".\AWLCoreClasses\CoordinateSystem.h" />
-    <ClInclude Include=".\AWLCoreClasses\DebugPrintf.h" />
-    <ClInclude Include=".\AWLCoreClasses\DetectionStruct.h" />
-    <ClInclude Include=".\AWLCoreClasses\LoopedWorker.h" />
-    <ClInclude Include=".\AWLCoreClasses\Publisher.h" />
-    <ClInclude Include=".\AWLCoreClasses\ReceiverCapture.h" />
-    <ClInclude Include=".\AWLCoreClasses\ReceiverPostProcessor.h" />
-    <ClInclude Include=".\AWLCoreClasses\ReceiverSimulatorCapture.h" />
-    <ClInclude Include=".\AWLCoreClasses\Subscription.h" />
-    <ClInclude Include=".\AWLCoreClasses\ThreadedWorker.h" />
-    <ClInclude Include=".\AWLQtScope\curvedata.h" />
     <CustomBuild Include="awlplotscan.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -D_WIN32_WINNT=0x0501 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CONCURRENT_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQWT_DLL -D_SCL_SECURE_NO_WARNINGS -DUSE_OPENCV_VIDEO  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtConcurrent" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(PCL_ROOT)\include\pcl-1.6" "-I$(PCL_ROOT)\3rdParty\Eigen\include" "-I$(PCL_ROOT)\3rdParty\Boost\include" "-I$(PCL_ROOT)\3rdParty\FLANN\include" "-I$(PCL_ROOT)\3rdParty\Qhull\include" "-I$(PCL_ROOT)\3rdParty\VTK\include\VTK-5.8" "-I$(OPENCV_DIR)\modules\videostab\include" "-I$(OPENCV_DIR)\modules\stitching\include" "-I$(OPENCV_DIR)\modules\contrib\include" "-I$(OPENCV_DIR)\modules\legacy\include" "-I$(OPENCV_DIR)\modules\calib3d\include" "-I$(OPENCV_DIR)\modules\features2d\include" "-I$(OPENCV_DIR)\modules\nonfree\include" "-I$(OPENCV_DIR)\modules\photo\include" "-I$(OPENCV_DIR)\modules\objdetect\include" "-I$(OPENCV_DIR)\modules\video\include" "-I$(OPENCV_DIR)\modules\ml\include" "-I$(OPENCV_DIR)\modules\highgui\include" "-I$(OPENCV_DIR)\modules\imgproc\include" "-I$(OPENCV_DIR)\modules\flann\include" "-I$(OPENCV_DIR)\modules\core\include" "-I$(OPENCV_DIR)\include" "-I$(OPENCV_DIR)\." "-IC:\Program Files (x86)\Intel\Composer XE\ipp\include" "-Ic:\EasySync" "-I$(QWTDir)\src" "-IC:\XIMEA\API"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename).h...</Message>
@@ -221,17 +192,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
-    <ClInclude Include="AWLCoreClasses\ReceiverCANCapture.h" />
-    <ClInclude Include="AWLCoreClasses\ReceiverCANMessageDef.h" />
-    <ClInclude Include="AWLCoreClasses\ReceiverLibUSBCapture.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverPolledCapture.h" />
-    <ClInclude Include="AWLCoreClasses\SensorCoord.h" />
-    <ClInclude Include="AWLCoreClasses\SensorSettings.h" />
     <ClInclude Include="AWLSettings.h" />
     <CustomBuild Include="fov_2dscan.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -282,9 +242,6 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
       <SubType>Designer</SubType>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="CuteDemo.rc" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="FOV_2DScan.ui">
@@ -350,7 +307,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
-    <None Include="plugin1.bin" />
     <CustomBuild Include="TableView.ui">
       <FileType>Document</FileType>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>

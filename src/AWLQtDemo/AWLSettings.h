@@ -27,11 +27,10 @@
 #include "DetectionStruct.h"
 #include "SensorSettings.h"
 
-
 namespace awl
 {
 
-class AWLSettings: public SensorSettings
+class AWLSettings: public SENSORCORE_NAMESPACE_PREFIX::SensorSettings
 {
 public:
 	static AWLSettings *InitSettings(const std::string sSettingsFileName = std::string(""));
@@ -64,7 +63,7 @@ public:
 
 	std::string sDisplayShowSize;
 
-	VelocityUnits velocityUnits; 
+	SENSORCORE_NAMESPACE_PREFIX::VelocityUnits velocityUnits;
 
 	std::string sLogoFileName;
 	std::string sIconFileName;

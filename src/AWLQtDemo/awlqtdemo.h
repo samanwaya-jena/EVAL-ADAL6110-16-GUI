@@ -33,7 +33,6 @@
 #include "VideoViewer.h"
 #endif
 
-
 #include "ReceiverCapture.h"
 
 #include "fov_2dscan.h"
@@ -176,8 +175,8 @@ protected:
 
 	// Fil the detection data vector with the latest detection data.
 	// Return true if the data has changed since last request.
-	bool GetLatestDetections(Detection::Vector &detectionData);
-	bool GetLatestAScans(AScan::Vector &aScanData);
+	bool GetLatestDetections(SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &detectionData);
+	bool GetLatestAScans(SENSORCORE_NAMESPACE_PREFIX::AScan::Vector &aScanData);
 	void closeEvent(QCloseEvent * /*event*/);
 
 	void FillChannelSelectList();
@@ -216,7 +215,7 @@ private:
 	QIcon *actionResizeMaximizeIcon;
 	QIcon *actionResizeRestoreDownIcon;
 
-	ReceiverCapture::List receiverCaptures;
+	SENSORCORE_NAMESPACE_PREFIX::ReceiverCapture::List receiverCaptures;
 
 #if defined (USE_OPENCV_VIDEO)
 	VideoCapture::List videoCaptures;
