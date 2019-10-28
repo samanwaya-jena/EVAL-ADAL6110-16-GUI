@@ -696,6 +696,9 @@
     <Image Include="Images\Widgets\up_arrow_dark.png" />
     <Image Include="Images\Widgets\up_arrow_disabled.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CuteDemo.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

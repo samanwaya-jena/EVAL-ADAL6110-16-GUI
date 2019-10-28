@@ -341,4 +341,9 @@
       <Filter>Resource Files\Logos</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CuteDemo.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>
