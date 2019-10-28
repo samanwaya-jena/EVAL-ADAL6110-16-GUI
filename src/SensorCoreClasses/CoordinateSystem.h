@@ -1,5 +1,6 @@
-#ifndef AWL_COORDINATESYSTEM_H
-#define AWL_COORDINATESYSTEM_H
+#ifndef SENSORCORE_COORDINATESYSTEM_H
+#define SENSORCORE_COORDINATESYSTEM_H
+
 
 /*
 	Copyright 2014, 2015 Phantom Intelligence Inc.
@@ -426,4 +427,4 @@ public:
 bool CameraCoordToFrameXY(float cameraFovWidthInRad, float cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY, float barrelK1 = 0.0, float barrelK2 = 0.0);
 
 SENSORCORE_END_NAMESPACE
-#endif // AWL_COORDINATESYSTEM_H
+#endif // SENSORCORE_COORDINATESYSTEM_H

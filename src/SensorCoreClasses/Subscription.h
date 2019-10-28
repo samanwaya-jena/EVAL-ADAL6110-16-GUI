@@ -1,5 +1,5 @@
-#ifndef AWL_SUBSCRIPTION_H
-#define AWL_SUBSCRIPTION_H
+#ifndef SENSORCORE_SUBSCRIPTION_H
+#define SENSORCORE_SUBSCRIPTION_H
 
 /*
 	Copyright 2014, 2015 Phantom Intelligence Inc.

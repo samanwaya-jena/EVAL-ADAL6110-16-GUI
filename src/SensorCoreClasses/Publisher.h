@@ -1,5 +1,5 @@
-#ifndef AWL_PUBLISHER_H
-#define AWL_PUBLISHER_H
+#ifndef SENSORCORE_PUBLISHER_H
+#define SENSORCORE_PUBLISHER_H
 
 /*
 	Copyright 2014, 2015 Phantom Intelligence Inc.
@@ -144,4 +144,4 @@ protected:
 }; // Publisher
 
 SENSORCORE_END_NAMESPACE
-#endif  // AWL_PUBLISHER_H
+#endif  // SENSORCORE_PUBLISHER_H
