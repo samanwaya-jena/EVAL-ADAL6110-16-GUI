@@ -59,16 +59,15 @@ QT_USE_NAMESPACE
 
 using namespace awl;
 
-//----------------------Intensity Classifier
+//----------------------Intensity Classifier: Experimental code should be moved out of 2D Scan view soon.
 #if 1
 
 typedef enum ClassificationType
 {
 	eClassifyUnknown = 0,
-	eClassifyMiner = 1,
-	eClassifyMineWall = 2,
-	eClassifyPedestrian = 3,
-	eClassifyCar = 4
+	eClassifyHighIntensity = 1,
+	eClassifyMediumIntensity = 2,
+	eClassifyLowIntensity = 3,
 }
 ClassificationType;
 
@@ -95,60 +94,8 @@ ClassificationEntry;
 ClassificationEntry classificationEntries[] = 
 {
 #if 1 // All types
-	{channel0Mask | channel1Mask | channel2Mask | channel3Mask | channel4Mask|channel5Mask|channel6Mask, 0, 300, 0, 100.00, eClassifyMiner},
+	{channel0Mask | channel1Mask | channel2Mask | channel3Mask | channel4Mask|channel5Mask|channel6Mask, 0, 300, 0, 100.00, eClassifyHighIntensity},
 #endif
-	// Long range
-	{channel4Mask|channel5Mask|channel6Mask, 0.5f, 2.5f, 73.50f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 2.5f, 3.5f, 69.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 3.5f, 4.5f, 67.50f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 4.5f, 5.5f, 63.50f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 5.5f, 6.5f, 60.50f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 6.5f, 7.5f, 59.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 7.5f, 8.5f, 54.50f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 8.5f, 9.5f, 51.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 9.5f, 10.5f, 47.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 10.5f, 11.5f, 44.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 11.5f, 12.5f, 44.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 12.5f, 13.5f, 44.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 13.5f, 14.5f, 48.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 14.5f, 15.5f, 47.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 15.5f, 16.5f, 44.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 16.5f, 17.5f, 43.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 17.5f, 18.5f, 36.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 18.5f, 19.5f, 36.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 19.5f, 20.5f, 32.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 20.5f, 21.5f, 31.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 21.5f, 22.5f, 32.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 22.5f, 23.5f, 29.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 23.5f, 24.5f, 26.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 24.5f, 25.5f, 21.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 25.5f, 26.5f, 22.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 26.5f, 27.5f, 20.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 27.5f, 28.5f, 19.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 28.5f, 29.5f, 15.00f, 80.00f, eClassifyMiner},
-	{channel4Mask|channel5Mask|channel6Mask, 29.5f, 30.5f, 11.00f, 80.00f, eClassifyMiner},
-
-	// Side short-range
-	{channel0Mask|channel3Mask, 0.5f, 2.5f, 58.80f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 2.5f, 3.5f, 55.20f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 3.5f, 4.5f, 54.00f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 4.5f, 5.5f, 50.80f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 5.5f, 6.5f, 48.4f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 6.5f, 7.5f, 47.20f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 7.5f, 8.5f, 45.60f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 8.5f, 9.5f, 40.8f, 80.00f, eClassifyMiner},
-	{channel0Mask|channel3Mask, 9.5f, 10.5f, 36.80f, 80.00f, eClassifyMiner},
-
-	// Center short-range
-	{channel1Mask|channel2Mask, 0.5f, 2.5f, 58.80f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 2.5f, 3.5f, 55.20f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 3.5f, 4.5f, 54.50f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 4.5f, 5.5f, 52.80f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 5.5f, 6.5f, 50.4f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 6.5f, 7.5f, 49.20f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 7.5f, 8.5f, 47.6f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 8.5f, 9.5f, 42.8f, 80.00f, eClassifyMiner},
-	{channel1Mask|channel2Mask, 9.5f, 10.5f, 38.80f, 80.00f, eClassifyMiner},
 
 	{0, 0.0f, 0.0f, 0.0f, 0.0f, eClassifyUnknown}
 };
@@ -1456,7 +1403,7 @@ void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intens
 {
 	ClassificationType classificationType = classifyFromIntensity(channel, distance, intensity);
 
-	if (classificationType != eClassifyMiner)  
+	if (classificationType != eClassifyHighIntensity)  
 	{
 		getColorFromThreatLevel(threatLevel, backColor, backStyle, lineColor, textColor);
 
