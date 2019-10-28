@@ -175,8 +175,8 @@ protected:
 
 	// Fil the detection data vector with the latest detection data.
 	// Return true if the data has changed since last request.
-	bool GetLatestDetections(SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &detectionData);
-	bool GetLatestAScans(SENSORCORE_NAMESPACE_PREFIX::AScan::Vector &aScanData);
+	bool GetLatestDetections(SensorCoreScope::Detection::Vector &detectionData);
+	bool GetLatestAScans(SensorCoreScope::AScan::Vector &aScanData);
 	void closeEvent(QCloseEvent * /*event*/);
 
 	void FillChannelSelectList();
@@ -215,7 +215,7 @@ private:
 	QIcon *actionResizeMaximizeIcon;
 	QIcon *actionResizeRestoreDownIcon;
 
-	SENSORCORE_NAMESPACE_PREFIX::ReceiverCapture::List receiverCaptures;
+	SensorCoreScope::ReceiverCapture::List receiverCaptures;
 
 #if defined (USE_OPENCV_VIDEO)
 	VideoCapture::List videoCaptures;

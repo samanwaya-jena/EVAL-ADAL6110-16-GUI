@@ -30,7 +30,7 @@
 namespace awl
 {
 
-class AWLSettings: public SENSORCORE_NAMESPACE_PREFIX::SensorSettings
+class AWLSettings: public SensorCoreScope::SensorSettings
 {
 public:
 	static AWLSettings *InitSettings(const std::string sSettingsFileName = std::string(""));
@@ -63,7 +63,7 @@ public:
 
 	std::string sDisplayShowSize;
 
-	SENSORCORE_NAMESPACE_PREFIX::VelocityUnits velocityUnits;
+	SensorCoreScope::VelocityUnits velocityUnits;
 
 	std::string sLogoFileName;
 	std::string sIconFileName;

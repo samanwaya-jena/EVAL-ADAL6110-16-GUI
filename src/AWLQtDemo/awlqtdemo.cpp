@@ -16,6 +16,8 @@
 */
 
 
+
+
 #include <boost/foreach.hpp>
 
 
@@ -2246,7 +2248,59 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-	msgBox.setText("CuteDemo 1.4.4<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+
+#if 0
+	Qtring aboutText= 
+		"<p>CuteDemo: LiDAR Demo Application.</p>"
+		"<p>"
+		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
+		"<a href = \"https://www.phantomintelligence.com/\"style=\"color: gray;\">https://www.phantomintelligence.com/</a></p>"
+		"<p>"
+		"You may use, distribute and copy the this application, its libraries and accompanying source code under the terms of  the GNU Lesser General Public License version 3 (LGPL3), which supplements GNU General Public License Version 3. Both of the licenses are available in file “Licenses / License.txt”.</p>"
+		"<p>"
+		"*** </p>"
+		"<p>"
+		"This program also makes use of third party tools and libraries, which are used without alteration to their source code.</p>"
+		"<p>"
+		"The use of each of the individual librairies is subject to its own license terms.A copy of the license text for each of these is available in the <br>"
+		"&quot;Licences&quot; subdirectory of the application.</p>"
+		"<p>"
+		"QT portion of the application is developed under the QT Open Source License<br>"
+		"(a LGPLV3 license).The Qt Toolkit is Copyright(C) 2017 The Qt Company Ltd.<br>"
+		"QT License is in file &quot;Qt open Source_LICENSE.txt&quot;.<br>"
+		"<a href = \"https://www.qt.io/\"style=\"color: gray;\">https://www.qt.io/</a></p>"
+		"<p>"
+		"OpenCV license is in file &quot;OpenCV_LICENSE.txt&quot;.OpenCV also makes use of FFmpeg, under a separate license &quot;OpenCV_LICENSE_FFMPEG.txt&quot;.<br>"
+		"<a href =\"https://opencv.org/\"style=\"color: gray;\">https://opencv.org/</a></p>"
+		"<p>"
+		"BOOST license is in file &quot;BOOST_LICENSE_1_0.txt&quot;.<br>"
+		"<a href = \"https://www.boost.org/\"style=\"color: gray;\";>https://www.boost.org/</a></p>"
+		"< p >"
+		"LibUSB license is provided in file &quot;LibUSB_COPYING.txt&quot;.<br>"
+		"<a href = \"https://libusb.info/\"style=\"color: gray;\">https://libusb.info/</a></p>"
+		"< p >"
+		"Microsoft Windows Redistributables are subject to the license terms outlined in &quot;Microsoft Visual C++2015 Redistributable (x86) 14.23.27820&quot; </p>";
+#else
+	QString aboutText =
+		"<p>CuteDemo: LiDAR Demo Application.</p>"
+		"<p>"
+		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
+		"<a href = \"https://www.phantomintelligence.com/en/\"style=\"color: gray;\">https://www.phantomintelligence.com/en/</a></p>"
+		"< p >"
+		"Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);<br>"
+		"you may not use this file except in compliance with the License.</p>"
+		"<p>"
+		"You may obtain a copy of the License at<br>"
+		"<a href = \"http://www.apache.org/licenses/LICENSE-2.0\"style=\"color: gray;\">http://www.apache.org/licenses/LICENSE-2.0</a></p>"
+		"< p >"
+		"Unless required by applicable law or agreed to in writing, software<br>"
+		"distributed under the License is distributed on an &quot;AS IS&quot; BASIS,<br>"
+		"WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<br>"
+		"See the License for the specific language governing permissions and<br>"
+		"limitations under the License.</p>";
+#endif
+
+	msgBox.setText(aboutText);
 	msgBox.exec();
 }
 

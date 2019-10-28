@@ -101,7 +101,7 @@ signals:
     void closed();
 public slots:
     void slotConfigChanged();
-    void slotDetectionDataChanged(const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector & data);
+    void slotDetectionDataChanged(const SensorCoreScope::Detection::Vector & data);
 	void ShowContextMenu(const QPoint& pos);
 	void slotPaletteAction();
 	void slotMergeDisplayAction();
@@ -127,7 +127,7 @@ private:
 
     float Ratio;
     bool ShowPalette;
-	SENSORCORE_NAMESPACE_PREFIX::Detection::Vector copyData;
+	SensorCoreScope::Detection::Vector copyData;
 	boost::container::vector<Detection::Vector> mergedData;
     ConfigSensor config;
     QRgb rgblongRangeLimited;
@@ -193,21 +193,21 @@ private:
     void drawPie(QPainter* p, float startAngle, float angularSpan, float radius, float xOffset, float yOffset);
     void drawLine(QPainter* p, float angle, float startRadius, float length);
     void drawText(QPainter* p,float angle, float pos, QString text, QColor foregroundColor = Qt::black, int xOffset = 0);
-    void drawTextDetection(QPainter* p, const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor, bool drawTarget = true, bool drawLegend = true);
+    void drawTextDetection(QPainter* p, const SensorCoreScope::Detection::Ptr &detection, QString text, QColor backColor, Qt::BrushStyle backPattern, QColor lineColor, QColor textColor, bool drawTarget = true, bool drawLegend = true);
     void drawAngularRuler(QPainter* p);
 	void mergeDetection();
 	AlertCondition::ThreatLevel getMaxThreat();
-	bool isInRange(const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection1, const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection2 );
+	bool isInRange(const SensorCoreScope::Detection::Ptr &detection1, const SensorCoreScope::Detection::Ptr &detection2 );
     void getColorFromDistance(float distance, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromVelocity(float velocity, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromIntensity(int channel, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
-	void getColorFromThreatLevel(SENSORCORE_NAMESPACE_PREFIX::AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromThreatLevel(SensorCoreScope::AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromChannel(int receiverID, int channelID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 
     void drawPalette(QPainter* p);
 
-    void drawDetection(QPainter* p, const SENSORCORE_NAMESPACE_PREFIX::Detection::Ptr &detection,  bool drawTarget = true, bool drawLegend = true);
-	void drawMergedData(QPainter* p, const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
+    void drawDetection(QPainter* p, const SensorCoreScope::Detection::Ptr &detection,  bool drawTarget = true, bool drawLegend = true);
+	void drawMergedData(QPainter* p, const SensorCoreScope::Detection::Vector &data, bool drawBoundingBox, bool drawTarget = true, bool drawLegend = true);
 
 	void createAction();
 	void calculateResize();

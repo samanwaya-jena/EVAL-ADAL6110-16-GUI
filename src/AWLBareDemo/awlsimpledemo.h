@@ -42,11 +42,11 @@ protected:
 	void DisplayReceiverStatus(int receiverID);
 
 	bool DoOneLoopIteration();
-	bool GetLatestDetections(SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &detectionData);
-	bool OutputDetections(const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &detectionData);
+	bool GetLatestDetections(SensorCoreScope::Detection::Vector &detectionData);
+	bool OutputDetections(const SensorCoreScope::Detection::Vector &detectionData);
 
 private:
-	SENSORCORE_NAMESPACE_PREFIX::ReceiverCapture::List receiverCaptures;
+	SensorCoreScope::ReceiverCapture::List receiverCaptures;
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;

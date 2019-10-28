@@ -33,7 +33,7 @@ namespace awl
 {
 
 
-	class AWLSettings : public SENSORCORE_NAMESPACE_PREFIX::SensorSettings
+	class AWLSettings : public SensorCoreScope::SensorSettings
 	{
 	public:
 		static AWLSettings * InitSettings(const std::string sSettingsFileName = std::string(""));

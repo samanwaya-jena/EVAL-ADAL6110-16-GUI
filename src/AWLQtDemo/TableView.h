@@ -59,7 +59,7 @@ public slots:
 	void ShowContextMenu(const QPoint& pos);
 	void slotDetectionsPerChannelAction();
     void slotConfigChanged();
-    void slotDetectionDataChanged(const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &data);
+    void slotDetectionDataChanged(const SensorCoreScope::Detection::Vector &data);
 
 protected :
 	void closeEvent(QCloseEvent * event);
@@ -71,7 +71,7 @@ private:
 	void PrepareTableViews();
 	void AdjustTableSize();
 
-	void DisplayReceiverValues(const SENSORCORE_NAMESPACE_PREFIX::Detection::Vector &data);
+	void DisplayReceiverValues(const SensorCoreScope::Detection::Vector &data);
 	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,
 						   int receiverID,
@@ -79,7 +79,7 @@ private:
 						   int detectionID, 
 						   TrackID trackID = 0, 
 						   float distance = NAN, 
-						  SENSORCORE_NAMESPACE_PREFIX::AlertCondition::ThreatLevel level =SENSORCORE_NAMESPACE_PREFIX::AlertCondition::eThreatNone,
+						  SensorCoreScope::AlertCondition::ThreatLevel level =SensorCoreScope::AlertCondition::eThreatNone,
 						   float intensity = NAN,
 						   float velocity = NAN,
 						   float acceleration = NAN, 

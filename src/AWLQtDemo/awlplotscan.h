@@ -42,11 +42,11 @@ class AWLPlotScan : public QFrame
 public:
 	AWLPlotScan(QWidget *parent = 0);
 	~AWLPlotScan();
-	void start(SENSORCORE_NAMESPACE_PREFIX::ReceiverCapture::Ptr inReceiverCapture);
+	void start(SensorCoreScope::ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
   void setChannelMask(uint32_t chMask);
   void selectReceiver(int receiver);
-  void AScanDataChanged(const SENSORCORE_NAMESPACE_PREFIX::AScan::Vector& inData);
+  void AScanDataChanged(const SensorCoreScope::AScan::Vector& inData);
   void ShowAScan(bool show) { showAScan = show; }
   void SetMaxRange(float maxRange) { m_maxRange = maxRange; }
 
@@ -56,10 +56,10 @@ public:
 
 private:
   bool showAScan;
-  SENSORCORE_NAMESPACE_PREFIX::AScan::Vector aScanData;
+  SensorCoreScope::AScan::Vector aScanData;
 	Ui::AWLPlotScanFrame ui;
 	void plotAScans(QPainter* p);
-  void PlotAScan(QPainter* p, SENSORCORE_NAMESPACE_PREFIX::AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
+  void PlotAScan(QPainter* p, SensorCoreScope::AScan::Ptr pAscan, int top, int left, int width, int height, float maxRange);
 	void LabelAScan(QPainter* p);
 
 signals:
