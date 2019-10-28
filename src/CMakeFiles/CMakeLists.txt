@@ -368,9 +368,6 @@ endif()
 message(STATUS "Note that ${PROJECT_NAME} will not work with boost version > 1.68")
 message(STATUS "For Boost installation on Windows that actually work with this CMake, see : https://gist.github.com/JBHarvey/e49348b03cf0898c929a107852c43e22")
 
-
-
-
 list(APPEND Boost_LIBRARIES
 	    "${FORMATED_LIB_regex}"
 	    "${FORMATED_LIB_thread}"
@@ -380,8 +377,6 @@ list(APPEND Boost_LIBRARIES
 	    "${FORMATED_LIB_chrono}"
 	    "${FORMATED_LIB_signals}"
        )
-
-include_directories("${BOOST_INCLUDEDIR}")
  
 # TODO: check if second find_package(Threads) really is necessary. It shouldn't
 #find_package(Threads)
@@ -448,11 +443,6 @@ print_package_info("Qt5Gui")
 print_package_info("Qt5Widgets")
 set(CMAKE_PREFIX_PATH ${OLD_CMAKE_PREFIX_PATH})
 
-# Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
-include_directories(${Qt5Widgets_INCLUDES})
-
-add_definitions(${Qt5Widgets_DEFINITIONS})
-
 # Creation of executable fails in Qt5 with default configuration
 enable_cxx_compiler_flag_if_supported("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 enable_cxx_compiler_flag_if_supported("-o2")
@@ -461,93 +451,34 @@ enable_cxx_compiler_flag_if_supported("-Qfast_transcendentals")
 enable_cxx_compiler_flag_if_supported("-opt:REF")
 
 #############################################################################################
-###    CuteDemo SensorCore Library   ########################################################
-#############################################################################################
-
-set (CORE_FILES_NAME "SensorCoreClasses")
-set(CORE_FILES_LIB "SensorCoreClasses.lib")
-set(CORE_FILES_DIR "../SensorCoreClasses")
-include_directories(include ${CORE_FILES_DIR})
-
-set(CUTEDEMO_CORE_FILES "")
-list(APPEND CUTEDEMO_CORE_FILES 
-	${CORE_FILES_DIR}/CoordinateSystem.cpp
-	${CORE_FILES_DIR}/DebugPrintf.cpp
-	${CORE_FILES_DIR}/DetectionStruct.cpp
-    ${CORE_FILES_DIR}/LoopedWorker.cpp
-    ${CORE_FILES_DIR}/Publisher.cpp
-    ${CORE_FILES_DIR}/ReceiverCANCapture.cpp
-    ${CORE_FILES_DIR}/ReceiverCapture.cpp
-    ${CORE_FILES_DIR}/ReceiverLibUSBCapture.cpp
-    ${CORE_FILES_DIR}/ReceiverPolledCapture.cpp
-	${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
-    ${CORE_FILES_DIR}/ReceiverSimulatorCapture.cpp
-	${CORE_FILES_DIR}/Sensorcoord.cpp
-	${CORE_FILES_DIR}/SensorSettings.cpp
-	${CORE_FILES_DIR}/Subscription.cpp
-    ${CORE_FILES_DIR}/ThreadedWorker.cpp
-    ${CORE_FILES_DIR}/pch.cpp
- )
-
-
-if(WIN32)
-    ADD_LIBRARY(
-    ${CORE_FILES_NAME}
-        STATIC
-        ${CUTEDEMO_CORE_FILES}
-<    )
-    
-    TARGET_COMPILE_DEFINITIONS(
-        ${CORE_FILES_NAME}
-            PUBLIC 
-                WINDOWS 
-    )
-else()
-    ADD_LIBRARY(
-    ${CORE_FILES_NAME} STATIC
-        ${CUTEDEMO_CORE_FILES}
-    )
-endif()
-
-target_include_directories(
-    ${CORE_FILES_NAME}
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILE_DIR}>
-        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILE_DIR}>
-)
-
-target_include_directories(
-    ${CORE_FILES_NAME}
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${DEMO_FILE_DIR}>
-        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${DEMO_FILE_DIR}>
-)
-
-#############################################################################################
 ###    CuteDemo    ##########################################################################
 #############################################################################################
 
+set(CUTEDEMO_FILES_NAME "SensorCoreClasses")
+set(CUTEDEMO_FILES_DIR "../AWLQtDemo")
 
 set(CUTEDEMO_MAIN_FILES "")
 list(APPEND CUTEDEMO_MAIN_FILES 
-    main.cpp
-    awlqtdemo.cpp
-    AWLSettings.cpp
-    fov_2dscan.cpp
-    awlplotscan.cpp
-    TableView.cpp
+    ${CUTEDEMO_FILES_DIR}/main.cpp
+    ${CUTEDEMO_FILES_DIR}/awlqtdemo.cpp
+    ${CUTEDEMO_FILES_DIR}/AWLSettings.cpp
+    ${CUTEDEMO_FILES_DIR}/fov_2dscan.cpp
+    ${CUTEDEMO_FILES_DIR}/awlplotscan.cpp
+    ${CUTEDEMO_FILES_DIR}/TableView.cpp
 )
 
 set(CUTEDEMO_QT_UI_FILES "")
 list(APPEND CUTEDEMO_QT_UI_FILES 
-    awlqtdemo.ui
-    fov_2dscan.ui
-    TableView.ui
-    awlplotscan.ui
+    ${CUTEDEMO_FILES_DIR}/awlqtdemo.ui
+    ${CUTEDEMO_FILES_DIR}/fov_2dscan.ui
+    ${CUTEDEMO_FILES_DIR}/TableView.ui
+    ${CUTEDEMO_FILES_DIR}/awlplotscan.ui
 )
 
-set(CUTEDEMO_RESOURCES CuteDemo.rc)
-set(CUTEDEMO_QRESOURCES awlqtdemo.qrc)
+set(CUTEDEMO_RESOURCES ${CUTEDEMO_FILES_DIR}/CuteDemo.rc)
+set(CUTEDEMO_QRESOURCES ${CUTEDEMO_FILES_DIR}/awlqtdemo.qrc)
+#qt5_add_resources(CUTEDEMO_QT_UI_FILES CUTEDEMO_QRESOURCES)
+
 if(WIN32)
     ADD_EXECUTABLE(
     ${PROJECT_NAME}
@@ -575,10 +506,10 @@ else()
 endif()
 
 target_include_directories(
-    ${PROJECT_NAME}
+   ${PROJECT_NAME}
     PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILE_DIR}>
-        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CUTEDEMO_FILES_DIR}>
+        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CUTEDEMO_FILES_DIR}>
 )
 
 target_include_directories(
@@ -588,6 +519,96 @@ target_include_directories(
         $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${DEMO_FILE_DIR}>
 )
 
+target_include_directories(
+   ${PROJECT_NAME}
+    PRIVATE
+        ${BOOST_INCLUDEDIR}
+)
+
+# Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
+target_include_directories(
+   CuteDemo
+    PRIVATE
+        ${Qt5Widgets_INCLUDES}
+)
+
+#add_definitions(${Qt5Widgets_DEFINITIONS})
+target_compile_definitions (
+   CuteDemo
+    PRIVATE
+        ${Qt5Widgets_DEFINITIONS}
+)
+
+#############################################################################################
+###    CuteDemo SensorCore Library   ########################################################
+#############################################################################################
+
+set(CORE_FILES_NAME "SensorCoreClasses")
+set(CORE_FILES_LIB "SensorCoreClasses.lib")
+set(CORE_FILES_DIR "../SensorCoreClasses")
+
+set(CUTEDEMO_CORE_FILES "")
+list(APPEND CUTEDEMO_CORE_FILES 
+	${CORE_FILES_DIR}/CoordinateSystem.cpp
+	${CORE_FILES_DIR}/DebugPrintf.cpp
+	${CORE_FILES_DIR}/DetectionStruct.cpp
+    ${CORE_FILES_DIR}/LoopedWorker.cpp
+    ${CORE_FILES_DIR}/Publisher.cpp
+    ${CORE_FILES_DIR}/ReceiverCANCapture.cpp
+    ${CORE_FILES_DIR}/ReceiverCapture.cpp
+    ${CORE_FILES_DIR}/ReceiverLibUSBCapture.cpp
+    ${CORE_FILES_DIR}/ReceiverPolledCapture.cpp
+	${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
+    ${CORE_FILES_DIR}/ReceiverSimulatorCapture.cpp
+	${CORE_FILES_DIR}/Sensorcoord.cpp
+	${CORE_FILES_DIR}/SensorSettings.cpp
+	${CORE_FILES_DIR}/Subscription.cpp
+    ${CORE_FILES_DIR}/ThreadedWorker.cpp
+    ${CORE_FILES_DIR}/pch.cpp
+ )
+
+if(WIN32)
+    ADD_LIBRARY(
+    ${CORE_FILES_NAME}
+        STATIC
+        ${CUTEDEMO_CORE_FILES}
+<    )
+    
+    TARGET_COMPILE_DEFINITIONS(
+        ${CORE_FILES_NAME}
+            PUBLIC 
+                WINDOWS 
+    )
+else()
+    ADD_LIBRARY(
+    ${CORE_FILES_NAME} STATIC
+        ${CUTEDEMO_CORE_FILES}
+    )
+endif()
+
+target_include_directories(
+    ${CORE_FILES_NAME}
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILES_DIR}>
+        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILES_DIR}>
+)
+target_include_directories(
+    CuteDemo
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${CORE_FILES_DIR}>
+        $<INSTALL_INTERFACE:${INSTALL_CMAKE_DIR}/${CORE_FILES_DIR}>
+)
+
+target_include_directories(
+   ${CORE_FILES_NAME}
+    PRIVATE
+        ${BOOST_INCLUDEDIR}
+)
+
+   TARGET_LINK_LIBRARIES( 
+        CuteDemo 
+        ${CORE_FILES_NAME} 
+    )
 
 
 #############################################################################################
@@ -622,7 +643,16 @@ if(${WANT_LIBUSB_SUPPORT})
         "${LIBUSB_DLL}"
     )
 
-    include_directories(${LIBUSB_INCLUDE_DIRS})
+    target_include_directories(
+    ${CORE_FILES_NAME}
+		PRIVATE
+		 ${LIBUSB_INCLUDE_DIRS}
+	)
+	target_include_directories(
+    ${PROJECT_NAME}
+		PRIVATE
+			${LIBUSB_INCLUDE_DIRS}
+	)
 
     TARGET_COMPILE_DEFINITIONS(
         CuteDemo
@@ -662,13 +692,17 @@ if(${WANT_OPENCV_VIDEO})
     FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build)
     print_package_info(OpenCV)
    
-    INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+    target_include_directories(
+		${PROJECT_NAME}
+		PRIVATE
+			${OpenCV_INCLUDE_DIRS}
+	)
 
     TARGET_SOURCES(
         CuteDemo 
     PRIVATE 
-            VideoCapture.cpp 
-            VideoViewer.cpp
+            ${CUTEDEMO_FILES_DIR}/VideoCapture.cpp 
+            ${CUTEDEMO_FILES_DIR}/VideoViewer.cpp
     )
 
     TARGET_LINK_LIBRARIES(
@@ -757,30 +791,20 @@ set_property(
         "${INSTALL_BIN_DIR}/$<TARGET_FILE_NAME:${PROJECT_NAME}>"
     PROPERTY CPACK_START_MENU_SHORTCUTS "${PROJECT_NAME}"
 )
-
-#JYD install(
-#JYD     EXPORT
-#JYD         ${PROJECT_NAME}Targets
-#JYD     FILE 
-#JYD         ${PROJECT_NAME}Targets.cmake
-#JYD     DESTINATION
-#JYD         ${INSTALL_CMAKE_DIR}
-#JYD )
-
 # Configuration file... needed for adequate runtime
 install(
     FILES
-        AWLDemoSettings.xml
-       ${CUTEDEMO_RESOURCES}
-       ${CUTEDEMO_QRESOURCES}
-#       LICENSE.txt
- #      README.txt
+        ${CUTEDEMO_FILES_DIR}/AWLDemoSettings.xml
+		${CUTEDEMO_RESOURCES}
+        ${CUTEDEMO_QRESOURCES}
+#       ${CUTEDEMO_FILES_DIR}/LICENSE.txt
+ #      ${CUTEDEMO_FILES_DIR}/README.txt
     DESTINATION ${INSTALL_BIN_DIR}
 )
     
 install(
     DIRECTORY
-        Images/
+        ${CUTEDEMO_FILES_DIR}/Images/
     DESTINATION ${INSTALL_BIN_DIR}/Images
 )
 
