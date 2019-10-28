@@ -808,6 +808,12 @@ install(
     DESTINATION ${INSTALL_BIN_DIR}/Images
 )
 
+install(
+    DIRECTORY
+        ${CUTEDEMO_FILES_DIR}/../Licenses/
+    DESTINATION ${INSTALL_BIN_DIR}/Licenses
+)
+
 # Installation of dll & other dependencies
 if(WIN32)
     install(

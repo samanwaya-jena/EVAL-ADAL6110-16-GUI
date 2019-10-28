@@ -1,22 +1,41 @@
-/* AWLQtDemo.cpp */
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
-
-
-
+/* AWLQtDemo.cpp : CuteApplication user interface management*/
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 
 #include <boost/foreach.hpp>
 
@@ -2249,34 +2268,34 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
 
-#if 0
-	Qtring aboutText= 
+#if 1
+	QString aboutText= 
 		"<p>CuteDemo: LiDAR Demo Application.</p>"
 		"<p>"
 		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
 		"<a href = \"https://www.phantomintelligence.com/\"style=\"color: gray;\">https://www.phantomintelligence.com/</a></p>"
 		"<p>"
-		"You may use, distribute and copy the this application, its libraries and accompanying source code under the terms of  the GNU Lesser General Public License version 3 (LGPL3), which supplements GNU General Public License Version 3. Both of the licenses are available in file “Licenses / License.txt”.</p>"
-		"<p>"
-		"*** </p>"
+		"You may use, distribute and copy the this application, its libraries and accompanying source code under the terms of the GNU Lesser General Public License version 3 (LGPL3), "
+		"which supplements GNU General Public License Version 3, appearing in document &quot;PHANTOM_LICENSE.LGPL3&quot; included in the packaging of this application.<br>"
+		"Alternatively, these files may be used under the terms of the GNU General Public License  version 3, appearing in the file &quot;PHANTOM_LICENSE.GPL3&quot; included in the packaging of this application.</p>"
 		"<p>"
 		"This program also makes use of third party tools and libraries, which are used without alteration to their source code.</p>"
 		"<p>"
-		"The use of each of the individual librairies is subject to its own license terms.A copy of the license text for each of these is available in the <br>"
-		"&quot;Licences&quot; subdirectory of the application.</p>"
+		"The use of each of the individual librairies is subject to its own license terms. A copy of the licenses for each of these is available in the <br>"
+		" &quot;Licences&quot; directory packaged with the application.</p>"
 		"<p>"
 		"QT portion of the application is developed under the QT Open Source License<br>"
 		"(a LGPLV3 license).The Qt Toolkit is Copyright(C) 2017 The Qt Company Ltd.<br>"
-		"QT License is in file &quot;Qt open Source_LICENSE.txt&quot;.<br>"
+		"QT License is in subdirectory &quot;Qt open Sourcet&quot;.<br>"
 		"<a href = \"https://www.qt.io/\"style=\"color: gray;\">https://www.qt.io/</a></p>"
 		"<p>"
-		"OpenCV license is in file &quot;OpenCV_LICENSE.txt&quot;.OpenCV also makes use of FFmpeg, under a separate license &quot;OpenCV_LICENSE_FFMPEG.txt&quot;.<br>"
+		"OpenCV license is in subdirectory &quot;OpenCV&quot;.OpenCV also makes use of FFmpeg, under a separate license also in subdirectory &quot;OpenCV&quot;.<br>"
 		"<a href =\"https://opencv.org/\"style=\"color: gray;\">https://opencv.org/</a></p>"
 		"<p>"
-		"BOOST license is in file &quot;BOOST_LICENSE_1_0.txt&quot;.<br>"
+		"BOOST license is in subdirectory &quot;BOOST&quot;.<br>"
 		"<a href = \"https://www.boost.org/\"style=\"color: gray;\";>https://www.boost.org/</a></p>"
 		"< p >"
-		"LibUSB license is provided in file &quot;LibUSB_COPYING.txt&quot;.<br>"
+		"LibUSB license is provided in subdirectory &quot;LibUSB&quot;.<br>"
 		"<a href = \"https://libusb.info/\"style=\"color: gray;\">https://libusb.info/</a></p>"
 		"< p >"
 		"Microsoft Windows Redistributables are subject to the license terms outlined in &quot;Microsoft Visual C++2015 Redistributable (x86) 14.23.27820&quot; </p>";
