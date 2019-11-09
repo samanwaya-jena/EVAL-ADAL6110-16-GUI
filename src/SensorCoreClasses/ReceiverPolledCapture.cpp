@@ -75,7 +75,6 @@ ReceiverPolledCapture::~ReceiverPolledCapture()
 {
 }
 
-
 void ReceiverPolledCapture::Go()
 {
   assert(!mThread);

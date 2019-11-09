@@ -404,10 +404,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
   ui.comboBoxMaxRange->setDisabled(true);
   ui.comboBoxMaxRange->clear();
-  ui.comboBoxMaxRange->addItem("100%");
-  ui.comboBoxMaxRange->addItem("75%");
-  ui.comboBoxMaxRange->addItem("50%");
-  ui.comboBoxMaxRange->addItem("25%");
+  ui.comboBoxMaxRange->addItem("100%", QVariant((float)1.00));
+  ui.comboBoxMaxRange->addItem("75%", QVariant((float)0.75));
+  ui.comboBoxMaxRange->addItem("50%", QVariant((float)0.50));
+  ui.comboBoxMaxRange->addItem("25%", QVariant((float)0.25));
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -2514,13 +2514,10 @@ void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
 {
   if (!ui.checkBoxAutoScale->isChecked())
   {
-    switch (newIndex)
-    {
-    case 0: mAScanView->SetMaxRange(32767.0F); break;
-    case 1: mAScanView->SetMaxRange(32767.0F * 0.75F); break;
-    case 2: mAScanView->SetMaxRange(32767.0F * 0.50F); break;
-    default:mAScanView->SetMaxRange(32767.0F * 0.25F); break;
-    }
+	  if (newIndex >= 0) {
+		  float rangeScale = ui.comboBoxMaxRange->itemData(newIndex).value<float>();
+		  mAScanView->SetMaxRange(32767.0F * rangeScale);
+	  }
   }
 }
 
@@ -2535,13 +2532,7 @@ void AWLQtDemo::on_checkBoxAutoScaleToggled()
   {
     ui.comboBoxMaxRange->setDisabled(false);
     int sel = ui.comboBoxMaxRange->currentIndex();
-    switch (sel)
-    {
-    case 0: mAScanView->SetMaxRange(32767.0F); break;
-    case 1: mAScanView->SetMaxRange(32767.0F * 0.75F); break;
-    case 2: mAScanView->SetMaxRange(32767.0F * 0.50F); break;
-    default:mAScanView->SetMaxRange(32767.0F * 0.25F); break;
-    }
+	on_comboBoxMaxRange_indexChanged(sel);
   }
 }
 
@@ -2597,7 +2588,7 @@ void AWLQtDemo::FillFPGAList()
 			QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
 			sLabel += ": ";
 			sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
-			ui.registerFPGAAddressSetComboBox->addItem(sLabel);
+			ui.registerFPGAAddressSetComboBox->addItem(sLabel, QVariant(i));
 		}
 	}
 
@@ -2623,9 +2614,13 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	size_t comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
+	// Index in combo box does not correspond to address in registerList, 
+	// since some items in regisster list are not always displayed.
+	// Trust the user data
+	size_t registerIndex = ui.registerFPGAAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersFPGA.size()) return;
 
-	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersFPGA[registerIndex].address;
 
 	sValue = ui.registerFPGAValueSetLineEdit->text();
 	bool ok;
@@ -2648,6 +2643,10 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
 	}
 
+
+	// Force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerFPGAGetPushButton_clicked();
+
 }
 
 void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
@@ -2657,10 +2656,13 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 	size_t comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+	// Index in combo box does not correspond to address in registerList, 
+// since some items in regisster list are not always displayed.
+// Trust the user data
+	size_t registerIndex = ui.registerFPGAAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersFPGA.size()) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
-
-	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersFPGA[registerIndex].address;
 
 	// Now update user interface
 	ui.registerFPGAAddressGetLineEdit->setText("");
@@ -2705,6 +2707,9 @@ void AWLQtDemo::on_registerFPGARestoreFactoryDefaults_clicked()
       receiverCaptures[0]->SetFPGARegister(0x3FFF, 0);
     }
   }
+
+  // Force a get of the current value, to force a refresh
+  AWLQtDemo::on_registerFPGAGetPushButton_clicked();
 }
 
 void AWLQtDemo::on_registerADCSaveToFlash_clicked()
@@ -2739,6 +2744,9 @@ void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
       receiverCaptures[0]->SetADCRegister(0x3FFF, 0);
     }
   }
+
+  // Force a get of the current value, to force a refresh
+  AWLQtDemo::on_registerADCGetPushButton_clicked();
 }
 
 void AWLQtDemo::FillADCList()
@@ -2754,7 +2762,7 @@ void AWLQtDemo::FillADCList()
 		QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
 		sLabel += ": ";
 		sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
-		ui.registerADCAddressSetComboBox->addItem(sLabel);
+		ui.registerADCAddressSetComboBox->addItem(sLabel, QVariant(i));
 	}
 
 	if (receiverCaptures[0]->registersADC.size() > 0)
@@ -2778,9 +2786,13 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 
 	size_t comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+	// Index in combo box does not correspond to address in registerList, 
+    // since some items in register list are not always displayed.
+    // Trust the user data
+	size_t registerIndex = ui.registerADCAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersADC.size()) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersADC.size()) return;
-	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersADC[registerIndex].address;
 
 	sValue = ui.registerADCValueSetLineEdit->text();
 	bool ok;
@@ -2803,6 +2815,9 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 		receiverCaptures[0]->SetADCRegister(registerAddress, registerValue);
 	}
 
+	// Force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerADCGetPushButton_clicked();
+
 }
 
 void AWLQtDemo::on_registerADCGetPushButton_clicked()
@@ -2812,9 +2827,13 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 
 	size_t comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+	// Index in combo box does not correspond to address in registerList, 
+	// since some items in register list are not always displayed.
+	// Trust the user data
+	size_t registerIndex = ui.registerADCAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersADC.size()) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
-	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersADC[registerIndex].address;
 
 	// Now update user interface
 	ui.registerADCAddressGetLineEdit->setText("");
@@ -2844,26 +2863,26 @@ void AWLQtDemo::FillGPIOList()
         listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 		listItem->setCheckState(Qt::Unchecked);
 		ui.registerGPIOListWidget->addItem(listItem);
-
-
 	}
 }
 
 void AWLQtDemo::UpdateGPIOList()
 {
-	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	size_t comboSize = (size_t) ui.registerGPIOListWidget->count();
+	for (size_t comboIndex = 0; comboIndex < comboSize; comboIndex++) 
 	{
-		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
+		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
+		size_t registerIndex = comboIndex;
 
-		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[registerIndex].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates  == updateStatusPendingUpdate)
+		sLabel += receiverCaptures[0]->registersGPIO[registerIndex].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates  == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}
 	
-		if (receiverCaptures[0]->registersGPIO[i].value) 
+		if (receiverCaptures[0]->registersGPIO[registerIndex].value) 
 		{
 			listItem->setCheckState(Qt::Checked);
 		}
@@ -2872,20 +2891,22 @@ void AWLQtDemo::UpdateGPIOList()
 			listItem->setCheckState(Qt::Unchecked);
 		}
 
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingVisual)
-			receiverCaptures[0]->registersGPIO[i].pendingUpdates = updateStatusUpToDate;
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates == updateStatusPendingVisual)
+			receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates = updateStatusUpToDate;
 	}
 }
 
 void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 {
 	// Update all of the MIOs at the same time
-	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	size_t comboSize = (size_t) ui.registerGPIOListWidget->count();
+	for (size_t comboIndex = 0; comboIndex < comboSize; comboIndex++)
 	{
-		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
+		size_t registerIndex = comboIndex;
+		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[registerIndex].address;
 		uint32_t registerValue = 0;
 
-		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
+		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
 		Qt::CheckState checkState = listItem->checkState();
 		if (checkState == Qt::Checked) 
 		{
@@ -2900,26 +2921,31 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 		}
 
 		// Update the user interface
-		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[registerIndex].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingUpdate)
+		sLabel += receiverCaptures[0]->registersGPIO[registerIndex].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}		
 		listItem->setText(sLabel);
 	}// For
+
+	  // Force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerGPIOGetPushButton_clicked();
 }
 
 
 void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 {
 	// Update all of the MIOs at the same time
-	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	size_t comboSize = (size_t) ui.registerGPIOListWidget->count();
+	for (size_t comboIndex = 0; comboIndex < comboSize; comboIndex++)
 	{
-		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
+		size_t registerIndex = comboIndex;
+		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[registerIndex].address;
 
-		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
+		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
 	
 		// Send the command to the device
 		if (receiverCaptures[0]) 
@@ -2928,10 +2954,10 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 		}
 
 		// Update the user interface
-		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[registerIndex].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates = updateStatusPendingUpdate)
+		sLabel += receiverCaptures[0]->registersGPIO[registerIndex].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates = updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}		
