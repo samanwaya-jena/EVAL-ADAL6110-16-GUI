@@ -57,11 +57,11 @@ namespace awl
 	class AWLSettings : public SensorCoreScope::SensorSettings
 	{
 	public:
-		static AWLSettings * InitSettings(const std::string sSettingsFileName = std::string(""));
+		static AWLSettings * InitSettings(const std::string sInSettingsFileName = std::string(""));
 		static AWLSettings* GetGlobalSettings();
 
 		// Constructor
-		AWLSettings(const std::string sSettingsFileName = std::string(""));
+		AWLSettings(const std::string sInSettingsFileName = std::string(""));
 		bool ReadSettings();
 	};
 

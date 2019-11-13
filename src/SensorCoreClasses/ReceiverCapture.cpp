@@ -554,7 +554,7 @@ bool ReceiverCapture::BeginDistanceLog()
 		
 	if (!logFilePtr->is_open())
 	{
-		OpenLogFile(*logFilePtr, GetLogFileName().c_str(), true);
+		OpenLogFile(*logFilePtr, true);
 	}
 
 	LogFilePrintf(*logFilePtr, ",Comment,Type, Track ID, Channel, ChannelID,Type Specific");

@@ -54,14 +54,9 @@
 SENSORCORE_USE_NAMESPACE
 
 
-// Default debug file name
-const char *sDebugFileName = "debug.dbg";
-
 // Path for the debug and log files.  
 // Per default is empty string, which amounts to writing to the application directory
 std::string sFilePath("");
-
-std::string sLogFileName("distanceLog.csv");
 
 // Field separator used in debug files.
 const char cFieldSeparator = ';'; 
@@ -82,7 +77,7 @@ void DebugFilePrintf(const char *format, ...)
 
 		// Open the debug file
 		std::ofstream debugFile;
-		bool bOpen = OpenDebugFile(debugFile, sDebugFileName, true); 
+		bool bOpen = OpenDebugFile(debugFile, SensorSettings::GetGlobalSettings()->sDebugFileName, true);
 		if( !bOpen) return;
 
 
@@ -145,7 +140,7 @@ void DebugFilePrintf(std::ofstream &debugFile, const char *format, ...)
 	}
 }
 
-bool OpenDebugFile(std::ofstream &debugFile, const char *fileName, bool bAppend)
+bool OpenDebugFile(std::ofstream &debugFile, const std::string filename, bool bAppend)
 {
 	if (SensorSettings::GetGlobalSettings()->bWriteDebugFile) 
 	{
@@ -154,7 +149,7 @@ bool OpenDebugFile(std::ofstream &debugFile, const char *fileName, bool bAppend)
 			CloseDebugFile(debugFile);
 		}
 
-		std::string sFileName = sFilePath + fileName;
+		std::string sFileName = SensorSettings::GetGlobalSettings()->sDebugAndLogFilePath + filename;
 
 		if (bAppend) 
 		{
@@ -168,7 +163,7 @@ bool OpenDebugFile(std::ofstream &debugFile, const char *fileName, bool bAppend)
 		if ( debugFile.fail() ) 
 		{
 			std::string sErr = " Failed to open ";
-			sErr += fileName;
+			sErr += filename;
 			fprintf(stderr, sErr.c_str());
 
 			return (false);
@@ -189,7 +184,7 @@ bool CloseDebugFile(std::ofstream &debugFile)
 }
 
 
-bool OpenLogFile(std::ofstream &logFile, const char *fileName, bool bAppend)
+bool OpenLogFile(std::ofstream &logFile,  bool bAppend)
 {
 	if (SensorSettings::GetGlobalSettings()->bWriteLogFile)
 	{
@@ -198,7 +193,8 @@ bool OpenLogFile(std::ofstream &logFile, const char *fileName, bool bAppend)
 			CloseLogFile(logFile);
 		}
 
-		std::string sFileName = sFilePath + fileName;
+		std::string sFileName = SensorSettings::GetGlobalSettings()->sDebugAndLogFilePath + 
+			                    SensorSettings::GetGlobalSettings()->sLogFileName;
 
 		if (bAppend) 
 		{
@@ -212,7 +208,7 @@ bool OpenLogFile(std::ofstream &logFile, const char *fileName, bool bAppend)
 		if ( logFile.fail() ) 
 		{
 			std::string sErr = " Failed to open ";
-			sErr += fileName;
+			sErr += sFileName;
 			fprintf(stderr, sErr.c_str());
 
 			return (false);
@@ -264,25 +260,4 @@ void LogFilePrintf(std::ofstream &logFile, const char *format, ...)
 	}
 }
 
-bool SetLogAndDebugFilePath(std::string newFilePath)
-{
-	sFilePath = newFilePath;
-	return(true);
-}
-
-std::string GetLogAndDebugFilePath()
-{
-	return(sFilePath);
-}
-
-bool SetLogFileName(std::string newFileName)
-{
-	sLogFileName = newFileName;
-	return(true);
-}
-
-std::string GetLogFileName()
-{
-	return(sLogFileName);
-}
 

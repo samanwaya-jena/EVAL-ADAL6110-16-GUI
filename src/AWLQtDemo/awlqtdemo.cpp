@@ -113,27 +113,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Set the basic paths
 	QCoreApplication::setOrganizationName("Phantom Intelligence");
 	QCoreApplication::setApplicationName("Phantom Intelligence Lidar Demo");
-	
-	// Set-up the debug and log file paths
-
-	// First, ask Qt for the recommmended directory
-	QString sDebugAndLogPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	//  if the directory does not exist, make it.
-	QDir debugAndLogDir(sDebugAndLogPath);
-	if (!debugAndLogDir.exists()) 
-	{
-		debugAndLogDir.mkpath(".");
-	}
-
-#if 1
-	sDebugAndLogPath = QString(".");
-#endif
-
-	// Append the last "/", which Qt does not do.
-	sDebugAndLogPath += "/";
-
-	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString());
-	SetLogFileName(std::string("distanceLog.csv"));
 
 	// Read the settigs from the configuration file
 	//
@@ -415,8 +394,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
-	ui.logFilePathLabel->setText(QString(GetLogAndDebugFilePath().c_str()));
-	ui.logFileNameLabel->setText(QString(GetLogFileName().c_str()));
+	ui.logFilePathLabel->setText(QString(globalSettings->GetLogAndDebugFilePath().c_str()));
+	ui.logFileNameLabel->setText(QString(globalSettings->GetLogFileName().c_str()));
 
 	// Initialize the AScan window
 	mAScanView = new AWLPlotScan();
@@ -987,7 +966,8 @@ void AWLQtDemo::on_logFileSelectorButton_pressed()
 	ui.logFileSelectButton->setEnabled(false);
 
 	QString dialogFileName = QFileDialog::getSaveFileName(this,
-		tr("Set Log File Path"), QString(GetLogAndDebugFilePath().c_str()), tr("Distance Log Files (*.csv)"));
+		tr("Set Log File Path"), 
+		QString(AWLSettings::GetGlobalSettings()->GetLogAndDebugFilePath().c_str()), tr("Distance Log Files (*.csv)"));
 
 	if (!dialogFileName.isEmpty())
 	{
@@ -996,8 +976,8 @@ void AWLQtDemo::on_logFileSelectorButton_pressed()
 		// Append the last "/", which Qt does not do.
 		QString path = fileInfo.absolutePath() + "/";
 		QString fileName = fileInfo.fileName();
-		SetLogAndDebugFilePath(path.toStdString());
-		SetLogFileName(fileName.toStdString());
+		AWLSettings::GetGlobalSettings()->SetLogAndDebugFilePath(path.toStdString());
+		AWLSettings::GetGlobalSettings()->SetLogFileName(fileName.toStdString());
 		ui.logFilePathLabel->setText(path);
 		ui.logFileNameLabel->setText(fileName);
 	}

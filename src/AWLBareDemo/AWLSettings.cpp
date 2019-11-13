@@ -51,28 +51,28 @@ const std::string sDefaultAWLSettingsFileName("AWLSimpleDemoSettings.xml");
 
 
 
-AWLSettings::AWLSettings(const std::string sSettingsFileName) :
+AWLSettings::AWLSettings(const std::string sInSettingsFileName) :
 	SensorSettings(sSettingsFileName)
 	
 {
 	if (sSettingsFileName.empty())
 	{
-		sFileName.assign(sDefaultAWLSettingsFileName);
+		sSettingsFileName.assign(sDefaultAWLSettingsFileName);
 	}
 	else
 	{
-		sFileName.assign(sSettingsFileName);
+		sSettingsFileName.assign(sInSettingsFileName);
 	}
 }
 
-AWLSettings* AWLSettings::InitSettings(const std::string sSettingsFileName)
+AWLSettings* AWLSettings::InitSettings(const std::string sInSettingsFileName)
 {
 	if (globalSettings)
 	{
 		delete globalSettings;
 	}
 
-	globalSettings = (SensorSettings*) new AWLSettings(sDefaultAWLSettingsFileName);
+	globalSettings = (SensorSettings*) new AWLSettings(sInSettingsFileName);
 	return((AWLSettings*)globalSettings);
 }
 

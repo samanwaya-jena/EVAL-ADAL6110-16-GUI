@@ -56,27 +56,27 @@ const std::string sDefaultSettingsFileName("SensorDemoSettings.xml");
 
 SensorSettings * SensorSettings::globalSettings = NULL;
 
-SensorSettings::SensorSettings(const std::string sSettingsFileName)
+SensorSettings::SensorSettings(const std::string sInSettingsFileName)
 
 {
-	if (sFileName.empty())
+	if (sInSettingsFileName.empty())
 	{
-		sFileName.assign(sDefaultSettingsFileName);
+		sSettingsFileName.assign(sDefaultSettingsFileName);
 	}
 	else
 	{
-		sFileName.assign(sSettingsFileName);
+		sSettingsFileName.assign(sInSettingsFileName);
 	}
 }
 
-SensorSettings* SensorSettings::InitSettings(const std::string sSettingsFileName)
+SensorSettings* SensorSettings::InitSettings(const std::string sInSettingsFileName)
 {
 	if (globalSettings)
 	{
 		delete globalSettings;
 	}
 
-	globalSettings = new SensorSettings(sSettingsFileName);
+	globalSettings = new SensorSettings(sInSettingsFileName);
 	return(globalSettings);
 }
 
@@ -95,7 +95,16 @@ bool SensorSettings::ReadSettings()
 
 	// Load the XML file into the property tree. If reading fails
 	// (cannot open file, parse error), an exception is thrown.
-	read_xml(sFileName, propTree);
+	read_xml(sSettingsFileName, propTree);
+
+	// Debug and log file control
+	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile", false);
+	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile", false);
+	sDebugFileName = propTree.get<std::string>("config.debug.debugFileName", "debug.dbg");
+	sLogFileName = propTree.get<std::string>("config.debug.logFileName", "distanceLog.csv");
+	sDebugAndLogFilePath = propTree.get<std::string>("config.debug.defaultPath", "./");
+
+	// Receivers
 
 	int receiverQty = propTree.get<int>("config.receivers.receiverQty", 0);
 	receiverSettings.resize(receiverQty);
@@ -141,11 +150,6 @@ bool SensorSettings::ReadSettings()
 		cameraPtr->barrelK2 = cameraNode.get<float>("barrelCorrectionK2", 0.0);
 	}
 
-	// Debug and log file control
-	bWriteDebugFile = propTree.get<bool>("config.debug.enableDebugFile", false);
-	bWriteLogFile = propTree.get<bool>("config.debug.enableLogFile", false);
-
-
 	brakingDeceleration = propTree.get<float>("config.dynamicTesting.brakingDeceleration", (float)5.096);
 	travelSpeed = propTree.get<float>("config.dynamicTesting.travelSpeed", (float)33.32);
 
@@ -173,7 +177,7 @@ bool SensorSettings::StoreReceiverCalibration()
 
 	// Load the XML file into the property tree. If reading fails
 	// (cannot open file, parse error), an exception is thrown.
-	read_xml(sFileName, localPropTree);
+	read_xml(sSettingsFileName, localPropTree);
 
 
 #if 0
@@ -466,5 +470,27 @@ void SensorSettings::PutChannelGeometry(boost::property_tree::ptree& channelGeom
 		PutColor(channelNode.put_child("displayColor", boost::property_tree::ptree("")),
 			channelConfigPtr->displayColorRed, channelConfigPtr->displayColorGreen, channelConfigPtr->displayColorBlue);
 	} // for (int channelIndex = 0;
+}
+
+bool SensorSettings::SetLogAndDebugFilePath(std::string newFilePath)
+{
+	sDebugAndLogFilePath = newFilePath;
+	return(true);
+}
+
+std::string SensorSettings::GetLogAndDebugFilePath()
+{
+	return(sDebugAndLogFilePath);
+}
+
+bool SensorSettings::SetLogFileName(std::string newFileName)
+{
+	sLogFileName = newFileName;
+	return(true);
+}
+
+std::string SensorSettings::GetLogFileName()
+{
+	return(sLogFileName);
 }
 

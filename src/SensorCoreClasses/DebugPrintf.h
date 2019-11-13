@@ -45,7 +45,35 @@
 
 SENSORCORE_BEGIN_NAMESPACE
 
-
+/** \brief DebugPrintf functions write debug data to a file.
+  *        Appends formatted information to the debug stream ("debug.dbg").
+  *        The debug uses the same syntax as Printf.
+  *
+  *        Buffers are flushed at every call, making robust in
+  *        case of a crash, at the cost of some efficiency.
+  *
+  *        Debug will write to file only if 
+  *        SensorSettings::GetGlobalSettings()->bWriteDebugFile is true.
+  *
+  *        DebugPrintf can be used to write to the default debug stream 
+  *        (file "debug.dbg")  or to a user selected debug stream.
+  *        To write to the default stream, just call DebugFilePrintf(const char *format, ...)
+  *        To write to specific file, call OpenDebugFile(std::ofstream &debugFile...) 
+  *        and call DebugFilePrintf(std::ofstream &debugFile, const char *format).
+  *
+  *        Internally uses vsprintf();
+  *        ***
+  *		   LogFilePrintf() uses similar syntax for log file usage.
+  *        LogFilePrintf() does NOT flush buffers, for the sake of efficiency.
+  *        Log will write to file only if 
+  *        SensorSettings::GetGlobalSettings()->bWriteLogFile is true.
+  *        ***
+  *        Path to the debug and log files can be set using 
+  *        SensorSettings::GetGlobalSettings()->SetLogAndDebugFilePath()
+  *        Otherwise, current executable directory is used.  
+  *       Be sure you have write permissions. 
+  */
+ 
 /** \brief Appends formatted information to the default debug stream ("debug.dbg").
   *        The debug uses the same syntax as Printf.
   *        Internally uses vsprintf();
@@ -87,7 +115,7 @@ void DebugFilePrintf(std::ofstream &debugFile, const char *format, ...);
   *                     Otherwise, set to false (default).
   */
 
-bool OpenDebugFile(std::ofstream &debugFile, const char *fileName, bool bAppend = false);
+bool OpenDebugFile(std::ofstream &debugFile, const std::string fileName, bool bAppend = false);
 
 /** \brief Closes a previously opened debug file.
   * \param[in,out] debugFile the stream to close.
@@ -127,17 +155,17 @@ void DebugFilePrintf(const char *format, ...);
 void LogFilePrintf(std::ofstream &logFile, const char *format, ...);
 
 
-/** \brief Opens a log file specified by name.
+/** \brief Opens a log file, using the current log file name.
   *			if (bAppend) is equal to true, the file is opened in "append mode", 
   *        otherwise, the file is flushed.
   *        If the stream is already opened, it is closed, then reopened.
   * \param[in,out] logFile the stream to open.
-  * \param[in] format  format string.
   * \param[in] bAppend  set to true to open the file in append mode.  
   *                     Otherwise, set to false (default).
+  * \note The log file name must have been previously set by SetLogFileName(), or default is used.
   */
 
-bool OpenLogFile(std::ofstream &logFile, const char *fileName, bool bAppend = false);
+bool OpenLogFile(std::ofstream &logFile, bool bAppend = false);
 
 /** \brief Closes a previously opened log file.
   * \param[in,out] logFile the stream to close.
@@ -145,28 +173,7 @@ bool OpenLogFile(std::ofstream &logFile, const char *fileName, bool bAppend = fa
 
 bool CloseLogFile(std::ofstream &logFile);
 
-/** \brief Changes the default path for the log and debug files.
-* \param[in] new path.
-* \note By default the log and debug files are set to the application directory.
-*/
 
-bool SetLogAndDebugFilePath(std::string newFilePath);
-
-/** \brief Returns the current path for the log and debug files.
-* \note By default the log and debug files are set to the application directory.
-*/
-std::string GetLogAndDebugFilePath();
-
-
-/** \brief Changes the default fileName for the log file.
-* \param[in] new fileName.
-*/
-
-bool SetLogFileName(std::string newFileName);
-
-/** \brief Returns the current fileName for the log file.
-*/
-std::string GetLogFileName();
 
 SENSORCORE_END_NAMESPACE          
 

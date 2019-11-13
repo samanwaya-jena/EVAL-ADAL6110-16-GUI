@@ -47,6 +47,10 @@
   <debug>
     <enableDebugFile>false</enableDebugFile>
     <enableLogFile>false</enableLogFile>
+    <!-- Path for debug and log files.  Must be terminated by a "/" -->
+    <defaultPath>./</defaultPath>
+    <!-- Name of the log file.  Should include extension. Recommended extension is CSV -->
+    <logFileName>distanceLog.csv</logFileName>
   </debug>
 
    <video>

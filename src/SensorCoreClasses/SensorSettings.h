@@ -114,11 +114,11 @@ typedef struct CameraSettings
 	class SensorSettings
 	{
 	public:
-		static SensorSettings* InitSettings(const std::string sSettingsFileName = std::string(""));
+		static SensorSettings* InitSettings(const std::string sInSettingsFileName = std::string(""));
 		static SensorSettings* GetGlobalSettings();
 
 		// Constructor
-		SensorSettings(const std::string sSettingsFileName = std::string(""));
+		SensorSettings(const std::string sInSettingsFileName = std::string(""));
 		bool ReadSettings();
 		boost::property_tree::ptree& GetPropTree() { return (propTree); };
 
@@ -145,12 +145,20 @@ typedef struct CameraSettings
 		static void PutColor(boost::property_tree::ptree& colorNode, uint8_t red, uint8_t green, uint8_t blue);
 
 		static void PutChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
+
+		bool SetLogAndDebugFilePath(std::string newFilePath);
+		std::string GetLogAndDebugFilePath();
+		bool SetLogFileName(std::string newFileName);
+		std::string GetLogFileName();
+
 		/** \brief Stores the current receiver calibration settings
 			* \return true if storage processe dwithout error. False in case of a storage error.
 		  */
 		  //bool SensorSettings::StoreReceiverCalibration();
 		  //Linux
 		bool StoreReceiverCalibration();
+
+
 
 	public:
 		// Receiver configuration
@@ -166,10 +174,13 @@ typedef struct CameraSettings
 		// Debug
 		bool bWriteDebugFile;
 		bool bWriteLogFile;
+		std::string sDebugFileName;
+		std::string sLogFileName;
+		std::string sDebugAndLogFilePath;
 
 
 	protected:
-		std::string sFileName;
+		std::string sSettingsFileName;
 		static SensorSettings* globalSettings;
 		// Property tree contains all the information from the configuration file
 		boost::property_tree::ptree propTree;
