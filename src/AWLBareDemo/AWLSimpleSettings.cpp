@@ -1,4 +1,4 @@
-/* AWLSettings .cpp */
+/* AWLSimpleSettings .cpp */
 /****************************************************************************
 **
 ** Copyright (C) 2014-2019 Phantom Intelligence Inc.
@@ -37,7 +37,7 @@
 **
 ****************************************************************************/
 
-#include "AWLSettings.h"
+#include "AWLSimpleSettings.h"
 #include <string>
 
 #include <boost/property_tree/ptree.hpp>
@@ -51,11 +51,11 @@ const std::string sDefaultAWLSettingsFileName("AWLSimpleDemoSettings.xml");
 
 
 
-AWLSettings::AWLSettings(const std::string sInSettingsFileName) :
-	SensorSettings(sSettingsFileName)
+AWLSimpleSettings::AWLSimpleSettings(const std::string sInSettingsFileName) :
+	SensorSettings(sInSettingsFileName)
 	
 {
-	if (sSettingsFileName.empty())
+	if (sInSettingsFileName.empty())
 	{
 		sSettingsFileName.assign(sDefaultAWLSettingsFileName);
 	}
@@ -65,25 +65,25 @@ AWLSettings::AWLSettings(const std::string sInSettingsFileName) :
 	}
 }
 
-AWLSettings* AWLSettings::InitSettings(const std::string sInSettingsFileName)
+AWLSimpleSettings* AWLSimpleSettings::InitSettings(const std::string sInSettingsFileName)
 {
 	if (globalSettings)
 	{
 		delete globalSettings;
 	}
 
-	globalSettings = (SensorSettings*) new AWLSettings(sInSettingsFileName);
-	return((AWLSettings*)globalSettings);
+	globalSettings = (SensorSettings*) new AWLSimpleSettings(sInSettingsFileName);
+	return((AWLSimpleSettings*)globalSettings);
 }
 
-AWLSettings* AWLSettings::GetGlobalSettings()
+AWLSimpleSettings* AWLSimpleSettings::GetGlobalSettings()
 {
-	return((AWLSettings*)globalSettings);
+	return((AWLSimpleSettings*)globalSettings);
 }
 
 
 
-bool AWLSettings::ReadSettings()
+bool AWLSimpleSettings::ReadSettings()
 {
 	return (SensorSettings::ReadSettings());
 }

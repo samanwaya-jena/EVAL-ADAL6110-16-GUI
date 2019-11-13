@@ -44,7 +44,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 
-#include "AWLSettings.h" // Application specific
+#include "AWLSimpleSettings.h" // Application specific
 #include "SensorCoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
@@ -65,7 +65,7 @@ AWLSimpleDemo::AWLSimpleDemo()
 {
 
 	// Read the settigs from the configuration file
-	AWLSettings *globalSettings = AWLSettings::InitSettings();
+	AWLSimpleSettings *globalSettings = AWLSimpleSettings::InitSettings();
 	globalSettings->ReadSettings();
 
 	// Build a reference coodinate system from the settings
@@ -140,7 +140,7 @@ bool AWLSimpleDemo::DoOneLoopIteration()
 
 bool AWLSimpleDemo::GetLatestDetections(Detection::Vector &detectionData)
 {
-	AWLSettings *settings = AWLSettings::GetGlobalSettings();
+	AWLSimpleSettings *settings = AWLSimpleSettings::GetGlobalSettings();
 	bool bNew = false;
 
 	ReceiverPostProcessor postProcessor;

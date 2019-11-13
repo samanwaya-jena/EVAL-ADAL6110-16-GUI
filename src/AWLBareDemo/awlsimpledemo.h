@@ -42,7 +42,7 @@
 #include <boost/container/vector.hpp>
 
 
-#include "AWLSettings.h"
+#include "AWLSimpleSettings.h"
 #include "ReceiverCapture.h"
 
 namespace awl

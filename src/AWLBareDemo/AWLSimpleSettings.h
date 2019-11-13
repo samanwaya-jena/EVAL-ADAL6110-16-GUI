@@ -35,8 +35,8 @@
 ** $PHANTOM_END_LICENSE$
 **
 ****************************************************************************/
-#ifndef _AWLSettings__H
-#define _AWLSettings__H
+#ifndef _AWLSimpleSettings__H
+#define _AWLSimpleSettings__H
 
 #include <string>
 #include <stdint.h>
@@ -54,17 +54,17 @@ namespace awl
 {
 
 
-	class AWLSettings : public SensorCoreScope::SensorSettings
+	class AWLSimpleSettings : public SensorCoreScope::SensorSettings
 	{
 	public:
-		static AWLSettings * InitSettings(const std::string sInSettingsFileName = std::string(""));
-		static AWLSettings* GetGlobalSettings();
+		static AWLSimpleSettings * InitSettings(const std::string sInSettingsFileName = std::string(""));
+		static AWLSimpleSettings* GetGlobalSettings();
 
 		// Constructor
-		AWLSettings(const std::string sInSettingsFileName = std::string(""));
+		AWLSimpleSettings(const std::string sInSettingsFileName = std::string(""));
 		bool ReadSettings();
 	};
 
 } // namespace AWL          
 
-#endif 
+#endif  //_AWLSimpleSettings__H
