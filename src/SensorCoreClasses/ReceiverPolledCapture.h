@@ -81,6 +81,22 @@ protected:
   virtual int ReadBytes(uint8_t * pData, int num) = 0;
   virtual int WriteBytes(uint8_t * pData, int num) = 0;
 
+
+  /** \brief Returns the CellID, given a channelID
+   * \param[in] channelID the input "channel"
+   * \return ChannelID, indicating unique pixel position in the detector array
+   * \remarks For the ReceiverPolledCapture, channels may be out of order on receive for some messages.
+   */
+  virtual CellID GetCellIDFromChannel(int inChannelID);
+
+  /** \brief Returns the CellID, given a channelID
+  * \param[in] channelID the input "channel"
+  * \return ChannelID, indicating unique pixel position in the detector array
+  * \remarks For the PolledCapture, channels may be out of order on receive for some meesage.
+ */
+
+  virtual int GetChannelIDFromCell(CellID inCellID);
+
   /** \brief Reads the configuration proerties from the configuration file
 	* \param[in] propTree the boost propertyTree created from reading the configuration file.
 	* \returns Returns true otherwise.
@@ -89,6 +105,8 @@ protected:
   virtual bool ReadConfigFromPropTree(boost::property_tree::ptree& propTree);
   void LogWaveform(size_t cycle);
 
+ 
+	void ProcessRaw(uint8_t* rawData);
 
 // Protected variables
 protected:

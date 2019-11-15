@@ -2250,7 +2250,8 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 
 #if 1
 	QString aboutText= 
-		"<p>CuteDemo: LiDAR Demo Application.</p>"
+		"<p>CuteDemo: LiDAR Demo Application.<br>"
+		"Version 1.4.5</p>"
 		"<p>"
 		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
 		"<a href = \"https://www.phantomintelligence.com/\"style=\"color: gray;\">https://www.phantomintelligence.com/</a></p>"

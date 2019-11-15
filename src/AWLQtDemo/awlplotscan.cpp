@@ -1,5 +1,5 @@
 
-/* Fov_2DScan.cpp */
+/* awlplotscan.cpp */
 /****************************************************************************
 **
 ** Copyright (C) 2014-2019 Phantom Intelligence Inc.
@@ -269,6 +269,10 @@ void AWLPlotScan::plotAScans(QPainter* p)
   float maxRange = 0.0F;
   float fAscanHeight = float(height()) / (m_nbrCh + 1);
 
+  // Text formatting info
+  int lineSpacing = p->fontMetrics().lineSpacing();
+  int leading = p->fontMetrics().leading();
+
   if (m_maxRange)
   {
     maxRange = m_maxRange;
@@ -278,7 +282,7 @@ void AWLPlotScan::plotAScans(QPainter* p)
     i = 0;
     BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
     {
-      if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->channelID))
+      if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->cellID.column))
       {
         float minV, maxV, meanV;
 
@@ -306,14 +310,15 @@ void AWLPlotScan::plotAScans(QPainter* p)
   i = 0;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-    if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->channelID))
+    if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->cellID.column))
     {
       PlotAScan(p, aScan, fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, maxRange);
 
       p->setBrush(QBrush(rgbRulerMed));
       p->setPen(QPen(rgbRulerText));
-      p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1), "Ch " + QString::number(aScan->receiverID + 1) + "." + QString::number(aScan->channelID + 1));
-      p->drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
+	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) - (leading/2) - 1, "Rcv " + QString::number(aScan->receiverID + 1) + " Col " + QString::number(aScan->cellID.column));
+	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) + lineSpacing - (leading/2) -1, "Channel " + QString::number(aScan->channelID));
+	  p->drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
 
       ++chIdx;
     }

@@ -47,6 +47,8 @@
 
 #include "SensorCoreClassesGlobal.h"
 #include "CoordinateSystem.h"
+#include "DetectionStruct.h"
+
 
 SENSORCORE_BEGIN_NAMESPACE
 
@@ -98,6 +100,19 @@ typedef union
 	} bitFieldData;;
 } ChannelMask, AlertChannelMask;
 
+/**\brief A CellID is a unique identifier of a "pixel" position (column, row) within a a receiver array.
+*/
+
+class CellID
+{
+public:
+	CellID(int inColumn, int inRow) : column(inColumn), row(inRow) {};
+	CellID() : column(0), row(0) {};
+
+public:
+	int column;
+	int row;
+};
 
 /** \brief The Alert class defines alert conditions.
 */
@@ -262,10 +277,12 @@ public:
     typedef boost::shared_ptr<AScan> ConstPtr;
 	typedef boost::container::vector<AScan::Ptr> Vector;
 public:
-	AScan(int inReceiverID, int inChannelID)
+	AScan(int inReceiverID, CellID inCellID, int inChannelID)
 	{
 		receiverID = inReceiverID;
 		channelID = inChannelID;
+		cellID = inCellID;
+
 		rawProvider = rawFromNothing;
 		sampleOffset = 0;
 		sampleCount = 0;
@@ -287,6 +304,7 @@ public:
 	int receiverID;
 	/** \brief channel ID of the channel where detection origins from */
 	int channelID;
+	CellID cellID;
 
 	RawProvider rawProvider;
 
@@ -395,8 +413,8 @@ public:
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
 	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
 
-	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector, int receiverID, int channelID);
-	bool FindAScan(AScan::Vector &detectionVector, int inReceiverID, int inChannelID, AScan::Ptr &outAScan);
+	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector,  int receiverID, CellID inCellID, int channelID);
+	bool FindAScan(AScan::Vector &detectionVector, int inReceiverID, CellID inCellID, AScan::Ptr &outAScan);
 
 public:
 	int receiverID;

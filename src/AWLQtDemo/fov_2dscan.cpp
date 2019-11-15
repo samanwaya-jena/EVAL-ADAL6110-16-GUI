@@ -306,7 +306,7 @@ void FOV_2DScan::createAction()
 	colorCodeDistanceAction = new QAction("Distances", this);
 	colorCodeVelocityAction = new QAction("Velocity", this);
 	colorCodeIntensityAction = new QAction("Intensity/Threat", this);
-	colorCodeChannelAction = new QAction("Channel color", this);
+	colorCodeChannelAction = new QAction("Cell color", this);
 	colorCodeAlertAction = new QAction("Threat Level", this);
 	
 	colorCodeDistanceAction->setCheckable(true);
@@ -1719,7 +1719,7 @@ void FOV_2DScan::ShowContextMenu(const QPoint& pos) // this is a slot
 
 	QMenu mainMenu;
 	//QMenu* menuMergeDetection = mainMenu.addMenu("Merge Detection Mode");
-	QMenu* menuMergeDisplay = mainMenu.addMenu("Merge Channels");
+	QMenu* menuMergeDisplay = mainMenu.addMenu("Merge Cells");
 	QMenu* menuMeasureMode = mainMenu.addMenu("Distance calculation");
 	QMenu* menuColorCode = mainMenu.addMenu("Distance vs velocity");
 	QMenu* menuDistanceDisplayMode = mainMenu.addMenu("Distance display");

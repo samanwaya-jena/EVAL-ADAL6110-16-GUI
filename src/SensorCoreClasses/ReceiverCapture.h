@@ -391,6 +391,7 @@ typedef struct AlgorithmSet
 }
 AlgorithmSet;
 
+
 /** \brief ReceiverCapture class is an abstract class for all classes used to acquire data from physical LIDAR units.
   *        The ReceiverCapture acquires LIDAR sensor data in SensorFrames.
   *        It buffers up a few frames to facilitate processing afterwards.
@@ -806,6 +807,26 @@ public:
 
 	*/
 	AlgorithmDescription * FindAlgoDescriptionByID(AlgorithmSet &inAlgoSet, int inAlgoID);
+
+	/** \brief Returns the CellID, given a channelID 
+	* \param[in] channelID the input "channel"
+	* \return ChannelID, indicating unique pixel position in the detector array
+	* \remarks Simple receptors qill ahave a one to one relationship between channelID and CellID.
+	*          Some receivers have out of order cell adressing. cellID may not correspond to teh physical position of the pixel.
+	*          Basic ReceiverCapture assumes  linear relationship matrix using rowQty and columnQty.
+	*/
+	virtual CellID GetCellIDFromChannel(int inChannelID);
+
+	/** \brief Returns the CellID, given a channelID
+	* \param[in] channelID the input "channel"
+	* \return ChannelID, indicating unique pixel position in the detector array
+	* \remarks Simple receptors qill ahave a one to one relationship between channelID and CellID.
+	*          Some receivers have out of order cell adressing. cellID may not correspond to teh physical position of the pixel.
+	*          Basic ReceiverCapture assumes  linear relationship matrix using rowQty and columnQty.
+	*/
+	
+	virtual int GetChannelIDFromCell(CellID inCellID);
+
 
 
 	// public variables

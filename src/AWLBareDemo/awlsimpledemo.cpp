@@ -195,7 +195,7 @@ bool AWLSimpleDemo::OutputDetections(const Detection::Vector &detectionData)
 
 		// For mat the detection information
 		char detectionString[255];
-		sprintf_s(detectionString, 255, "Receiver %02d;Channel %02d;Distance from sensor %02.2f;Distance from car %02.2f", detection->receiverID, detection->channelID, detection->relativeToSensorCart.cartesian.x,  detection->relativeToVehicleCart.cartesian.x);
+		sprintf_s(detectionString, 255, "Receiver %02d;Channel column, row %02d %d ;Distance from sensor %02.2f;Distance from car %02.2f", detection->receiverID, detection->channelID, detection->relativeToSensorCart.cartesian.x,  detection->relativeToVehicleCart.cartesian.x);
 
 		timeStr += detectionString;
 		timeStr += "\n";

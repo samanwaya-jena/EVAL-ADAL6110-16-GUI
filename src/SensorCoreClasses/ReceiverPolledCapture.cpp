@@ -201,7 +201,7 @@ bool ReceiverPolledCapture::DoOneLoop()
 
 			}
 
-		ProcessRaw(rawFromLibUSB, (uint8_t*)dataFifo->AcqFifo, CHANNEL_QTY * WAVEFORM_POINT_QTY * sizeof(short));
+		ProcessRaw((uint8_t*)dataFifo->AcqFifo);
 	}
 
 	if (messageCount)
@@ -361,7 +361,11 @@ void ReceiverPolledCapture::LogWaveform(size_t cycle)
 
 	for (int ch = 0; ch < CHANNEL_QTY; ch++)
 	{
-		std::string theWaveString(", ,Wave,,Channel,");
+		CellID cellID = GetCellIDFromChannel(ch);
+		std::string theWaveString(", ,Wave, ,");
+		theWaveString += std::to_string(receiverID);
+		theWaveString += std::string(",Channel,");
+		theWaveString += std::to_string(cellID.row) + "," + std::to_string(cellID.column) + ",";
 		theWaveString += std::to_string(ch) + ", ,";
 
 		short* pData = &dataFifo[cycle].AcqFifo[ch * WAVEFORM_POINT_QTY];
@@ -377,7 +381,8 @@ void ReceiverPolledCapture::LogWaveform(size_t cycle)
 	}
 
 	short* pFooter = &dataFifo[cycle].footer[0];
-	std::string theFooterString(", ,Footer,,,,,");
+	std::string theFooterString(", ,Footer,,");
+	theFooterString += std::to_string(receiverID) + ",,,,";
 	for (size_t i = 0; i < WAVEFORM_FOOTER_SIZE; i++)
 	{
 		if (i == WAVEFORM_FOOTER_SIZE - 1) {
@@ -407,4 +412,109 @@ bool ReceiverPolledCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 	xmitsFooterData =  receiverNode.get<bool>("xmitsFooterData", true);
 
 	return(true);
+}
+
+int channelToColumnArray[16] = {
+  14,
+  12,
+  10,
+  8,
+  6,
+  4,
+  2,
+  0,
+  1,
+  3,
+  5,
+  7,
+  9,
+  11,
+  13,
+  15
+};
+
+int columnToChannelArray[]={
+7,
+8,
+6,
+9,
+5,
+10,
+4,
+11,
+3,
+12,
+2,
+13,
+1,
+14,
+0
+};
+
+
+
+CellID ReceiverPolledCapture::GetCellIDFromChannel(int inChannelID)
+{
+	int row = 0;
+	int column = channelToColumnArray[inChannelID];
+	return (CellID(column, row));
+}
+
+int ReceiverPolledCapture::GetChannelIDFromCell(CellID inCellID)
+{
+	for (int i = 0; i < receiverChannelQty; i++)
+	{
+		if (channelToColumnArray[i] == inCellID.column) return (i);
+	}
+
+	return (0);
+}
+
+
+void ReceiverPolledCapture::ProcessRaw(uint8_t* rawData)
+{
+	size_t sampleOffset = 0;
+	size_t sampleDrop = 0;
+	size_t sampleSize = 1;
+	bool sampleSigned = false;
+
+	uint16_t* rawData16;
+
+	rawData16 = (uint16_t*)rawData;
+
+	++m_nbrRawCumul;
+
+	sampleOffset = 0;
+	sampleSize = 2;
+	sampleSigned = true;
+	sampleCount = 100;
+	sampleDrop = 1;
+
+
+	for (int channel = 0; channel < 16; channel++)
+	{
+		if (!rawBuffers[channel])
+			rawBuffers[channel] = new uint8_t[maxRawBufferSize];
+
+		rawBufferCount++;
+
+
+		CellID cellID = GetCellIDFromChannel(channel);
+		memcpy(rawBuffers[channel], rawData + (channel * (100 * 2)), 100 * 2);
+	}
+
+	boost::mutex::scoped_lock rawLock(GetMutex());
+
+	for (int column = 0; column < 16; column++)
+	{
+		CellID cellID(column, 0);
+		int channelID = GetChannelIDFromCell(cellID);
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, channelID);
+		aScan->samples = rawBuffers[channelID];
+		aScan->sampleSize = sampleSize;
+		aScan->rawProvider = RawProvider::rawFromLibUSB;
+		aScan->sampleOffset = sampleOffset;
+		aScan->sampleCount = sampleCount - sampleDrop;
+		aScan->sampleSigned = sampleSigned;
+	}
 }

@@ -168,14 +168,14 @@ bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChanne
 	return(false);
 }
 
-AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector, int inReceiverID, int channelID)
+AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector,  int inReceiverID, CellID inCellID, int channelID)
 
 {
 	AScan::Ptr aScan;
-	bool bExists = FindAScan(aScanVector, inReceiverID, channelID, aScan);
+	bool bExists = FindAScan(aScanVector, inReceiverID, inCellID,  aScan);
 	if (!bExists) 
 	{
-		aScan = AScan::Ptr(new AScan(inReceiverID, channelID));
+		aScan = AScan::Ptr(new AScan(inReceiverID, inCellID, channelID));
 		aScanVector.push_back(aScan);
 	}
 
@@ -243,13 +243,13 @@ float AScan::GetScaleFactorForRange(int range)
 	else return 0.0;
 }
 
-bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inReceiverID, int inChannelID, AScan::Ptr &outAScan)
+bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inReceiverID, CellID inCellID, AScan::Ptr &outAScan)
 {
 	AScan::Vector::iterator  aScanIterator = aScanVector.begin();
 	while (aScanIterator != aScanVector.end()) 
 	{
 		AScan::Ptr aScan = *aScanIterator;
-		if (aScan->receiverID == inReceiverID && aScan->channelID == inChannelID)
+		if (aScan->receiverID == inReceiverID && aScan->cellID.column == inCellID.column && aScan->cellID.row == inCellID.row)
 		{
 			outAScan = aScan;
 			return(true);

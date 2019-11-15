@@ -145,8 +145,6 @@ public:
       */
 	void ParseMessage(ReceiverCANMessage &inMsg);
 
-	void ProcessRaw(RawProvider provider, uint8_t *rawData, size_t size);
-
 		/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.
       * \return true if success.  false on error

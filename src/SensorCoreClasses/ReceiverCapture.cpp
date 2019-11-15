@@ -542,6 +542,22 @@ AlgorithmParameter * ReceiverCapture::FindTrackerParamByAddress(int inTrackerID,
 	return(NULL);
 }
 
+
+CellID ReceiverCapture::GetCellIDFromChannel(int inChannelID)
+{
+	int row = inChannelID/receiverColumnQty;
+	int column = inChannelID % receiverRowQty;
+	return (CellID(column, row));
+}
+
+int ReceiverCapture::GetChannelIDFromCell(CellID inCellID)
+{
+	int channelID = inCellID.row * receiverColumnQty;
+	channelID += inCellID.column;
+
+	return (channelID);
+}
+
 bool ReceiverCapture::BeginDistanceLog()
 
 {
@@ -557,13 +573,13 @@ bool ReceiverCapture::BeginDistanceLog()
 		OpenLogFile(*logFilePtr, true);
 	}
 
-	LogFilePrintf(*logFilePtr, ",Comment,Type, Track ID, Channel, ChannelID,Type Specific");
+	LogFilePrintf(*logFilePtr, ",Comment,Type, ReceiverID, Track ID, Channel, RowID, ColumnID, ChannelID,Type Specific");
 	LogFilePrintf(*logFilePtr, ",,Start distance log");
-	// Title Line
-	LogFilePrintf(*logFilePtr, ",Track Description:,Track,trackID,Channel,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
-	LogFilePrintf(*logFilePtr, ",Distance Description:,Dist,_,__,Channel,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
-	LogFilePrintf(*logFilePtr, ",Footer Description:,Footer,_,_,_,_,FooterData");
-	LogFilePrintf(*logFilePtr, ",Wave Description: ,Wave,_,_,Channel,ChannelID,point0,point1,point3,etc");
+	// Title Line. The title lines dscribe the column content for each type of message.
+	LogFilePrintf(*logFilePtr, ",Track Description:,Track,trackID,ReceiverID,Channel,RowID, ColumnID,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
+	LogFilePrintf(*logFilePtr, ",Distance Description:,Dist,_,ReceiverID,Channel,RowID,ColumnID,ChannelID,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
+	LogFilePrintf(*logFilePtr, ",Footer Description:,Footer,_,ReceiverID,_,_,_,_,FooterData");
+	LogFilePrintf(*logFilePtr, ",Wave Description:,Wave,_,ReceiverID,Channel,RowID, ColumnID,ChannelID,point0,point1,point3,etc");
 
 	logFileMutex.unlock();
 
@@ -613,10 +629,18 @@ void ReceiverCapture::LogTracks(SensorFrame::Ptr sourceFrame)
 		Track::Ptr track = *trackIterator;
 		if (track->IsComplete()) 
 		{
+			// Track messages are ordered per voxel. trackMainChannel corresponds to column
+
+			CellID cellID(track->trackMainChannel % receiverColumnQty, track->trackMainChannel / receiverColumnQty);
+			int channelID = GetChannelIDFromCell(cellID);
+
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;intensity,speed;acceleration;probability;timeToCollision);
-			LogFilePrintf(*logFilePtr, ", ,Track,%d,Channel,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
+			LogFilePrintf(*logFilePtr, ", ,Track,%d,%d,Channel,%d,%d,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 				track->trackID,
-				track->trackMainChannel,
+				receiverID,
+				cellID.row,
+				cellID.column,
+				channelID,
 				targetHintDistance,
 				targetHintAngle,
 				track->distance,
@@ -658,8 +682,17 @@ void ReceiverCapture::LogDistances(SensorFrame::Ptr sourceFrame)
 	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
 		Detection::Ptr detection = *detectionIterator;
-		LogFilePrintf(*logFilePtr, " , ,Dist,,Channel,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
-			detection->channelID, 
+		// Track messages are ordered per voxel. trackMainChannel corresponds to column
+
+		CellID cellID(detection->channelID % receiverColumnQty, detection->channelID / receiverColumnQty);
+		int channelID = GetChannelIDFromCell(cellID);
+
+
+		LogFilePrintf(*logFilePtr, " , ,Dist,,%d,Channel,%d,%d,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
+			receiverID,
+			cellID.row,
+			cellID.column,
+			channelID, 
 			detection->detectionID,
 			targetHintDistance,
 			targetHintAngle,

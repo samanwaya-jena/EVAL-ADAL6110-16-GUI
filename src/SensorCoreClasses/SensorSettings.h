@@ -60,7 +60,7 @@ SENSORCORE_BEGIN_NAMESPACE
 		float fovHeight;
 
 		float maxRange;
-    float maxAscanRange;
+		float maxAscanRange;
 		uint8_t displayColorRed;
 		uint8_t displayColorGreen;
 		uint8_t displayColorBlue;
