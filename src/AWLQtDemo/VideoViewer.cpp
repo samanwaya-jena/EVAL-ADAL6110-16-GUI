@@ -680,7 +680,6 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 
 	// Channel description pointer
 	int columns = globalSettings->receiverSettings[receiverID].receiverColumns;
-	int rows = globalSettings->receiverSettings[receiverID].receiverRows;
 	int voxelIndex = (detection->cellID.row * columns) + detection->cellID.column;
 	VoxelConfig *voxel= &globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex];
 
