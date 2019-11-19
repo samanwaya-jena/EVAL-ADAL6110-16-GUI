@@ -36,6 +36,8 @@
   </qresource>
   <qresource prefix="Logos">
     <file>Images/Logos/AWLQtDemo.ico</file>
+    <file>Images/Logos/ADIQtDemo.ico</file>
+    <file>Images/Logos/PhantomQtDemo.ico</file>
     <file>Images/Logos/Phantom-Black-logo.png</file>
     <file>Images/Logos/Sungwoo.ico</file>
     <file>Images/Logos/SungwooLogoIconTransparent.png</file>

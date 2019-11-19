@@ -249,12 +249,16 @@ endfunction()
 #############################################################################################
 ###    Version and Installation settings    #################################################
 #############################################################################################
+set(${PROJECT_NAME}_VERSION_MAJOR_CACHE "1" CACHE STRING "Major Version Number - First digit of version number")
+set(${PROJECT_NAME}_VERSION_MINOR_CACHE "4" CACHE STRING "Minor Version Number - Second digit of version number")
+set(${PROJECT_NAME}_VERSION_PATCH_CACHE "6" CACHE STRING "Patch Version Number - Third digit of version number")
+set(${PROJECT_NAME}_VERSION_MAJOR ${${PROJECT_NAME}_VERSION_MAJOR_CACHE})
+set(${PROJECT_NAME}_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR_CACHE})
+set(${PROJECT_NAME}_VERSION_PATCH ${${PROJECT_NAME}_VERSION_PATCH_CACHE})
 
-set(${PROJECT_NAME}_MAJOR_VERSION 1)
-set(${PROJECT_NAME}_MINOR_VERSION 4)
-set(${PROJECT_NAME}_PATCH_VERSION 5)
 set(${PROJECT_NAME}_VERSION
-        ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_PATCH_VERSION})
+        ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH})
+
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
@@ -855,9 +859,13 @@ endif()
 #############################################################################################
 #set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 #set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Qt Demo application. Made with <3 at Phantom")
+
+set(PACKAGE_VENDOR_NAME "Phantom Intelligence" CACHE STRING "Company Making the install")
+set(PACKAGE_VENDOR_PATH "Phantom Intelligence" CACHE STRING "Company Installation Path")
+
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Qt Demo application. Made with <3 at ${PACKAGE_VENDOR_NAME}")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_VENDOR "Phantom Intelligence Inc.")
+set(CPACK_PACKAGE_VENDOR "${PACKAGE_VENDOR_NAME}")
 set(CPACK_PACKAGE_VERSION "${${PROJECT_NAME}_VERSION}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${${PROJECT_NAME}_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${${PROJECT_NAME}_VERSION_MINOR}")
@@ -874,11 +882,12 @@ if(WIN32)
     #set(CPACK_WIX_UPGRADE_GUID "") # TODO: Set those with actual values
 
     #TODO : check if this effectively changes the "C:\Program Files\CuteDemo" for "C:\Program Files\PhantomIntelligence\CuteDemo"
-    #set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "PhantomIntelligence/CuteDemo")
+    #set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "${PACKAGE_VENDOR_PATH}/CuteDemo")
     set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "CuteDemo")
     set(CPACK_PACKAGE_FILE_NAME
         "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}-${TIMESTAMP_VALUE}")
 endif()
+
 
 include(CPack)
 # CPack Modules to investigate

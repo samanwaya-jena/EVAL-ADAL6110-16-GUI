@@ -111,8 +111,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	//setAutoFillBackground( true );
 
 	// Set the basic paths
-	QCoreApplication::setOrganizationName("Phantom Intelligence");
-	QCoreApplication::setApplicationName("Phantom Intelligence Lidar Demo");
+//	QCoreApplication::setOrganizationName("Phantom Intelligence");
+//	QCoreApplication::setApplicationName("Phantom Intelligence Lidar Demo");	
 
 	// Read the settigs from the configuration file
 	//
@@ -2242,10 +2242,10 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
 
-#if 1
-	QString aboutText= 
-		"<p>CuteDemo: LiDAR Demo Application.<br>"
-		"Version 1.4.5</p>"
+	// allocate a block of memory for the version info
+	QString sApplicationVersion = QApplication::applicationVersion();
+
+	QString aboutText = QString("<p>Cute Demo: LiDAR demo application<br>Version ") + QApplication::applicationVersion() + "</p>"+
 		"<p>"
 		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
 		"<a href = \"https://www.phantomintelligence.com/\"style=\"color: gray;\">https://www.phantomintelligence.com/</a></p>"
@@ -2261,7 +2261,7 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 		"<p>"
 		"QT portion of the application is developed under the QT Open Source License<br>"
 		"(a LGPLV3 license).The Qt Toolkit is Copyright(C) 2017 The Qt Company Ltd.<br>"
-		"QT License is in subdirectory &quot;Qt open Sourcet&quot;.<br>"
+		"QT License is in subdirectory &quot;Qt open Source&quot;.<br>"
 		"<a href = \"https://www.qt.io/\"style=\"color: gray;\">https://www.qt.io/</a></p>"
 		"<p>"
 		"OpenCV license is in subdirectory &quot;OpenCV&quot;.OpenCV also makes use of FFmpeg, under a separate license also in subdirectory &quot;OpenCV&quot;.<br>"
@@ -2274,25 +2274,6 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 		"<a href = \"https://libusb.info/\"style=\"color: gray;\">https://libusb.info/</a></p>"
 		"< p >"
 		"Microsoft Windows Redistributables are subject to the license terms outlined in &quot;Microsoft Visual C++2015 Redistributable (x86) 14.23.27820&quot; </p>";
-#else
-	QString aboutText =
-		"<p>CuteDemo: LiDAR Demo Application.</p>"
-		"<p>"
-		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
-		"<a href = \"https://www.phantomintelligence.com/en/\"style=\"color: gray;\">https://www.phantomintelligence.com/en/</a></p>"
-		"< p >"
-		"Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);<br>"
-		"you may not use this file except in compliance with the License.</p>"
-		"<p>"
-		"You may obtain a copy of the License at<br>"
-		"<a href = \"http://www.apache.org/licenses/LICENSE-2.0\"style=\"color: gray;\">http://www.apache.org/licenses/LICENSE-2.0</a></p>"
-		"< p >"
-		"Unless required by applicable law or agreed to in writing, software<br>"
-		"distributed under the License is distributed on an &quot;AS IS&quot; BASIS,<br>"
-		"WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<br>"
-		"See the License for the specific language governing permissions and<br>"
-		"limitations under the License.</p>";
-#endif
 
 	msgBox.setText(aboutText);
 	msgBox.exec();

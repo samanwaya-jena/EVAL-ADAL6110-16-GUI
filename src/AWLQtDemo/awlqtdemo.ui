@@ -402,7 +402,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>Images/Logos/ADIQtDemo.ico</normaloff>Images/Logos/ADIQtDemo.ico</iconset>
+    <normaloff>Images/Logos/AWLQtDemo.ico</normaloff>Images/Logos/AWLQtDemo.ico</iconset>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
