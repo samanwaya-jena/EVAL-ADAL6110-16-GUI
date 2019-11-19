@@ -221,9 +221,9 @@ private:
 	bool isInRange(const SensorCoreScope::Detection::Ptr &detection1, const SensorCoreScope::Detection::Ptr &detection2 );
     void getColorFromDistance(float distance, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromVelocity(float velocity, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
-	void getColorFromIntensity(int channel, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromIntensity(int receiverID, CellID inCellID, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 	void getColorFromThreatLevel(SensorCoreScope::AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
-	void getColorFromChannel(int receiverID, int channelID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
+	void getColorFromChannel(int receiverID, CellID inCellID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor);
 
     void drawPalette(QPainter* p);
 

@@ -49,11 +49,11 @@
 SENSORCORE_USE_NAMESPACE
 
 
-ReceiverSimulatorCapture::ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+ReceiverSimulatorCapture::ReceiverSimulatorCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
+	ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 	const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO,
 	const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers) :
-ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset,
+ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inVoxelMask, inMessageMask, inRangeOffset,
 					   inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers)
 
 {
@@ -90,24 +90,24 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 		trackDistance += 0.0001f;
 		if (trackDistance > 10.0) trackDistance = 0.0;
 
-		for (uint16_t channel= 0; channel < 16; channel++)
+		for (uint16_t voxelIndex= 0; voxelIndex < 16; voxelIndex++)
 		{
 			for (uint16_t detection = 0; detection < 8; detection++)
 			{
 				// Only display even on even lines and odd on odd lines
-				size_t lineIndex = (channel / this->receiverColumnQty);
-				size_t lineQty = (GetChannelQty() / this->receiverColumnQty);  
-				if (lineIndex == (channel%lineQty)) 
+				size_t lineIndex = (voxelIndex / this->receiverColumnQty);
+				size_t lineQty = (GetVoxelQty() / this->receiverColumnQty);  
+				if (lineIndex == (voxelIndex%lineQty)) 
 				{
-					Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (channel * 8) + detection);
+					Track::Ptr track = acquisitionSequence->MakeUniqueTrack(currentFrame, (voxelIndex * 8) + detection);
 					track->firstTimeStamp = currentFrame->timeStamp;
 
 					track->timeStamp = currentFrame->timeStamp;
 					track->distance = (detection * 2) + trackDistance;
 					track->intensity = 1.00;
-					track->trackMainChannel = channel;
+					track->trackMainVoxel = voxelIndex;
 
-					track->trackChannels.wordData = 0x01 << (track->trackMainChannel % 8);
+					track->trackChannels.wordData = 0x01 << (track->trackMainVoxel % 8);
 					
 
 					track->velocity = 3;
@@ -131,7 +131,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 }
 
 
-bool ReceiverSimulatorCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
+bool ReceiverSimulatorCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/)
 
 {
 	return(true);

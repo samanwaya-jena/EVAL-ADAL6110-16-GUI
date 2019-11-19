@@ -53,9 +53,9 @@
 
 SENSORCORE_BEGIN_NAMESPACE
 
-	typedef struct ChannelConfig 
+	typedef struct VoxelConfig 
 	{
-		int channelIndex;
+		int voxelIndex;
 		float fovWidth;
 		float fovHeight;
 
@@ -65,9 +65,9 @@ SENSORCORE_BEGIN_NAMESPACE
 		uint8_t displayColorGreen;
 		uint8_t displayColorBlue;
 	}
-	ChannelConfig;
+	VoxelConfig;
 
-	typedef boost::container::vector<ChannelConfig> ChannelConfigVector;
+	typedef boost::container::vector<VoxelConfig> VoxelConfigVector;
 
 
 	typedef enum {
@@ -78,13 +78,16 @@ SENSORCORE_BEGIN_NAMESPACE
 
 	typedef struct ReceiverSettings
 	{
+
 	// Channel configuration
-	ChannelConfigVector channelsConfig;
+	int receiverRows;
+	int receiverColumns;
+	VoxelConfigVector voxelsConfig;
 
 	// Receiver
 	std::string sReceiverType;
 	std::string sReceiverRegisterSet;
-	std::string sReceiverChannelGeometry;
+	std::string sReceiverVoxelGeometry;
 
 
 	float displayedRangeMin;
@@ -134,8 +137,8 @@ typedef struct CameraSettings
 		static void GetColor(boost::property_tree::ptree& colorNodeNode, uint8_t& red, uint8_t& green, uint8_t& blue);
 		static void GetAlertConditions(boost::property_tree::ptree& alertNode, AlertCondition& alert);
 
-		static void GetChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
-		static void GetChannelGeometryArray(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
+		static void GetVoxelGeometry(boost::property_tree::ptree& voxelGeometryNode, ReceiverSettings* receiverPtr);
+		static void GetVoxelGeometryArray(boost::property_tree::ptree& voxelGeometryNode, ReceiverSettings* receiverPtr);
 
 
 		static void PutPosition(boost::property_tree::ptree& node, float forward, float left, float up);
@@ -144,7 +147,7 @@ typedef struct CameraSettings
 		static void PutGeometry(boost::property_tree::ptree& geometryNode, float forward, float left, float up, float pitch, float yaw, float roll);
 		static void PutColor(boost::property_tree::ptree& colorNode, uint8_t red, uint8_t green, uint8_t blue);
 
-		static void PutChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr);
+		static void PutChannelGeometry(boost::property_tree::ptree& voxelGeometryNode, ReceiverSettings* receiverPtr);
 
 		bool SetLogAndDebugFilePath(std::string newFilePath);
 		std::string GetLogAndDebugFilePath();

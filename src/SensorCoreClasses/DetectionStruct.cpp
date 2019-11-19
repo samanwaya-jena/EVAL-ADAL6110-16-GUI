@@ -78,7 +78,6 @@ FrameID	AcquisitionSequence::GetLastFrameID()
 
 bool AcquisitionSequence::FindTrack(SensorFrame::Ptr currentFrame, TrackID trackID, Track::Ptr &outTrack)
 {
-
 	Track::Vector::iterator  trackIterator = currentFrame->tracks.begin();
 	while (trackIterator != currentFrame->tracks.end()) 
 	{
@@ -125,10 +124,10 @@ bool AcquisitionSequence::FindSensorFrame(FrameID inFrameID, SensorFrame::Ptr &o
 }
 
 
-SensorFrame::SensorFrame(int inReceiverID, FrameID inFrameID, int inChannelQty) :
+SensorFrame::SensorFrame(int inReceiverID, FrameID inFrameID, int inVoxelQty) :
 receiverID(inReceiverID),
 frameID(inFrameID),
-channelQty(inChannelQty),
+voxelQty(inVoxelQty),
 rawDetections(),
 tracks(),
 timeStamp(0)
@@ -136,27 +135,27 @@ timeStamp(0)
 {
 }
 
-Detection::Ptr SensorFrame::MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID)
+Detection::Ptr SensorFrame::MakeUniqueDetection(Detection::Vector &detectionVector, CellID inCellID, int inDetectionID)
 
 {
 	Detection::Ptr detection;
-	bool bExists = FindDetection(detectionVector, channelID, detectionID, detection);
+	bool bExists = FindDetection(detectionVector, inCellID, inDetectionID, detection);
 	if (!bExists) 
 	{
-		detection = Detection::Ptr(new Detection(receiverID, channelID, detectionID));
+		detection = Detection::Ptr(new Detection(receiverID, inCellID, inDetectionID));
 		detectionVector.push_back(detection);
 	}
 
 	return(detection);
 }
 
-bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection)
+bool SensorFrame::FindDetection(Detection::Vector &detectionVector, CellID inCellID, int inDetectionID, Detection::Ptr &outDetection)
 {
 	Detection::Vector::iterator  detectionIterator = detectionVector.begin();
 	while (detectionIterator != detectionVector.end()) 
 	{
 		Detection::Ptr detection = *detectionIterator;
-		if (detection->channelID == inChannelID && detection->detectionID == inDetectionID) 
+		if (detection->cellID.column ==  inCellID.column && detection->cellID.row == inCellID.row && detection->detectionID == inDetectionID) 
 		{
 			outDetection = detection;
 			return(true);
@@ -168,14 +167,14 @@ bool SensorFrame::FindDetection(Detection::Vector &detectionVector, int inChanne
 	return(false);
 }
 
-AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector,  int inReceiverID, CellID inCellID, int channelID)
+AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector,  int inReceiverID, CellID inCellID, int inChannelID)
 
 {
 	AScan::Ptr aScan;
 	bool bExists = FindAScan(aScanVector, inReceiverID, inCellID,  aScan);
 	if (!bExists) 
 	{
-		aScan = AScan::Ptr(new AScan(inReceiverID, inCellID, channelID));
+		aScan = AScan::Ptr(new AScan(inReceiverID, inCellID, inChannelID));
 		aScanVector.push_back(aScan);
 	}
 
@@ -264,7 +263,7 @@ bool SensorFrame::FindAScan(AScan::Vector &aScanVector, int inReceiverID, CellID
 
 Detection::Detection():
 receiverID(0),
-channelID(0), 
+cellID(0,0), 
 detectionID(0),
 distance(0.0),
 intensity(0.0),
@@ -286,9 +285,9 @@ relativeToWorldSpherical()
 
 
 
-Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID):
+Detection::Detection(int inReceiverID, CellID inCellID, int inDetectionID):
 receiverID(inReceiverID),
-channelID(inChannelID), 
+cellID(inCellID), 
 detectionID(inDetectionID),
 distance(0.0),
 intensity(0.0),
@@ -309,10 +308,10 @@ relativeToWorldSpherical()
 
 }
 
-Detection::Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
+Detection::Detection(int inReceiverID, CellID inCellID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
 		float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, AlertCondition::ThreatLevel inThreatLevel):
 receiverID(inReceiverID),
-channelID(inChannelID),
+cellID(inCellID),
 detectionID(inDetectionID),
 distance(inDistance),
 intensity(inIntensity),
@@ -353,14 +352,14 @@ part4Entered(false)
 
 {
 	trackChannels.wordData = 0;
-	trackMainChannel = 0;
+	trackMainVoxel = 0;
 }
 
 
-AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, AlertChannelMask inChannelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel):
+AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, AlertVoxelMask inVoxelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel):
 alertType(inAlertType),
 receiverID(inReceiverID),
-alertChannelMask(inChannelMask),
+alertVoxelMask(inVoxelMask),
 minRange(inMinRange),
 maxRange(inMaxRange),
 threatLevel(inThreatLevel)
@@ -372,86 +371,17 @@ AlertCondition::AlertCondition(AlertCondition &sourceCondition)
 	*this = sourceCondition;
 }
 
-AlertCondition::ThreatLevel AlertCondition::FindDetectionThreat(boost::shared_ptr<Detection> detection)
-{
-	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
-	
-	AlertCondition::Vector::iterator  alertIterator = globalAlertsVector.begin();
-	while (alertIterator != globalAlertsVector.end())
-	{
-		AlertCondition::Ptr alert = *alertIterator;
-		AlertChannelMask theChannelMask;
-		theChannelMask.wordData = 0x01 << (uint16_t)detection->channelID;
-
-		if (alert->receiverID == detection->receiverID && (alert->alertChannelMask.wordData & theChannelMask.wordData))
-		{
-			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
-			switch (alert->alertType) {
-			case eAlertDistanceWithin:
-				if (detection->relativeToSensorSpherical.rho >= alert->minRange && detection->relativeToSensorSpherical.rho <= alert->maxRange)
-				{
-					currentThreatLevel = alert->threatLevel;
-				}
-				break;
-			case eAlertDistanceOutside:
-				if (!(detection->relativeToSensorSpherical.rho >= alert->minRange && detection->relativeToSensorSpherical.rho <= alert->maxRange))
-				{
-					currentThreatLevel = alert->threatLevel;
-				}
-				break;
-			case eAlertSpeed:
-				if (detection->velocity >= alert->minRange && detection->velocity <= alert->maxRange)
-				{
-					currentThreatLevel = alert->threatLevel;
-				}
-				break;
-
-			case eAlertAcceleration:
-				if (detection->acceleration >= alert->minRange && detection->acceleration<= alert->maxRange)
-				{
-					currentThreatLevel = alert->threatLevel;
-				}
-				break;
-
-			case eAlertDecelerationToStop:
-				if (detection->decelerationToStop >= alert->minRange && detection->decelerationToStop <= alert->maxRange)
-				{
-					currentThreatLevel = alert->threatLevel;
-				}
-				break;
-
-			case eAlertTTC:
-				if (detection->timeToCollision >= alert->minRange && detection->timeToCollision <= alert->maxRange)
-				{
-					currentThreatLevel = alert->threatLevel;
-				}
-				break;
-
-			default:
-				break;
-			}
-
-			if (currentThreatLevel > maxThreatLevel) maxThreatLevel = currentThreatLevel;
-		}
-
-		alertIterator++;
-	}
-
-	return(maxThreatLevel);
-
-}
-
 AlertCondition::ThreatLevel AlertCondition::FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track)
 {
 	AlertCondition::ThreatLevel maxThreatLevel = AlertCondition::eThreatNone;
 
 	AlertCondition::Vector::iterator  alertIterator = globalAlertsVector.begin();
-	uint16_t trackMask = 1 << (uint16_t)track->trackMainChannel;
+	uint16_t trackMask = 1 << (uint16_t)track->trackMainVoxel;
 
 	while (alertIterator != globalAlertsVector.end())
 	{
 		AlertCondition::Ptr alert = *alertIterator;
-		if (alert->receiverID == inReceiverID  && (alert->alertChannelMask.wordData & trackMask))
+		if (alert->receiverID == inReceiverID  && (alert->alertVoxelMask.wordData & trackMask))
 		{
 			AlertCondition::ThreatLevel currentThreatLevel = AlertCondition::eThreatNone;
 			switch (alert->alertType) {

@@ -96,13 +96,13 @@ public:
 public:
 	/** \brief ReceiverCANCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
-	    * \param[in] inReceiverChannelQty number of channels in the receiver
+	    * \param[in] inReceiverVoxelQty number of voxels in the receiver
 	    * \param[in] inCANRate CAN Communitcations baud rate of the receiver
 		* \param[in] inReceiverColumns number of columns in receiver array
 		* \param[in] inReceiverRows number of rows  in the receiver array
 		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
 		* \param[in] inFrameRate frameRate of the receiver
-	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
+	    * \param[in] inVoxelMask  voxelMask indicating which voxels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
 		*                          Will automatically be added to any range received.
@@ -113,8 +113,8 @@ public:
 		* \param[in] inParametersTrackers default description of the Tracker parameters
       */
 
-	ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+	ReceiverCANCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers);
@@ -160,21 +160,21 @@ public:
 
 	/** \brief Starts the playback of the file specified in the last SetPlaybackFileName() call.
       * \param[in] frameRate playback frame rate. Ignored on some implementations of AWL.
-      * \param[in] channelMask mask for the channels that will be played back. that an empty channelMask is equivalent to StopPlayback().
+      * \param[in] voxelMask mask for the voxels that will be played back. that an empty voxelMask is equivalent to StopPlayback().
       * \return true if success.  false on error
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(ReceiverFrameRate frameRate, ChannelMask channelMask);
+	virtual bool StartPlayback(ReceiverFrameRate frameRate, VoxelMask voxelMask);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
-      * \param[in] channelMask mask for the recorded channels. that an empty channelMask is equivalent to StopRecord().
+      * \param[in] voxelMask mask for the recorded voxels. that an empty voxelMask is equivalent to StopRecord().
       * \return true if success.  false on error
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(ReceiverFrameRate frameRate, ChannelMask channelMask);
+	virtual bool StartRecord(ReceiverFrameRate frameRate, VoxelMask voxelMask);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -194,11 +194,11 @@ public:
 	/** \brief Starts the internal calibration of the system. 
       * \param[in] frameQty number of frames on which calibration is calculated
       * \param[in] beta beta parameter for the calibration
-      * \param[in] channelMask mask for the recorded channels. that an empty channelMask is equivalent to StopRecord().
+      * \param[in] voxelMask mask for the recorded voxelss. that an empty voxelMask is equivalent to StopRecord().
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask);
+	virtual bool StartCalibration(uint8_t frameQty, float beta, VoxelMask voxelMask);
 
 
 	/** \brief Issues the command to set the current algorithm in the sensor.
@@ -296,12 +296,12 @@ public:
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
-    * \param[in] channelMask mask for the analyzed channels.
+    * \param[in] voxelMask mask for the analyzed voxels.
     * \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetMessageFilters(ReceiverFrameRate frameRate, ChannelMask channelMask, MessageMask messageMask);
+	virtual bool SetMessageFilters(ReceiverFrameRate frameRate, VoxelMask voxelMask, MessageMask messageMask);
 
 
 	/** \brief Issues an asynchronous query command to get the current algorithm.
@@ -433,7 +433,7 @@ protected:
      */
 	void ParseChannelIntensity(ReceiverCANMessage &inMsg);
 
-	/** \brief Read the channel distance and intensity readings from CAN messages (60)
+	/** \brief Read the voxel distance and intensity readings from CAN messages (60)
 	* \param[in] inMsg   CAN message contents
 	* \remarks This message is sent in place of independent distance and intensity messages on sensors made after AWL
 	*/
@@ -613,11 +613,11 @@ protected:
 
 		size_t sampleCount;
 		int max_msg_id;
-		int max_channel;
+		int max_voxel;
 
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/
-		ChannelMask lastChannelMask;
+		VoxelMask lastVoxelMask;
 		uint16_t lastChannelID;
 #endif //FORCE_FRAME_RESYNC_PATCH
 

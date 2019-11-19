@@ -62,21 +62,21 @@ const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::
 #define ConvertIntensityToSNR(v) (((v)/2.0f) - 21.0f)
 
 
-ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
+					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers):
-ReceiverCapture(receiverID, inReceiverChannelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inChannelMask, inMessageMask, inRangeOffset, 
+ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inVoxelMask, inMessageMask, inRangeOffset, 
                 inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers),
 canRate(inCANRate),
-sampleCount(0), max_msg_id(0x80), max_channel(0),
+sampleCount(0), max_msg_id(0x80), max_voxel(0),
 closeCANReentryCount(0)
 
 
 {
 #ifdef FORCE_FRAME_RESYNC_PATCH
-	lastChannelMask.wordData = 0;
+	lastVoxelMask.wordData = 0;
 	lastChannelID = 0;
 #endif
 	yearOffset = defaultYearOffset;
@@ -94,12 +94,12 @@ closeCANReentryCount(0)
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCapture(receiverID, propTree),
-sampleCount(0), max_msg_id(0x80), max_channel(0),
+sampleCount(0), max_msg_id(0x80), max_voxel(0),
 closeCANReentryCount(0)
 
 {
 #ifdef FORCE_FRAME_RESYNC_PATCH
-	lastChannelMask.wordData = 0;
+	lastVoxelMask.wordData = 0;
 	lastChannelID = 0;
 #endif
 
@@ -139,7 +139,7 @@ void  ReceiverCANCapture::Go()
 	if (OpenCANPort())
 	{
 		WriteCurrentDateTime();
-		SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+		SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 		// Update all the info (eventually) from the status of the machine
 		QueryAlgorithm();
 		QueryTracker();
@@ -312,29 +312,31 @@ void ReceiverCANCapture::ParseSensorBoot(ReceiverCANMessage &inMsg)
 void ReceiverCANCapture::ParseChannelDistance(ReceiverCANMessage &inMsg)
 
 {
-	int channel;
+	int voxelIndex = 0;
 	int detectOffset = 0;
 	uint16_t *distancePtr = (uint16_t *) inMsg.data;
 
 	if (inMsg.id >= RECEIVERCANMSG_ID_CHANNELDISTANCE2_FIRST)
 	{
-		channel = inMsg.id - RECEIVERCANMSG_ID_CHANNELDISTANCE2_FIRST;
+		voxelIndex= inMsg.id - RECEIVERCANMSG_ID_CHANNELDISTANCE2_FIRST;
 		detectOffset = 4;
 	}
 	else 
 	{
-		channel = inMsg.id - RECEIVERCANMSG_ID_CHANNELDISTANCE1_FIRST;
+		voxelIndex = inMsg.id - RECEIVERCANMSG_ID_CHANNELDISTANCE1_FIRST;
 	}
 
-	if (channel >= 0) 
+	if (voxelIndex >= 0) 
 	{
+		CellID cellID (voxelIndex % receiverColumnQty, voxelIndex / receiverColumnQty);
+
 		boost::mutex::scoped_lock rawLock(GetMutex());
 		float distance = (float)(distancePtr[0]);
 		distance /= 100;
 		distance += measurementOffset;
 
 		int detectionIndex = 0+detectOffset;
-		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		
 		detection->distance = distance;
 
@@ -349,7 +351,7 @@ void ReceiverCANCapture::ParseChannelDistance(ReceiverCANMessage &inMsg)
 		distance += measurementOffset;
 
 		detectionIndex = 1+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		
 		detection->distance = distance;
 		detection->firstTimeStamp = currentFrame->timeStamp;
@@ -363,7 +365,7 @@ void ReceiverCANCapture::ParseChannelDistance(ReceiverCANMessage &inMsg)
 		distance += measurementOffset;
 
 		detectionIndex = 2+detectOffset;
-		detection =currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection =currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		
 		detection->distance = distance;
 		detection->firstTimeStamp = currentFrame->timeStamp;
@@ -377,7 +379,7 @@ void ReceiverCANCapture::ParseChannelDistance(ReceiverCANMessage &inMsg)
 		distance += measurementOffset;
 
 		detectionIndex = 3+detectOffset;
-		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		
 		detection->distance = distance;
 		detection->firstTimeStamp = currentFrame->timeStamp;
@@ -395,49 +397,51 @@ void ReceiverCANCapture::ParseChannelDistance(ReceiverCANMessage &inMsg)
 void ReceiverCANCapture::ParseChannelIntensity(ReceiverCANMessage &inMsg)
 
 {
-	int channel;
+	int voxelIndex = 0;
 	int detectOffset = 0;
 	uint16_t *intensityPtr = (uint16_t *) inMsg.data;
 
 	if (inMsg.id >= RECEIVERCANMSG_ID_CHANNELINTENSITY2_FIRST)
 	{
-		channel = inMsg.id - RECEIVERCANMSG_ID_CHANNELINTENSITY2_FIRST;
+		voxelIndex = inMsg.id - RECEIVERCANMSG_ID_CHANNELINTENSITY2_FIRST;
 		detectOffset = 4;
 	}
 	else 
 	{
-		channel = inMsg.id - RECEIVERCANMSG_ID_CHANNELINTENSITY1_FIRST;
+		voxelIndex = inMsg.id - RECEIVERCANMSG_ID_CHANNELINTENSITY1_FIRST;
 	}
 
 
-	if (channel >= 0)
+	if (voxelIndex >= 0)
 	{
+		CellID cellID(voxelIndex % receiverColumnQty, voxelIndex / receiverColumnQty);
+
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
 		float intensity = ((float)intensityPtr[0]) / maxIntensity;
 		int detectionIndex = 0 + detectOffset;
-		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		detection->intensity = ConvertIntensityToSNR(intensity);
 		detection->trackID = 0;
 		detection->velocity = 0;
 
 		intensity = ((float)intensityPtr[1]) / maxIntensity;
 		detectionIndex = 1 + detectOffset;
-		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		detection->intensity = ConvertIntensityToSNR(intensity);
 		detection->trackID = 0;
 		detection->velocity = 0;
 
 		intensity = ((float)intensityPtr[2]) / maxIntensity;
 		detectionIndex = 2 + detectOffset;
-		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		detection->intensity = ConvertIntensityToSNR(intensity);
 		detection->trackID = 0;
 		detection->velocity = 0;
 
 		intensity = ((float)intensityPtr[3]) / maxIntensity;
 		detectionIndex = 3 + detectOffset;
-		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 		detection->intensity = ConvertIntensityToSNR(intensity);
 		detection->trackID = 0;
 		detection->velocity = 0;
@@ -450,13 +454,14 @@ void ReceiverCANCapture::ParseChannelIntensity(ReceiverCANMessage &inMsg)
 void ReceiverCANCapture::ParseChannelDistanceAndIntensity(ReceiverCANMessage &inMsg)
 
 {
-	int channel;
 	uint16_t *dataPtr = (uint16_t *)inMsg.data;
 
-	channel = dataPtr[0];
+	int voxelIndex = dataPtr[0];
 
-	if (channel >= 0)
+	if (voxelIndex >= 0)
 	{
+		CellID cellID(voxelIndex % receiverColumnQty, voxelIndex / receiverColumnQty);
+
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
 		float distance = (float)(dataPtr[1]);
@@ -466,7 +471,7 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(ReceiverCANMessage &in
 		float intensity = ((float)dataPtr[2]) / maxIntensity;
 
 		int detectionIndex = (int)dataPtr[3];
-		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, channel, detectionIndex);
+		Detection::Ptr detection = currentFrame->MakeUniqueDetection(currentFrame->rawDetections, cellID, detectionIndex);
 
 		detection->distance = distance;
 		detection->intensity = ConvertIntensityToSNR(intensity);
@@ -485,15 +490,6 @@ void ReceiverCANCapture::ParseChannelDistanceAndIntensity(ReceiverCANMessage &in
 	DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d", inMsg.id, dataPtr[0], dataPtr[1], dataPtr[2]);
 }
 
-#define PATCH_CHANNEL_REORDER 0
-
-#if PATCH_CHANNEL_REORDER
-
-// Patch because LiBUSB Sensor sends channels ou of order
-int channelReorder[16] = { 14, 12, 10, 8, 6, 4, 2, 0, 15, 13, 11, 9, 7, 5, 3, 1 };
-
-#endif
-
 void ReceiverCANCapture::ParseObstacleTrack(ReceiverCANMessage &inMsg)
 
 {
@@ -507,28 +503,24 @@ void ReceiverCANCapture::ParseObstacleTrack(ReceiverCANMessage &inMsg)
 	track->timeStamp = currentFrame->timeStamp;
 
 	track->trackChannels.wordData = *(uint8_t *)&inMsg.data[2];
-	track->trackMainChannel = *(uint16_t *)&inMsg.data[3];
-#if PATCH_CHANNEL_REORDER
-	track->trackMainChannel = channelReorder[track->trackMainChannel];
-
-#endif
+	track->trackMainVoxel = *(uint16_t *)&inMsg.data[3];
 
 
-	// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
-	// Other versions send trackMainChannel. For AWL-7 track main channel is 0.
-	// Rebuild trackMainChannel from AWL 7 data.
-	if (this->receiverChannelQty == 7)
+	// Compatibility patch: AWL-7 sends byte data only, but only one voxel per voxelMask.  
+	// Other versions send trackMainVoxel. For AWL-7 track main voxel is 0.
+	// Rebuild trackMainVoxel from AWL 7 data.
+	if (this->receiverVoxelQty == 7)
 	{
-		track->trackMainChannel = 0;
-		uint16_t channelMask = 0x01;
-		for (uint16_t channel = 0; channel < 8; channel++)
+		track->trackMainVoxel = 0;
+		uint16_t voxelMask = 0x01;
+		for (uint16_t voxelIndex = 0; voxelIndex < 8; voxelIndex++)
 		{
-			if (track->trackChannels.wordData & channelMask)
+			if (track->trackChannels.wordData & voxelMask)
 			{
-				track->trackMainChannel = channel;
+				track->trackMainVoxel = voxelIndex;
 				break;
 			}
-			channelMask <<= 1;
+			voxelMask <<= 1;
 		}
 	}
 
@@ -542,7 +534,7 @@ void ReceiverCANCapture::ParseObstacleTrack(ReceiverCANMessage &inMsg)
 
 	rawLock.unlock();
 	// Debug and Log messages
-	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %d %f %f", inMsg.id, track->trackID, track->trackChannels, track->trackMainChannel, track->probability, track->intensity);
+	DebugFilePrintf(debugFile, "Msg %lu - Track %u Val %x %d %f %f", inMsg.id, track->trackID, track->trackChannels, track->trackMainVoxel, track->probability, track->intensity);
 }
 
 
@@ -1278,7 +1270,7 @@ bool ReceiverCANCapture::SetRecordFileName(std::string inRecordFileName)
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartPlayback(ReceiverFrameRate frameRate, ChannelMask channelMask)
+bool ReceiverCANCapture::StartPlayback(ReceiverFrameRate frameRate, VoxelMask voxelMask)
 {
 	ReceiverCANMessage message;
 	
@@ -1287,7 +1279,7 @@ bool ReceiverCANCapture::StartPlayback(ReceiverFrameRate frameRate, ChannelMask 
 
     message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = RECEIVERCANMSG_ID_CMD_PLAYBACK_RAW;
-	message.data[1] = (uint8_t) channelMask.wordData;   // Channel mask. Mask at 0 stops playback
+	message.data[1] = (uint8_t) voxelMask.wordData;   // Channel mask. Mask at 0 stops playback
 
 	message.data[2] = 0x00; // Not used
 	message.data[3] = (uint8_t) frameRate; // Frame rate in HZ. 00: Use actual
@@ -1303,7 +1295,7 @@ bool ReceiverCANCapture::StartPlayback(ReceiverFrameRate frameRate, ChannelMask 
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartRecord(ReceiverFrameRate frameRate, ChannelMask channelMask)
+bool ReceiverCANCapture::StartRecord(ReceiverFrameRate frameRate, VoxelMask voxelMask)
 {
 	ReceiverCANMessage message;
 	
@@ -1312,7 +1304,7 @@ bool ReceiverCANCapture::StartRecord(ReceiverFrameRate frameRate, ChannelMask ch
 
     message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = RECEIVERCANMSG_ID_CMD_PARAM_RECORD_FILENAME;
-	message.data[1] = (uint8_t)channelMask.wordData;   // Channel mask. Mask at 0 stops record
+	message.data[1] = (uint8_t)voxelMask.wordData;   // Channel mask. Mask at 0 stops record
 
 	message.data[2] = 0x00; // Not used
 	message.data[3] = (uint8_t) frameRate; 
@@ -1386,7 +1378,7 @@ bool ReceiverCANCapture::StopRecord()
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask)
+bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, VoxelMask voxelMask)
 {
 	ReceiverCANMessage message;
 	
@@ -1394,7 +1386,7 @@ bool ReceiverCANCapture::StartCalibration(uint8_t frameQty, float beta, ChannelM
 
     message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = RECEIVERCANMSG_ID_CMD_RECORD_CALIBRATION;   // Record_Calibration
-	message.data[1] = (uint8_t)channelMask.wordData;   
+	message.data[1] = (uint8_t)voxelMask.wordData;   
 
 	message.data[2] = frameQty; // Number of frames
 	message.data[3] = 0; // Not used
@@ -1740,7 +1732,7 @@ bool ReceiverCANCapture::SetTrackerParameter(int trackerID, uint16_t registerAdd
 	return(bMessageOk);
 }
 
-bool ReceiverCANCapture::SetMessageFilters(ReceiverFrameRate frameRate, ChannelMask channelMask, MessageMask messageMask)
+bool ReceiverCANCapture::SetMessageFilters(ReceiverFrameRate frameRate, VoxelMask voxelMask, MessageMask messageMask)
 
 {
 	ReceiverCANMessage message;
@@ -1750,7 +1742,7 @@ bool ReceiverCANCapture::SetMessageFilters(ReceiverFrameRate frameRate, ChannelM
     message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
     message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
 
-	message.data[1] = (uint8_t)channelMask.wordData; // Channel mask
+	message.data[1] = (uint8_t)voxelMask.wordData; // Channel mask
 	message.data[2] = 0;  // Reserved
 	message.data[3] = (uint8_t) frameRate; // New frame rate. oo= use actual.
 	message.data[4] = messageMask.byteData; // Message mask
@@ -1764,7 +1756,7 @@ bool ReceiverCANCapture::SetMessageFilters(ReceiverFrameRate frameRate, ChannelM
 	{
 		message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_raw enable flags
 
-		message.data[1] = (uint8_t)channelMask.wordData; // Channel mask
+		message.data[1] = (uint8_t)voxelMask.wordData; // Channel mask
 		message.data[2] = 0xFF;  // Reserved
 		message.data[3] = 0;
 		message.data[4] = 0;
@@ -2296,63 +2288,63 @@ void ReceiverCANCapture::ForceFrameResync(ReceiverCANMessage &inMsg)
 {
 	// This is a "patch" intended to correct a known bug in AWL-7, where CAN frames may "overwrite" each other,
 	// causing the end of frame message not to be received.
-	// Happens when a large number of detections are made on multiple channels.
-	// The way we detect end of frame is if "channel number" from message 10 decreases (channels are out of order), 
+	// Happens when a large number of detections are made on multiple voxel.
+	// The way we detect end of frame is if "voxel index" from message 10 decreases (channels are out of order), 
 	// then we have skipped end of frame.
 
 		unsigned long msgID = inMsg.id;
 
 		if (msgID == 10)
 		{
-			uint16_t newChannelMask = *(uint8_t *)&inMsg.data[2];
-			uint16_t newChannelID = *(uint16_t *)&inMsg.data[3];
+			uint16_t newVoxelMask = *(uint8_t *)&inMsg.data[2];
+			uint16_t newVoxelIndex= *(uint16_t *)&inMsg.data[3];
 #if 1
-			// Compatibility patch: AWL-7 sends byte data only, but only one channel per channelMask.  
-			// Other versions send trackMainChannel. For AWL-7 track main channel is 0.
-			// Rebuild trackMainChannel from AWL 7 data.
-			if (newChannelMask && !newChannelID)
+			// Compatibility patch: AWL-7 sends byte data only, but only one voxel per voxelMask.  
+			// Other versions send trackMainVoxel. For AWL-7 track main voxel is 0.
+			// Rebuild trackMainVoxel from AWL 7 data.
+			if (newVoxelMask && !newChannelID)
 			{
 				newChannelID = 0;
-				uint16_t channelMask = 0x01;
-				for (int channel = 0; channel < 8; channel++)
+				uint16_t voxelMask = 0x01;
+				for (int voxelIndex = 0; voxelIndex < 8; voxelIndex++)
 				{
-					if (newChannelMask & channelMask)
+					if (newVoxelMask & voxelMask)
 					{
-						newChannelID = channel;
+						newVoxelIndex = voxelIndex;
 						break;
 					}
-					channelMask <<= 1;
+					voxelMask <<= 1;
 				}
 			}
 #endif
 
-			if (newChannelID < lastChannelID)
+			if (newVoxelIndex < lastVoxelIndex)
 			{
 				ProcessCompletedFrame();
 				lastChannelID = 0;
 			}
 
-			lastChannelID = newChannelID;
+			lastVoxelIndex = newVoxelIndex;
 		}
 
 		if (msgID == 60)
 		{
-			uint16_t newChannelID = *(uint16_t *)&inMsg.data[3];
+			uint16_t newVoxelIndex = *(uint16_t *)&inMsg.data[3];
 
-			if (newChannelID < lastChannelID)
+			if (newVoxelIndex < lastVoxelIndex)
 			{
 				ProcessCompletedFrame();
-				lastChannelID = 0;
+				lastVoxelIndex = 0;
 			}
 
-			lastChannelID = newChannelID;
+			lastVoxelIndex = newVoxelIndex;
 		}
 #if 1
 		if (msgID == 9)
 		{
 			ProcessCompletedFrame();
-			lastChannelMask.wordData = 0;
-			lastChannelID = 0;
+			lastVoxelMask.wordData = 0;
+			lastVoxelIndex = 0;
 		}
 #endif
 }

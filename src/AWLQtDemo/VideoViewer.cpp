@@ -582,12 +582,15 @@ void VideoViewer::DrawChannelOutlines(QImage &sourceFrame, QPainter &painter)
 	int receiverQty = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
+		int voxelQty = globalSettings->receiverSettings[receiverID].voxelsConfig.size();
+		int columnQty = globalSettings->receiverSettings[receiverID].receiverColumns;
+
+		for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 		{
-			Detection::Ptr detection = Detection::Ptr(new Detection(receiverID, channelID, 0));
+			CellID cellID(voxelIndex % columnQty, voxelIndex / columnQty);
+
+			Detection::Ptr detection = Detection::Ptr(new Detection(receiverID, cellID, 0));
 			detection->distance = 10.0;
-			detection->channelID = channelID;
 			detection->distance = 10.0;
 
 			detection->intensity = 99.0;
@@ -673,27 +676,30 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 	bool bSomePointsInFront = false;
 
 	int receiverID = detection->receiverID;
-	int channelID = detection->channelID;
 	int cameraID = videoCapture->GetCameraID();
 
 	// Channel description pointer
-	ChannelConfig *channel = &globalSettings->receiverSettings[receiverID].channelsConfig[channelID];
+	int columns = globalSettings->receiverSettings[receiverID].receiverColumns;
+	int rows = globalSettings->receiverSettings[receiverID].receiverRows;
+	int voxelIndex = (detection->cellID.row * columns) + detection->cellID.column;
+	VoxelConfig *voxel= &globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex];
 
-	// Position of the topLeft corner of the channel FOV 
-	SphericalCoord topLeftInChannel(detection->distance, M_SENSORCORE_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
-	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topLeftInChannel, topLeft.x, topLeft.y);
 
-	// Position of the topRight corner of the channel FOV 
-	SphericalCoord topRightInChannel(detection->distance, M_SENSORCORE_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2)); 
-    bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topRightInChannel, topRight.x, topRight.y);
+	// Position of the topLeft corner of the voxel FOV 
+	SphericalCoord topLeftInvoxel(detection->distance, M_SENSORCORE_2 - DEG2RAD(voxel->fovHeight/2), +DEG2RAD(voxel->fovWidth/2));  // Spherical coordinate, relative to sensor
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, topLeftInvoxel, topLeft.x, topLeft.y);
 
-	// Position of the bottomLeft corner of the channel FOV 
-	SphericalCoord bottomLeftInChannel(detection->distance, M_SENSORCORE_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
+	// Position of the topRight corner of the voxel FOV 
+	SphericalCoord topRightInvoxel(detection->distance, M_SENSORCORE_2 - DEG2RAD(voxel->fovHeight/2), -DEG2RAD(voxel->fovWidth/2)); 
+    bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, topRightInvoxel, topRight.x, topRight.y);
 
-	// Position of the topRight corner of the channel FOV 
-	SphericalCoord bottomRightInChannel(detection->distance, M_SENSORCORE_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomRightInChannel, bottomRight.x, bottomRight.y);
+	// Position of the bottomLeft corner of the voxel FOV 
+	SphericalCoord bottomLeftInvoxel(detection->distance, M_SENSORCORE_2 + DEG2RAD(voxel->fovHeight/2), + DEG2RAD(voxel->fovWidth/2));
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, bottomLeftInvoxel, bottomLeft.x, bottomLeft.y);
+
+	// Position of the topRight corner of the voxel FOV 
+	SphericalCoord bottomRightInvoxel(detection->distance, M_SENSORCORE_2 + DEG2RAD(voxel->fovHeight/2), -DEG2RAD(voxel->fovWidth/2));
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, bottomRightInvoxel, bottomRight.x, bottomRight.y);
 
 	if (bSomePointsInFront)
 	{

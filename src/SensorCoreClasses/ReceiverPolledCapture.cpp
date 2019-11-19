@@ -242,7 +242,7 @@ void ReceiverPolledCapture::DoOneThreadIteration()
       if (OpenCANPort())
       {
         WriteCurrentDateTime();
-        SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+        SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
         // Update all the info (eventually) from the status of the machine
         QueryAlgorithm();
         QueryTracker();
@@ -365,7 +365,7 @@ void ReceiverPolledCapture::LogWaveform(size_t cycle)
 		std::string theWaveString(", ,Wave, ,");
 		theWaveString += std::to_string(receiverID);
 		theWaveString += std::string(",Channel,");
-		theWaveString += std::to_string(cellID.row) + "," + std::to_string(cellID.column) + ",";
+		theWaveString += std::to_string(cellID.column) + "," + std::to_string(cellID.row) + ",";
 		theWaveString += std::to_string(ch) + ", ,";
 
 		short* pData = &dataFifo[cycle].AcqFifo[ch * WAVEFORM_POINT_QTY];
@@ -462,7 +462,7 @@ CellID ReceiverPolledCapture::GetCellIDFromChannel(int inChannelID)
 
 int ReceiverPolledCapture::GetChannelIDFromCell(CellID inCellID)
 {
-	for (int i = 0; i < receiverChannelQty; i++)
+	for (int i = 0; i < receiverVoxelQty; i++)
 	{
 		if (channelToColumnArray[i] == inCellID.column) return (i);
 	}

@@ -66,7 +66,7 @@ public:
 	~AWLPlotScan();
 	void start(SensorCoreScope::ReceiverCapture::Ptr inReceiverCapture);
 	void stop();
-  void setChannelMask(uint32_t chMask);
+  void setVoxelMask(uint32_t chMask);
   void selectReceiver(int receiver);
   void AScanDataChanged(const SensorCoreScope::AScan::Vector& inData);
   void ShowAScan(bool show) { showAScan = show; }

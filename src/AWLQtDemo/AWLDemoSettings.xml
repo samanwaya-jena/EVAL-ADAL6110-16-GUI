@@ -71,10 +71,10 @@
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
       <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
-      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
-		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+      <!-- The receiverVoxelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
 
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -96,9 +96,9 @@
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
-      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>65535</channelMask>
+      <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
+      <voxelMask>65535</voxelMask>
 
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
@@ -146,10 +146,10 @@
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
       <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
-      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
-		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+      <!-- The receiverVoxelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
 
         <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -172,9 +172,9 @@
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-        <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
-      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>65535</channelMask>
+        <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
+      <voxelMask>65535</voxelMask>
 
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
@@ -221,10 +221,10 @@
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
       <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
-      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
-		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+      <!-- The receiverVoxelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
 
           <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -245,9 +245,9 @@
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
-      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>65535</channelMask>
+      <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
+      <voxelMask>65535</voxelMask>
 
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
@@ -316,8 +316,8 @@
 
       <!-- MS_LIFECAM_HD5000 @640x360 -->
       <fov>
-        <x>45.0</x>
-        <y>39.0</y>
+        <x>50.3</x>
+        <y>43.6</y>
       </fov>
       <!-- radial distorsion correction parameters -->
       <radialCorrectionK1>0.0</radialCorrectionK1>
@@ -365,7 +365,7 @@
 
   
   <displayTableView>
-    <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
+    <displayedDetectionsPerVoxelInTableView>2</displayedDetectionsPerVoxelInTableView>
   </displayTableView>
 
   <display2D>
@@ -410,7 +410,7 @@
 	     0: Colors indicate distances
 	     1: Colors indicate speed 
        2: Colors indicate obstacle type according to classifier
-       3: Colors correspond to channel "color"
+       3: Colors correspond to voxel displayed "color"
        4: Colors indicate Threat Level-->
     <colorCode>4</colorCode>
    
@@ -466,7 +466,7 @@
     <alert0>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+      <alertVoxel> 65535 </alertVoxel> <!-- Bitmask for voxels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 1.0</alertMin>  <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>2.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>1</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -475,7 +475,7 @@
     <alert1>
       <alertType>decelerationToStop</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+       <alertVoxel> 65535 </alertVoxel> <!-- Bitmask for voxels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 2.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>3.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>2</alertLevel><!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -484,7 +484,7 @@
     <alert2>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+      <alertVoxel> 65535 </alertVoxel> <!-- Bitmask for voxels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin>3.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax></alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -493,7 +493,7 @@
      <alert3Ignored>
       <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
        <alertReceiver>0</alertReceiver>
-       <alertChannels> 1 </alertChannels>
+       <alertVoxel> 1 </alertVoxel>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -502,7 +502,7 @@
      <alert4Ignored>
       <alertType>distanceOutside</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
        <alertReceiver>0</alertReceiver>
-       <alertChannels> 2 </alertChannels>
+       <alertVoxel> 2 </alertVoxel>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -512,7 +512,7 @@
       <alertType>distanceOutside</alertType>
       <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 4 </alertChannels>
+      <alertVoxel> 4 </alertVoxel>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -521,7 +521,7 @@
     <alert6Ignored>
       <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 8 </alertChannels>
+      <alertVoxel> 8 </alertVoxel>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -1025,7 +1025,6 @@
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
     <lineWrapAround>-1</lineWrapAround>
-    <channelsPerLine>16</channelsPerLine>
 
     <arraySize>
       <x>16</x>

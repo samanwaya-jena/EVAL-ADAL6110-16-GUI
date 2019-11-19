@@ -107,14 +107,14 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 
 	// Make sure that we start from scratch. All output detection vector is cleared.
 	outDetections.clear();
-	std::vector<int> detectionIndex(currentFrame->channelQty);
+	std::vector<int> detectionIndex(currentFrame->voxelQty);
 
 
-	// In channel order, recreate individual detections from the tracks.
-	for (int channelIndex = 0; channelIndex < currentFrame->channelQty; channelIndex++)
+	// In voxel order, recreate individual detections from the tracks.
+	for (int voxelIndex = 0; voxelIndex < currentFrame->voxelQty; voxelIndex++)
 	{
-		ChannelMask channelMask;
-		channelMask.wordData = 0x01 << (channelIndex % 8);
+		VoxelMask voxelMask;
+		voxelMask.wordData = 0x01 << (voxelIndex % 8);
 
 
 		// Re-Create detections from the coalesced tracks
@@ -125,36 +125,39 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 			Track::Ptr track = *trackIterator;
 
 
-			int trackChannel = track->trackMainChannel;
+			int trackVoxel = track->trackMainVoxel;
+			CellID cellID(trackVoxel % receiver->receiverColumnQty, trackVoxel / receiver->receiverColumnQty);
 			float trackDistance = track->distance;
 
-#if 1 // Process channel wraparound if set
+#if 1 // Process voxel wraparound if set
 			if (receiver->lineWrapAround > 0.0)
 			{
-				int lineIndex = 0;
+				int rowIndex = 0;
 				int columnIndex = 0;
 
-				lineIndex = (int) (track->distance / receiver->lineWrapAround);
-				if (lineIndex > (receiver->receiverRowQty - 1))
+				rowIndex = (int) (track->distance / receiver->lineWrapAround);
+				if (rowIndex > (receiver->receiverRowQty - 1))
 				{
-					lineIndex = 0;
+					rowIndex = 0;
 				}
 
-				columnIndex = channelIndex % receiver->receiverColumnQty;
+				columnIndex = voxelIndex % receiver->receiverColumnQty;
 
-				trackChannel = (lineIndex * receiver->receiverColumnQty) + columnIndex;
-				trackDistance = track->distance - (lineIndex * receiver->lineWrapAround);
+				trackVoxel = (rowIndex * receiver->receiverColumnQty) + columnIndex;
+				cellID = CellID(trackVoxel % receiver->receiverColumnQty, trackVoxel / receiver->receiverColumnQty);
+
+				trackDistance = track->distance - (rowIndex * receiver->lineWrapAround);
 			}
 #endif
 
-			if ( track->IsComplete() && (trackChannel == channelIndex) &&
+			if ( track->IsComplete() && (trackVoxel == voxelIndex) &&
 				(trackDistance >= receiverSettings.displayedRangeMin) && 
-				(trackDistance <=  receiverSettings.channelsConfig[channelIndex].maxRange)) 
+				(trackDistance <=  receiverSettings.voxelsConfig[voxelIndex].maxRange)) 
  			{
-				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, trackChannel, detectionIndex[trackChannel]++));
+				Detection::Ptr detection = Detection::Ptr(new Detection(currentFrame->receiverID, cellID, detectionIndex[trackVoxel]++));
 				outDetections.push_back(detection);
 
-				detection->channelID = trackChannel;
+				detection->cellID = cellID;
 				detection->distance = trackDistance;
 
 				detection->intensity = track->intensity; 
@@ -170,11 +173,11 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 				detection->threatLevel = track->threatLevel;
 
 				// Place the coordinates relative to all their respective reference systems
-				TransformationNode::Ptr channelCoords = SensorCoordinates::GetChannel(detection->receiverID, channelIndex);
+				TransformationNode::Ptr voxelCoords = SensorCoordinates::GetVoxel(detection->receiverID, trackVoxel);
 				SphericalCoord sphericalPointInChannel(detection->distance, (float) M_SENSORCORE_2, 0);
-				detection->relativeToSensorCart = channelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
-				detection->relativeToVehicleCart = channelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
-				detection->relativeToWorldCart = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
+				detection->relativeToSensorCart = voxelCoords->ToReferenceCoord(eSensorToReceiverCoord, sphericalPointInChannel);
+				detection->relativeToVehicleCart = voxelCoords->ToReferenceCoord(eSensorToVehicleCoord, sphericalPointInChannel);
+				detection->relativeToWorldCart = voxelCoords->ToReferenceCoord(eSensorToWorldCoord, sphericalPointInChannel);
 
 				detection->relativeToSensorSpherical = detection->relativeToSensorCart;
 				detection->relativeToVehicleSpherical = detection->relativeToVehicleCart;
@@ -187,7 +190,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 
 			trackIterator++;
 		} // while (trackIterator...
-	} // for (channelIndex)
+	} // for (voxelIndex)
 
 	return (bAllTracksComplete);
 }
@@ -196,7 +199,7 @@ bool ReceiverPostProcessor::BuildEnhancedDetectionsFromTracks(ReceiverCapture::P
 bool ReceiverPostProcessor::GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, FrameID inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer)
 {
 
-	SensorFrame::Ptr currentFrame = SensorFrame::Ptr(new SensorFrame(receiver->receiverID, inFrameID, receiver->receiverChannelQty));
+	SensorFrame::Ptr currentFrame = SensorFrame::Ptr(new SensorFrame(receiver->receiverID, inFrameID, receiver->receiverVoxelQty));
 
 	// Get a local copy of the currentFrame to proceess;
 	if (!receiver->CopyReceiverFrame(inFrameID, currentFrame, inSubscriberID))

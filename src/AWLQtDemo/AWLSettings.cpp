@@ -120,7 +120,7 @@ bool AWLSettings::ReadSettings()
 	sIconFileName = propTree.get<std::string>("config.layout.iconFileName");
 	sDisplayShowSize = propTree.get<std::string>("config.layout.displayShowSize", "Normal");
 
-	displayedDetectionsPerChannelInTableView = propTree.get<int>("config.displayTableView.displayedDetectionsPerChannelInTableView", 2);
+	displayedDetectionsPerVoxelInTableView = propTree.get<int>("config.displayTableView.displayedDetectionsPerVoxelInTableView", 2);
 
 	carWidth = propTree.get<float>("config.display2D.carWidth", (float) 1.78);
 	carLength = propTree.get<float>("config.display2D.carLength", (float) 4.53 );

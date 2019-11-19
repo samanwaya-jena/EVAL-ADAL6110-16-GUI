@@ -71,18 +71,18 @@ typedef enum ClassificationType
 }
 ClassificationType;
 
-const unsigned int channel0Mask = 0x01;
-const unsigned int channel1Mask = 0x02;
-const unsigned int channel2Mask = 0x04;
-const unsigned int channel3Mask = 0x08;
-const unsigned int channel4Mask = 0x10;
-const unsigned int channel5Mask = 0x20;
-const unsigned int channel6Mask = 0x40;
+const unsigned int voxel0Mask = 0x01;
+const unsigned int voxel1Mask = 0x02;
+const unsigned int voxel2Mask = 0x04;
+const unsigned int voxel3Mask = 0x08;
+const unsigned int voxel4Mask = 0x10;
+const unsigned int voxel5Mask = 0x20;
+const unsigned int voxel6Mask = 0x40;
 
 
 typedef struct 
 {
-	unsigned int channelMask;
+	unsigned int voxelMask;
 	float minDistance;
 	float maxDistance;
 	float minIntensity;
@@ -94,20 +94,20 @@ ClassificationEntry;
 ClassificationEntry classificationEntries[] = 
 {
 #if 1 // All types
-	{channel0Mask | channel1Mask | channel2Mask | channel3Mask | channel4Mask|channel5Mask|channel6Mask, 0, 300, 0, 100.00, eClassifyHighIntensity},
+	{voxel0Mask | voxel1Mask | voxel2Mask | voxel3Mask | voxel4Mask| voxel5Mask| voxel6Mask, 0, 300, 0, 100.00, eClassifyHighIntensity},
 #endif
 
 	{0, 0.0f, 0.0f, 0.0f, 0.0f, eClassifyUnknown}
 };
 
-ClassificationType classifyFromIntensity(int channel, float distance, float intensity)
+ClassificationType classifyFromIntensity(int voxel, float distance, float intensity)
 
 {
-	unsigned int channelMask = 0x0001 << channel;
+	unsigned int voxelMask = 0x0001 << voxel;
 
-	for (ClassificationEntry *entry = &classificationEntries[0]; entry->channelMask != 0; entry++) 
+	for (ClassificationEntry *entry = &classificationEntries[0]; entry->voxelMask != 0; entry++) 
 	{
-		if (entry->channelMask & channelMask) {
+		if (entry->voxelMask & voxelMask) {
 			if (distance >= entry->minDistance && distance < entry->maxDistance) {
 				if (intensity >= entry->minIntensity && intensity < entry->maxIntensity)
 				{
@@ -540,17 +540,17 @@ void FOV_2DScan::slotConfigChanged()
 
 		config.spareDepth = std::min(config.spareDepth, -receiverPosition.position.bodyRelative.forward);
 		
-		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
+		int voxelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].voxelsConfig.size();
+		for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 		{
 			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
-			ChannelConfig channelConfig = receiverSettings.channelsConfig[channelID];
-			RelativePosition channelPosition = SensorCoordinates::GetChannelPosition(receiverID, channelID);
+			RelativePosition voxelPosition = SensorCoordinates::GetVoxelPosition(receiverID, voxelIndex);
+			VoxelConfig voxelConfig = receiverSettings.voxelsConfig[voxelIndex];
 
 			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) +
-				RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
+				RAD2DEG(voxelPosition.orientation.yaw) + (voxelConfig.fovWidth / 2);
 			config.maxAngularSpan = std::max(config.maxAngularSpan, fabs(startAngle));
-			config.maxAngularSpan = std::max(config.maxAngularSpan, fabs(startAngle - channelConfig.fovWidth));
+			config.maxAngularSpan = std::max(config.maxAngularSpan, fabs(startAngle - voxelConfig.fovWidth));
 		}
 	}
 
@@ -748,23 +748,23 @@ void FOV_2DScan::paintEvent(QPaintEvent * /*paintEvent*/)
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		RelativePosition receiverPosition = SensorCoordinates::GetReceiverPosition(receiverID);
-		int channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
+		int voxelQty = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].voxelsConfig.size();
+		for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 		{
 			ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
-			ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
-			RelativePosition channelPosition = SensorCoordinates::GetChannelPosition(receiverID,channelID);
+			RelativePosition voxelPosition = SensorCoordinates::GetVoxelPosition(receiverID, voxelIndex);
+			VoxelConfig voxelConfig =receiverSettings.voxelsConfig[voxelIndex];
 
-			QColor channelColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue, fovTransparency);
-			painter.setBrush(QBrush(channelColor));
+			QColor voxelColor(voxelConfig.displayColorRed, voxelConfig.displayColorGreen, voxelConfig.displayColorBlue, fovTransparency);
+			painter.setBrush(QBrush(voxelColor));
 
 			float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + 
-				               RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth/2);
+				               RAD2DEG(voxelPosition.orientation.yaw) + (voxelConfig.fovWidth/2);
 
 			// Angles in drawPie are counter clockwise, our config is also counter clockwise. 
 			// All distances are relative to bumper, subtract the sensor depth  
 			// Angles are drawn from sensor position add the sensor depth
-			drawPie(&painter, startAngle, -channelConfig.fovWidth, channelConfig.maxRange,
+			drawPie(&painter, startAngle, -voxelConfig.fovWidth, voxelConfig.maxRange,
 				-receiverPosition.position.bodyRelative.left, -receiverPosition.position.bodyRelative.forward);
 		}
 	}
@@ -896,7 +896,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& inData, bo
 	float leftMax = -config.maxSensorsRange;
 
 	float intensityMax = 0;
-	int channelForIntensityMax = 0;
+	CellID cellForIntensityMax (0,0);
 	float distanceForIntensityMax = 0.0;
 	AlertCondition::ThreatLevel threatLevelMax = AlertCondition::eThreatNone;
 
@@ -927,7 +927,7 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& inData, bo
 		if (detection->intensity > intensityMax) 
 		{
 			intensityMax = detection->intensity;
-			channelForIntensityMax = detection->channelID;
+			cellForIntensityMax = detection->cellID;
 			distanceForIntensityMax = detection->distance;
 		}
 
@@ -970,13 +970,13 @@ void FOV_2DScan::drawMergedData(QPainter* p, const Detection::Vector& inData, bo
 	else if (colorCode == eColorCodeDistance)
 		getColorFromDistance(distanceDisplayed, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeIntensity)
-		getColorFromIntensity(channelForIntensityMax, distanceForIntensityMax, intensityMax, threatLevelMax, backColor, backPattern, lineColor, textColor);
+		getColorFromIntensity(-1, cellForIntensityMax, distanceForIntensityMax, intensityMax, threatLevelMax, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeChannel)
-		getColorFromChannel(-1, -1, backColor, backPattern, lineColor, textColor);
+		getColorFromChannel(-1, CellID(0, 0), backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeAlert)
 		getColorFromThreatLevel(threatLevelMax, backColor, backPattern, lineColor, textColor);
 	else
-		getColorFromChannel(-1, -1, backColor, backPattern, lineColor, textColor);
+		getColorFromChannel(-1, CellID(0, 0), backColor, backPattern, lineColor, textColor);
 
 
 	p->setBrush(QBrush(backColor, backPattern));
@@ -1086,13 +1086,13 @@ void FOV_2DScan::drawDetection(QPainter* p, const Detection::Ptr &detection, boo
 	else if (colorCode == eColorCodeDistance)
 		getColorFromDistance(distanceToDisplay, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeIntensity)
-		getColorFromIntensity(detection->channelID, detection->distance, detection->intensity, detection->threatLevel, backColor, backPattern, lineColor, textColor);
+		getColorFromIntensity(detection->receiverID, detection->cellID, detection->distance, detection->intensity, detection->threatLevel, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeChannel)
-		getColorFromChannel(detection->receiverID, detection->channelID, backColor, backPattern, lineColor, textColor);
+		getColorFromChannel(detection->receiverID, detection->cellID, backColor, backPattern, lineColor, textColor);
 	else if (colorCode == eColorCodeAlert)
 		getColorFromThreatLevel(detection->threatLevel, backColor, backPattern, lineColor, textColor);
 	else
-		getColorFromChannel(detection->receiverID, detection->channelID, backColor, backPattern, lineColor, textColor);
+		getColorFromChannel(detection->receiverID, detection->cellID, backColor, backPattern, lineColor, textColor);
 
 	p->setBrush(QBrush(backColor, backPattern));
 	p->setPen(lineColor);
@@ -1108,9 +1108,10 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 	int receiverID = detection->GetReceiverID();
 	RelativePosition receiverPosition = SensorCoordinates::GetReceiverPosition(receiverID);
 	ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
-	ChannelConfig channelConfig = receiverSettings.channelsConfig[detection->channelID];
-	RelativePosition channelPosition = SensorCoordinates::GetChannelPosition(receiverID, detection->channelID);
-
+	int voxelIndex = (detection->cellID.row * receiverSettings.receiverColumns) + detection->cellID.column;
+	RelativePosition voxelPosition = SensorCoordinates::GetVoxelPosition(receiverID, voxelIndex);
+	VoxelConfig voxelConfig = receiverSettings.voxelsConfig[voxelIndex];
+	
 
 	// Linewith is between 2 and 5 pixels, depening on screen size
 	const int  lineWidth = std::min(std::max(0.15F * Ratio, 3.0F), 6.0F);
@@ -1203,16 +1204,16 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		// If we need to draw the arrow, this is where it should happen.
 		if (bDrawArrow)
 		{
-			// Prepare some calculations to draw the arrows, tilted accoding to the channel orientation.
-			const float sinTilt = sin(-(receiverPosition.orientation.yaw + channelPosition.orientation.yaw));
-			const float cosTilt = cos(-(receiverPosition.orientation.yaw + channelPosition.orientation.yaw));
+			// Prepare some calculations to draw the arrows, tilted accoding to the voxel orientation.
+			const float sinTilt = sin(-(receiverPosition.orientation.yaw + voxelPosition.orientation.yaw));
+			const float cosTilt = cos(-(receiverPosition.orientation.yaw + voxelPosition.orientation.yaw));
 
 			QPointF basePoint(detectionPoint.x(), detectionPoint.y());
 
 			p->setPen(lineColor);
 			p->setBrush(QBrush(backColor, backPattern));
 
-			// Rotate to tilt accordingly to the channel tilt. The equations for this is
+			// Rotate to tilt accordingly to the voxel tilt. The equations for this is
 			// x' = x cos f - y sin f
 			// y' = y cos f + x sin f
 
@@ -1243,8 +1244,8 @@ void FOV_2DScan::drawTextDetection(QPainter* p, const Detection::Ptr &detection,
 		// All distances are relative to bumper, subtract the sensor depth  
 		// Angles are drawn from sensor position add the sensor depth
 
-		float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + RAD2DEG(channelPosition.orientation.yaw) + (channelConfig.fovWidth / 2);
-		drawArc(p, startAngle, -channelConfig.fovWidth, detection->distance,
+		float startAngle = RAD2DEG(receiverPosition.orientation.yaw) + RAD2DEG(voxelPosition.orientation.yaw) + (voxelConfig.fovWidth / 2);
+		drawArc(p, startAngle, -voxelConfig.fovWidth, detection->distance,
 			-receiverPosition.position.bodyRelative.left, -receiverPosition.position.bodyRelative.forward);
 	}
 }
@@ -1399,9 +1400,12 @@ void FOV_2DScan::getColorFromVelocity(float velocity, QColor &backColor, Qt::Bru
 	}
 }
 
-void FOV_2DScan::getColorFromIntensity(int channel, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+void FOV_2DScan::getColorFromIntensity(int receiverID, CellID inCellID, float distance, float intensity, AlertCondition::ThreatLevel threatLevel, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
-	ClassificationType classificationType = classifyFromIntensity(channel, distance, intensity);
+	ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
+	int voxelIndex = (inCellID.row * receiverSettings.receiverColumns) + inCellID.column;
+
+	ClassificationType classificationType = classifyFromIntensity(voxelIndex, distance, intensity);
 
 	if (classificationType != eClassifyHighIntensity)  
 	{
@@ -1473,18 +1477,20 @@ void FOV_2DScan::getColorFromThreatLevel(AlertCondition::ThreatLevel threatLevel
 }
 
 
-void FOV_2DScan::getColorFromChannel(int receiverID, int channelID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
+void FOV_2DScan::getColorFromChannel(int receiverID, CellID inCellID, QColor &backColor, Qt::BrushStyle &backStyle, QColor &lineColor, QColor &textColor)
 {
 
-	if (receiverID < 0 || channelID < 0) 
+	if (receiverID < 0) 
 	{
 		backColor = QColor(64, 64, 64);
 	}
 	else 
 	{
 		ReceiverSettings receiverSettings = AWLSettings::GetGlobalSettings()->receiverSettings[receiverID];
-		ChannelConfig channelConfig =receiverSettings.channelsConfig[channelID];
-		backColor = QColor(channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
+
+		int voxelIndex = (inCellID.row * receiverSettings.receiverColumns) +inCellID.column;
+		VoxelConfig voxelConfig = receiverSettings.voxelsConfig[voxelIndex];
+		backColor = QColor(voxelConfig.displayColorRed, voxelConfig.displayColorGreen, voxelConfig.displayColorBlue);
 	}
 
 	backStyle = Qt::SolidPattern;
@@ -1577,11 +1583,16 @@ bool sortDetectionsBottomRightTopLeft (Detection::Ptr &left, Detection::Ptr &rig
 	{
 		if (left->relativeToVehicleCart.bodyRelative.left == right->relativeToVehicleCart.bodyRelative.left)
 		{
-			if (left->channelID < right->channelID)
+			if (left->cellID.column < right->cellID.column)
 			{
 				return(true);
 			}
-			else
+			else if ((left->cellID.column == right->cellID.column) && (left->cellID.row < right->cellID.row))
+
+			{ 
+				return(true);
+			}
+			else 
 			{
 				return(false);
 			}

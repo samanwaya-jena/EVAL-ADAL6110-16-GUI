@@ -96,7 +96,7 @@ private:
 	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,
 						   int receiverID,
-						   int channelID,
+						   CellID cellID,
 						   int detectionID, 
 						   TrackID trackID = 0, 
 						   float distance = NAN, 

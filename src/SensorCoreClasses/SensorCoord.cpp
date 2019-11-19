@@ -80,9 +80,9 @@ TransformationNode::Ptr SensorCoordinates::GetReceiver(int receiverID)
 	return(globalCoordinates->receivers[receiverID]);
 }
 
-TransformationNode::Ptr SensorCoordinates::GetChannel(int receiverID, int channelID)
+TransformationNode::Ptr SensorCoordinates::GetVoxel(int receiverID, int voxelIndex)
 {
-	return(globalCoordinates->receivers[receiverID]->children[channelID]);
+	return(globalCoordinates->receivers[receiverID]->children[voxelIndex]);
 }
 
 TransformationNode::List SensorCoordinates::GetCameras()
@@ -100,9 +100,9 @@ RelativePosition SensorCoordinates::GetReceiverPosition(int receiverID)
 	return(GetReceiver(receiverID)->relativePosition);
 }
 
-RelativePosition SensorCoordinates::GetChannelPosition(int receiverID, int channelID)
+RelativePosition SensorCoordinates::GetVoxelPosition(int receiverID, int voxelIndex)
 {
-	return(GetChannel(receiverID, channelID)->relativePosition);
+	return(GetVoxel(receiverID, voxelIndex)->relativePosition);
 }
 
 RelativePosition SensorCoordinates::GetCameraPosition(int cameraID)
@@ -122,9 +122,9 @@ RelativePosition SensorCoordinates::SetReceiverPosition(int receiverID, const Re
 	return(node->relativePosition);
 }
 
-RelativePosition SensorCoordinates::SetChannelPosition(int receiverID, int channelID, const RelativePosition &inPosition)
+RelativePosition SensorCoordinates::SetVoxelPosition(int receiverID, int voxelIndex, const RelativePosition &inPosition)
 {
-	TransformationNode::Ptr node = GetChannel(receiverID, channelID);
+	TransformationNode::Ptr node = GetVoxel(receiverID, voxelIndex);
 
 	node->relativePosition = inPosition;
 	node->RefreshGlobal();
@@ -144,16 +144,16 @@ RelativePosition SensorCoordinates::SetCameraPosition(int cameraID, const Relati
 }
 
 
-bool SensorCoordinates::SensorToCameraXY(int receiverID, int channelID, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
+bool SensorCoordinates::SensorToCameraXY(int receiverID, int voxelIndex, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY)
 {
 	bool bInFront = false;
 
-	// Channel description pointer
-	TransformationNode::Ptr channelCoords = SensorCoordinates::GetChannel(receiverID, channelID);
+	// Voxel description pointer
+	TransformationNode::Ptr voxelCoords = SensorCoordinates::GetVoxel(receiverID, voxelIndex);
 	
 	// Camera FOV description
 	TransformationNode::Ptr cameraCoords = SensorCoordinates::GetCameras()[cameraID];
-	CartesianCoord coordInWorld = channelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
+	CartesianCoord coordInWorld = voxelCoords->ToReferenceCoord(eSensorToWorldCoord, sensorCoord);         // Convert to world
 	CartesianCoord coordInCameraCart = cameraCoords->FromReferenceCoord(eWorldToCameraCoord, coordInWorld);		 // Convert to camera
 
 	bInFront = camera.ToFrameXY(coordInCameraCart, cameraX, cameraY);
@@ -203,24 +203,24 @@ bool SensorCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree
 		firstNode->AddChild(receiverGeometryNode);
 		receivers.push_back(receiverGeometryNode);
 
-		std::string sChannelGeometryKey = receiverPropNode.get<std::string>("receiverChannelGeometry");
+		std::string sVoxelGeometryKey = receiverPropNode.get<std::string>("receiverVoxelGeometry");
 
-		// Loop for each individual channel
-		boost::property_tree::ptree &channelGeometryPropNode = propTree.get_child(std::string("config.")+sChannelGeometryKey);
-		int channelQty = channelGeometryPropNode.get<int>("channelQty", -1);
-		if (channelQty != -1)
+		// Loop for each individual voxel
+		boost::property_tree::ptree &voxelGeometryPropNode = propTree.get_child(std::string("config.")+sVoxelGeometryKey);
+		int voxelQty = voxelGeometryPropNode.get<int>("voxelQty", -1);
+		if (voxelQty != -1)
 		{
-			for (int channelID = 0; channelID < channelQty; channelID++)
+			for (int voxelID = 0; voxelID < voxelQty; voxelID++)
 			{
-				std::string channelKey = std::string("channel") + std::to_string(channelID);
-				boost::property_tree::ptree &channelPropNode = channelGeometryPropNode.get_child(channelKey);
+				std::string voxelKey = std::string("voxel") + std::to_string(voxelID);
+				boost::property_tree::ptree &voxelPropNode = voxelGeometryPropNode.get_child(voxelKey);
 
 				// Make the transformation node and add it to the tree
-				TransformationNode::Ptr channelGeometryNode = GetGeometryFromChannelPropertyNode(channelPropNode);
-				receiverGeometryNode->AddChild(channelGeometryNode);
+				TransformationNode::Ptr voxelGeometryNode = GetGeometryFromVoxelPropertyNode(voxelPropNode);
+				receiverGeometryNode->AddChild(voxelGeometryNode);
 			}
 		}
-		else //Channel qty == -1
+		else //Voxel qty == -1
 		{
 			float columnsFloat(0.0);
 			float rowsFloat(0.0);
@@ -233,21 +233,21 @@ bool SensorCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree
 			float offsetX(0.0);
 			float offsetY(0.0);
 
-			SensorSettings::Get2DPoint(channelGeometryPropNode.get_child("arraySize"), columnsFloat, rowsFloat);
+			SensorSettings::Get2DPoint(voxelGeometryPropNode.get_child("arraySize"), columnsFloat, rowsFloat);
 			columns = (int)columnsFloat;
 			rows = (int)rowsFloat;
-			SensorSettings::Get2DPoint(channelGeometryPropNode.get_child("arrayFOV"), fovX, fovY);
-			SensorSettings::Get2DPoint(channelGeometryPropNode.get_child("pixelSpacing"), spacingX, spacingY);
-			SensorSettings::Get2DPoint(channelGeometryPropNode.get_child("arrayOffset"), offsetX, offsetY);
+			SensorSettings::Get2DPoint(voxelGeometryPropNode.get_child("arrayFOV"), fovX, fovY);
+			SensorSettings::Get2DPoint(voxelGeometryPropNode.get_child("pixelSpacing"), spacingX, spacingY);
+			SensorSettings::Get2DPoint(voxelGeometryPropNode.get_child("arrayOffset"), offsetX, offsetY);
 
 			float pixelWidth = (fovX - ((columns - 1)*spacingX)) / columns;
 			float pixelHeight = (fovY - ((rows - 1)*spacingY)) / rows;
 
-			int matrixChannelQty = columns * rows;
-			for (int channelIndex = 0; channelIndex < matrixChannelQty; channelIndex++)
+			int matrixVoxelQty = columns * rows;
+			for (int voxelIndex = 0; voxelIndex < matrixVoxelQty; voxelIndex++)
 			{
-				int column = channelIndex % columns;
-				int row = channelIndex / columns;
+				int column = voxelIndex % columns;
+				int row = voxelIndex / columns;
 
 				float pixelYaw = DEG2RAD(offsetX + ((fovX / 2) - (pixelWidth / 2)) - (column * (pixelWidth + spacingX)));
 				float pixelPitch = DEG2RAD(offsetY - ((fovY / 2) - (pixelHeight / 2)) + (row * (pixelHeight + spacingY)));
@@ -255,13 +255,13 @@ bool SensorCoordinates::BuildCoordinatesFromSettings(boost::property_tree::ptree
 
 				Orientation orientation(pixelRoll, pixelPitch, pixelYaw);
 
-				// Simplification: We assume all channel sensors are at position 0.0
+				// Simplification: We assume all voxel sensors are at position 0.0
 				CartesianCoord position(0, 0, 0);
 
 				// Make the transformation node
-				TransformationNode::Ptr channelGeometryNode = TransformationNode::Ptr(new TransformationNode(position, orientation));
-				receiverGeometryNode->AddChild(channelGeometryNode);
-			} // for (int channelIndex = ;
+				TransformationNode::Ptr voxelGeometryNode = TransformationNode::Ptr(new TransformationNode(position, orientation));
+				receiverGeometryNode->AddChild(voxelGeometryNode);
+			} // for (int voxelIndex = ;
 		}
 	}
 
@@ -311,7 +311,7 @@ TransformationNode::Ptr SensorCoordinates::GetGeometryFromPropertyNode(boost::pr
 		return (destNode);
 }
 
-TransformationNode::Ptr SensorCoordinates::GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode)
+TransformationNode::Ptr SensorCoordinates::GetGeometryFromVoxelPropertyNode(boost::property_tree::ptree &voxelNode)
 
 {
 		float centerY(0.0);
@@ -319,14 +319,14 @@ TransformationNode::Ptr SensorCoordinates::GetGeometryFromChannelPropertyNode(bo
 		float roll(0.0);  
 		
 		// Read the orientation from the configuration file.
-		SensorSettings::GetOrientation(channelNode.get_child("orientation"), centerY, centerX, roll);
+		SensorSettings::GetOrientation(voxelNode.get_child("orientation"), centerY, centerX, roll);
 
 		roll = 0.0;
 		float pitch = DEG2RAD(centerY);
 		float yaw = DEG2RAD(centerX);
 		Orientation orientation(roll, pitch, yaw);
 
-		// Simplification: We assume all channel sensors are at position 0.0
+		// Simplification: We assume all voxel sensors are at position 0.0
 		CartesianCoord position(0, 0, 0);
 
 		// Make the transformation node

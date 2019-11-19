@@ -91,7 +91,7 @@ public:
 	std::string sIconFileName;
 
 	// Table view options
-	int displayedDetectionsPerChannelInTableView;
+	int displayedDetectionsPerVoxelInTableView;
 
 	// 2D display options
 	float carWidth;

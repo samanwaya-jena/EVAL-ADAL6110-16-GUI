@@ -188,7 +188,7 @@
      </column>
      <column>
       <property name="text">
-       <string>Col.</string>
+       <string>Cell</string>
       </property>
       <property name="font">
        <font>

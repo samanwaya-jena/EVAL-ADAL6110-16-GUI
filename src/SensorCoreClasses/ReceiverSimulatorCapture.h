@@ -70,12 +70,12 @@ public:
 public:
 	/** \brief ReceiverSimulatorCapture constructor.
  	    * \param[in] inReceiverID  unique receiverID
-	    * \param[in] inReceiverChannelQty number of channels in the receiver
+	    * \param[in] inReceiverVoxelQty number of voxels in the receiver
 		* \param[in] inReceiverColumns number of columns in receiver array
 		* \param[in] inReceiverRows number of rows  in the receiver array
 		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
 		* \param[in] inFrameRate frameRate of the receiver
-	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
+	    * \param[in] inVoxelMask  voxelMask indicating which voxels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
 		*                          Will automatically be added to any range received.
@@ -85,8 +85,8 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
 
-	ReceiverSimulatorCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+	ReceiverSimulatorCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
+					   ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers);
 
@@ -105,11 +105,11 @@ public:
 	/** \brief Starts the internal calibration of the system. 
       * \param[in] frameQty number of frames on which calibration is calculated
       * \param[in] beta beta parameter for the calibration
-      * \param[in] channelMask mask for the recorded channels. that an empty channelMask is equivalent to StopRecord().
+      * \param[in] voxelMask mask for the recorded voxels. that an empty voxelMask is equivalent to StopRecord().
       * \return true if success.  false on error
 	  * \remarks In Simulation, does nothing. Returns true.
      */
-	virtual bool StartCalibration(uint8_t /*frameQty*/, float /*beta*/, ChannelMask /*channelMask*/) 
+	virtual bool StartCalibration(uint8_t /*frameQty*/, float /*beta*/, VoxelMask /*voxelMask*/) 
 	{ 
 		return(true); 
 	};
@@ -227,12 +227,12 @@ public:
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
 	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
-	* \param[in] channelMask mask for the analyzed channels.
+	* \param[in] voxelMask mask for the analyzed voxels.
 	* \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/);
+	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/);
 
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.

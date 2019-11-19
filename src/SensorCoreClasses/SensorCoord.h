@@ -65,7 +65,7 @@ public:
 	static TransformationNode::Ptr GetFirstNode();
 	static TransformationNode::List GetReceivers();
 	static TransformationNode::Ptr GetReceiver(int receiverID);
-	static TransformationNode::Ptr GetChannel(int receiverID, int channelID);
+	static TransformationNode::Ptr GetVoxel(int receiverID, int voxelIndex);
 	static TransformationNode::List GetCameras();
 	static TransformationNode::Ptr GetCamera(int cameraID);
 	
@@ -80,7 +80,7 @@ public:
 	 *  \returns Returns true if the point is in front of the camera.  Returns false for points behind the camera.
 	 * 
 	 */
-	static bool SensorToCameraXY(int receiverID, int channelID, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
+	static bool SensorToCameraXY(int receiverID, int voxelIndex, int cameraID, const CameraCalibration &camera, const SphericalCoord &sensorCoord, int &cameraX, int &cameraY);
 
 	/** \brief convert world coordinates to image (XY) coordinates of the specified camera
 	 *  \returns Returns true if the point is in front of the camera.  Returns false for points behind the camera.
@@ -89,17 +89,17 @@ public:
 	static bool WorldToCameraXY(int cameraID, const CameraCalibration &camera, const CartesianCoord &worldCoord, int &cameraX, int &cameraY);
 
 	static RelativePosition GetReceiverPosition(int receiverID);
-	static RelativePosition GetChannelPosition(int receiverID, int channelID);
+	static RelativePosition GetVoxelPosition(int receiverID, int voxelID);
 	static RelativePosition GetCameraPosition(int cameraID);
 
 	static RelativePosition SetReceiverPosition(int receiverID, const RelativePosition &inPosition);
-	static RelativePosition SetChannelPosition(int receiverID, int channelID, const RelativePosition &inPosition);
+	static RelativePosition SetVoxelPosition(int receiverID, int voxelIndex, const RelativePosition &inPosition);
 	static RelativePosition SetCameraPosition(int cameraID, const RelativePosition &inPosition);
 
 
 protected:
 	static  TransformationNode::Ptr GetGeometryFromPropertyNode(boost::property_tree::ptree &propTree);
-	static TransformationNode::Ptr GetGeometryFromChannelPropertyNode(boost::property_tree::ptree &channelNode);
+	static TransformationNode::Ptr GetGeometryFromVoxelPropertyNode(boost::property_tree::ptree &voxelNode);
 
 protected:
 	static SensorCoordinates *globalCoordinates;

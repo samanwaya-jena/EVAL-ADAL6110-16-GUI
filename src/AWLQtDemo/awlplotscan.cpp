@@ -116,7 +116,7 @@ void AWLPlotScan::stop()
      ;
 }
 
-void AWLPlotScan::setChannelMask(uint32_t chMask)
+void AWLPlotScan::setVoxelMask(uint32_t chMask)
 {
   m_chMask = chMask;
   m_nbrCh = numberOfSetBits(m_chMask);
@@ -134,7 +134,7 @@ void AWLPlotScan::LabelAScan(QPainter* p)
 	float maxRange, scale;
 	int step;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	maxRange = globalSettings->receiverSettings[0].channelsConfig[0].maxAscanRange / 5;
+	maxRange = globalSettings->receiverSettings[0].voxelsConfig[0].maxAscanRange / 5;
 	if ( maxRange < 10.0 ) {
 		step = ((int)((maxRange+2.5)/5)) * 5;
 	} else {
@@ -317,7 +317,7 @@ void AWLPlotScan::plotAScans(QPainter* p)
       p->setBrush(QBrush(rgbRulerMed));
       p->setPen(QPen(rgbRulerText));
 	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) - (leading/2) - 1, "Rcv " + QString::number(aScan->receiverID + 1) + " Col " + QString::number(aScan->cellID.column));
-	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) + lineSpacing - (leading/2) -1, "Channel " + QString::number(aScan->channelID));
+	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) + lineSpacing - (leading/2) -1, "Channel " + QString::number(aScan->channelNo));
 	  p->drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
 
       ++chIdx;

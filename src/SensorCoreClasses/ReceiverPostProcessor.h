@@ -64,20 +64,20 @@ public:
 	// Only detections from tracks that are complete (no errors are kept)
 	// Detections from tracks where distance is oustide the range are not kept. 
 	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid channel info.
+	// Return false if we have found incomplete tracks or invalid voxel info.
 	bool GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, FrameID inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer);
 
 protected:
 		// Complete the track info that was not processed by the AWL Module.
 	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid channel info.
+	// Return false if we have found incomplete tracks or invalid voxel info.
 	bool CompleteTrackInfo(SensorFrame::Ptr currentFrame);
 
 	// Rebuild processsed detections from the current track set.
 	// Only detections from tracks that are complete (no errors are kept)
 	// Detections from tracks where distance is oustide the range are not kept. 
 	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid channel info.
+	// Return false if we have found incomplete tracks or invalid voxel info.
 	bool BuildEnhancedDetectionsFromTracks(ReceiverCapture::Ptr receiver, SensorFrame::Ptr currentFrame, Detection::Vector &outDetections);
 
 		/** \brief Predict the time to collision (distance = 0) between sensor and obstacle,  

@@ -135,7 +135,7 @@ protected:
 	void paintEvent(QPaintEvent* /*event*/); 
 
 	void GetDetectionColors(const SensorCoreScope::Detection::Ptr &detection, QColor &colorEnhance,  int &iThickness);
-	/** \brief get the four corners of the specified Detection's channel FOV, as projected at the Detection distance
+	/** \brief get the four corners of the specified Detection's voxel FOV, as projected at the Detection distance
 	  *         in the camera plane.
 	  *\return Returns false if all the points in the projection are behind the camera plane. Returns true
 	  *        if at least one of the points is in front of the camera.

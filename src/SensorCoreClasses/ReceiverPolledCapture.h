@@ -85,15 +85,15 @@ protected:
   /** \brief Returns the CellID, given a channelID
    * \param[in] channelID the input "channel"
    * \return ChannelID, indicating unique pixel position in the detector array
-   * \remarks For the ReceiverPolledCapture, channels may be out of order on receive for some messages.
+   * \remarks For the ReceiverPolledCapture, channels are out of order on receive for raw data messages.
    */
   virtual CellID GetCellIDFromChannel(int inChannelID);
 
   /** \brief Returns the CellID, given a channelID
   * \param[in] channelID the input "channel"
   * \return ChannelID, indicating unique pixel position in the detector array
-  * \remarks For the PolledCapture, channels may be out of order on receive for some meesage.
- */
+  * \remarks For the ReceiverPolledCapture, channels are out of order on receive for raw data messages.
+  */
 
   virtual int GetChannelIDFromCell(CellID inCellID);
 

@@ -201,7 +201,7 @@ protected:
 	bool GetLatestAScans(SensorCoreScope::AScan::Vector &aScanData);
 	void closeEvent(QCloseEvent * /*event*/);
 
-	void FillChannelSelectList();
+	void FillVoxelSelectList();
 
 	void FillFPGAList();
 	void FillADCList();
@@ -209,7 +209,7 @@ protected:
 
 	void UpdateGPIOList();
 
-	void ChangeRangeMax(int channelID, float range);
+	void ChangeRangeMax(int voxelID, float range);
 
   //void  DoThreadLoop();
 

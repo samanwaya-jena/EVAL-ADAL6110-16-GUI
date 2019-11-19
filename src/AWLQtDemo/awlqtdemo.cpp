@@ -217,8 +217,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize the controls from the settings in INI file
 
-	ui.calibrationChannelMaskGroupBox->setVisible(false);
-	ui.channelMaskGroupBox->setVisible(false);
+	ui.calibrationVoxelMaskGroupBox->setVisible(false);
+	ui.voxelMaskGroupBox->setVisible(false);
 
 	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	ui.sensorHeightSpinBox->setValue(sensorPosition.position.bodyRelative.up);
@@ -228,9 +228,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.measurementOffsetSpinBox->setValue(measurementOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
-	ui.sensorRangeMaxSpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
+	ui.sensorRangeMaxSpinBox->setValue(globalSettings->receiverSettings[0].voxelsConfig[0].maxRange);
 
-	FillChannelSelectList();
+	FillVoxelSelectList();
 
 	ui.targetHintDistanceSpinBox->setValue(receiverCaptures[0]->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
@@ -238,42 +238,42 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Default values, currently unused
 	if (receiverCaptures[0]) 
 	{
-		ui.recordChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
-		ui.recordChannel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel1);
-		ui.recordChannel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel2);
-		ui.recordChannel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel3);
-		ui.recordChannel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel4);
-		ui.recordChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
-		ui.recordChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
+		ui.recordVoxel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel0);
+		ui.recordVoxel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel1);
+		ui.recordVoxel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel2);
+		ui.recordVoxel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel3);
+		ui.recordVoxel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel4);
+		ui.recordVoxel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel5);
+		ui.recordVoxel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel6);
 
-		ui.calibrationChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
-		ui.calibrationChannel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel1);
-		ui.calibrationChannel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel2);
-		ui.calibrationChannel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel3);
-		ui.calibrationChannel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel4);
-		ui.calibrationChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
-		ui.calibrationChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
+		ui.calibrationVoxel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel0);
+		ui.calibrationVoxel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel1);
+		ui.calibrationVoxel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel2);
+		ui.calibrationVoxel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel3);
+		ui.calibrationVoxel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel4);
+		ui.calibrationVoxel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel5);
+		ui.calibrationVoxel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel6);
 
 		ui.frameRateSpinBox->setValue((int) receiverCaptures[0]->receiverStatus.frameRate);
 	}
 	else
 	{
-		ui.recordChannel1CheckBox->setChecked(true);
-		ui.recordChannel2CheckBox->setChecked(true);
-		ui.recordChannel3CheckBox->setChecked(true);
-		ui.recordChannel4CheckBox->setChecked(true);
-		ui.recordChannel5CheckBox->setChecked(true);
-		ui.recordChannel6CheckBox->setChecked(true);
-		ui.recordChannel7CheckBox->setChecked(true);
+		ui.recordVoxel1CheckBox->setChecked(true);
+		ui.recordVoxel2CheckBox->setChecked(true);
+		ui.recordVoxel3CheckBox->setChecked(true);
+		ui.recordVoxel4CheckBox->setChecked(true);
+		ui.recordVoxel5CheckBox->setChecked(true);
+		ui.recordVoxel6CheckBox->setChecked(true);
+		ui.recordVoxel7CheckBox->setChecked(true);
 
 
-		ui.calibrationChannel1CheckBox->setChecked(true);
-		ui.calibrationChannel2CheckBox->setChecked(true);
-		ui.calibrationChannel3CheckBox->setChecked(true);
-		ui.calibrationChannel4CheckBox->setChecked(true);
-		ui.calibrationChannel5CheckBox->setChecked(true);
-		ui.calibrationChannel6CheckBox->setChecked(true);
-		ui.calibrationChannel7CheckBox->setChecked(true);
+		ui.calibrationVoxel1CheckBox->setChecked(true);
+		ui.calibrationVoxel2CheckBox->setChecked(true);
+		ui.calibrationVoxel3CheckBox->setChecked(true);
+		ui.calibrationVoxel4CheckBox->setChecked(true);
+		ui.calibrationVoxel5CheckBox->setChecked(true);
+		ui.calibrationVoxel6CheckBox->setChecked(true);
+		ui.calibrationVoxel7CheckBox->setChecked(true);
 		
 		ui.frameRateSpinBox->setValue(0);
 	}
@@ -536,17 +536,17 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Adjust the default maximum displayed range for the receiver (used in various interfaces) 
-	// to reflect the maximum of all its channel ranges.
+	// to reflect the maximum of all its voxel ranges.
 	size_t receiverQty = globalSettings->receiverSettings.size();
 	//long absoluteMaxRange = 0.0;
 	for (size_t receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		long absoluteMaxRangeForReceiver = 0.0;
-		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+		int voxelQty = globalSettings->receiverSettings[receiverID].voxelsConfig.size();
+		for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 		{
-			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
-				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange;
+			if (globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex].maxRange > absoluteMaxRangeForReceiver)
+				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex].maxRange;
 		}
 		AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax = absoluteMaxRangeForReceiver;
 
@@ -668,21 +668,21 @@ void AWLQtDemo::on_recordPushButton_clicked()
 {
 	std::string sRecordFileName(ui.recordFileNameEdit->text().toStdString());
 	ReceiverFrameRate frameRate = (ReceiverFrameRate) ui.frameRateSpinBox->value();
-	ChannelMask channelMask;
+	VoxelMask voxelMask;
 
-	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.recordChannel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.recordChannel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.recordChannel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.channel7 = 1;
+	voxelMask.bitFieldData.voxel0 = ui.recordVoxel1CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel1 = ui.recordVoxel2CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel2 = ui.recordVoxel3CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel3 = ui.recordVoxel4CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel4 = ui.recordVoxel5CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel5 = ui.recordVoxel6CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel6 = ui.recordVoxel7CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel7 = 1;
 
 	if (receiverCaptures[0]) 
 	{
 		receiverCaptures[0]->SetRecordFileName(sRecordFileName);
-		receiverCaptures[0]->StartRecord(frameRate, channelMask);
+		receiverCaptures[0]->StartRecord(frameRate, voxelMask);
 	}
 
 	// Update the state of buttons
@@ -695,21 +695,21 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
 	ReceiverFrameRate frameRate = (ReceiverFrameRate)ui.frameRateSpinBox->value();
-	ChannelMask channelMask;
+	VoxelMask voxelMask;
 
-	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.recordChannel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.recordChannel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.recordChannel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.channel7= 1;
+	voxelMask.bitFieldData.voxel0 = ui.recordVoxel1CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel1 = ui.recordVoxel2CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel2 = ui.recordVoxel3CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel3 = ui.recordVoxel4CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel4 = ui.recordVoxel5CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel5 = ui.recordVoxel6CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel6 = ui.recordVoxel7CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel7= 1;
 	
 	if (receiverCaptures[0]) 
 	{
 		receiverCaptures[0]->SetPlaybackFileName(sPlaybackFileName);
-		receiverCaptures[0]->StartPlayback(frameRate, channelMask);
+		receiverCaptures[0]->StartPlayback(frameRate, voxelMask);
 	}
 
 	// Update the state of buttons
@@ -832,7 +832,7 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	setCursor(Qt::ArrowCursor);
 }
 
-void AWLQtDemo::ChangeRangeMax(int channelID, float range)
+void AWLQtDemo::ChangeRangeMax(int voxelID, float range)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Wait Cursor
@@ -848,7 +848,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, float range)
         {
 
 
-		settings->receiverSettings[receiverID].channelsConfig[channelID].maxRange = range;
+		settings->receiverSettings[receiverID].voxelsConfig[voxelID].maxRange = range;
 	
 		// Calculate the absolute max distance from the settings
 		AdjustDefaultDisplayedRanges();
@@ -870,14 +870,14 @@ void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 	float range = (float) ui.sensorRangeMaxSpinBox->value();
 
 	// Calculate the absolute max distance from the settings
-	size_t channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
-	for (size_t channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	size_t voxelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].voxelsConfig.size();
+	for (size_t voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 	{
-		QListWidgetItem *listItem = ui.channelSelectListWidget->item(channelIndex);
+		QListWidgetItem *listItem = ui.voxelSelectListWidget->item(voxelIndex);
 		Qt::CheckState checkState = listItem->checkState();
 		if (checkState == Qt::Checked)
 		{
-			ChangeRangeMax(channelIndex, range);
+			ChangeRangeMax(voxelIndex, range);
 		}
 	}
 }
@@ -910,20 +910,20 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 {
 	uint8_t frameQty = ui.calibrationFrameQtySpinBox->value();
 	float   beta = (float) ui.calibrationBetaDoubleSpinBox->value();
-	ChannelMask channelMask;
+	VoxelMask voxelMask;
 
-	channelMask.bitFieldData.channel0 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.calibrationChannel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.calibrationChannel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.calibrationChannel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.calibrationChannel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.calibrationChannel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.calibrationChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.channel7 = 1;
+	voxelMask.bitFieldData.voxel0 = ui.calibrationVoxel1CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel1 = ui.calibrationVoxel2CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel2 = ui.calibrationVoxel3CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel3 = ui.calibrationVoxel4CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel4 = ui.calibrationVoxel5CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel5 = ui.calibrationVoxel6CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel6 = ui.calibrationVoxel7CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel7 = 1;
 
 	if (receiverCaptures[0]) 
 	{
-		receiverCaptures[0]->StartCalibration(frameQty, beta, channelMask);
+		receiverCaptures[0]->StartCalibration(frameQty, beta, voxelMask);
 	}
 
 	// Update the state of buttons
@@ -1161,13 +1161,7 @@ bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
 		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
 		bNew = receiver->CopyReceiverAScans(lastDisplayedFrame, aScanData, subscriberID);
-		//printf ("receiver %d\n", receiverID);
 	}
-	/*
-	BOOST_FOREACH(AScan::Ptr aScan, aScanData) {
-		printf ("copied ascan %d-%d\n", aScan->receiverID, aScan->channelID);
-	}
-	*/
 
 	return(bNew);
 }
@@ -1223,13 +1217,13 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		ui.hardwareDSPCheckBox->setChecked(status.hardwareError.bitFieldData.dsp);
 		ui.hardwareMemoryCheckBox->setChecked(status.hardwareError.bitFieldData.memory);
 
-		ui.receiverChannel1CheckBox->setChecked(status.receiverError.bitFieldData.channel0);
-		ui.receiverChannel2CheckBox->setChecked(status.receiverError.bitFieldData.channel1);
-		ui.receiverChannel3CheckBox->setChecked(status.receiverError.bitFieldData.channel2);
-		ui.receiverChannel4CheckBox->setChecked(status.receiverError.bitFieldData.channel3);
-		ui.receiverChannel5CheckBox->setChecked(status.receiverError.bitFieldData.channel4);
-		ui.receiverChannel6CheckBox->setChecked(status.receiverError.bitFieldData.channel5);
-		ui.receiverChannel7CheckBox->setChecked(status.receiverError.bitFieldData.channel6);
+		ui.receiverVoxel1CheckBox->setChecked(status.receiverError.bitFieldData.voxel0);
+		ui.receiverVoxel2CheckBox->setChecked(status.receiverError.bitFieldData.voxel1);
+		ui.receiverVoxel3CheckBox->setChecked(status.receiverError.bitFieldData.voxel2);
+		ui.receiverVoxel4CheckBox->setChecked(status.receiverError.bitFieldData.voxel3);
+		ui.receiverVoxel5CheckBox->setChecked(status.receiverError.bitFieldData.voxel4);
+		ui.receiverVoxel6CheckBox->setChecked(status.receiverError.bitFieldData.voxel5);
+		ui.receiverVoxel7CheckBox->setChecked(status.receiverError.bitFieldData.voxel6);
 
 		ui.statusSelfTestCheckBox->setChecked(status.status.bitFieldData.selfTest);
 		ui.statusShutdownCheckBox->setChecked(status.status.bitFieldData.shutdown);
@@ -1300,13 +1294,13 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		ui.hardwareDSPCheckBox->setEnabled(bEnableButtons);
 		ui.hardwareMemoryCheckBox->setEnabled(bEnableButtons);
 
-		ui.receiverChannel1CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel2CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel3CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel4CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel5CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel6CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel7CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel1CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel2CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel3CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel4CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel5CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel6CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel7CheckBox->setEnabled(bEnableButtons);
 
 		ui.statusSelfTestCheckBox->setEnabled(bEnableButtons);
 		ui.statusShutdownCheckBox->setEnabled(bEnableButtons);
@@ -1324,23 +1318,23 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		UpdateTrackerParametersView();
 }
 
-void AWLQtDemo::FillChannelSelectList()
+void AWLQtDemo::FillVoxelSelectList()
 {
 
-	ui.channelSelectListWidget->clear();
+	ui.voxelSelectListWidget->clear();
 
-	int channelQty = receiverCaptures[0]->GetChannelQty();
-	for (int channel = 0; channel < channelQty; channel++)
+	int voxelQty = receiverCaptures[0]->GetVoxelQty();
+	for (int voxelID = 0; voxelID < voxelQty; voxelID++)
 	{
-		int row = channel / receiverCaptures[0]->receiverColumnQty;
-		int column= channel % receiverCaptures[0]->receiverColumnQty;
+		int row = voxelID / receiverCaptures[0]->receiverColumnQty;
+		int column= voxelID % receiverCaptures[0]->receiverColumnQty;
 
-		QString sLabel= QString("Row: %1 Col: %2").arg(row+1, 3).arg(column+1, 3);
+		QString sLabel= QString("Row: %1 Col: %2").arg(row, 3).arg(column, 3);
 	
-		QListWidgetItem *listItem = new QListWidgetItem(sLabel, ui.channelSelectListWidget);
+		QListWidgetItem *listItem = new QListWidgetItem(sLabel, ui.voxelSelectListWidget);
 		listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 		listItem->setCheckState(Qt::Checked);
-		ui.channelSelectListWidget->addItem(listItem);
+		ui.voxelSelectListWidget->addItem(listItem);
 	}
 }
 
@@ -2432,7 +2426,7 @@ void AWLQtDemo::on_pushButtonSelectAllAscan_clicked()
   ui.checkBox_15->setChecked(true);
   ui.checkBox_16->setChecked(true);
 
-  mAScanView->setChannelMask(0xFFFF);
+  mAScanView->setVoxelMask(0xFFFF);
 }
 
 void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
@@ -2454,7 +2448,7 @@ void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
   ui.checkBox_15->setChecked(false);
   ui.checkBox_16->setChecked(false);
 
-  mAScanView->setChannelMask(0);
+  mAScanView->setVoxelMask(0);
 }
 
 void AWLQtDemo::on_checkBoxAscanSelToggled()
@@ -2476,7 +2470,7 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
   if (ui.checkBox_14->isChecked()) mask |= 1 << 13;
   if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
   if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
-  mAScanView->setChannelMask(mask);
+  mAScanView->setVoxelMask(mask);
 }
 
 void AWLQtDemo::on_radioReceiverSelToggled()

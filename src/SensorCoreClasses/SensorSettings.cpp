@@ -108,6 +108,7 @@ bool SensorSettings::ReadSettings()
 
 	int receiverQty = propTree.get<int>("config.receivers.receiverQty", 0);
 	receiverSettings.resize(receiverQty);
+	
 	for (int receiverIndex = 0; receiverIndex < receiverQty; receiverIndex++)
 	{
 		std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverIndex);
@@ -117,16 +118,16 @@ bool SensorSettings::ReadSettings()
 		ReceiverSettings* receiverPtr = &receiverSettings[receiverIndex];
 		receiverPtr->sReceiverType = receiverNode.get<std::string>("receiverType");
 		receiverPtr->sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
-		receiverPtr->sReceiverChannelGeometry = receiverNode.get<std::string>("receiverChannelGeometry");
+		receiverPtr->sReceiverVoxelGeometry = receiverNode.get<std::string>("receiverVoxelGeometry");
 
 		// Display
 		receiverPtr->displayedRangeMin = receiverNode.get<float>("displayedRangeMin", (float)0.0);
 		receiverPtr->displayedRangeMax = receiverNode.get<float>("displayedRangeMax", (float)60.0);
 
 		// Get the Channel configuration Node
-		std::string channelGeometryKey = "config." + receiverPtr->sReceiverChannelGeometry;
-		boost::property_tree::ptree& channelGeometryNode = propTree.get_child(channelGeometryKey);
-		GetChannelGeometry(channelGeometryNode, receiverPtr);
+		std::string voxelGeometryKey = "config." + receiverPtr->sReceiverVoxelGeometry;
+		boost::property_tree::ptree& voxelGeometryNode = propTree.get_child(voxelGeometryKey);
+		GetVoxelGeometry(voxelGeometryNode, receiverPtr);
 	} // for (int receiverIndex = 0; 
 
 
@@ -191,10 +192,10 @@ bool SensorSettings::StoreReceiverCalibration()
 
 			receiverNode.put<std::string>("receiverType", receiver.sReceiverType);
 			receiverNode.put<std::string>("receiverRegisterSet", receiver.sReceiverRegisterSet);
-			receiverNode.put<std::string>("receiverChannelGeometry", receiver.sReceiverGeometry);
+			receiverNode.put<std::string>("receiverVoxelGeometry", receiver.sReceiverGeometry);
 
 
-			receiverNode.put<uint16_t>("channelMask", receiver.receiverChannelMask);
+			receiverNode.put<uint16_t>("voxelMask", receiver.receiverVoxelMask);
 			receiverNode.put<uint16_t>("frameRate", (uint16_t) receiver.receiverFrameRate);
 
 			// Geometry
@@ -208,28 +209,28 @@ bool SensorSettings::StoreReceiverCalibration()
 			receiverNode.put<float>("displayedRangeMax", receiver.displayedRangeMax);
 			receiverNode.put<float>("rangeOffset", receiver.rangeOffset);
 
-			// All channel info for the receiver
-			BOOST_FOREACH(ptree::value_type & channelsNode, receiverNode)
+			// All voxel info for the receiver
+			BOOST_FOREACH(ptree::value_type & voxelsNode, receiverNode)
 			{
-				if (channelsNode.first == "channel")
+				if (voxelsNode.first == "voxel")
 				{
-					boost::property_tree::ptree& channelNode = channelsNode.second;
-					ChannelConfig channelConfig;
+					boost::property_tree::ptree& voxelNode = voxelsNode.second;
+					VoxelConfig voxelConfig;
 
-					channelNode.put<int>("index", channelConfig.channelIndex);
-					Put2DPoint(channelNode.get_child("fov"), channelConfig.fovWidth, channelConfig.fovHeight);
+					voxelNode.put<int>("index", voxelConfig.voxelIndex);
+					Put2DPoint(voxelNode.get_child("fov"), voxelConfig.fovWidth, voxelConfig.fovHeight);
 					float roll = 0.0;
-					PutOrientation(channelNode.get_child("orientation"), channelConfig.centerY, channelConfig.centerX, roll);
-					channelNode.put<float>("maxRange", channelConfig.maxRange);
+					PutOrientation(voxelNode.get_child("orientation"), voxelConfig.centerY, voxelConfig.centerX, roll);
+					voxelNode.put<float>("maxRange", voxelConfig.maxRange);
 
-					PutColor(channelNode.get_child("displayColor"),
-						channelConfig.displayColorRed, channelConfig.displayColorGreen, channelConfig.displayColorBlue);
+					PutColor(voxelNode.get_child("displayColor"),
+						voxelConfig.displayColorRed, voxelConfig.displayColorGreen, voxelConfig.displayColorBlue);
 
-					channelsNode->add_child(channelNode);
-				}// if( receiversNode.first == "channel"
+					voxelsNode->add_child(voxelNode);
+				}// if( receiversNode.first == "voxel"
 
-			} // BOOST_FOREACH(ptree::value_type &channelsNode
-			receiverNode.put_child(channelsNode);
+			} // BOOST_FOREACH(ptree::value_type &voxelsNode
+			receiverNode.put_child(voxelsNode);
 		} // If receiversNode.first == "receiver"
 		receiversNode.put_child(receiverNode);
 	} // BOOST_FOREACH(ptree::value_type &receiversNode, propT
@@ -313,45 +314,48 @@ void SensorSettings::GetAlertConditions(boost::property_tree::ptree& alertNode, 
 	}
 
 	alert.receiverID = alertNode.get<int>("alertReceiver", 0);
-	alert.alertChannelMask.wordData = alertNode.get<uint16_t>("alertChannels", 255);
+	alert.alertVoxelMask.wordData = alertNode.get<uint16_t>("alertVoxel", 255);
 	alert.minRange = alertNode.get<float>("alertMin", -std::numeric_limits<float>::max());
 	alert.maxRange = alertNode.get<float>("alertMax", std::numeric_limits<float>::max());
 	alert.threatLevel = (AlertCondition::ThreatLevel) (alertNode.get<int>("alertLevel", AlertCondition::eThreatNone));
 }
 
-void SensorSettings::GetChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr)
+void SensorSettings::GetVoxelGeometry(boost::property_tree::ptree& voxelGeometryNode, ReceiverSettings* receiverPtr)
 {
-	// All channel info for the receiver
-	int channelQty = channelGeometryNode.get<int>("channelQty", -1);
+	// All voxel info for the receiver
+	int voxelQty = voxelGeometryNode.get<int>("voxelQty", -1);
 
-	// if no "channelPerChannel" description, try array Description.
-	if (channelQty == -1)
+	// if no "voxel Per voxel" description, try array Description.
+	if (voxelQty == -1)
 	{
-		GetChannelGeometryArray(channelGeometryNode, receiverPtr);
+		GetVoxelGeometryArray(voxelGeometryNode, receiverPtr);
 		return;
 	}
 
-	receiverPtr->channelsConfig.resize(channelQty);
+	receiverPtr->voxelsConfig.resize(voxelQty);
+	receiverPtr->receiverRows = 1;
+	receiverPtr->receiverColumns = voxelQty;
 
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+
+	for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 	{
 
-		std::string channelKey = std::string("channel") + std::to_string(channelIndex);
+		std::string voxelKey = std::string("voxels") + std::to_string(voxelIndex);
 
-		boost::property_tree::ptree& channelNode = channelGeometryNode.get_child(channelKey);
+		boost::property_tree::ptree& voxelNode = voxelGeometryNode.get_child(voxelKey);
 
-		ChannelConfig* channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
-		channelConfigPtr->channelIndex = channelIndex;
-		Get2DPoint(channelNode.get_child("fov"), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		channelConfigPtr->maxRange = channelNode.get<float>("maxRange", std::numeric_limits<float>::max());
+		VoxelConfig* voxelConfigPtr = &receiverPtr->voxelsConfig[voxelIndex];
+		voxelConfigPtr->voxelIndex = voxelIndex;
+		Get2DPoint(voxelNode.get_child("fov"), voxelConfigPtr->fovWidth, voxelConfigPtr->fovHeight);
+		voxelConfigPtr->maxRange = voxelNode.get<float>("maxRange", std::numeric_limits<float>::max());
 
-		GetColor(channelNode.get_child("displayColor"),
-			channelConfigPtr->displayColorRed, channelConfigPtr->displayColorGreen, channelConfigPtr->displayColorBlue);
-	} // for (int channelIndex = 0;
+		GetColor(voxelNode.get_child("displayColor"),
+			voxelConfigPtr->displayColorRed, voxelConfigPtr->displayColorGreen, voxelConfigPtr->displayColorBlue);
+	} // for (int voxelIndex = 0;
 
 }
 
-void SensorSettings::GetChannelGeometryArray(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr)
+void SensorSettings::GetVoxelGeometryArray(boost::property_tree::ptree& voxelGeometryNode, ReceiverSettings* receiverPtr)
 
 {
 	float columnsFloat;
@@ -372,44 +376,46 @@ void SensorSettings::GetChannelGeometryArray(boost::property_tree::ptree& channe
 
 
 	// Range Wraparound trick
-	Get2DPoint(channelGeometryNode.get_child("arraySize"), columnsFloat, rowsFloat);
+	Get2DPoint(voxelGeometryNode.get_child("arraySize"), columnsFloat, rowsFloat);
 	columns = (int)columnsFloat;
 	rows = (int)rowsFloat;
 
-	Get2DPoint(channelGeometryNode.get_child("arrayFOV"), fovX, fovY);
-	Get2DPoint(channelGeometryNode.get_child("pixelSpacing"), spacingX, spacingY);
-	Get2DPoint(channelGeometryNode.get_child("arrayOffset"), offsetX, offsetY);
+	Get2DPoint(voxelGeometryNode.get_child("arrayFOV"), fovX, fovY);
+	Get2DPoint(voxelGeometryNode.get_child("pixelSpacing"), spacingX, spacingY);
+	Get2DPoint(voxelGeometryNode.get_child("arrayOffset"), offsetX, offsetY);
 
-	maxRange = channelGeometryNode.get<float>("maxRange", 60.0);
-	maxAscanRange = channelGeometryNode.get<float>("maxAscanRange", 60.0);
+	maxRange = voxelGeometryNode.get<float>("maxRange", 60.0);
+	maxAscanRange = voxelGeometryNode.get<float>("maxAscanRange", 60.0);
 
-	GetColor(channelGeometryNode.get_child("displayColor"), displayColorRed, displayColorGreen, displayColorBlue);
+	GetColor(voxelGeometryNode.get_child("displayColor"), displayColorRed, displayColorGreen, displayColorBlue);
 
 	float pixelWidth = (fovX - ((columns - 1) * spacingX)) / columns;
 	float pixelHeight = (fovY - ((rows - 1) * spacingY)) / rows;
 
-	int channelQty = columns * rows;
-	receiverPtr->channelsConfig.resize(channelQty);
+	int voxelQty = columns * rows;
+	receiverPtr->voxelsConfig.resize(voxelQty);
+	receiverPtr->receiverColumns = columns;
+	receiverPtr->receiverRows = rows;
 
 
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 	{
-		int row = channelIndex / columns;
+		int row = voxelIndex / columns;
 		std::string sColorKey = std::string("displayColorLine") + std::to_string(row);
-		GetColor(channelGeometryNode.get_child(sColorKey), displayColorRed, displayColorGreen, displayColorBlue);
+		GetColor(voxelGeometryNode.get_child(sColorKey), displayColorRed, displayColorGreen, displayColorBlue);
 
-		ChannelConfig* channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
-		channelConfigPtr->channelIndex = channelIndex;
+		VoxelConfig* voxelConfigPtr = &receiverPtr->voxelsConfig[voxelIndex];
+		voxelConfigPtr->voxelIndex = voxelIndex;
 
-		channelConfigPtr->fovWidth = pixelWidth;
-		channelConfigPtr->fovHeight = pixelHeight;
+		voxelConfigPtr->fovWidth = pixelWidth;
+		voxelConfigPtr->fovHeight = pixelHeight;
 
-		channelConfigPtr->maxRange = maxRange;
-		channelConfigPtr->maxAscanRange = maxAscanRange;
-		channelConfigPtr->displayColorRed = displayColorRed;
-		channelConfigPtr->displayColorGreen = displayColorGreen;
-		channelConfigPtr->displayColorBlue = displayColorBlue;
-	} // for (int channelIndex = ;
+		voxelConfigPtr->maxRange = maxRange;
+		voxelConfigPtr->maxAscanRange = maxAscanRange;
+		voxelConfigPtr->displayColorRed = displayColorRed;
+		voxelConfigPtr->displayColorGreen = displayColorGreen;
+		voxelConfigPtr->displayColorBlue = displayColorBlue;
+	} // for (int voxelIndex = ;
 }
 
 void SensorSettings::PutPosition(boost::property_tree::ptree& node, float forward, float left, float up)
@@ -448,28 +454,28 @@ void SensorSettings::PutColor(boost::property_tree::ptree& colorNode, uint8_t re
 }
 
 
-void SensorSettings::PutChannelGeometry(boost::property_tree::ptree& channelGeometryNode, ReceiverSettings* receiverPtr)
+void SensorSettings::PutChannelGeometry(boost::property_tree::ptree& voxelGeometryNode, ReceiverSettings* receiverPtr)
 {
-	int channelQty = receiverPtr->channelsConfig.size();
-	// All channel info for the receiver
-	channelGeometryNode.put<int>("channelQty", channelQty);
+	int voxelQty = receiverPtr->voxelsConfig.size();
+	// All voxel info for the receiver
+	voxelGeometryNode.put<int>("voxelQty", voxelQty);
 
 	// Range Wraparound trick
 
-	for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 	{
-		std::string channelKey = std::string("channel") + std::to_string(channelIndex);
+		std::string voxelKey = std::string("voxel") + std::to_string(voxelIndex);
 
-		boost::property_tree::ptree& channelNode = channelGeometryNode.put_child(channelKey, boost::property_tree::ptree(""));
+		boost::property_tree::ptree& voxelNode = voxelGeometryNode.put_child(voxelKey, boost::property_tree::ptree(""));
 
-		ChannelConfig* channelConfigPtr = &receiverPtr->channelsConfig[channelIndex];
-		channelConfigPtr->channelIndex = channelIndex;
-		Put2DPoint(channelNode.put_child("fov", boost::property_tree::ptree("")), channelConfigPtr->fovWidth, channelConfigPtr->fovHeight);
-		channelConfigPtr->maxRange = channelNode.get<float>("maxRange");
+		VoxelConfig* voxelConfigPtr = &receiverPtr->voxelsConfig[voxelIndex];
+		voxelConfigPtr->voxelIndex = voxelIndex;
+		Put2DPoint(voxelNode.put_child("fov", boost::property_tree::ptree("")), voxelConfigPtr->fovWidth, voxelConfigPtr->fovHeight);
+		voxelConfigPtr->maxRange = voxelNode.get<float>("maxRange");
 
-		PutColor(channelNode.put_child("displayColor", boost::property_tree::ptree("")),
-			channelConfigPtr->displayColorRed, channelConfigPtr->displayColorGreen, channelConfigPtr->displayColorBlue);
-	} // for (int channelIndex = 0;
+		PutColor(voxelNode.put_child("displayColor", boost::property_tree::ptree("")),
+			voxelConfigPtr->displayColorRed, voxelConfigPtr->displayColorGreen, voxelConfigPtr->displayColorBlue);
+	} // for (int voxelIndex = 0;
 }
 
 bool SensorSettings::SetLogAndDebugFilePath(std::string newFilePath)

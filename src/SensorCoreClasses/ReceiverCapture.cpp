@@ -58,26 +58,26 @@ const int ReceiverCapture::maximumSensorFrames(100);
 
 const std::string sDefaultReceiverType = "Generic";
 const std::string sDefaultReceiverRegisterSet = "registerDescription_RevC";
-const std::string sDefaultReceiverChannelGeometry = "GeometryAWL7";
-const uint16_t defaultChannelMaskValue = 0xFFFF;
+const std::string sDefaultReceiverVoxelGeometry = "GeometryAWL7";
+const uint16_t defaultVoxelMaskValue = 0xFFFF;
 const float defaultSignalToNoiseFloor = -10.0;
 
 
-ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	ReceiverFrameRate inFrameRate, ChannelMask& inChannelMask, MessageMask& inMessageMask, float inRangeOffset,
+ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
+	ReceiverFrameRate inFrameRate, VoxelMask& inVoxelMask, MessageMask& inMessageMask, float inRangeOffset,
 	const RegisterSet& inRegistersFPGA, const RegisterSet& inRegistersADC, const RegisterSet& inRegistersGPIO,
 	const AlgorithmSet& inParametersAlgos,
 	const AlgorithmSet& inParametersTrackers) :
 	ThreadedWorker(),
 	Publisher(),
 	receiverID(receiverID),
-	receiverChannelQty(inReceiverChannelQty),
+	receiverVoxelQty(inReceiverVoxelQty),
 	receiverColumnQty(inReceiverColumns),
 	receiverRowQty(inReceiverRows),
 	lineWrapAround(inLineWrapAround),
 	acquisitionSequence(new AcquisitionSequence()),
 	frameID(0),
-	currentFrame(new SensorFrame(receiverID, 0, inReceiverChannelQty)),
+	currentFrame(new SensorFrame(receiverID, 0, inReceiverVoxelQty)),
 	measurementOffset(inRangeOffset),
 	bFrameInvalidated(false),
 	registersFPGA(inRegistersFPGA),
@@ -87,7 +87,7 @@ ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int i
 	parametersTrackers(inParametersTrackers),
 	sReceiverType(sDefaultReceiverType),
 	sReceiverRegisterSet(sDefaultReceiverRegisterSet),
-	sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
+	sReceiverVoxelGeometry(sDefaultReceiverVoxelGeometry),
 	targetHintDistance(0.0),
 	targetHintAngle(0.0),
 	m_FrameRate(0),
@@ -111,11 +111,11 @@ ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverChannelQty, int i
 
 	// Update settings from application
 	receiverStatus.frameRate = inFrameRate;
-	receiverStatus.channelMask = inChannelMask;
+	receiverStatus.voxelMask = inVoxelMask;
 	receiverStatus.messageMask = inMessageMask;
 
 	// Reflect the settings in hardware
-	SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+	SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 }
 
 ReceiverCapture::ReceiverCapture(int receiverID, boost::property_tree::ptree &propTree):
@@ -127,7 +127,7 @@ frameID(0),
 bFrameInvalidated(false),
 sReceiverType(sDefaultReceiverType),
 sReceiverRegisterSet(sDefaultReceiverRegisterSet),
-sReceiverChannelGeometry(sDefaultReceiverChannelGeometry),
+sReceiverVoxelGeometry(sDefaultReceiverVoxelGeometry),
 targetHintDistance(0.0),
 targetHintAngle(0.0),
 m_FrameRate(0),
@@ -154,10 +154,10 @@ logFilePtr(NULL)
 	receiverStatus.currentTrackerPendingUpdates = 0;
 
 	// Create a temporary SensorFrame object for storage of the current data
-	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, 0, receiverChannelQty));
+	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, 0, receiverVoxelQty));
 
 	// Reflect the settings in hardware
-	SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);
+	SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 }
 
 ReceiverCapture::~ReceiverCapture()
@@ -333,13 +333,13 @@ bool ReceiverCapture::SetRecordFileName(std::string inRecordFileName)
 	return(true);
 }
 
-bool ReceiverCapture::StartPlayback(ReceiverFrameRate/*frameRate*/, ChannelMask /*channelMask*/)
+bool ReceiverCapture::StartPlayback(ReceiverFrameRate/*frameRate*/, VoxelMask /*voxelMask*/)
 {
 	receiverStatus.bInPlayback = true;
 	return(true);
 }
 
-bool ReceiverCapture::StartRecord(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/)
+bool ReceiverCapture::StartRecord(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/)
 {
 	receiverStatus.bInRecord = true;
 	return(true);
@@ -358,7 +358,7 @@ bool ReceiverCapture::StopRecord()
 }
 
 
-bool ReceiverCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/)
+bool ReceiverCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/)
 
 {
    return(true);
@@ -446,7 +446,7 @@ void ReceiverCapture::ProcessCompletedFrame()
 	
 	// Create a new current frame.
 	FrameID localFrameID = acquisitionSequence->AllocateFrameID();
-	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, localFrameID, receiverChannelQty));
+	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, localFrameID, receiverVoxelQty));
 	bFrameInvalidated = false;
 
 	rawLock.unlock();
@@ -552,7 +552,7 @@ CellID ReceiverCapture::GetCellIDFromChannel(int inChannelID)
 
 int ReceiverCapture::GetChannelIDFromCell(CellID inCellID)
 {
-	int channelID = inCellID.row * receiverColumnQty;
+	int channelID= inCellID.row * receiverColumnQty;
 	channelID += inCellID.column;
 
 	return (channelID);
@@ -573,13 +573,13 @@ bool ReceiverCapture::BeginDistanceLog()
 		OpenLogFile(*logFilePtr, true);
 	}
 
-	LogFilePrintf(*logFilePtr, ",Comment,Type, ReceiverID, Track ID, Channel, RowID, ColumnID, ChannelID,Type Specific");
+	LogFilePrintf(*logFilePtr, ",Comment,Type, ReceiverID, Track ID, Channel, ColumnID, RowID, ChannelID,Type Specific");
 	LogFilePrintf(*logFilePtr, ",,Start distance log");
 	// Title Line. The title lines dscribe the column content for each type of message.
-	LogFilePrintf(*logFilePtr, ",Track Description:,Track,trackID,ReceiverID,Channel,RowID, ColumnID,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
-	LogFilePrintf(*logFilePtr, ",Distance Description:,Dist,_,ReceiverID,Channel,RowID,ColumnID,ChannelID,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
+	LogFilePrintf(*logFilePtr, ",Track Description:,Track,trackID,ReceiverID,Channel,ColumnID, RowID,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
+	LogFilePrintf(*logFilePtr, ",Distance Description:,Dist,_,ReceiverID,Channel,ColumnID,RowID,ChannelID,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
 	LogFilePrintf(*logFilePtr, ",Footer Description:,Footer,_,ReceiverID,_,_,_,_,FooterData");
-	LogFilePrintf(*logFilePtr, ",Wave Description:,Wave,_,ReceiverID,Channel,RowID, ColumnID,ChannelID,point0,point1,point3,etc");
+	LogFilePrintf(*logFilePtr, ",Wave Description:,Wave,_,ReceiverID,Channel,ColumID, RowID, ChannelID,point0,point1,point3,etc");
 
 	logFileMutex.unlock();
 
@@ -629,17 +629,17 @@ void ReceiverCapture::LogTracks(SensorFrame::Ptr sourceFrame)
 		Track::Ptr track = *trackIterator;
 		if (track->IsComplete()) 
 		{
-			// Track messages are ordered per voxel. trackMainChannel corresponds to column
+			// Track messages are ordered per voxel. trackMainVoxel corresponds to column
 
-			CellID cellID(track->trackMainChannel % receiverColumnQty, track->trackMainChannel / receiverColumnQty);
+			CellID cellID(track->trackMainVoxel % receiverColumnQty, track->trackMainVoxel / receiverColumnQty);
 			int channelID = GetChannelIDFromCell(cellID);
 
 			//Date;Comment (empty);"TrackID", "Track"/"Dist";TrackID;"Channel";....Val;distance;intensity,speed;acceleration;probability;timeToCollision);
 			LogFilePrintf(*logFilePtr, ", ,Track,%d,%d,Channel,%d,%d,%d, ,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.1f,%.1f,%.3f,%.1f,%.0f,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 				track->trackID,
 				receiverID,
-				cellID.row,
 				cellID.column,
+				cellID.row,
 				channelID,
 				targetHintDistance,
 				targetHintAngle,
@@ -651,14 +651,14 @@ void ReceiverCapture::LogTracks(SensorFrame::Ptr sourceFrame)
 				track->decelerationToStop,
 				track->probability,
 				track->threatLevel,
-				track->trackMainChannel, 
-				(track->trackChannels.bitFieldData.channel0)? 0 : 0, 
-				(track->trackChannels.bitFieldData.channel1) ? 1 : 0,
-				(track->trackChannels.bitFieldData.channel2) ? 2 : 0,
-				(track->trackChannels.bitFieldData.channel3) ? 3 : 0,
-				(track->trackChannels.bitFieldData.channel4) ? 4 : 0,
-				(track->trackChannels.bitFieldData.channel5) ? 5 : 0,
-				(track->trackChannels.bitFieldData.channel6) ? 6 : 0);
+				track->trackMainVoxel, 
+				(track->trackChannels.bitFieldData.voxel0)? 0 : 0, 
+				(track->trackChannels.bitFieldData.voxel1) ? 1 : 0,
+				(track->trackChannels.bitFieldData.voxel2) ? 2 : 0,
+				(track->trackChannels.bitFieldData.voxel3) ? 3 : 0,
+				(track->trackChannels.bitFieldData.voxel4) ? 4 : 0,
+				(track->trackChannels.bitFieldData.voxel5) ? 5 : 0,
+				(track->trackChannels.bitFieldData.voxel6) ? 6 : 0);
 
 		}  // if (track...
 
@@ -682,16 +682,15 @@ void ReceiverCapture::LogDistances(SensorFrame::Ptr sourceFrame)
 	while (detectionIterator != sourceFrame->rawDetections.end()) 
 	{
 		Detection::Ptr detection = *detectionIterator;
-		// Track messages are ordered per voxel. trackMainChannel corresponds to column
+		// Track messages are ordered per voxel. trackMainVoxel corresponds to column
 
-		CellID cellID(detection->channelID % receiverColumnQty, detection->channelID / receiverColumnQty);
+		CellID cellID = detection->cellID;
 		int channelID = GetChannelIDFromCell(cellID);
-
 
 		LogFilePrintf(*logFilePtr, " , ,Dist,,%d,Channel,%d,%d,%d,%d,Expected,%.2f,%.1f,Val,%.2f,%.1f,%.2f,%.1f,%.3f,%.1f,%.0f,%d",
 			receiverID,
-			cellID.row,
 			cellID.column,
+			cellID.row,
 			channelID, 
 			detection->detectionID,
 			targetHintDistance,
@@ -723,12 +722,12 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 
 		sReceiverType = receiverNode.get<std::string>("receiverType");
 		sReceiverRegisterSet = receiverNode.get<std::string>("receiverRegisterSet");
-		sReceiverChannelGeometry = receiverNode.get<std::string>("receiverChannelGeometry");
+		sReceiverVoxelGeometry = receiverNode.get<std::string>("receiverVoxelGeometry");
 		measurementOffset = receiverNode.get<float>("rangeOffset");
 
 		receiverStatus.frameRate =  (ReceiverFrameRate) receiverNode.get<uint16_t>("frameRate");	// Default frame rate is 100Hz
 
-		receiverStatus.channelMask.wordData = receiverNode.get<uint16_t>("channelMask");
+		receiverStatus.voxelMask.wordData = receiverNode.get<uint16_t>("voxelMask");
 
 		receiverStatus.messageMask.byteData = 0;
 		if (receiverNode.get<bool>("msgEnableObstacle")) receiverStatus.messageMask.bitFieldData.obstacle = 1;
@@ -749,7 +748,7 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 	using boost::property_tree::ptree;
 
 	// Read the geometry
-	std::string geometryDescKey = "config." + sReceiverChannelGeometry;
+	std::string geometryDescKey = "config." + sReceiverVoxelGeometry;
 
 	// The geometry configuration section may be absent from the configuration.
 	// This is considered a normal situation.
@@ -771,14 +770,14 @@ bool ReceiverCapture::ReadGeometryFromPropTree(boost::property_tree::ptree &prop
 	// array based configuration;
 
 	lineWrapAround = geometryNodePtr->get<float>("lineWrapAround", -1.0);
-	receiverChannelQty = geometryNodePtr->get<int>("channelQty", -1);
-	receiverColumnQty = receiverChannelQty;
+	receiverVoxelQty = geometryNodePtr->get<int>("voxelQty", -1);
+	receiverColumnQty = receiverVoxelQty;
 	receiverRowQty = 1;
-	if (receiverChannelQty == -1)
+	if (receiverVoxelQty == -1)
 	{
 		receiverColumnQty = geometryNodePtr->get<int>("arraySize.x", -1);
 		receiverRowQty = geometryNodePtr->get<int>("arraySize.y", -1);
-		receiverChannelQty = ((int)receiverColumnQty) * ((int)receiverRowQty);
+		receiverVoxelQty = ((int)receiverColumnQty) * ((int)receiverRowQty);
 	}
 
 	return(true);

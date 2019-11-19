@@ -133,20 +133,20 @@ public:
 		} bitFieldData;
 	} hardwareError;
 
-	/** \brief Receiver channel error flags.  Indicates an error condition on a specific detector.
+	/** \brief Receiver voxel error flags.  Indicates an error condition on a specific detector.
       */
 
 	union 
 	{
 		uint8_t byteData;
 		struct  {
-			bool channel0	: 1;
-			bool channel1	: 1;
-			bool channel2	: 1;
-			bool channel3	: 1;
-			bool channel4	: 1;
-			bool channel5	: 1;
-			bool channel6	: 1;
+			bool voxel0	: 1;
+			bool voxel1	: 1;
+			bool voxel2	: 1;
+			bool voxel3	: 1;
+			bool voxel4	: 1;
+			bool voxel5	: 1;
+			bool voxel6	: 1;
 			bool monitor		: 1;
 		} bitFieldData;
 	} receiverError;
@@ -248,7 +248,7 @@ public:
 
 	float    signalToNoiseFloor;
 	
-	ChannelMask	channelMask;
+	VoxelMask	voxelMask;
 	MessageMask	messageMask;
 }
 ReceiverStatus;
@@ -420,12 +420,12 @@ public:
 public:
 	/** \brief ReceiverCapture constructor from user supplied values.
  	    * \param[in] inReceiverID  unique receiverID
-	    * \param[in] inReceiverChannelQty number of channels in the receiver
+	    * \param[in] inReceiverVoxelQty number of channels in the receiver
 	    * \param[in] inReceiverColumns number of columns in receiver array
 		* \param[in] inReceiverRows number of rows  in the receiver array
 		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
 		* \param[in] inFrameRate frameRate of the receiver
-	    * \param[in] inChannelMask  channelMask indicating which channels are activated in the receiver
+	    * \param[in] inVoxelMask  voxelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
 		*                          Will automatically be added to any range received.
@@ -436,8 +436,8 @@ public:
 		* \param[in] inParametersTrackers default description of the Tracker parameters
 		*/
 
-	ReceiverCapture(int receiverID, int inReceiverChannelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
-						ReceiverFrameRate inFrameRate, ChannelMask &inChannelMask, MessageMask &inMessageMask, float inRangeOffset,
+	ReceiverCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
+						ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers);
@@ -470,10 +470,10 @@ public:
 
   virtual bool IsConnected() { return true; }
 
-	/** \brief Return the number of receiver channels used for video projection
+	/** \brief Return the number of receiver voxels used for video projection
       * \return int indicating the number of channels.
       */
-	virtual int GetChannelQty() {return receiverChannelQty;};
+	virtual int GetVoxelQty() {return receiverVoxelQty;};
 
 
 	/** \brief copy the frame identified by frameID to to a local copy (thread-safe)
@@ -496,11 +496,9 @@ public:
 
 	virtual bool CopyReceiverAScans(FrameID inFrameID,  AScan::Vector &outAScans, Publisher::SubscriberID inSubscriberID);
 
-	/** \brief copy the channel status informationidentified with a frameID to to a local copy (thread-safe)
-     * \param[in] inFrameID frame identificator of the requiested frame
-     * \param[in] inChannelID index of the required channel
-	   \param[out] outChannelFrame ChannelFram structure to which the data is copied.
-     * \return True if channel data is copied successfully. False if frame corresponding to inFrameID or channel data not found
+	/** \brief copy the voxel status informationidentified with a frameID to to a local copy (thread-safe)
+	   \param[out] outStatus ReceiverStatus structure to which the data is copied.
+     * \return True if status data is copied successfully. 
      */
 	virtual bool CopyReceiverStatusData(ReceiverStatus &outStatus);
 
@@ -554,21 +552,21 @@ public:
 
 	/** \brief Starts the playback of the file specified in the last SetPlaybackFileName() call.
       * \param[in] frameRate playback frame rate. Ignored on some implementations of AWL.
-      * \param[in] channelMask mask for the channels that will be played back. that an empty channelMask is equivalent to StopPlayback().
+      * \param[in] voxelMask mask for the voxels that will be played back. that an empty voxelMask is equivalent to StopPlayback().
       * \return true if success.  false on error
  	  * \remarks status of playback is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartPlayback(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/);
+	virtual bool StartPlayback(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/);
 
 	/** \brief Starts the record of a file whose name was set using the last SetRecordFileName() call. 
       * \param[in] frameRate recording frame rate. Ignored on some implementations of AWL (in this case, default frame rate is used).
-      * \param[in] channelMask mask for the recorded channels. that an empty channelMask is equivalent to StopRecord().
+      * \param[in] voxelMask mask for the recorded voxels. that an empty voxelMask is equivalent to StopRecord().
       * \return true if success.  false on error
 	  * \remarks status of record is updated in the receiverStatus member.
 	  * \remarks File is recorded locally on SD Card.
      */
-	virtual bool StartRecord(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/);
+	virtual bool StartRecord(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/);
 
 	/** \brief Stops any current playback of a file. 
       * \return true if success.  false on error
@@ -580,11 +578,11 @@ public:
 	/** \brief Starts the internal calibration of the system. 
       * \param[in] frameQty number of frames on which calibration is calculated
       * \param[in] beta beta parameter for the calibration
-      * \param[in] channelMask mask for the recorded channels. that an empty channelMask is equivalent to StopRecord().
+      * \param[in] voxelMask mask for the recorded voxels. that an empty voxelMask is equivalent to StopRecord().
       * \return true if success.  false on error
 	  * \remarks Calibration file is recorded locally on SD Card.
      */
-	virtual bool StartCalibration(uint8_t frameQty, float beta, ChannelMask channelMask) = 0;
+	virtual bool StartCalibration(uint8_t frameQty, float beta, VoxelMask voxelMask) = 0;
 
 
 	/** \brief Stops any current recording. 
@@ -702,12 +700,12 @@ public:
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
     * \param[in] frameRate new frame rate for the system. A value of 0 means no change
-    * \param[in] channelMask mask for the analyzed channels.
+    * \param[in] voxelMask mask for the analyzed voxels.
     * \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
 	* \return true if success.  false on error.
 	*/
 		
-	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, ChannelMask /*channelMask*/, MessageMask /*messageMask*/) = 0;
+	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/) = 0;
 
 
 
@@ -811,7 +809,8 @@ public:
 	/** \brief Returns the CellID, given a channelID 
 	* \param[in] channelID the input "channel"
 	* \return ChannelID, indicating unique pixel position in the detector array
-	* \remarks Simple receptors qill ahave a one to one relationship between channelID and CellID.
+	* \remarks Simple receptors will ahave a one to one relationship between channelID and CellID 
+	*          (in that case channelID is equivalent to the voxelIndex).
 	*          Some receivers have out of order cell adressing. cellID may not correspond to teh physical position of the pixel.
 	*          Basic ReceiverCapture assumes  linear relationship matrix using rowQty and columnQty.
 	*/
@@ -821,6 +820,7 @@ public:
 	* \param[in] channelID the input "channel"
 	* \return ChannelID, indicating unique pixel position in the detector array
 	* \remarks Simple receptors qill ahave a one to one relationship between channelID and CellID.
+	*          (in that case channelID is equivalent to the voxelIndex).
 	*          Some receivers have out of order cell adressing. cellID may not correspond to teh physical position of the pixel.
 	*          Basic ReceiverCapture assumes  linear relationship matrix using rowQty and columnQty.
 	*/
@@ -846,11 +846,11 @@ public:
 
 	/** \brief String indentifying the receiver optical Configuration.
 	*/
-	std::string sReceiverChannelGeometry;
+	std::string sReceiverVoxelGeometry;
 
-	/** \brief Number of receiver channels on the sensor
+	/** \brief Number of receiver voxels on the sensor
       */
-	int receiverChannelQty;
+	int receiverVoxelQty;
 
 	/** \brief Number of rows in receiver array
 	*/

@@ -71,7 +71,7 @@ class Detection;
 class AScan;
 class Track;
 class SensorFrame;
-class ChannelFrame;
+class VoxelFrame;
 
 
 /** \brief TimeStamp is the standard format for storing time elapsed
@@ -80,7 +80,7 @@ class ChannelFrame;
 
 typedef double Timestamp;
 
-/** \brief ChannelMask struct describes receiverchannel bit mask used in most data structures
+/** \brief VoxelMask struct describes receiverVoxel bit mask used in most data structures
 *        and communications
 * \author Jean-Yves Deschênes
 */
@@ -89,16 +89,16 @@ typedef union
 {
 	uint16_t wordData;
 	struct  {
-		bool channel0 : 1;
-		bool channel1 : 1;
-		bool channel2 : 1;
-		bool channel3 : 1;
-		bool channel4 : 1;
-		bool channel5 : 1;
-		bool channel6 : 1;
-		bool channel7 : 1;
+		bool voxel0 : 1;
+		bool voxel1 : 1;
+		bool voxel2 : 1;
+		bool voxel3 : 1;
+		bool voxel4 : 1;
+		bool voxel5 : 1;
+		bool voxel6 : 1;
+		bool voxel7 : 1;
 	} bitFieldData;;
-} ChannelMask, AlertChannelMask;
+} VoxelMask, AlertVoxelMask;
 
 /**\brief A CellID is a unique identifier of a "pixel" position (column, row) within a a receiver array.
 */
@@ -146,14 +146,13 @@ public:
 
 public:
 	AlertCondition() {};
-	AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, ChannelMask inChannelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel = eThreatNone);
+	AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, VoxelMask inVoxelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel = eThreatNone);
 	AlertCondition(AlertCondition &sourceCondition);
 
-	static AlertCondition::ThreatLevel FindDetectionThreat(boost::shared_ptr<Detection> detection);
 	static AlertCondition::ThreatLevel FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track);
 
 	int	GetReceiverID() { return(receiverID); }
-	AlertChannelMask	GetChannelMask() { return(alertChannelMask); }
+	AlertVoxelMask	GetVoxelMask() { return(alertVoxelMask); }
 	float GetMinRange() { return (minRange); }
 	float GetMaxRange() { return (maxRange); }
 	ThreatLevel GetThreatLevel (){ return(threatLevel); }
@@ -169,8 +168,8 @@ public:
 	/** \brief sensor ID of the sensor where detection origins from */
 	int	  receiverID;
 
-	/** \brief channelMask of the channels where detection origins from */
-	AlertChannelMask	  alertChannelMask;
+	/** \brief voxelMask of the voxelss where detection origins from */
+	AlertVoxelMask	  alertVoxelMask;
 
 	/** \brief minimum range for triggerting of the alert. Nature depends on AlertType */
 	float	  minRange;
@@ -200,22 +199,22 @@ public:
 
 public:
 	Detection();
-	Detection(int inReceiverID, int inChannelID, int inDetectionID);
-	Detection(int inReceiverID, int inChannelID, int inDetectionID, float inDistance, float inIntensity, float inVelocity, 
+	Detection(int inReceiverID, CellID inCellID, int inDetectionID);
+	Detection(int inReceiverID, CellID inCellID, int inDetectionID, float inDistance, float inIntensity, float inVelocity,
 	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, AlertCondition::ThreatLevel inThreatLevel = AlertCondition::eThreatNone);
 	
 	int	GetReceiverID() {return(receiverID);}	
 	int	GetDetectionID() {return(detectionID);}
-	int	GetChannelID() {return(channelID);}
+	CellID	GetCellID() {return(cellID);}
 
 public:
 	/** \brief sensor ID of the sensor where detection origins from */
 	int	  receiverID;
 
-	/** \brief channel ID of the channel where detection origins from */
-	int	  channelID;
+	/** \brief cellID of the voxel where detection origins from */
+	CellID	  cellID;
 
-	/** \brief index of the detection within the channel */
+	/** \brief index of the detection within the voxel */
 	int	  detectionID;
 
 	/** \brief distance, in meters */
@@ -277,11 +276,11 @@ public:
     typedef boost::shared_ptr<AScan> ConstPtr;
 	typedef boost::container::vector<AScan::Ptr> Vector;
 public:
-	AScan(int inReceiverID, CellID inCellID, int inChannelID)
+	AScan(int inReceiverID, CellID inCellID, int inChannelNo)
 	{
 		receiverID = inReceiverID;
-		channelID = inChannelID;
 		cellID = inCellID;
+		channelNo = inChannelNo;
 
 		rawProvider = rawFromNothing;
 		sampleOffset = 0;
@@ -296,15 +295,16 @@ public:
 		//if (samples) delete samples;
 	}
 */
-	int	GetChannelID() {return(channelID);}
 	float GetScaleFactorForRange(int range);
 	void FindMinMaxMean(float *min, float *max, float *mean);
 
 public:
 	int receiverID;
-	/** \brief channel ID of the channel where detection origins from */
-	int channelID;
+	/** \brief cellIDID of the voxel where detection origins from */
 	CellID cellID;
+
+	/* Internal channelNo is used for display purposes */
+	int channelNo;
 
 	RawProvider rawProvider;
 
@@ -376,10 +376,10 @@ public:
 	AlertCondition::ThreatLevel	threatLevel;
 
 	/** \brief Channels in which detections were made for the track **/
-	ChannelMask trackChannels;
+	VoxelMask trackChannels;
 
-	/** \brief Main channel in which detections is made for the track **/
-	uint16_t trackMainChannel;
+	/** \brief Main voxel in which detections is made for the track **/
+	uint16_t trackMainVoxel;
 
 
 	// A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed.
@@ -392,7 +392,7 @@ protected:
 };
 
 
-/** \brief The SensorFrame class holds all channel detections (channelFrames),
+/** \brief The SensorFrame class holds all voxel detections (voxelFrames),
 		corresponding to a unique time frame.
 */
 class SensorFrame
@@ -403,23 +403,23 @@ public:
 	typedef std::deque<SensorFrame::Ptr> Queue;
 
 public:
-	SensorFrame(int inReceiverID, FrameID inFrameID, int inChannelQty);
+	SensorFrame(int inReceiverID, FrameID inFrameID, int inVoxelQty);
 	virtual ~SensorFrame() {};
 
 	int GetReceiverID() { return(receiverID);}
 	FrameID	GetFrameID() {return(frameID);}
 
 
-	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, int channelID, int detectionID);
-	bool FindDetection(Detection::Vector &detectionVector, int inChannelID, int inDetectionID, Detection::Ptr &outDetection);
+	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, CellID inCellID, int detectionID);
+	bool FindDetection(Detection::Vector &detectionVector, CellID inCellID, int inDetectionID, Detection::Ptr &outDetection);
 
-	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector,  int receiverID, CellID inCellID, int channelID);
+	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector,  int receiverID, CellID inCellID, int inChannelID);
 	bool FindAScan(AScan::Vector &detectionVector, int inReceiverID, CellID inCellID, AScan::Ptr &outAScan);
 
 public:
 	int receiverID;
 	FrameID frameID;
-	int channelQty;
+	int voxelQty;
 
 	Detection::Vector rawDetections;		// Raw detections as acquired from device
 	AScan::Vector aScans;
@@ -468,8 +468,6 @@ public:
 	// Frame ID counter.  Each SensorFrame within an acquisition sequence has a unique frame ID.
 	FrameID frameID;
 };
-
-
 
 SENSORCORE_END_NAMESPACE
 #endif // SENSORCORE_DETECTION_STRUCT_H
