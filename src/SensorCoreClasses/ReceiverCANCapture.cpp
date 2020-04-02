@@ -249,6 +249,192 @@ void ReceiverCANCapture::ParseMessage(ReceiverCANMessage &inMsg)
 	}
 }
 
+// Channel index in the data cycle returned by the Wagner chip
+
+int aVoxelIdxWagner[16] = {
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15
+};
+
+int aVoxelIdxArray[16] = {
+  7,
+  8,
+  6,
+  9,
+  5,
+  10,
+  4,
+  11,
+  3,
+  12,
+  2,
+  13,
+  1,
+  14,
+  0,
+  15
+};
+
+void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t* rawData, size_t size)
+{
+	int voxelIndex = -1;
+	CellID cellID(0, 0);
+	int msg_id = -1;
+	size_t sampleOffset = 0;
+	size_t sampleDrop = 0;
+	size_t sampleSize = 1;
+	bool sampleSigned = false;
+	bool transmit = false;
+
+	uint16_t* rawData16;
+
+	rawData16 = (uint16_t*)rawData;
+
+	++m_nbrRawCumul;
+
+	/*
+		printf ("ProcessRaw(%d) ", size);
+		for (int i = 0; i < size; i++) {
+			printf ("%02x ", rawData[i]);
+		}
+		printf ("\n");
+	*/
+
+	switch (provider) {
+	default:
+	case rawFromLibUSB:
+		voxelIndex = 0;
+		cellID = CellID(voxelIndex, voxelIndex);
+		sampleOffset = 0;
+		sampleSize = 2;
+		sampleSigned = true;
+		sampleCount = 100;
+		sampleDrop = 1;
+
+		for (voxelIndex = 0; voxelIndex < 16; voxelIndex++)
+		{
+			cellID = CellID(voxelIndex % receiverColumnQty, voxelIndex / receiverColumnQty);
+
+			int voxelIdxArray = aVoxelIdxArray[voxelIndex];
+
+			int voxelIdx = aVoxelIdxWagner[voxelIdxArray];
+
+			if (!rawBuffers[voxelIndex])
+				rawBuffers[voxelIndex] = new uint8_t[maxRawBufferSize];
+
+			rawBufferCount++;
+
+			memcpy(rawBuffers[voxelIndex], rawData + voxelIdx * (100 * 2), 100 * 2);
+		}
+
+		{
+			boost::mutex::scoped_lock rawLock(GetMutex());
+
+			for (voxelIndex = 0; voxelIndex < 16; voxelIndex++)
+			{
+				AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, voxelIndex);
+				aScan->samples = rawBuffers[voxelIndex];
+				aScan->sampleSize = sampleSize;
+				aScan->rawProvider = provider;
+				aScan->sampleOffset = sampleOffset;
+				aScan->sampleCount = sampleCount - sampleDrop;
+				aScan->sampleSigned = sampleSigned;
+			}
+		}
+
+		break;
+
+	case rawFromPosixTTY:
+		msg_id = rawData[0];
+		if (msg_id != 0xb0) return;
+		voxelIndex = rawData16[1];
+		voxelIndex &= 0xff;
+		cellID = CellID(voxelIndex % receiverColumnQty, voxelIndex / receiverColumnQty);
+		if (voxelIndex >= maxRawBufferCount) break;
+
+		sampleOffset = 12;
+		sampleDrop = 0;
+		sampleSize = 2;
+		sampleSigned = true;
+		if (!rawBuffers[voxelIndex]) rawBuffers[voxelIndex] = new uint8_t[voxelIndex];
+		rawBufferCount++;
+		if (size > maxRawBufferSize) size = maxRawBufferSize;
+		memcpy(rawBuffers[voxelIndex], rawData, size);
+		sampleCount = size / 2 - sampleOffset;
+		transmit = true;
+		if (voxelIndex > max_voxel) max_voxel = voxelIndex;
+		if (voxelIndex == max_voxel) transmit = true;
+		break;
+
+	case rawFromPosixUDP:
+		msg_id = rawData[0];
+		voxelIndex = rawData16[1];
+		voxelIndex &= 0xff;
+		if (voxelIndex >= maxRawBufferCount) break;
+		if (msg_id > 0xbf) return;
+		sampleOffset = 16;
+		sampleDrop = 100;
+		sampleSize = 4;
+		sampleSigned = true;
+		switch (msg_id) {
+		default:
+			break;
+		case 0x80:
+		case 0x81:
+			if (!rawBuffers[voxelIndex]) rawBuffers[voxelIndex] = new uint8_t[maxRawBufferSize];
+			rawBufferCount++;
+			if (size > maxRawBufferSize) size = maxRawBufferSize;
+			memcpy(rawBuffers[voxelIndex], rawData, size);
+			sampleCount = size / 4 - sampleOffset;
+			break;
+		case 0x82:
+		case 0x83:
+		case 0x84:
+			if (voxelIndex < 0) return;
+			if (size > maxRawBufferSize / 4) size = maxRawBufferSize / 4;
+			memcpy(rawBuffers[voxelIndex] + size * (msg_id - 0x81), rawData, size);
+			sampleCount += size / 4 - sampleOffset;
+			break;
+		}
+		if (msg_id > max_msg_id) max_msg_id = msg_id;
+		if (msg_id == 0x80 || msg_id == max_msg_id) transmit = true;
+	}
+	//printf("ascan %02x %02x %d %d %d\n", msg_id, max_msg_id, channel, size, sampleCount);
+
+	if (transmit) {
+
+		boost::mutex::scoped_lock rawLock(GetMutex());
+
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, voxelIndex);
+		aScan->samples = rawBuffers[voxelIndex];
+		aScan->sampleSize = sampleSize;
+		aScan->rawProvider = provider;
+		aScan->sampleOffset = sampleOffset;
+		aScan->sampleCount = sampleCount - sampleDrop;
+		aScan->sampleSigned = sampleSigned;
+		//printf("transmit ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+
+		rawLock.unlock();
+	}
+
+	// Debug and Log messages
+	//DebugFilePrintf(debugFile, "Msg %lu - Val %d %d %d %d", inMsg.id, distancePtr[0], distancePtr[1], distancePtr[2], distancePtr[3]);
+}
+
 void ReceiverCANCapture::ParseSensorStatus(ReceiverCANMessage &inMsg)
 
 {
@@ -727,10 +913,6 @@ void ReceiverCANCapture::ParseParameterResponse(ReceiverCANMessage &inMsg)
 		ParseParameterPlaybackResponse(inMsg);
 		break;
 
-	case RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC:
-		ParseParameterSensorSpecificResponse(inMsg);
-		break;
-
 	default:
 		break;
 	}
@@ -781,11 +963,6 @@ void ReceiverCANCapture::ParseParameterError(ReceiverCANMessage &inMsg)
 	case RECEIVERCANMSG_ID_CMD_PARAM_PLAYBACK_FILENAME:
 		ParseParameterPlaybackError(inMsg);
 		break;
-
-	case RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC:
-		ParseParameterSensorSpecificError(inMsg);
-		break;
-
 
 	default:
 		break;
@@ -1140,6 +1317,8 @@ void ReceiverCANCapture::ParseParameterSensorSpecificError(ReceiverCANMessage& i
 	rawLock.unlock();
 	DebugFilePrintf(debugFile, "Control command error.  Type %x %x", inMsg.data[1], inMsg.data[2]);
 }
+
+
 
 
 

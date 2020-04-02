@@ -19,7 +19,7 @@
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>true</TabSettingMisc>
+    <TabSettingMisc>false</TabSettingMisc>
 
 
     <!-- velocity units: display velocity in km/h or m/s
@@ -64,7 +64,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>LibUSB2</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -139,7 +139,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>LibUSB2</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -214,7 +214,7 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>LibUSB2</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
@@ -323,47 +323,8 @@
       <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
-
-    <cameraWebcamSample>
-      <!-- cameraName:
-	    Camera index, as used in openCV.
-       Indexes start at 0, up to 99. 
-       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras (if supported by code), add 1100 to the camera index (default XIMEA camera would be "1100").-->
-      <cameraName>1</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
-
-      <!-- cameraFlip:
-       if true, 180 degree rotation of the camera image, 
-       for cameras that need to be fixed upside down. -->
-      <cameraFlip>false</cameraFlip>
-
-      <position>
-        <!-- positionFromBumper -->
-        <forward>0</forward>
-        <!-- lateral offet -->
-        <left>0</left>
-        <!-- height -->
-        <up>0</up>
-      </position>
-      <orientation>
-        <pitch>0.0</pitch>
-        <roll>0.0</roll>
-        <yaw>0.0</yaw>
-      </orientation>
-
-        <!-- MS_LIFECAM_HD5000 @640x360 -->
-      <fov>
-        <x>45.0</x>
-        <y>39.0</y>
-      </fov>
-      <!-- radial distorsion correction parameters -->
-      <radialCorrectionK1>0.0</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-    </cameraWebcamSample>
   </cameras>
-  
-
-  
+    
   <displayTableView>
     <displayedDetectionsPerVoxelInTableView>2</displayedDetectionsPerVoxelInTableView>
   </displayTableView>
@@ -447,7 +408,6 @@
   </display2D>
 
 
-
   <dynamicTesting>
     <!-- Max deceleration of the vehicle with full brakes on
 	     Kusano-Gaeble
@@ -498,34 +458,6 @@
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert3Ignored>
-
-     <alert4Ignored>
-      <alertType>distanceOutside</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
-       <alertReceiver>0</alertReceiver>
-       <alertVoxel> 2 </alertVoxel>
-      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
-      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert4Ignored>
-
-    <alert5Ignored>
-      <alertType>distanceOutside</alertType>
-      <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
-      <alertReceiver>0</alertReceiver>
-      <alertVoxel> 4 </alertVoxel>
-      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
-      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert5Ignored>
-
-    <alert6Ignored>
-      <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
-      <alertReceiver>0</alertReceiver>
-      <alertVoxel> 8 </alertVoxel>
-      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
-      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert6Ignored>
   </dynamicTesting>
 
 
@@ -981,31 +913,113 @@
     </registersFPGA>
 
     <registersADC label="CPU Registers">
-
       <register>
         <index>0</index>
         <address>0</address>
-        <description>Software Reset</description>
+        <description>Device ID (read only)</description>
       </register>
 
       <register>
         <index>1</index>
         <address>1</address>
-        <description>Wagner: Max Acc</description>
-      </register>
-
-      <!--register>
-        <index>254</index>
-        <address>254</address>
-        <description>SAVE_CONFIG_TO_FLASH</description>
+        <description>Manufacture Date (read only)</description>
       </register>
 
       <register>
-        <index>255</index>
-        <address>255</address>
-        <description>RESET_FACTORY_DEFAULT</description>
-      </register-->
+        <index>2</index>
+        <address>2</address>
+        <description>Serial number (read only)</description>
+      </register>
 
+      <register>
+        <index>3</index>
+        <address>16</address>
+        <description>Acquisition Enable</description>
+      </register>
+
+      <register>
+        <index>4</index>
+        <address>17</address>
+        <description>DSP enable</description>
+      </register>
+
+      <register>
+        <index>5</index>
+        <address>18</address>
+        <description>Serial log (bit0: detection, bit1: USB communications, bit2: debug info)</description>
+      </register>
+
+      <register>
+        <index>6</index>
+        <address>19</address>
+        <description>Frame rate (in fps)</description>
+      </register>
+
+      <register>
+        <index>7</index>
+        <address>32</address>
+        <description>Detection algorithm selection</description>
+      </register>
+
+      <register>
+        <index>8</index>
+        <address>33</address>
+        <description>Tracking algorithm selection</description>
+      </register>
+
+      <register>
+        <index>9</index>
+        <address>34</address>
+        <description>Number of detection per channel</description>
+      </register>
+
+      <register>
+        <index>10</index>
+        <address>35</address>
+        <description>Number of track per channel</description>
+      </register>
+
+      <register>
+        <index>11</index>
+        <address>96</address>
+        <description>Detection/track data xmit decimation (0 to disable)</description>
+      </register>
+
+      <register>
+        <index>12</index>
+        <address>97</address>
+        <description>Detection/track data xmit mask</description>
+      </register>
+
+      <register>
+        <index>13</index>
+        <address>98</address>
+        <description>Raw data xmit decimation (0 to disable)</description>
+      </register>
+
+      <register>
+        <index>14</index>
+        <address>99</address>
+        <description>Raw Data xmit mask</description>
+      </register>
+
+      <register>
+        <index>15</index>
+        <address>100</address>
+        <description>Status period (in ms)</description>
+      </register>
+
+      <register>
+        <index>cmd1</index>
+        <address>254</address>
+        <description>Save config to flash (write only)</description>
+      </register>
+
+      <register>
+        <index>cmd2</index>
+        <address>255</address>
+        <description>Reset to factory default (write only)</description>
+      </register>
     </registersADC>
 
     <GPIOs>

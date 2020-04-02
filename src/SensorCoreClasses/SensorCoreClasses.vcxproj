@@ -177,6 +177,7 @@
     <ClInclude Include="ReceiverCANCapture.h" />
     <ClInclude Include="ReceiverCANMessageDef.h" />
     <ClInclude Include="ReceiverCapture.h" />
+    <ClInclude Include="ReceiverLibUSB2Capture.h" />
     <ClInclude Include="ReceiverLibUSBCapture.h" />
     <ClInclude Include="ReceiverPolledCapture.h" />
     <ClInclude Include="ReceiverPostProcessor.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="Publisher.cpp" />
     <ClCompile Include="ReceiverCANCapture.cpp" />
     <ClCompile Include="ReceiverCapture.cpp" />
+    <ClCompile Include="ReceiverLibUSB2Capture.cpp" />
     <ClCompile Include="ReceiverLibUSBCapture.cpp">
       <UseFullPaths Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</UseFullPaths>
     </ClCompile>

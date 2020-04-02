@@ -35,36 +35,69 @@
 ** $PHANTOM_END_LICENSE$
 **
 ****************************************************************************/
-#ifndef SENSORCORE_RECEIVER_LIBUSB_CAPTURE_H
-#define SENSORCORE_RECEIVER_LIBUSB_CAPTURE_H
+#ifndef SENSORCORE_RECEIVER_LIBUSB2_CAPTURE_H
+#define SENSORCORE_RECEIVER_LIBUSB2_CAPTURE_H
 
+/*
+	Copyright 2014, 2015 Phantom Intelligence Inc.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
+#include <stdint.h>
+
+#include "Publisher.h"
+#include "ThreadedWorker.h"
+#include "DetectionStruct.h"
+#include "ReceiverCANCapture.h"
 
 #include <libusb.h>
 
-#include "SensorCoreClassesGlobal.h"
-#include "ReceiverPolledCapture.h"
 
 SENSORCORE_BEGIN_NAMESPACE
 
-
-/** \brief ReceiverLibUSBCapture class is a specialized implementation of the ReceiverCapture
-   *        used to acquire data from AWL LIDAR modules	through the LibUSB CAN bus interface.
+/** \brief ReceiverLibUSB2Capture class is a specialized implementation of the ReceiverCapture
+   *        used to acquire data from Wagner LIDAR modules	through the LibUSB CAN bus interface.
   */
-class ReceiverLibUSBCapture: public ReceiverPolledCapture
+class ReceiverLibUSB2Capture: public ReceiverCANCapture
 {
 // Public types
 public:
+	typedef boost::shared_ptr<ReceiverLibUSB2Capture> Ptr;
+	typedef boost::shared_ptr<ReceiverLibUSB2Capture> ConstPtr;
 
 // public Methods
 public:
 
-	ReceiverLibUSBCapture(int receiverID,  boost::property_tree::ptree  &propTree);
-
-	/** \brief ReceiverLibUSBCapture Destructor.  Insures that all threads are stopped before destruction.
+	/** \brief ReceiverLibUSB2Capture constructor from a configuration file information.
+ 	    * \param[in] inReceiverID  unique receiverID
+	    * \param[in] propTree propertyTree that contains teh confoguration file information.
       */
-	virtual ~ReceiverLibUSBCapture();
 
+	ReceiverLibUSB2Capture(int receiverID,  boost::property_tree::ptree  &propTree);
+
+	/** \brief ReceiverPosixUDPCapture Destructor.  Insures that all threads are stopped before destruction.
+      */
+	virtual ~ReceiverLibUSB2Capture();
+
+	virtual void Go();
+	virtual void Stop();
+	virtual bool IsConnected() { return (handle != NULL); }
 protected:
+
+	/** \brief Do one iteration of the thread loop.
+      */
+	virtual void DoOneThreadIteration();
 
 	/** \brief Open the CAN port
 	  * \returns true if the port is successfully opened, false otherwise.
@@ -78,10 +111,12 @@ protected:
 	  */
 	virtual bool CloseCANPort();
 
+
 	/** \brief Return True if the device is connected (that is if the communications driver has established connection.
 	* \return true if connected, false otherwise.
 	*/
-	virtual bool IsConnected() { return (handle != NULL); }
+
+	virtual bool WriteMessage(const ReceiverCANMessage &inMsg);
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
@@ -89,9 +124,14 @@ protected:
 	  * \throws  Throws boost error on read of the property keys.
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
+  	virtual int ReadBytes(uint8_t * pData, int num);
+  	virtual int WriteBytes(uint8_t * pData, int num);
+ 	bool SendSoftwareReset();
+	uint8_t *GetCurrentBuffer(void);
+	uint8_t *GetNextBuffer(void);
 
-  virtual int ReadBytes(uint8_t * pData, int num);
-  virtual int WriteBytes(uint8_t * pData, int num);
+  	void * GetHandle(void);
+  	void SetHandle(void *);
 
 // Protected variables
 protected:
@@ -104,10 +144,28 @@ protected:
 		int usbTimeOut;
 
 
-		void * swap_handle;
+        void*handle;
+        void *swap_handle;
 
-};
+        /** \brief Time-out without an input message after which we try to recomnnect the serial port. */
+        boost::posix_time::ptime reconnectTime;
+
+        bool xmitsFooterData; 
+
+
+		/** \brief counter in the close() call, used to avoid reentry iduring thread close */
+		int closeCANReentryCount;
+		               /** \brief CAN file descriptor.*/
+		boost::mutex m_Mutex;
+
+   		FILE * m_pFile;
+
+
+		static const int numBuffers = 4;
+		uint8_t *buffers[numBuffers];
+		int currentBuffer;
+}; // class USB2
 
 SENSORCORE_END_NAMESPACE
 
-#endif //SENSORCORE_RECEIVER_LIBUSB_CAPTURE_H
+#endif //SENSORCORE_RECEIVER_LIBUSB2_CAPTURE_H

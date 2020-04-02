@@ -46,6 +46,7 @@
 #include "ReceiverCapture.h"
 #ifdef USE_LIBUSB
 #include "ReceiverLibUSBCapture.h"
+#include "ReceiverLibUSB2Capture.h"
 #endif
 
 #include "ReceiverSimulatorCapture.h"
@@ -174,7 +175,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			// LibUSB Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverLibUSBCapture(receiverID, globalSettings->GetPropTree()));
 		}
-		else 
+		else if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("LibUSB2"))
+		{
+			// LibUSB2 Capture is used if defined in the ini file
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverLibUSB2Capture(receiverID, globalSettings->GetPropTree()));
+
+		}
+		else
 #endif
 		{
 			// If the type is undefined, just use the dumb simulator, not using external device
@@ -2631,43 +2638,6 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 	}
 }
 
-void AWLQtDemo::on_registerFPGASaveToFlash_clicked()
-{
-  QMessageBox::StandardButton reply;
-
-  reply = QMessageBox::question(this, "Warning", "Save current configuration to Flash. Are you sure?",
-    QMessageBox::Yes | QMessageBox::No);
-
-  if (reply == QMessageBox::Yes)
-  {
-    // Send the command to the device
-    if (receiverCaptures[0])
-    {
-      receiverCaptures[0]->SetFPGARegister(0x3FFE, 0);
-    }
-  }
-}
-
-void AWLQtDemo::on_registerFPGARestoreFactoryDefaults_clicked()
-{
-  QMessageBox::StandardButton reply;
-
-  reply = QMessageBox::question(this, "Warning", "Restore factory default configuration. Are you sure?",
-    QMessageBox::Yes | QMessageBox::No);
-
-  if (reply == QMessageBox::Yes)
-  {
-    // Send the command to the device
-    if (receiverCaptures[0])
-    {
-      receiverCaptures[0]->SetFPGARegister(0x3FFF, 0);
-    }
-  }
-
-  // Force a get of the current value, to force a refresh
-  AWLQtDemo::on_registerFPGAGetPushButton_clicked();
-}
-
 void AWLQtDemo::on_registerADCSaveToFlash_clicked()
 {
   QMessageBox::StandardButton reply;
@@ -2680,7 +2650,7 @@ void AWLQtDemo::on_registerADCSaveToFlash_clicked()
     // Send the command to the device
     if (receiverCaptures[0])
     {
-      receiverCaptures[0]->SetADCRegister(0x3FFE, 0);
+      receiverCaptures[0]->SetADCRegister(0xFE, 0);
     }
   }
 }
@@ -2697,12 +2667,13 @@ void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
     // Send the command to the device
     if (receiverCaptures[0])
     {
-      receiverCaptures[0]->SetADCRegister(0x3FFF, 0);
+      receiverCaptures[0]->SetADCRegister(0xFF, 0);
     }
   }
 
-  // Force a get of the current value, to force a refresh
+  // Force a get of the current values, to force a refresh
   AWLQtDemo::on_registerADCGetPushButton_clicked();
+  AWLQtDemo::on_registerFPGAGetPushButton_clicked();
 }
 
 void AWLQtDemo::FillADCList()

@@ -1242,7 +1242,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -3823,42 +3823,6 @@ background-color: #202020;
              <bool>true</bool>
             </property>
            </widget>
-          </widget>
-          <widget class="QPushButton" name="registerFPGASaveToFlash">
-           <property name="geometry">
-            <rect>
-             <x>130</x>
-             <y>160</y>
-             <width>141</width>
-             <height>23</height>
-            </rect>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>-1</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Save config to Flash</string>
-           </property>
-          </widget>
-          <widget class="QPushButton" name="registerFPGARestoreFactoryDefaults">
-           <property name="geometry">
-            <rect>
-             <x>280</x>
-             <y>160</y>
-             <width>141</width>
-             <height>23</height>
-            </rect>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>-1</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Restore factory defaults</string>
-           </property>
           </widget>
           <widget class="QCheckBox" name="checkBoxAdvanceMode">
            <property name="geometry">

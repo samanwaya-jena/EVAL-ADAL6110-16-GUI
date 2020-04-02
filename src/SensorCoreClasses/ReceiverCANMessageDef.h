@@ -73,7 +73,9 @@ typedef struct {
 #define RECEIVERCANMSG_ID_CHANNELDISTANCEANDINTENSITY    60
 #define RECEIVERCANMSG_ID_COMMANDMESSAGE                 80
 
+
 // New command id for Wagner/Guardian
+#define RECEIVERCANMSG_ID_POLL                           86
 #define RECEIVERCANMSG_ID_GETDATA                        87
 #define RECEIVERCANMSG_ID_POLLMESSAGES                   88
 #define RECEIVERCANMSG_ID_LIDARQUERY                     89
@@ -139,6 +141,5 @@ for TIME:
 #define RECEIVERCANMSG_ID_CMD_SSP_ENABLE_AUTO_GAIN	  0x32
 #define RECEIVERCANMSG_ID_CMD_SSP_ENABLE_DC_BALANCE	  0x33
 
-#define RECEIVERCANMSG_ID_CMD_PARAM_
 
 #endif //RECEIVERCANMESSAGEDEF_H

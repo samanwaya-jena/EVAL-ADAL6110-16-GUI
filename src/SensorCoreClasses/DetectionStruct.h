@@ -266,7 +266,9 @@ public:
 
 enum RawProvider{
 	rawFromNothing,
-	rawFromLibUSB
+	rawFromLibUSB,
+	rawFromPosixTTY,
+	rawFromPosixUDP
 }; 
 
 class AScan

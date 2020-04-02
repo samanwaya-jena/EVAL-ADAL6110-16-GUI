@@ -117,8 +117,7 @@ private slots:
 	void on_registerADCGetPushButton_clicked();
 	void on_registerGPIOSetPushButton_clicked();
 	void on_registerGPIOGetPushButton_clicked();
-  void on_registerFPGASaveToFlash_clicked();
-  void on_registerFPGARestoreFactoryDefaults_clicked();
+
   void on_registerADCSaveToFlash_clicked();
   void on_registerADCRestoreFactoryDefaults_clicked();
 

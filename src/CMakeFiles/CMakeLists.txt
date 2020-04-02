@@ -561,6 +561,7 @@ list(APPEND CUTEDEMO_CORE_FILES
     ${CORE_FILES_DIR}/ReceiverCANCapture.cpp
     ${CORE_FILES_DIR}/ReceiverCapture.cpp
     ${CORE_FILES_DIR}/ReceiverLibUSBCapture.cpp
+    ${CORE_FILES_DIR}/ReceiverLibUSB2Capture.cpp
     ${CORE_FILES_DIR}/ReceiverPolledCapture.cpp
 	${CORE_FILES_DIR}/ReceiverPostProcessor.cpp
     ${CORE_FILES_DIR}/ReceiverSimulatorCapture.cpp
@@ -677,6 +678,12 @@ if(${WANT_LIBUSB_SUPPORT})
     PRIVATE 
             ${CORE_FILES_DIR}/ReceiverLibUSBCapture.cpp 
     )
+
+    TARGET_SOURCES(
+        CuteDemo
+    PRIVATE 
+            ${CORE_FILES_DIR}/ReceiverLibUSB2Capture.cpp 
+    )
 endif()
 
 
@@ -694,6 +701,8 @@ if(${WANT_OPENCV_VIDEO})
     )
 
     FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build)
+
+    SET( ${OpenCV}_LIBRARIES} "${OpenCV_INSTALL_PATH}/lib/release/opencv_world346.lib")
     print_package_info(OpenCV)
    
     target_include_directories(
@@ -711,12 +720,14 @@ if(${WANT_OPENCV_VIDEO})
 
     TARGET_LINK_LIBRARIES(
         CuteDemo 
-        ${OpenCV_LIBS}
+	${OpenCV_LIBRARIES}
     )
 
-list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
+    list(APPEND ${PROJECT_NAME}_DLL_TO_INSTALL
 	"${OpenCV_INSTALL_PATH}/bin/release/opencv_world346.dll"
 )
+
+
 
 endif()
 

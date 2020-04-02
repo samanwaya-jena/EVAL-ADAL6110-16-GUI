@@ -72,6 +72,9 @@
     <ClInclude Include="SensorCoreClassesGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReceiverLibUSB2Capture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -120,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ThreadedWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReceiverLibUSB2Capture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
