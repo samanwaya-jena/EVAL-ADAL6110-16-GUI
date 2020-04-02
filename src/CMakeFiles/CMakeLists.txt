@@ -250,8 +250,8 @@ endfunction()
 ###    Version and Installation settings    #################################################
 #############################################################################################
 set(${PROJECT_NAME}_VERSION_MAJOR_CACHE "1" CACHE STRING "Major Version Number - First digit of version number")
-set(${PROJECT_NAME}_VERSION_MINOR_CACHE "4" CACHE STRING "Minor Version Number - Second digit of version number")
-set(${PROJECT_NAME}_VERSION_PATCH_CACHE "6" CACHE STRING "Patch Version Number - Third digit of version number")
+set(${PROJECT_NAME}_VERSION_MINOR_CACHE "5" CACHE STRING "Minor Version Number - Second digit of version number")
+set(${PROJECT_NAME}_VERSION_PATCH_CACHE "0" CACHE STRING "Patch Version Number - Third digit of version number")
 set(${PROJECT_NAME}_VERSION_MAJOR ${${PROJECT_NAME}_VERSION_MAJOR_CACHE})
 set(${PROJECT_NAME}_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR_CACHE})
 set(${PROJECT_NAME}_VERSION_PATCH ${${PROJECT_NAME}_VERSION_PATCH_CACHE})
