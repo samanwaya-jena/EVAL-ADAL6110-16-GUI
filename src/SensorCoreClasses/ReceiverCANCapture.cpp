@@ -370,7 +370,7 @@ void ReceiverCANCapture::ProcessRaw(RawProvider provider, uint8_t* rawData, size
 		sampleDrop = 0;
 		sampleSize = 2;
 		sampleSigned = true;
-		if (!rawBuffers[voxelIndex]) rawBuffers[voxelIndex] = new uint8_t[voxelIndex];
+		if (!rawBuffers[voxelIndex]) rawBuffers[voxelIndex] = new uint8_t[maxRawBufferSize];
 		rawBufferCount++;
 		if (size > maxRawBufferSize) size = maxRawBufferSize;
 		memcpy(rawBuffers[voxelIndex], rawData, size);

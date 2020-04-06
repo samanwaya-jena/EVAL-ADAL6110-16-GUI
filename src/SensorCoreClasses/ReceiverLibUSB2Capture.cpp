@@ -78,7 +78,7 @@ SENSORCORE_USE_NAMESPACE
 const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds every repoenPortDelayMillisec, 
 
 
-const size_t bufferSize = 5192;
+const size_t receiveBufferSize = 212;
 										   // To see if the system reconnects
 
 ReceiverLibUSB2Capture::ReceiverLibUSB2Capture(int receiverID, boost::property_tree::ptree &propTree):
@@ -148,7 +148,8 @@ void  ReceiverLibUSB2Capture::Go()
         mWorkerRunning = true;
         startTime = boost::posix_time::microsec_clock::local_time();
 
-        mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSB2Capture::DoThreadLoop, this)));
+          mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSB2Capture::DoThreadLoop, this)));
+
 #ifdef _WINDOWS_
         // Set the priority under windows.  This is the most critical display thread 
         // for user interaction
@@ -158,7 +159,6 @@ void  ReceiverLibUSB2Capture::Go()
          SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
         //   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
-
 }
 
 
@@ -191,12 +191,9 @@ bool ReceiverLibUSB2Capture::SendSoftwareReset()
 void ReceiverLibUSB2Capture::DoOneThreadIteration()
 
 {
-	uint8_t buffer[212];
-	uint32_t* buf32;
+	uint8_t buffer[receiveBufferSize];
 	int bytesRead;
 	bool sent;
-
-	buf32 = (uint32_t*)buffer;
 
 	ReceiverCANMessage msg, poll;
 	poll.id = RECEIVERCANMSG_ID_POLL;
@@ -230,7 +227,7 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 				// Jack rawFromLibUSB2
 								//ProcessRaw(rawFromPosixUDP, buffer, ret);
 				//raw_start = buffer + 20;
-				ProcessRaw(rawFromPosixTTY, buffer, 212);
+				ProcessRaw(rawFromPosixTTY, buffer, receiveBufferSize);
 			}
 		}
 	}
