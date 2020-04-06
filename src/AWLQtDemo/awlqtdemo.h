@@ -118,8 +118,8 @@ private slots:
 	void on_registerGPIOSetPushButton_clicked();
 	void on_registerGPIOGetPushButton_clicked();
 
-  void on_registerADCSaveToFlash_clicked();
-  void on_registerADCRestoreFactoryDefaults_clicked();
+  void on_registerSaveToFlashPushButton_clicked();
+  void on_registerRestoreFactoryDefaultsPushButton_clicked();
 
 	void on_algoSelectComboBox_indexChanged(int newIndex);
 
@@ -136,7 +136,8 @@ private slots:
 	void on_globalParametersGetPushButton_clicked();
 	void on_pushButton_FR_clicked();
 
-  void on_checkBoxAdvanceModeToggled();
+  void on_checkBoxFPGAAdvanceModeToggled();
+  void on_checkBoxADCAdvanceModeToggled();
 
   void on_comboBoxMaxRange_indexChanged(int newIndex);
   void on_checkBoxAutoScaleToggled();

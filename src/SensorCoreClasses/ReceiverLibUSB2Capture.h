@@ -150,9 +150,6 @@ protected:
         /** \brief Time-out without an input message after which we try to recomnnect the serial port. */
         boost::posix_time::ptime reconnectTime;
 
-        bool xmitsFooterData; 
-
-
 		/** \brief counter in the close() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
 		               /** \brief CAN file descriptor.*/

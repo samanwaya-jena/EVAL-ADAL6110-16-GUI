@@ -463,8 +463,132 @@
 
   <registerDescription_ADI>
 
+    <registersFPGA label="CPU Registers">
+      <register>
+        <index>0</index>
+        <address>0</address>
+        <description>Device ID (read only)</description>
+      </register>
+
+      <register>
+        <index>1</index>
+        <address>1</address>
+        <description>Manufacture Date (read only)</description>
+      </register>
+
+      <register>
+        <index>2</index>
+        <address>2</address>
+        <description>Serial number (read only)</description>
+      </register>
+
+      <register>
+        <index>3</index>
+        <address>16</address>
+        <description>Acquisition Enable</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>4</index>
+        <address>17</address>
+        <description>DSP enable</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>5</index>
+        <address>18</address>
+        <description>Serial log (bit0: detection, bit1: USB communications, bit2: debug info)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>6</index>
+        <address>19</address>
+        <description>Frame rate (in fps)</description>
+      </register>
+
+      <register>
+        <index>7</index>
+        <address>32</address>
+        <description>Detection algorithm selection</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>8</index>
+        <address>33</address>
+        <description>Tracking algorithm selection</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>9</index>
+        <address>34</address>
+        <description>Number of detections per channel</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>10</index>
+        <address>35</address>
+        <description>Number of tracks per channel</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>11</index>
+        <address>96</address>
+        <description>Detection/track data xmit decimation (0 to disable)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>12</index>
+        <address>97</address>
+        <description>Detection/track data xmit mask</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>13</index>
+        <address>98</address>
+        <description>Raw data xmit decimation (0 to disable)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>14</index>
+        <address>99</address>
+        <description>Raw Data xmit mask</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>15</index>
+        <address>100</address>
+        <description>Status period (in ms)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>cmd1</index>
+        <address>254</address>
+        <description>Save config to flash (write only)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>cmd2</index>
+        <address>255</address>
+        <description>Reset to factory default (write only)</description>
+        <advanced>1</advanced>
+      </register>
+    </registersFPGA>
+
     <!-- Registers for Wagner evaluation board based on ADI Gordon -->
-    <registersFPGA label="ADAL6110-16 Registers">
+    <registersADC label="ADAL6110-16 Registers">
 
       <register>
         <index>Rx00</index>
@@ -910,118 +1034,8 @@
         <description>SRAM_DATA</description>
         <advanced>1</advanced>
       </register>
-    </registersFPGA>
-
-    <registersADC label="CPU Registers">
-      <register>
-        <index>0</index>
-        <address>0</address>
-        <description>Device ID (read only)</description>
-      </register>
-
-      <register>
-        <index>1</index>
-        <address>1</address>
-        <description>Manufacture Date (read only)</description>
-      </register>
-
-      <register>
-        <index>2</index>
-        <address>2</address>
-        <description>Serial number (read only)</description>
-      </register>
-
-      <register>
-        <index>3</index>
-        <address>16</address>
-        <description>Acquisition Enable</description>
-      </register>
-
-      <register>
-        <index>4</index>
-        <address>17</address>
-        <description>DSP enable</description>
-      </register>
-
-      <register>
-        <index>5</index>
-        <address>18</address>
-        <description>Serial log (bit0: detection, bit1: USB communications, bit2: debug info)</description>
-      </register>
-
-      <register>
-        <index>6</index>
-        <address>19</address>
-        <description>Frame rate (in fps)</description>
-      </register>
-
-      <register>
-        <index>7</index>
-        <address>32</address>
-        <description>Detection algorithm selection</description>
-      </register>
-
-      <register>
-        <index>8</index>
-        <address>33</address>
-        <description>Tracking algorithm selection</description>
-      </register>
-
-      <register>
-        <index>9</index>
-        <address>34</address>
-        <description>Number of detection per channel</description>
-      </register>
-
-      <register>
-        <index>10</index>
-        <address>35</address>
-        <description>Number of track per channel</description>
-      </register>
-
-      <register>
-        <index>11</index>
-        <address>96</address>
-        <description>Detection/track data xmit decimation (0 to disable)</description>
-      </register>
-
-      <register>
-        <index>12</index>
-        <address>97</address>
-        <description>Detection/track data xmit mask</description>
-      </register>
-
-      <register>
-        <index>13</index>
-        <address>98</address>
-        <description>Raw data xmit decimation (0 to disable)</description>
-      </register>
-
-      <register>
-        <index>14</index>
-        <address>99</address>
-        <description>Raw Data xmit mask</description>
-      </register>
-
-      <register>
-        <index>15</index>
-        <address>100</address>
-        <description>Status period (in ms)</description>
-      </register>
-
-      <register>
-        <index>cmd1</index>
-        <address>254</address>
-        <description>Save config to flash (write only)</description>
-      </register>
-
-      <register>
-        <index>cmd2</index>
-        <address>255</address>
-        <description>Reset to factory default (write only)</description>
-      </register>
     </registersADC>
-
+    
     <GPIOs>
     </GPIOs>
 

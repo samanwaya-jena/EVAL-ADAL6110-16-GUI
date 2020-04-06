@@ -312,7 +312,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.trackerSelectComboBox->setCurrentIndex(ui.trackerSelectComboBox->findData(selectedTrackerID));
 
   // AdvancedMode
-  connect(ui.checkBoxAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAdvanceModeToggled()));
+  connect(ui.checkBoxFPGAAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxFPGAAdvanceModeToggled()));
+  connect(ui.checkBoxADCAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxADCAdvanceModeToggled()));
 
   // Ascan selection
   connect(ui.checkBox_1, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
@@ -2337,11 +2338,15 @@ void AWLQtDemo::on_viewCameraActionToggled()
 }
 #endif
 
-void AWLQtDemo::on_checkBoxAdvanceModeToggled()
+void AWLQtDemo::on_checkBoxFPGAAdvanceModeToggled()
 {
   FillFPGAList();
 }
 
+void AWLQtDemo::on_checkBoxADCAdvanceModeToggled()
+{
+	FillADCList();
+}
 void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
 {
 
@@ -2535,7 +2540,7 @@ void AWLQtDemo::on_viewAScanClose()
 
 void AWLQtDemo::FillFPGAList()
 {
-	bool bAdvancedModeChecked = ui.checkBoxAdvanceMode->isChecked();
+	bool bAdvancedModeChecked = ui.checkBoxFPGAAdvanceMode->isChecked();
 
 	if (!receiverCaptures[0]->registersFPGALabel.empty())
 		ui.registerFPGAGroupBox->setTitle(receiverCaptures[0]->registersFPGALabel.c_str());
@@ -2638,7 +2643,7 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 	}
 }
 
-void AWLQtDemo::on_registerADCSaveToFlash_clicked()
+void AWLQtDemo::on_registerSaveToFlashPushButton_clicked()
 {
   QMessageBox::StandardButton reply;
 
@@ -2655,7 +2660,7 @@ void AWLQtDemo::on_registerADCSaveToFlash_clicked()
   }
 }
 
-void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
+void AWLQtDemo::on_registerRestoreFactoryDefaultsPushButton_clicked()
 {
   QMessageBox::StandardButton reply;
 
@@ -2678,18 +2683,24 @@ void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
 
 void AWLQtDemo::FillADCList()
 {
+	bool bAdvancedModeChecked = ui.checkBoxADCAdvanceMode->isChecked();
+
 	if (!receiverCaptures[0]->registersADCLabel.empty())
 		ui.registerADCGroupBox->setTitle(receiverCaptures[0]->registersADCLabel.c_str());
 
-
 	ui.registerADCAddressSetComboBox->clear();
 
-	for (size_t i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersADC.size(); i++)
 	{
-		QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
-		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
-		ui.registerADCAddressSetComboBox->addItem(sLabel, QVariant(i));
+		if (!bAdvancedModeChecked && receiverCaptures[0]->registersADC[i].bAdvanced)
+			; // Skip advanced register
+		else
+		{
+			QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
+			sLabel += ": ";
+			sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
+			ui.registerADCAddressSetComboBox->addItem(sLabel, QVariant(i));
+		}
 	}
 
 	if (receiverCaptures[0]->registersADC.size() > 0)

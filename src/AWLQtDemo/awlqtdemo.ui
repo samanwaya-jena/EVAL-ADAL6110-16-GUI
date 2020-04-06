@@ -3653,17 +3653,17 @@ background-color: #202020;
             <x>10</x>
             <y>10</y>
             <width>431</width>
-            <height>201</height>
+            <height>171</height>
            </rect>
           </property>
           <property name="title">
-           <string>Registers</string>
+           <string>CPU Registers</string>
           </property>
           <widget class="QPushButton" name="registerFPGASetPushButton">
            <property name="geometry">
             <rect>
              <x>50</x>
-             <y>110</y>
+             <y>140</y>
              <width>75</width>
              <height>23</height>
             </rect>
@@ -3681,7 +3681,7 @@ background-color: #202020;
            <property name="geometry">
             <rect>
              <x>220</x>
-             <y>110</y>
+             <y>140</y>
              <width>75</width>
              <height>23</height>
             </rect>
@@ -3696,7 +3696,7 @@ background-color: #202020;
              <x>10</x>
              <y>20</y>
              <width>321</width>
-             <height>81</height>
+             <height>113</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -3766,6 +3766,19 @@ background-color: #202020;
              <bool>true</bool>
             </property>
            </widget>
+           <widget class="QCheckBox" name="checkBoxFPGAAdvanceMode">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>80</y>
+              <width>101</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Advanced mode</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QGroupBox" name="registerFPGAGetGroupBox">
            <property name="geometry">
@@ -3773,7 +3786,7 @@ background-color: #202020;
              <x>340</x>
              <y>20</y>
              <width>81</width>
-             <height>81</height>
+             <height>111</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -3824,19 +3837,6 @@ background-color: #202020;
             </property>
            </widget>
           </widget>
-          <widget class="QCheckBox" name="checkBoxAdvanceMode">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>160</y>
-             <width>101</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Advanced mode</string>
-           </property>
-          </widget>
          </widget>
          <widget class="QGroupBox" name="registerADCGroupBox">
           <property name="geometry">
@@ -3844,7 +3844,7 @@ background-color: #202020;
             <x>460</x>
             <y>10</y>
             <width>431</width>
-            <height>201</height>
+            <height>171</height>
            </rect>
           </property>
           <property name="title">
@@ -3854,7 +3854,7 @@ background-color: #202020;
            <property name="geometry">
             <rect>
              <x>50</x>
-             <y>110</y>
+             <y>140</y>
              <width>75</width>
              <height>23</height>
             </rect>
@@ -3867,7 +3867,7 @@ background-color: #202020;
            <property name="geometry">
             <rect>
              <x>220</x>
-             <y>110</y>
+             <y>140</y>
              <width>75</width>
              <height>23</height>
             </rect>
@@ -3882,7 +3882,7 @@ background-color: #202020;
              <x>10</x>
              <y>20</y>
              <width>321</width>
-             <height>81</height>
+             <height>113</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -3952,6 +3952,19 @@ background-color: #202020;
              <bool>true</bool>
             </property>
            </widget>
+           <widget class="QCheckBox" name="checkBoxADCAdvanceMode">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>80</y>
+              <width>101</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Advanced mode</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QGroupBox" name="registerADCGetGroupBox">
            <property name="geometry">
@@ -3959,7 +3972,7 @@ background-color: #202020;
              <x>340</x>
              <y>20</y>
              <width>81</width>
-             <height>81</height>
+             <height>111</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -4010,42 +4023,42 @@ background-color: #202020;
             </property>
            </widget>
           </widget>
-          <widget class="QPushButton" name="registerADCSaveToFlash">
-           <property name="geometry">
-            <rect>
-             <x>130</x>
-             <y>160</y>
-             <width>141</width>
-             <height>23</height>
-            </rect>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>-1</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Save config to Flash</string>
-           </property>
-          </widget>
-          <widget class="QPushButton" name="registerADCRestoreFactoryDefaults">
-           <property name="geometry">
-            <rect>
-             <x>280</x>
-             <y>160</y>
-             <width>141</width>
-             <height>23</height>
-            </rect>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>-1</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Restore factory defaults</string>
-           </property>
-          </widget>
+         </widget>
+         <widget class="QPushButton" name="registerSaveToFlashPushButton">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>195</y>
+            <width>141</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>-1</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Save config to Flash</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="registerRestoreFactoryDefaultsPushButton">
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>194</y>
+            <width>141</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>-1</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Restore factory defaults</string>
+          </property>
          </widget>
         </widget>
         <widget class="QWidget" name="gpiosTab">
@@ -5992,6 +6005,38 @@ color: rgb(255,255,255);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>registerSaveToFlashPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerSaveToFlashPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>244</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>246</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>registerRestoreFactoryDefaultsPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerRestoreFactoryDefaultsPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>361</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>517</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_colorImageRadioButton_setChecked(bool)</slot>
@@ -6044,5 +6089,7 @@ color: rgb(255,255,255);</string>
   <slot>on_registerFPGAAddressSetComboBox_indexChanged(int)</slot>
   <slot>on_registerADCAddressSetComboBox_indexChanged(int)</slot>
   <slot>on_logFileSelectorButton_pressed()</slot>
+  <slot>on_registerSaveToFlashPushButton_clicked()</slot>
+  <slot>on_registerRestoreFactoryDefaultsPushButton_clicked()</slot>
  </slots>
 </ui>
