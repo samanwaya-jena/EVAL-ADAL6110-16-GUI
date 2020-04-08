@@ -304,7 +304,7 @@ public:
 	/** \brief cellIDID of the voxel where detection origins from */
 	CellID cellID;
 
-	/* Internal channelNo is used for display purposes */
+	/* Internal channelNo  is the ADC channel from sensor . It used for display purposes */
 	int channelNo;
 
 	size_t sampleOffset; // Samples to ignore at the begining

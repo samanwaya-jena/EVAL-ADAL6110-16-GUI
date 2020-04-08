@@ -488,34 +488,25 @@ static int columnToChannelArray[] = {
 
 CellID ReceiverLibUSB2Capture::GetCellIDFromChannel(int inChannelID)
 {
-#if 0
 	int row = 0;
 	int column = channelToColumnArray[inChannelID];
 	return (CellID(column, row));
-#else
-	return (CellID(inChannelID, 0));
-#endif
 }
 
 int ReceiverLibUSB2Capture::GetChannelIDFromCell(CellID inCellID)
 {
-#if 0
 	for (int i = 0; i < receiverVoxelQty; i++)
 	{
 		if (channelToColumnArray[i] == inCellID.column) return (i);
 	}
 	return (0); 
-#else
-	return(inCellID.column);
-#endif
-
 }
 
 void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 {
 	uint16_t* rawData16 = (uint16_t*)rawData;
 	int voxelIndex = rawData16[1] & 0xFF;
-	CellID cellID = GetCellIDFromChannel(voxelIndex);
+	CellID cellID(voxelIndex, 0);
 	int msg_id = rawData[0];
 	size_t sampleOffset = 12;
 	size_t sampleDrop = 0;
@@ -551,7 +542,7 @@ void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 
 		boost::mutex::scoped_lock rawLock(GetMutex());
 
-		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, voxelIndex);
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, GetChannelIDFromCell(cellID));
 		aScan->samples = rawBuffers[voxelIndex];
 		aScan->sampleSize = sampleSize;
 		aScan->sampleOffset = sampleOffset;
