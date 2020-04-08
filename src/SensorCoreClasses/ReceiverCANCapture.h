@@ -145,12 +145,8 @@ public:
       */
 	void ParseMessage(ReceiverCANMessage &inMsg);
 
-	/** \brief Process Raw Data messages from no-CAN devices
-		* \param[in] rawProvider Identifies data provider (rawFromLibUSB, rawFromPosixTTY, rawFromPosixUDP)
-		* \param[in] rawData pointer to the raw data memeory block
-		* \param[in] size size of the raw data me,ory block, in bytes
-	  */
-	void ProcessRaw(RawProvider provider, uint8_t* rawData, size_t size);
+
+
 
 		/** \brief Sets the playback filename at the receiver device level.
       * \param[in] inPlaybackFileName the name for the playback file.

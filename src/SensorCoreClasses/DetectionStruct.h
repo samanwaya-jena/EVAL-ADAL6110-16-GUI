@@ -264,13 +264,6 @@ public:
 	AlertCondition::ThreatLevel	threatLevel;
 };
 
-enum RawProvider{
-	rawFromNothing,
-	rawFromLibUSB,
-	rawFromPosixTTY,
-	rawFromPosixUDP
-}; 
-
 class AScan
 {
 public:
@@ -284,7 +277,6 @@ public:
 		cellID = inCellID;
 		channelNo = inChannelNo;
 
-		rawProvider = rawFromNothing;
 		sampleOffset = 0;
 		sampleCount = 0;
 		sampleSize = 0;
@@ -299,7 +291,14 @@ public:
 */
 	float GetScaleFactorForRange(int range);
 	void FindMinMaxMean(float *min, float *max, float *mean);
-
+	bool operator < (const AScan& cmp)  const 
+	{ 
+		if (cellID.row > cmp.cellID.row) return false;
+		if (cellID.row < cmp.cellID.row) return true;
+		// same row
+		if (cellID.column < cmp.cellID.column) return true;
+		return(false);
+	}
 public:
 	int receiverID;
 	/** \brief cellIDID of the voxel where detection origins from */
@@ -307,8 +306,6 @@ public:
 
 	/* Internal channelNo is used for display purposes */
 	int channelNo;
-
-	RawProvider rawProvider;
 
 	size_t sampleOffset; // Samples to ignore at the begining
 

@@ -143,7 +143,13 @@ void  ReceiverLibUSB2Capture::Go()
 
 {
         assert(!mThread);
-        OpenCANPort();
+
+		if (OpenCANPort())
+		{
+			WriteCurrentDateTime();
+			SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
+		}
+
 
         mWorkerRunning = true;
         startTime = boost::posix_time::microsec_clock::local_time();
@@ -157,7 +163,7 @@ void  ReceiverLibUSB2Capture::Go()
 
          HANDLE th = mThread->native_handle();
          SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
-        //   SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+         //SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
 }
 
@@ -202,10 +208,14 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 		swap_handle = NULL;
 	}
 	if (handle)
-	{
+	{   
+		
 		//ret = recvfrom(fd, (char*)buffer, size, 0, 0, 0);
+		
+		//DebugFilePrintf("Test");
 		sent = WriteMessage(poll);
 		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer));
+
 		if (bytesRead <= 0)
 		{
 			//perror("UDP read");
@@ -224,18 +234,15 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 				ParseMessage(msg);
 			}
 			else {
-				// Jack rawFromLibUSB2
-								//ProcessRaw(rawFromPosixUDP, buffer, ret);
-				//raw_start = buffer + 20;
-				ProcessRaw(rawFromPosixTTY, buffer, receiveBufferSize);
+				ProcessRaw(buffer);
 			}
 		}
-	}
+			}
 	else {
 		if (boost::posix_time::microsec_clock::local_time() > reconnectTime) {
 			if (OpenCANPort()) {
 				WriteCurrentDateTime();
-				// SetMessageFilters(receiverStatus.frameRate, receiverStatus.channelMask, receiverStatus.messageMask);	
+				SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);	
 			}
 		}
 	}
@@ -306,7 +313,6 @@ bool  ReceiverLibUSB2Capture::OpenCANPort()
 	if (handle)
 	{
 		int received = 0;
-		bool tr;
 
 		boost::mutex::scoped_lock rawLock(m_Mutex);
 
@@ -317,41 +323,7 @@ bool  ReceiverLibUSB2Capture::OpenCANPort()
 			ret = libusb_bulk_transfer((libusb_device_handle*)handle, usbEndPointIn, (unsigned char*)tmp, sizeof(tmp), &received, 100);
 		} while (ret == 0 && received > 0);
 
-		ReceiverCANMessage msg;
-		msg.id = RECEIVERCANMSG_ID_LIDARQUERY;
-		//Test Jack
-		ReceiverCANMessage message;
-        	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-        	//message.id = RECEIVERCANMSG_ID_CMD_TRANSMIT_COOKED;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-    		message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-    		message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
-        	message.data[1] = 0xFF; // Channel mask
-        	message.data[2] = 0xFF;  // Reserved
-        	message.data[3] = 1; // New frame rate. oo= use actual.
-        	message.data[4] = 0x82; // Message mask
-        	message.data[5] = 0;  // Reserved
-        	message.data[6] = 0;  // Reserved
-        	message.data[7] = 0;  // Reserved
-
-		tr = WriteMessage(message);
-    		message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_cooked RAW flags
-		tr = WriteMessage(message);
-
-    		message.data[0] = 0xC0;   // Set  
-        	message.data[1] = 0x03; // Sensor Reg 
-        	message.data[2] = 0x10;  // Reserved
-        	message.data[3] = 0; // New frame rate. oo= use actual.
-        	message.data[4] = 1; // Message mask
-        	message.data[5] = 0;  // Reserved
-        	message.data[6] = 0;  // Reserved
-        	message.data[7] = 0;  // Reserved
-
-		tr = WriteMessage(message);
-
 		rawLock.unlock();
-
-
-		m_FrameRate = 0;
 
 		return true;
 	}
@@ -360,6 +332,62 @@ bool  ReceiverLibUSB2Capture::OpenCANPort()
 	}
 }
 
+
+bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, VoxelMask voxelMask, MessageMask messageMask)
+
+{
+	ReceiverCANMessage message;
+
+	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
+
+	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
+	message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
+
+	*(int16_t*)&message.data[1] = voxelMask.wordData;
+	message.data[3] = 1;  // Rate Decimation.
+	message.data[4] = 0;  // Reserved
+	message.data[5] = 0;  // Reserved
+	message.data[6] = 0;  // Reserved
+	message.data[7] = 0;  // Reserved
+
+	bool bMessageOk = WriteMessage(message);
+
+	if (bMessageOk)
+	{
+		message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_RAW;   // Transmit_raw enable flags
+
+		if (messageMask.bitFieldData.raw)
+		{
+			*(int16_t*)&message.data[1] = voxelMask.wordData;
+		}
+		else 
+		{
+			*(int16_t*)&message.data[1] = 0;
+
+		}
+		message.data[3] = 1;  // Rate Decimation.
+		message.data[4] = 0;  // Reserved
+		message.data[5] = 0;  // Reserved
+		message.data[6] = 0;  // Reserved
+		message.data[7] = 0;  // Reserved
+		bMessageOk = WriteMessage(message);
+	}
+
+	if (bMessageOk)
+	{
+		// Acquisition enable
+		bMessageOk = SetFPGARegister(0x10, 1);
+	}
+
+	if (bMessageOk)
+	{
+		// Set Frame Rate
+		bMessageOk = SetFPGARegister(0x13, frameRate);
+	}
+
+	// The message has no confirmation built in
+	return(bMessageOk);
+}
 bool  ReceiverLibUSB2Capture::CloseCANPort()
 {
   boost::mutex::scoped_lock rawLock(m_Mutex);
@@ -421,6 +449,120 @@ bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage &inMsg)
 	return(true);
 }
 
+static int channelToColumnArray[] = {
+  14,
+  12,
+  10,
+  8,
+  6,
+  4,
+  2,
+  0,
+  1,
+  3,
+  5,
+  7,
+  9,
+  11,
+  13,
+  15
+};
+
+static int columnToChannelArray[] = {
+7,
+8,
+6,
+9,
+5,
+10,
+4,
+11,
+3,
+12,
+2,
+13,
+1,
+14,
+0
+};
+
+CellID ReceiverLibUSB2Capture::GetCellIDFromChannel(int inChannelID)
+{
+#if 0
+	int row = 0;
+	int column = channelToColumnArray[inChannelID];
+	return (CellID(column, row));
+#else
+	return (CellID(inChannelID, 0));
+#endif
+}
+
+int ReceiverLibUSB2Capture::GetChannelIDFromCell(CellID inCellID)
+{
+#if 0
+	for (int i = 0; i < receiverVoxelQty; i++)
+	{
+		if (channelToColumnArray[i] == inCellID.column) return (i);
+	}
+	return (0); 
+#else
+	return(inCellID.column);
+#endif
+
+}
+
+void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
+{
+	uint16_t* rawData16 = (uint16_t*)rawData;
+	int voxelIndex = rawData16[1] & 0xFF;
+	CellID cellID = GetCellIDFromChannel(voxelIndex);
+	int msg_id = rawData[0];
+	size_t sampleOffset = 12;
+	size_t sampleDrop = 0;
+	size_t sampleSize = 2;
+	bool sampleSigned = true;
+	bool transmit = false;
+
+
+
+	++m_nbrRawCumul;
+
+	if (msg_id != 0xb0) return;
+	if (voxelIndex >= maxRawBufferCount) return;
+
+	if (!rawBuffers[voxelIndex])
+	{
+		rawBuffers[voxelIndex] = new uint8_t[maxRawBufferSize];
+	}
+	rawBufferCount++;
+
+	memcpy(rawBuffers[voxelIndex], rawData, receiveBufferSize);
+	sampleCount = (receiveBufferSize / 2) - sampleOffset;
+	transmit = true;
+	
+	if (voxelIndex > max_voxel) max_voxel = voxelIndex;
+	if (voxelIndex == max_voxel) transmit = true;
+
+
+	//printf("ascan %02x %02x %d %d %d\n", msg_id, max_msg_id, channel, size, sampleCount);
+
+	if (transmit)
+	{
+
+		boost::mutex::scoped_lock rawLock(GetMutex());
+
+		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, voxelIndex);
+		aScan->samples = rawBuffers[voxelIndex];
+		aScan->sampleSize = sampleSize;
+		aScan->sampleOffset = sampleOffset;
+		aScan->sampleCount = sampleCount - sampleDrop;
+		aScan->sampleSigned = sampleSigned;
+		//printf("transmit ascan %d %d\n", aScan->channelID, aScan->sampleCount);
+
+		rawLock.unlock();
+	}
+}
+
 bool ReceiverLibUSB2Capture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
 {
 	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
@@ -435,7 +577,6 @@ bool ReceiverLibUSB2Capture::ReadConfigFromPropTree(boost::property_tree::ptree 
 	usbEndPointIn = (unsigned char)receiverNode.get<int>("libUsbEndPointIn", 129);
 	usbEndPointOut = (unsigned char)receiverNode.get<int>("libUsbEndPointOut", 2);
 	usbTimeOut =  receiverNode.get<int>("libUsbTimeOut", 1000);
-
 
 	return(true);
 }

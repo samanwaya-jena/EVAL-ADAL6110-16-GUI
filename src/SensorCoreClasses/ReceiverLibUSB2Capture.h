@@ -118,6 +118,28 @@ protected:
 
 	virtual bool WriteMessage(const ReceiverCANMessage &inMsg);
 
+	/** \brief Returns the CellID, given a channelID
+   * \param[in] channelID the input "channel"
+   * \return ChannelID, indicating unique pixel position in the detector array
+   * \remarks For the ReceiverPolledCapture, channels are out of order on receive for raw data messages.
+   */
+	virtual CellID GetCellIDFromChannel(int inChannelID);
+
+	/** \brief Returns the CellID, given a channelID
+	* \param[in] channelID the input "channel"
+	* \return ChannelID, indicating unique pixel position in the detector array
+	* \remarks For the ReceiverPolledCapture, channels are out of order on receive for raw data messages.
+	*/
+
+	virtual int GetChannelIDFromCell(CellID inCellID);
+
+	/** \brief Process Raw Data messages from no-CAN devices
+	   * \param[in] rawData pointer to the raw data memeory block
+	 */
+
+	virtual void ProcessRaw(uint8_t* rawData);
+
+
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
 	  * \returns Returns true otherwise.
@@ -132,6 +154,15 @@ protected:
 
   	void * GetHandle(void);
   	void SetHandle(void *);
+
+	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
+	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
+	* \param[in] voxelMask mask for the analyzed voxels.
+	* \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
+	* \return true if success.  false on error.
+	*/
+	bool SetMessageFilters(ReceiverFrameRate frameRate, VoxelMask voxelMask, MessageMask messageMask);
+
 
 // Protected variables
 protected:

@@ -414,7 +414,7 @@ bool ReceiverPolledCapture::ReadConfigFromPropTree(boost::property_tree::ptree &
 	return(true);
 }
 
-int channelToColumnArray[16] = {
+static int channelToColumnArray[] = {
   14,
   12,
   10,
@@ -433,7 +433,7 @@ int channelToColumnArray[16] = {
   15
 };
 
-int columnToChannelArray[]={
+static int columnToChannelArray[]={
 7,
 8,
 6,
@@ -512,7 +512,6 @@ void ReceiverPolledCapture::ProcessRaw(uint8_t* rawData)
 		AScan::Ptr aScan = currentFrame->MakeUniqueAScan(currentFrame->aScans, receiverID, cellID, channelID);
 		aScan->samples = rawBuffers[channelID];
 		aScan->sampleSize = sampleSize;
-		aScan->rawProvider = RawProvider::rawFromLibUSB;
 		aScan->sampleOffset = sampleOffset;
 		aScan->sampleCount = sampleCount - sampleDrop;
 		aScan->sampleSigned = sampleSigned;

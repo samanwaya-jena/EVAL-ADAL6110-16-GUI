@@ -94,7 +94,7 @@
 
 
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
-      <frameRate>0</frameRate>
+      <frameRate>50</frameRate>
 
       <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
       <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
@@ -110,8 +110,8 @@
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
-      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
+      <msgEnableObstacleCompact>false</msgEnableObstacleCompact>
+      <msgEnableRaw>true</msgEnableRaw>
  
       <sensorGeometry>
         <position>

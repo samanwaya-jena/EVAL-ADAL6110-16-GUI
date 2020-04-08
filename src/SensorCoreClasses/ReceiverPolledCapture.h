@@ -105,8 +105,12 @@ protected:
   virtual bool ReadConfigFromPropTree(boost::property_tree::ptree& propTree);
   void LogWaveform(size_t cycle);
 
+  /** \brief Process Raw Data messages from no-CAN devices
+        * \param[in] rawData pointer to the raw data memeory block
+      */
+
  
-	void ProcessRaw(uint8_t* rawData);
+	virtual void ProcessRaw(uint8_t* rawData);
 
 // Protected variables
 protected:

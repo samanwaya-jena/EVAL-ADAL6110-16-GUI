@@ -172,10 +172,31 @@ AScan::Ptr SensorFrame::MakeUniqueAScan(AScan::Vector &aScanVector,  int inRecei
 {
 	AScan::Ptr aScan;
 	bool bExists = FindAScan(aScanVector, inReceiverID, inCellID,  aScan);
-	if (!bExists) 
+	if (!bExists)
 	{
 		aScan = AScan::Ptr(new AScan(inReceiverID, inCellID, inChannelID));
+#if 1
+		// Insert in order of row/column
+		AScan::Vector::iterator  aScanIterator = aScanVector.begin();
+		while (aScanIterator != aScanVector.end())
+		{
+			AScan::Ptr aScanCompare = *aScanIterator;
+			if (aScanCompare->receiverID == inReceiverID && (*aScan) < (*aScanCompare))
+			{
+				aScanVector.insert(aScanIterator, aScan);
+				return(aScan);
+			}
+
+			aScanIterator++;
+		}
+
+		// No item samller, insert at end;
 		aScanVector.push_back(aScan);
+		return(aScan);
+#else
+		// Insert at the end
+		aScanVector.push_back(aScan);
+#endif
 	}
 
 	return(aScan);
