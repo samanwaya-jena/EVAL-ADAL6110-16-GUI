@@ -64,7 +64,7 @@ const float defaultSignalToNoiseFloor = -10.0;
 
 
 ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	ReceiverFrameRate inFrameRate, VoxelMask& inVoxelMask, MessageMask& inMessageMask, float inRangeOffset,
+	ReceiverFrameRate inDemandedFrameRate, VoxelMask& inVoxelMask, MessageMask& inMessageMask, float inRangeOffset,
 	const RegisterSet& inRegistersFPGA, const RegisterSet& inRegistersADC, const RegisterSet& inRegistersGPIO,
 	const AlgorithmSet& inParametersAlgos,
 	const AlgorithmSet& inParametersTrackers) :
@@ -90,52 +90,47 @@ ReceiverCapture::ReceiverCapture(int receiverID, int inReceiverVoxelQty, int inR
 	sReceiverVoxelGeometry(sDefaultReceiverVoxelGeometry),
 	targetHintDistance(0.0),
 	targetHintAngle(0.0),
-	m_FrameRate(0),
-	m_FrameRateMS(0.0),
+	m_calculatedFrameRate(),
+	m_frameRateMS(0.0),
 	m_nbrCompletedFrame(0),
-	m_nbrCompletedFrameCumul(0),
-	m_nbrRawCumul(0),
 	logFilePtr(NULL)
 
 {
 	// Initialize default status values
 	InitStatus();
 
-	receiverStatus.frameRate = inFrameRate;
+	receiverStatus.demandedFrameRate = inDemandedFrameRate;
+	receiverStatus.obtainedFrameRate = 0;
 	receiverStatus.currentAlgo = 0;
 	receiverStatus.currentAlgoPendingUpdates = 0;
 
 	receiverStatus.currentTracker = 0;
 	receiverStatus.currentTrackerPendingUpdates = 0;
 
-
 	// Update settings from application
-	receiverStatus.frameRate = inFrameRate;
 	receiverStatus.voxelMask = inVoxelMask;
 	receiverStatus.messageMask = inMessageMask;
 
 	// Reflect the settings in hardware
-	SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
+	SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 }
 
-ReceiverCapture::ReceiverCapture(int receiverID, boost::property_tree::ptree &propTree):
-ThreadedWorker(),
-Publisher(),
-receiverID(receiverID),
-acquisitionSequence(new AcquisitionSequence()),
-frameID(0),
-bFrameInvalidated(false),
-sReceiverType(sDefaultReceiverType),
-sReceiverRegisterSet(sDefaultReceiverRegisterSet),
-sReceiverVoxelGeometry(sDefaultReceiverVoxelGeometry),
-targetHintDistance(0.0),
-targetHintAngle(0.0),
-m_FrameRate(0),
-m_FrameRateMS(0.0),
-m_nbrCompletedFrame(0),
-m_nbrCompletedFrameCumul(0),
-m_nbrRawCumul(0),
-logFilePtr(NULL)
+ReceiverCapture::ReceiverCapture(int receiverID, boost::property_tree::ptree& propTree) :
+	ThreadedWorker(),
+	Publisher(),
+	receiverID(receiverID),
+	acquisitionSequence(new AcquisitionSequence()),
+	frameID(0),
+	bFrameInvalidated(false),
+	sReceiverType(sDefaultReceiverType), 
+	sReceiverRegisterSet(sDefaultReceiverRegisterSet),
+	sReceiverVoxelGeometry(sDefaultReceiverVoxelGeometry),
+	targetHintDistance(0.0),
+	targetHintAngle(0.0),
+	m_calculatedFrameRate(0),
+	m_frameRateMS(0.0),
+	m_nbrCompletedFrame(0),
+	logFilePtr(NULL)
 
 {
 	// Read the configuration from the configuration file
@@ -145,6 +140,7 @@ logFilePtr(NULL)
 	ReadConfigFromPropTree(propTree);
 	ReadGeometryFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);
+	receiverStatus.obtainedFrameRate = 0;
 
 	// Initialize default status values
 	InitStatus();
@@ -157,7 +153,7 @@ logFilePtr(NULL)
 	currentFrame = SensorFrame::Ptr(new SensorFrame(receiverID, 0, receiverVoxelQty));
 
 	// Reflect the settings in hardware
-	SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
+	SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 }
 
 ReceiverCapture::~ReceiverCapture()
@@ -219,19 +215,19 @@ int ReceiverCapture::GetFrameQty()
 	return acquisitionSequence->sensorFrames.size();
 }
 
-ReceiverFrameRate ReceiverCapture::GetFrameRate()
+ReceiverFrameRate ReceiverCapture::GetCalculatedFrameRate()
 {
-  // timestamp the currentFrame
-  Timestamp elapsed = GetElapsed();
+	// timestamp the currentFrame
+	Timestamp elapsed = GetElapsed();
 
-  if (elapsed - m_FrameRateMS > 1000.0)
-  {
-    m_FrameRate = (ReceiverFrameRate) m_nbrCompletedFrame;
-    m_nbrCompletedFrame = 0;
-    m_FrameRateMS = elapsed;
-  }
+	if (elapsed - m_frameRateMS > 1000.0)
+	{
+		m_calculatedFrameRate = (ReceiverFrameRate)m_nbrCompletedFrame;
+		m_nbrCompletedFrame = 0;
+		m_frameRateMS = elapsed;
+	}
 
-  return m_FrameRate;
+	return m_calculatedFrameRate;
 }
 
 bool ReceiverCapture::CopyReceiverFrame(FrameID inFrameID,  SensorFrame::Ptr &outSensorFrame, Publisher::SubscriberID inSubscriberID)
@@ -402,7 +398,6 @@ void ReceiverCapture::ProcessCompletedFrame()
 	Timestamp elapsed = GetElapsed();
 
   ++m_nbrCompletedFrame;
-  ++m_nbrCompletedFrameCumul;
 
 	currentFrame->timeStamp = elapsed;
 
@@ -725,7 +720,7 @@ bool ReceiverCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTr
 		sReceiverVoxelGeometry = receiverNode.get<std::string>("receiverVoxelGeometry");
 		measurementOffset = receiverNode.get<float>("rangeOffset");
 
-		receiverStatus.frameRate =  (ReceiverFrameRate) receiverNode.get<uint16_t>("frameRate");	// Default frame rate is 100Hz
+		receiverStatus.demandedFrameRate =  (ReceiverFrameRate) receiverNode.get<uint16_t>("frameRate");	// Default frame rate is 100Hz
 
 		receiverStatus.voxelMask.wordData = receiverNode.get<uint16_t>("voxelMask");
 

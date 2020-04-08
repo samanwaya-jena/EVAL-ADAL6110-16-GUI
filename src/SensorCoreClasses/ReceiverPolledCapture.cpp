@@ -242,7 +242,7 @@ void ReceiverPolledCapture::DoOneThreadIteration()
       if (OpenCANPort())
       {
         WriteCurrentDateTime();
-        SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
+        SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
         // Update all the info (eventually) from the status of the machine
         QueryAlgorithm();
         QueryTracker();
@@ -481,8 +481,6 @@ void ReceiverPolledCapture::ProcessRaw(uint8_t* rawData)
 	uint16_t* rawData16;
 
 	rawData16 = (uint16_t*)rawData;
-
-	++m_nbrRawCumul;
 
 	sampleOffset = 0;
 	sampleSize = 2;

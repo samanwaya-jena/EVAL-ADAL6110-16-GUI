@@ -98,8 +98,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	actionQuitButton(NULL),
 	actionResizeMaximizeIcon(NULL),
 	actionResizeRestoreDownIcon(NULL),
-	m_bConnected(false),
-	m_frameRate(1)
+	m_bConnected(false)
 {
 
 	labelConnected = new QLabel("Initializing...");
@@ -261,7 +260,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		ui.calibrationVoxel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel5);
 		ui.calibrationVoxel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel6);
 
-		ui.frameRateSpinBox->setValue((int) receiverCaptures[0]->receiverStatus.frameRate);
+		ui.frameRateSpinBox->setValue((int) receiverCaptures[0]->GetDemandedFrameRate());
 	}
 	else
 	{
@@ -1069,7 +1068,7 @@ void AWLQtDemo::on_timerTimeout()
 	// Update receiver status
 	bool bWasConnected = labelConnected->text().compare(QString("Connected")) == 0;
 	bool bConnected = receiverCaptures[0]->IsConnected();
-	ReceiverFrameRate frameRate = receiverCaptures[0]->GetFrameRate();
+	ReceiverFrameRate frameRate = receiverCaptures[0]->GetCalculatedFrameRate();
 
 	{
 		QString str;
@@ -2921,26 +2920,3 @@ void AWLQtDemo::closeEvent(QCloseEvent * /*event*/)
 	qApp->closeAllWindows();
 }	
 
-#if 0
-void AWLQtDemo::DoThreadLoop()
-{
-	int dgg = 0;
-	char str[256];
-	int nbrPrevFrame = 0;
-	int nbrPrevRaw = 0;
-
-	while (true)
-	{
-		int nbrFrame = receiverCaptures[0]->m_nbrCompletedFrameCumul;
-		int nbrRaw = receiverCaptures[0]->m_nbrRawCumul;
-
-		sprintf(str, "frame: %5d (%3d) - Raw: %5d (%3d)\n", nbrFrame, nbrFrame - nbrPrevFrame, nbrRaw, nbrRaw - nbrPrevRaw);
-		OutputDebugStringA(str);
-
-		nbrPrevFrame = nbrFrame;
-		nbrPrevRaw = nbrRaw;
-
-		Sleep(1000);
-	}
-}
-#endif

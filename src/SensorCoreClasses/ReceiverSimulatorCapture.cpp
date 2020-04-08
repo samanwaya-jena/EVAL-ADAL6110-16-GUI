@@ -50,10 +50,10 @@ SENSORCORE_USE_NAMESPACE
 
 
 ReceiverSimulatorCapture::ReceiverSimulatorCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-	ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
+	ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 	const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO,
 	const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers) :
-ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inVoxelMask, inMessageMask, inRangeOffset,
+ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inDemandedFrameRate, inVoxelMask, inMessageMask, inRangeOffset,
 					   inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers)
 
 {
@@ -131,7 +131,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 }
 
 
-bool ReceiverSimulatorCapture::SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/)
+bool ReceiverSimulatorCapture::SetMessageFilters(ReceiverFrameRate /*demandedFrameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/)
 
 {
 	return(true);

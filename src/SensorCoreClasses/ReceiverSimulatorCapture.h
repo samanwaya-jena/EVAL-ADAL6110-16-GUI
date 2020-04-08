@@ -70,7 +70,7 @@ public:
 		* \param[in] inReceiverColumns number of columns in receiver array
 		* \param[in] inReceiverRows number of rows  in the receiver array
 		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
-		* \param[in] inFrameRate frameRate of the receiver
+		* \param[in] inDemandedFrameRate frameRate that will be requested of the receiver
 	    * \param[in] inVoxelMask  voxelMask indicating which voxels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
@@ -82,7 +82,7 @@ public:
       */
 
 	ReceiverSimulatorCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
-					   ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
+					   ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos, const AlgorithmSet &inParametersTrackers);
 
@@ -222,13 +222,13 @@ public:
 	virtual bool SetTrackerParameter(int /*trackerID*/, uint16_t /*registerAddress*/, uint32_t /*registerValue*/) { return(true); };
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
-	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
+	* \param[in] deamndedFrameRate new frame rate demanded for the system. A value of 0 means no change
 	* \param[in] voxelMask mask for the analyzed voxels.
 	* \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
 	* \return true if success.  false on error.
 	*/
 
-	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/);
+	virtual bool SetMessageFilters(ReceiverFrameRate /*demandedFrameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/);
 
 	/** \  an asynchronous query command to get the current algorithm.
 	* \return true if success.  false on error.

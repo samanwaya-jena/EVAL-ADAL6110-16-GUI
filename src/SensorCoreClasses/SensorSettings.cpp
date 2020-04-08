@@ -196,7 +196,7 @@ bool SensorSettings::StoreReceiverCalibration()
 
 
 			receiverNode.put<uint16_t>("voxelMask", receiver.receiverVoxelMask);
-			receiverNode.put<uint16_t>("frameRate", (uint16_t) receiver.receiverFrameRate);
+			receiverNode.put<uint16_t>("frameRate", (uint16_t) receiver.receiverStatus.demandedFrameRate);
 
 			// Geometry
 			boost::property_tree::ptree& geometryNode = receiverNode.get_child("sensorGeometry");

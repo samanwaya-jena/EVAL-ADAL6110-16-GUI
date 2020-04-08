@@ -101,7 +101,7 @@ public:
 		* \param[in] inReceiverColumns number of columns in receiver array
 		* \param[in] inReceiverRows number of rows  in the receiver array
 		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
-		* \param[in] inFrameRate frameRate of the receiver
+		* \param[in] inDemandedFrameRate frameRate of the receiver
 	    * \param[in] inVoxelMask  voxelMask indicating which voxels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
@@ -114,7 +114,7 @@ public:
       */
 
 	ReceiverCANCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
+					   eReceiverCANRate inCANRate, ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers);

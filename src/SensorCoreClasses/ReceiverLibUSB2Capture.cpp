@@ -147,7 +147,7 @@ void  ReceiverLibUSB2Capture::Go()
 		if (OpenCANPort())
 		{
 			WriteCurrentDateTime();
-			SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
+			SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 		}
 
 
@@ -242,7 +242,7 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 		if (boost::posix_time::microsec_clock::local_time() > reconnectTime) {
 			if (OpenCANPort()) {
 				WriteCurrentDateTime();
-				SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);	
+				SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);	
 			}
 		}
 	}
@@ -337,20 +337,30 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 
 {
 	ReceiverCANMessage message;
-
 	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-
 	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-	message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
 
-	*(int16_t*)&message.data[1] = voxelMask.wordData;
-	message.data[3] = 1;  // Rate Decimation.
-	message.data[4] = 0;  // Reserved
-	message.data[5] = 0;  // Reserved
-	message.data[6] = 0;  // Reserved
-	message.data[7] = 0;  // Reserved
+	bool bMessageOk = true;
 
-	bool bMessageOk = WriteMessage(message);
+	if (bMessageOk)
+	{
+		// Set Frame Rate
+		bMessageOk = SetFPGARegister(0x13, frameRate);
+	}
+
+	if (bMessageOk)
+	{
+		message.data[0] = RECEIVERCANMSG_ID_CMD_TRANSMIT_COOKED;   // Transmit_cooked enable flags
+
+		*(int16_t*)&message.data[1] = voxelMask.wordData;
+		message.data[3] = 1;  // Rate Decimation.
+		message.data[4] = 0;  // Reserved
+		message.data[5] = 0;  // Reserved
+		message.data[6] = 0;  // Reserved
+		message.data[7] = 0;  // Reserved
+
+		bMessageOk = WriteMessage(message);
+	}
 
 	if (bMessageOk)
 	{
@@ -363,7 +373,6 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 		else 
 		{
 			*(int16_t*)&message.data[1] = 0;
-
 		}
 		message.data[3] = 1;  // Rate Decimation.
 		message.data[4] = 0;  // Reserved
@@ -377,12 +386,6 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 	{
 		// Acquisition enable
 		bMessageOk = SetFPGARegister(0x10, 1);
-	}
-
-	if (bMessageOk)
-	{
-		// Set Frame Rate
-		bMessageOk = SetFPGARegister(0x13, frameRate);
 	}
 
 	// The message has no confirmation built in
@@ -513,10 +516,6 @@ void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 	size_t sampleSize = 2;
 	bool sampleSigned = true;
 	bool transmit = false;
-
-
-
-	++m_nbrRawCumul;
 
 	if (msg_id != 0xb0) return;
 	if (voxelIndex >= maxRawBufferCount) return;

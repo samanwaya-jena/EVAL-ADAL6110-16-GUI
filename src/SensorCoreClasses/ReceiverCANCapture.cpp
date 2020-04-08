@@ -63,11 +63,11 @@ const ReceiverCANCapture::eReceiverCANRate defaultCANRate = ReceiverCANCapture::
 
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
-					   eReceiverCANRate inCANRate, ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
+					   eReceiverCANRate inCANRate, ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers):
-ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inFrameRate, inVoxelMask, inMessageMask, inRangeOffset, 
+ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inDemandedFrameRate, inVoxelMask, inMessageMask, inRangeOffset, 
                 inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers),
 canRate(inCANRate),
 sampleCount(0), max_msg_id(0x80), max_voxel(0),
@@ -139,7 +139,7 @@ void  ReceiverCANCapture::Go()
 	if (OpenCANPort())
 	{
 		WriteCurrentDateTime();
-		SetMessageFilters(receiverStatus.frameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
+		SetMessageFilters(GetDemandedFrameRate(), receiverStatus.voxelMask, receiverStatus.messageMask);
 		// Update all the info (eventually) from the status of the machine
 		QueryAlgorithm();
 		QueryTracker();
@@ -266,7 +266,7 @@ void ReceiverCANCapture::ParseSensorStatus(ReceiverCANMessage &inMsg)
 	unsigned int  uiVoltage = uintDataPtr[1];
 	receiverStatus.voltage = (float) uiVoltage;
 
-	receiverStatus.frameRate = (ReceiverFrameRate) byteDataPtr[4];
+	receiverStatus.obtainedFrameRate = (ReceiverFrameRate) byteDataPtr[4];
 
 	receiverStatus.hardwareError.byteData = byteDataPtr[5];
 	receiverStatus.receiverError.byteData = byteDataPtr[6];
@@ -276,7 +276,7 @@ void ReceiverCANCapture::ParseSensorStatus(ReceiverCANMessage &inMsg)
 
 	DebugFilePrintf(debugFile, "Msg %lu - Val %u %u %u %u %u %u", inMsg.id, 
 			iTemperature, uiVoltage, 
-			receiverStatus.frameRate, 
+			receiverStatus.obtainedFrameRate, 
 			receiverStatus.hardwareError.byteData,
 			receiverStatus.receiverError.byteData,
 			receiverStatus.status.byteData);
@@ -1284,7 +1284,7 @@ bool ReceiverCANCapture::StartPlayback(ReceiverFrameRate frameRate, VoxelMask vo
 	bool bMessageOk = WriteMessage(message);
 
 	receiverStatus.bInPlayback = bMessageOk;
-	if (frameRate > 0) receiverStatus.frameRate = frameRate;
+	if (frameRate > 0) receiverStatus.demandedFrameRate = frameRate;
 	return(bMessageOk);
 }
 
@@ -1309,7 +1309,7 @@ bool ReceiverCANCapture::StartRecord(ReceiverFrameRate frameRate, VoxelMask voxe
 	bool bMessageOk = WriteMessage(message);
 
 	receiverStatus.bInRecord = bMessageOk;
-	if (frameRate > 0) receiverStatus.frameRate = frameRate;
+	if (frameRate > 0) receiverStatus.demandedFrameRate = frameRate;
 
 	return(bMessageOk);
 }
@@ -1326,7 +1326,7 @@ bool ReceiverCANCapture::StopPlayback()
 	message.data[1] = 0x00;  // Mask at 0 stops the playback 
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = (uint8_t) receiverStatus.frameRate; // Frame rate
+	message.data[3] = (uint8_t) GetDemandedFrameRate(); // Frame rate
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used
@@ -1355,7 +1355,7 @@ bool ReceiverCANCapture::StopRecord()
 	message.data[1] = 0x00;  // Mask at 0 stops the recording 
 
 	message.data[2] = 0x00; // Not used
-	message.data[3] = (uint8_t) receiverStatus.frameRate; // Frame rate
+	message.data[3] = (uint8_t) GetDemandedFrameRate(); // Frame rate
 	message.data[4] = 0x00; // Not used
 	message.data[5] = 0x00; // Not used
 	message.data[6] = 0x00; // Not used

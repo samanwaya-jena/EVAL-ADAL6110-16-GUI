@@ -114,9 +114,14 @@ public:
       */
 	float voltage;
 
-	/** \brief Current frame rate. May not be reported accurately during playback.
+	/** \brief Current demanded frame rate. 
       */
-	ReceiverFrameRate frameRate;
+	ReceiverFrameRate demandedFrameRate;
+
+	/** \brief Current frame rate in sensor. 
+     */
+	ReceiverFrameRate obtainedFrameRate;
+
 
 	/** \brief Hardware error flags.
       */
@@ -424,7 +429,7 @@ public:
 	    * \param[in] inReceiverColumns number of columns in receiver array
 		* \param[in] inReceiverRows number of rows  in the receiver array
 		* \param[in] inLineWrapAround "distance" coded between rows in the original communications protocol for arrayed sensors
-		* \param[in] inFrameRate frameRate of the receiver
+		* \param[in] inDemandedFrameRate demanded frameRate for the receiver
 	    * \param[in] inVoxelMask  voxelMask indicating which channels are activated in the receiver
 	    * \param[in] inMessageMask mask of the messages that are enabled in the communications protocol
 	    * \param[in] inRangeOffset rangeOffset that corresponds to a calibration error in the sensor.
@@ -437,7 +442,7 @@ public:
 		*/
 
 	ReceiverCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
-						ReceiverFrameRate inFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
+						ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
 					   const AlgorithmSet &inParametersAlgos,
 					   const AlgorithmSet &inParametersTrackers);
@@ -466,7 +471,20 @@ public:
       */
 	int  GetFrameQty();
 
-	ReceiverFrameRate  GetFrameRate();
+	/** \brief Return the frame rate requested by the application to the sensor
+	  * \return frame rate requested by the application to the sensor. Corresponds to configuration file settings.
+	  */
+	ReceiverFrameRate  GetDemandedFrameRate() { return receiverStatus.demandedFrameRate; };
+
+	/** \brief Return the frame rate returned by the sensor to the application
+	  * \return frame rate returned by the sensor to the application. Corresponds to sensor settings.
+	  */
+	ReceiverFrameRate  GetObtainedFrameRate() { return receiverStatus.obtainedFrameRate; };
+
+	/** \brief Return the frame rate computed by the application based on number of frames processed per second.
+	  * \return frame rate computed by the application based on number of frames processed per second.
+	  */
+	ReceiverFrameRate  GetCalculatedFrameRate();
 
   virtual bool IsConnected() { return true; }
 
@@ -1054,17 +1072,11 @@ protected:
 	std::ofstream *logFilePtr;
 	boost::mutex logFileMutex;
 
-	ReceiverFrameRate m_FrameRate;
-	int m_nbrCompletedFrame;
 
-  private:
-
-    Timestamp m_FrameRateMS;
-
-  public:
-    int m_nbrCompletedFrameCumul;
-    int m_nbrRawCumul;
-
+  protected:
+	  ReceiverFrameRate m_calculatedFrameRate;
+	  int m_nbrCompletedFrame;
+	  Timestamp m_frameRateMS;
 };
 
 

@@ -185,7 +185,7 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
 		SendSoftwareReset();
 
-		m_FrameRate = 0;
+		m_calculatedFrameRate = 0;
 
 		return true;
 	}
