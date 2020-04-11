@@ -324,20 +324,8 @@ bool ReceiverPolledCapture::SendSoftwareReset()
   if (!handle)
     return false;
 
-  ReceiverCANMessage msg;
-  msg.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;
-  msg.len = RECEIVERCANMSG_LEN;
-  msg.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-  msg.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_ADC_REGISTER;
-  msg.data[2] = 0x00;
-  msg.data[3] = 0x00;
-  msg.data[4] = 0x00;
-  msg.data[5] = 0x00;
-  msg.data[6] = 0x00;
-  msg.data[7] = 0x00;
-
-  return WriteMessage(msg);
-}
+ return (SetADCRegister(0, 0));
+ }
 
 
 void * ReceiverPolledCapture::GetHandle(void) {

@@ -80,7 +80,6 @@ public:
 	bool bTabSettingAlgoControl;
 	bool bTabSettingTrackerControl;
 	bool bTabSettingAScan;
-	bool bTabSettingMisc;
 
 
 	std::string sDisplayShowSize;

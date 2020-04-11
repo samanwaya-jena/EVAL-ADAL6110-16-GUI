@@ -211,40 +211,6 @@ public:
 		
 	virtual bool SetAlgorithm(uint16_t algorithmID);
 
-	/** \brief Issues the command to set the current tracker in the sensor.
-	*\param[in] tarckerID  ID of the selected tracker.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPFrameRate(ReceiverFrameRate frameRate );
-
-	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPSystemEnable(bool on);
-	
-	/** \brief Issues the command to enable the sensor.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPLaserEnable(bool on);
-	
-	/** \brief Issues the command to enable the Laser.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPAutoGainEnable(bool on);
-	
-	/** \brief Issues the command to enable the Auto Gain.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPDCBalanceEnable(bool on);
-	
-	/** \brief Issues the command to enable the DC Balance.
-	* \return true if success.  false on error.
-	*/
 
 	virtual bool SetTracker(uint16_t trackerID);
 
@@ -316,39 +282,8 @@ public:
 	* \return true if success.  false on error.
 	*/
 
-
-	virtual bool QuerySSPFrameRate();
-
-	/** \brief Issues the command to get the frame rate.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool QuerySSPSystemEnable();
-	
-	/** \brief Issues the command to enable the sensor.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool QuerySSPLaserEnable();
-	
-	/** \brief Issues the command to enable the Laser.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool QuerySSPAutoGainEnable();
-	
-	/** \brief Issues the command to enable the Auto Gain.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool QuerySSPDCBalanceEnable();
-	
-	/** \brief Issues the command to enable the DC Balance.
-	* \return true if success.  false on error.
-	*/
-
-
 	virtual bool QueryTracker();
+
 
 	/** \brief Send an asynchronous query command for an internal FPGA register. 
 		 *\param[in] registerAddress Adrress of the register to query.
@@ -400,6 +335,18 @@ public:
 	*          placed in the a trackerParameters registerSet.
 	*/
 	virtual bool QueryTrackerParameter(int trackerID, uint16_t registerAddress);
+
+	/** \Brief Get the device serial number
+     *   Value of 0 indicates that the data is not available.
+     */
+	virtual uint32_t GetProductID();
+
+	/** \Brief send a message to get the device serial number
+	 *   Value of 0 indicates that the data is not available.
+	 */
+
+	virtual uint32_t GetUniqueID();
+
 
 // Protected methods
 protected:
@@ -573,6 +520,17 @@ protected:
  	  * \return true if the function was successful (the substring is a valid hex number) . False otherwise.
      */
 	bool GetStandardID(std::string &inResponse,  unsigned long &outID, int startIndex);
+
+	/** \Brief send a message to get the device serial number
+	*  Message is asynchonous.  Result will not be available immediately.
+	 */
+	virtual bool QueryUniqueID();
+
+	/** \Brief send a messahge to get the device type
+	  *  Message is asynchonous.  Result will not be available immediately.
+	*/
+	virtual bool QueryProductID();
+
 
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.

@@ -339,16 +339,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
   connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
 
-  // Misc
-
-  connect(ui.misc_checkBox_System, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscSystemSelToggled()));
-  connect(ui.misc_checkBox_Laser, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscLaserSelToggled()));
-  connect(ui.misc_checkBox_Gain, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscGainSelToggled()));
-  connect(ui.misc_checkBox_DC, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscDCSelToggled()));
-
-  ui.spinBox_FR->setRange(10, 50);
-  ui.spinBox_FR->setSingleStep(5);
-  ui.spinBox_FR->setValue(50);
 
 //  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggled()));
 
@@ -464,9 +454,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	if (!globalSettings->bTabSettingAScan) {
                 ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.tab));
         }
-	if (!globalSettings->bTabSettingMisc) {
-                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.extraTab));
-        }
 
 	if (ui.interfaceTabs->count() > 0) ui.interfaceTabs->setCurrentIndex(0);
 
@@ -500,12 +487,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		showNormal();
 
 
-	// Start the threads for background  receiver capture objects
-	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
-	{
-		receiverCaptures[receiverID]->Go();
-	}
-
 #if defined (USE_OPENCV_VIDEO)
 	// Start the threads for background video capture objects
 	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++)
@@ -513,6 +494,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoCaptures[cameraID]->Go();
 	}
 #endif
+
+
+	// Start the threads for background  receiver capture objects
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		receiverCaptures[receiverID]->Go();
+	}
 
 
 	
@@ -686,7 +674,7 @@ void AWLQtDemo::on_recordPushButton_clicked()
 	voxelMask.bitFieldData.voxel6 = ui.recordVoxel7CheckBox->isChecked();
 	voxelMask.bitFieldData.voxel7 = 1;
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->SetRecordFileName(sRecordFileName);
 		receiverCaptures[0]->StartRecord(frameRate, voxelMask);
@@ -713,8 +701,7 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 	voxelMask.bitFieldData.voxel6 = ui.recordVoxel7CheckBox->isChecked();
 	voxelMask.bitFieldData.voxel7= 1;
 	
-	if (receiverCaptures[0]) 
-	{
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected()) {
 		receiverCaptures[0]->SetPlaybackFileName(sPlaybackFileName);
 		receiverCaptures[0]->StartPlayback(frameRate, voxelMask);
 	}
@@ -751,7 +738,7 @@ void AWLQtDemo::on_stopPushButton_clicked()
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		if (receiverCaptures[0]->receiverStatus.bInPlayback) 
 		{
@@ -906,11 +893,6 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 	AWLSettings::GetGlobalSettings()->StoreReceiverCalibration();
 }
 
-void AWLQtDemo::on_pushButton_FR_clicked()
-{
-		receiverCaptures[0]->SetSSPFrameRate((ReceiverFrameRate) ui.spinBox_FR->value());
-		fprintf(stderr, "Frame rate: %d\n",ui.spinBox_FR->value());
-}
 
 void AWLQtDemo::on_calibratePushButton_clicked()
 
@@ -928,7 +910,7 @@ void AWLQtDemo::on_calibratePushButton_clicked()
 	voxelMask.bitFieldData.voxel6 = ui.calibrationVoxel7CheckBox->isChecked();
 	voxelMask.bitFieldData.voxel7 = 1;
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->StartCalibration(frameQty, beta, voxelMask);
 	}
@@ -2346,58 +2328,6 @@ void AWLQtDemo::on_checkBoxADCAdvanceModeToggled()
 {
 	FillADCList();
 }
-void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
-{
-
-	if(ui.misc_checkBox_System->isChecked()) {
-		fprintf(stderr, "System enable message\n");
-		receiverCaptures[0]->SetSSPSystemEnable(true);
-	} else {
-		fprintf(stderr, "System disable message\n");
-		receiverCaptures[0]->SetSSPSystemEnable(false);
-
-		receiverCaptures[0]->QuerySSPSystemEnable();
-	}
-
-
-}
-
-void AWLQtDemo::on_checkBoxMiscLaserSelToggled()
-{
-	if(ui.misc_checkBox_Laser->isChecked()) {
-		fprintf(stderr, "Laser enable message\n");
-		receiverCaptures[0]->SetSSPLaserEnable(true);
-	} else {
-		fprintf(stderr, "Laser disable message\n");
-		receiverCaptures[0]->SetSSPLaserEnable(false);
-	}
-
-	receiverCaptures[0]->QuerySSPLaserEnable();
-}
-
-void AWLQtDemo::on_checkBoxMiscGainSelToggled()
-{
-	if(ui.misc_checkBox_Gain->isChecked()) {
-		fprintf(stderr, "Gain enable message\n");
-		receiverCaptures[0]->SetSSPAutoGainEnable(true);
-	} else {
-		fprintf(stderr, "Gain disable message\n");
-		receiverCaptures[0]->SetSSPAutoGainEnable(false);
-	}
-}
-
-void AWLQtDemo::on_checkBoxMiscDCSelToggled()
-{
-	uint16_t registerAddress = 229;
-	uint32_t registerValue = 0;
-
-	if(ui.misc_checkBox_DC->isChecked()) {
-		fprintf(stderr, "DC enable message\n");
-	} else {
-		//fprintf(stderr, "DC disable message\n");
-		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
-	}
-}
 
 void AWLQtDemo::on_pushButtonSelectAllAscan_clicked()
 {
@@ -2605,7 +2535,7 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	ui.registerFPGAValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
 	}
@@ -2636,7 +2566,7 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 	ui.registerFPGAValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected()) 
 	{
 		receiverCaptures[0]->QueryFPGARegister(registerAddress);
 	}
@@ -2652,7 +2582,7 @@ void AWLQtDemo::on_registerSaveToFlashPushButton_clicked()
   if (reply == QMessageBox::Yes)
   {
     // Send the command to the device
-    if (receiverCaptures[0])
+    if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
     {
       receiverCaptures[0]->SetADCRegister(0xFE, 0);
     }
@@ -2747,7 +2677,7 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	ui.registerADCValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->SetADCRegister(registerAddress, registerValue);
 	}
@@ -2777,7 +2707,7 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 	ui.registerADCValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->QueryADCRegister(registerAddress);
 	}
@@ -2852,7 +2782,7 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 
 
 		// Send the command to the device
-		if (receiverCaptures[0]) 
+		if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 		{
 			receiverCaptures[0]->SetGPIORegister(registerAddress, registerValue);
 		}
@@ -2885,7 +2815,7 @@ void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
 	
 		// Send the command to the device
-		if (receiverCaptures[0]) 
+		if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 		{
 			receiverCaptures[0]->QueryGPIORegister(registerAddress);		
 		}

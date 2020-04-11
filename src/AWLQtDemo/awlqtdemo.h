@@ -134,7 +134,6 @@ private slots:
 
 	void on_globalParametersSetPushButton_clicked();
 	void on_globalParametersGetPushButton_clicked();
-	void on_pushButton_FR_clicked();
 
   void on_checkBoxFPGAAdvanceModeToggled();
   void on_checkBoxADCAdvanceModeToggled();
@@ -148,11 +147,6 @@ private slots:
 
   void on_pushButtonSelectAllAscan_clicked();
   void on_pushButtonSelectNoneAscan_clicked();
-
-	void on_checkBoxMiscSystemSelToggled();
-	void on_checkBoxMiscLaserSelToggled();
-	void on_checkBoxMiscGainSelToggled();
-	void on_checkBoxMiscDCSelToggled();
 
 	void on_viewSettingsActionToggled();
 

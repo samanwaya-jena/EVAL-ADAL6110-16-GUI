@@ -112,7 +112,6 @@ bool AWLSettings::ReadSettings()
 	bTabSettingAlgoControl = propTree.get<bool>("config.layout.TabSettingAlgoControl", false);
 	bTabSettingTrackerControl = propTree.get<bool>("config.layout.TabSettingTrackerControl", false);
 	bTabSettingAScan = propTree.get<bool>("config.layout.TabSettingAScan", false);
-	bTabSettingMisc = propTree.get<bool>("config.layout.TabSettingMisc", false);
 
 	velocityUnits = (VelocityUnits) propTree.get<int>("config.layout.velocityUnits", 1);
 

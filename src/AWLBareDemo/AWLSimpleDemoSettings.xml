@@ -21,7 +21,6 @@
     <TabSettingAlgoControl>true</TabSettingAlgoControl>
     <TabSettingTrackerControl>true</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>true</TabSettingMisc>
 
 
     <!-- velocity units: display velocity in km/h or m/s

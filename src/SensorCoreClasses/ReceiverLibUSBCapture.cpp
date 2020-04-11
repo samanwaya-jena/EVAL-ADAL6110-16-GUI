@@ -196,22 +196,48 @@ bool  ReceiverLibUSBCapture::OpenCANPort()
 
 bool  ReceiverLibUSBCapture::CloseCANPort()
 {
-  boost::mutex::scoped_lock rawLock(m_Mutex);
+	boost::mutex::scoped_lock rawLock(m_Mutex);
 
-  if (handle)
-  {
-    libusb_release_interface((libusb_device_handle *)handle, 0);
+	if (handle)
+	{
+		libusb_release_interface((libusb_device_handle*)handle, 0);
 
-    libusb_close((libusb_device_handle *)handle);
+		libusb_close((libusb_device_handle*)handle);
 
-    handle = NULL;
-  }
+		handle = NULL;
+		ClearAllRegisters();
+	}
 
 	//libusb_exit(NULL);
 
-	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+
+	reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 
 	return(true);
+}
+
+bool ReceiverLibUSBCapture::QueryUniqueID()
+{
+	// Basic LibUSB device does not have UniqueID
+	return(true);
+}
+
+bool ReceiverLibUSBCapture::QueryProductID()
+{
+	// Basic LiBUsb device does not have ProductID emmbeded in firmware 
+	return(true);
+}
+
+uint32_t ReceiverLibUSBCapture::GetUniqueID()
+{
+	// A value of zero indicates that serial No is not available
+	return(0);
+}
+
+uint32_t ReceiverLibUSBCapture::GetProductID()
+{
+	// Default device type ID for LibUSB Device is 0103
+	return(0);
 }
 
 bool ReceiverLibUSBCapture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)

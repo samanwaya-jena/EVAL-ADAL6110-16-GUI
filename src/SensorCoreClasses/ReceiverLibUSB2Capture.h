@@ -92,7 +92,25 @@ public:
 
 	virtual void Go();
 	virtual void Stop();
-	virtual bool IsConnected() { return (handle != NULL); }
+
+	/** \brief Return true if connexion with the device has been etablished.
+	  *        In a LibUSB 2 device, connexion is establihed when port has been acquired and initial device information queries have been answered.
+      * \return True if device connexion is established.
+
+      */
+	virtual bool IsConnected();
+
+	/** \Brief Get the device serial number
+ *   Value of 0 indicates that the data is not available.
+*/
+	virtual uint32_t GetProductID();
+
+	/** \Brief send a message to get the device serial number
+	 *   Value of 0 indicates that the data is not available.
+	*/
+
+	virtual uint32_t GetUniqueID();
+
 protected:
 
 	/** \brief Do one iteration of the thread loop.
@@ -147,9 +165,9 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
   	virtual int ReadBytes(uint8_t * pData, int num);
+	virtual int ReadBytes(uint8_t* pData, int num, int timeOut);
   	virtual int WriteBytes(uint8_t * pData, int num);
- 	bool SendSoftwareReset();
-	uint8_t *GetCurrentBuffer(void);
+ 	uint8_t *GetCurrentBuffer(void);
 	uint8_t *GetNextBuffer(void);
 
   	void * GetHandle(void);
@@ -162,6 +180,24 @@ protected:
 	* \return true if success.  false on error.
 	*/
 	bool SetMessageFilters(ReceiverFrameRate frameRate, VoxelMask voxelMask, MessageMask messageMask);
+
+	/** \Brief send a message to get the device serial number
+	  *  Message is asynchonous.  Result will not be available immediately.
+	*/
+	virtual bool QueryUniqueID();
+
+	/** \Brief send a messahge to get the device type
+	  *  Message is asynchonous.  Result will not be available immediately.
+	*/
+	virtual bool QueryProductID();
+
+
+	/** \Brief Flush theUSB buffers and Pending message Queues in sensor.
+	*   Messages are not processed.
+	*   This resolves issues when the application is shutdown in the middle of a
+	*   USB transfer from the device, and buffer queues on both sides have pending data.
+	*/
+	bool FlushMessages();
 
 
 // Protected variables

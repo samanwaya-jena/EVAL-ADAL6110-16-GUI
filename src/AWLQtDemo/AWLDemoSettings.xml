@@ -19,7 +19,6 @@
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>false</TabSettingMisc>
 
 
     <!-- velocity units: display velocity in km/h or m/s
@@ -45,7 +44,7 @@
   </layout>
 
   <debug>
-    <enableDebugFile>false</enableDebugFile>
+    <enableDebugFile>true</enableDebugFile>
     <enableLogFile>false</enableLogFile>
     <!-- Path for debug and log files.  Must be terminated by a "/" -->
     <defaultPath>./</defaultPath>

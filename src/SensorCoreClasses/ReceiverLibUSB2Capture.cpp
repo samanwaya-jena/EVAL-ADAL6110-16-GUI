@@ -79,19 +79,27 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds ev
 
 
 const size_t receiveBufferSize = 212;
-										   // To see if the system reconnects
 
-ReceiverLibUSB2Capture::ReceiverLibUSB2Capture(int receiverID, boost::property_tree::ptree &propTree):
-ReceiverCANCapture(receiverID, propTree),
-closeCANReentryCount(0),
-handle(NULL),
-swap_handle(NULL)
+const uint16_t productIDRegister = 0x00;
+const uint16_t manufactureDateRegister = 0x01;
+const uint16_t uniqueIDRegister = 0x02;
+const uint16_t acquisitionRegister = 0x10;
+const uint16_t frameRateRegister = 0x13;
+
+
+// To see if the system reconnects
+
+ReceiverLibUSB2Capture::ReceiverLibUSB2Capture(int receiverID, boost::property_tree::ptree& propTree) :
+	ReceiverCANCapture(receiverID, propTree),
+	closeCANReentryCount(0),
+	handle(NULL),
+	swap_handle(NULL)
 {
-  reconnectTime = boost::posix_time::microsec_clock::local_time();
-  m_pFile = NULL;
-  // Read the configuration from the configuration file
-  ReadConfigFromPropTree(propTree);
-  ReadRegistersFromPropTree(propTree);
+	reconnectTime = boost::posix_time::microsec_clock::local_time();
+	m_pFile = NULL;
+	// Read the configuration from the configuration file
+	ReadConfigFromPropTree(propTree);
+	ReadRegistersFromPropTree(propTree);
 }
 
 ReceiverLibUSB2Capture::~ReceiverLibUSB2Capture()
@@ -99,98 +107,86 @@ ReceiverLibUSB2Capture::~ReceiverLibUSB2Capture()
 }
 
 
-int ReceiverLibUSB2Capture::ReadBytes(uint8_t * pData, int num)
+int ReceiverLibUSB2Capture::ReadBytes(uint8_t* pData, int num)
 {
-  int received;
-
-  int ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointIn, (unsigned char *)pData, num, &received, usbTimeOut);
-  if (ret)
-  {
-	
-	  return 0;
-  }
-  
-  if (num != received)
-  {
-	  return (received); // Just to have some breakpoint
-  }
-
-   return received;
+	return ReadBytes(pData, num, usbTimeOut);
 }
 
-int ReceiverLibUSB2Capture::WriteBytes(uint8_t * pData, int num)
+int ReceiverLibUSB2Capture::ReadBytes(uint8_t* pData, int num, int timeOut)
 {
-  int transferred;
+	int received;
 
-  int ret = libusb_bulk_transfer((libusb_device_handle *)handle, usbEndPointOut, (unsigned char *)pData, num, &transferred, usbTimeOut);
-  if (ret || (transferred != num))
-    return -1;
+	int ret = libusb_bulk_transfer((libusb_device_handle*)handle, usbEndPointIn, (unsigned char*)pData, num, &received, timeOut);
+	if (ret)
+	{
 
-  return transferred;
+		return 0;
+	}
+
+	if (num != received)
+	{
+		return (received); // Just to have some breakpoint
+	}
+
+	return received;
 }
 
-void * ReceiverLibUSB2Capture::GetHandle(void) 
+int ReceiverLibUSB2Capture::WriteBytes(uint8_t* pData, int num)
 {
-        return handle;
+	int transferred;
+
+	int ret = libusb_bulk_transfer((libusb_device_handle*)handle, usbEndPointOut, (unsigned char*)pData, num, &transferred, usbTimeOut);
+	if (ret || (transferred != num))
+		return -1;
+
+	return transferred;
 }
 
-void ReceiverLibUSB2Capture::SetHandle(void *h)
+void* ReceiverLibUSB2Capture::GetHandle(void)
 {
-        swap_handle = h;
+	return handle;
+}
+
+void ReceiverLibUSB2Capture::SetHandle(void* h)
+{
+	swap_handle = h;
 }
 
 void  ReceiverLibUSB2Capture::Go()
 
 {
-        assert(!mThread);
+	assert(!mThread);
 
-		if (OpenCANPort())
-		{
-			WriteCurrentDateTime();
-			SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
-		}
+	mWorkerRunning = true;
+	startTime = boost::posix_time::microsec_clock::local_time();
 
+	// Reconnect time is now.  This will force reconnect on first iteration of DoThreadLoop()
+	reconnectTime = boost::posix_time::microsec_clock::local_time();
 
-        mWorkerRunning = true;
-        startTime = boost::posix_time::microsec_clock::local_time();
-
-          mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSB2Capture::DoThreadLoop, this)));
+	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSB2Capture::DoThreadLoop, this)));
 
 #ifdef _WINDOWS_
-        // Set the priority under windows.  This is the most critical display thread 
-        // for user interaction
+	// Set the priority under windows.  This is the most critical display thread 
+	// for user interaction
+	HANDLE th = mThread->native_handle();
 
-
-         HANDLE th = mThread->native_handle();
-         SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
-         //SetThreadPriority(th, THREAD_PRIORITY_ABOVE_NORMAL);
+	SetThreadPriority(th, THREAD_PRIORITY_TIME_CRITICAL);
 #endif
 }
 
 
 void ReceiverLibUSB2Capture::Stop()
 {
-  ReceiverCapture::Stop();
+	ReceiverCapture::Stop();
 }
 
-bool ReceiverLibUSB2Capture::SendSoftwareReset()
-{
-  if (!handle)
-    return false;
+bool ReceiverLibUSB2Capture::IsConnected() 
+{ 
+	bool hasHandle = handle != NULL;
+	bool hasUniqueID = GetUniqueID() != 0;
+	bool hasProductID = GetProductID() != 0;
 
-  ReceiverCANMessage msg;
-  msg.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;
-  msg.len = RECEIVERCANMSG_LEN;
-  msg.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-  msg.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_ADC_REGISTER;
-  msg.data[2] = 0x00;
-  msg.data[3] = 0x00;
-  msg.data[4] = 0x00;
-  msg.data[5] = 0x00;
-  msg.data[6] = 0x00;
-  msg.data[7] = 0x00;
-
-  return WriteMessage(msg);
+	return (hasHandle && hasUniqueID && hasProductID);
 }
 
 
@@ -208,12 +204,9 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 		swap_handle = NULL;
 	}
 	if (handle)
-	{   
-		
-		//ret = recvfrom(fd, (char*)buffer, size, 0, 0, 0);
-		
-		//DebugFilePrintf("Test");
+	{
 		sent = WriteMessage(poll);
+
 		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer));
 
 		if (bytesRead <= 0)
@@ -227,7 +220,7 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 			msg.len = buffer[9];
 			//printf ("UDP %08x\n", msg.id);
 			if (msg.id < 0x60) {
-				msg.len = ((uint8_t)bytesRead) - (int) sizeof(uint32_t);
+				msg.len = ((uint8_t)bytesRead) - (int)sizeof(uint32_t);
 				for (int i = 0; i < 8 && i < msg.len; i++) {
 					msg.data[i] = buffer[10 + i];
 				}
@@ -237,12 +230,14 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 				ProcessRaw(buffer);
 			}
 		}
-			}
+	}
 	else {
 		if (boost::posix_time::microsec_clock::local_time() > reconnectTime) {
 			if (OpenCANPort()) {
+				QueryProductID();
+				QueryUniqueID();
 				WriteCurrentDateTime();
-				SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);	
+				SetMessageFilters(receiverStatus.demandedFrameRate, receiverStatus.voxelMask, receiverStatus.messageMask);
 			}
 		}
 	}
@@ -251,31 +246,31 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 
 bool  ReceiverLibUSB2Capture::OpenCANPort()
 {
-  int ret = 0;
+	int ret = 0;
 
-  reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+	reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
 
-  ret = libusb_init(&context);
+	ret = libusb_init(&context);
 
-  if (ret)
-    return false;
+	if (ret)
+		return false;
 
 	// discover devices
-	libusb_device **list;
+	libusb_device** list;
 	libusb_device_descriptor descriptor;
 	ssize_t cnt = libusb_get_device_list(NULL, &list);
 	ssize_t i = 0;
 	int err = 0;
 	if (cnt < 0)
-    		perror("libusb_get_device_list");
+		perror("libusb_get_device_list");
 
 	int matches = 0;
 
 	for (i = 0; i < cnt; i++) {
-    	libusb_device *device = list[i];
-    	err = libusb_get_device_descriptor(device, &descriptor);
+		libusb_device* device = list[i];
+		err = libusb_get_device_descriptor(device, &descriptor);
 		if (!err && descriptor.idVendor == usbVendorId && descriptor.idProduct == usbProductId) {
-			matches ++;
+			matches++;
 		}
 	}
 
@@ -283,8 +278,8 @@ bool  ReceiverLibUSB2Capture::OpenCANPort()
 	if (matches < (receiverID + 1)) return false;
 
 	for (i = 0; i < cnt; i++) {
-    	libusb_device *device = list[i];
-    	err = libusb_get_device_descriptor(device, &descriptor);
+		libusb_device* device = list[i];
+		err = libusb_get_device_descriptor(device, &descriptor);
 		if (!err && descriptor.idVendor == usbVendorId && descriptor.idProduct == usbProductId) {
 			libusb_device_handle* h;
 			err = libusb_open(device, &h);
@@ -309,29 +304,96 @@ bool  ReceiverLibUSB2Capture::OpenCANPort()
 		if (handle) break;
 	}
 
-//printf("out %p\n", handle);
+	//printf("out %p\n", handle);
 	if (handle)
 	{
-		int received = 0;
-
-		boost::mutex::scoped_lock rawLock(m_Mutex);
-
-		// DGG: Clear any outstanding data left in the USB buffers
-		do
-		{
-			char tmp[256];
-			ret = libusb_bulk_transfer((libusb_device_handle*)handle, usbEndPointIn, (unsigned char*)tmp, sizeof(tmp), &received, 100);
-		} while (ret == 0 && received > 0);
-
-		rawLock.unlock();
-
-		return true;
+		return (FlushMessages());
 	}
 	else {  // if (!handle)
+		ClearAllRegisters();
 		return false;
 	}
 }
 
+bool  ReceiverLibUSB2Capture::CloseCANPort()
+{
+	boost::mutex::scoped_lock rawLock(m_Mutex);
+
+	if (handle)
+	{
+		libusb_release_interface((libusb_device_handle*)handle, 0);
+
+		libusb_close((libusb_device_handle*)handle);
+
+		handle = NULL;
+		ClearAllRegisters();
+	}
+
+	//libusb_exit(NULL);
+
+	reconnectTime = boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(reopenPortDelaylMillisec);
+
+	return(true);
+}
+
+bool ReceiverLibUSB2Capture::FlushMessages()
+{
+	int ret = 0;
+	int bytesRead;
+
+	uint8_t buffer[receiveBufferSize];
+		int received = 0;
+
+	if (!handle) return(false);
+
+
+	boost::mutex::scoped_lock rawLock(m_Mutex);
+
+	// force stop on acquisition. Unit may have been running for a while and 
+	// has data in queue we may need to get rid of. 
+	SetFPGARegister(acquisitionRegister, 0);
+
+	//  Clear any outstanding data left in the USB buffers
+	do
+	{
+		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer), 100);
+	} while (bytesRead > 0);
+
+
+
+	// Clear messages outstanding in the sensor's internal queues, but do not process them.
+	// End only when there is no more datam, or we have hit a QUEU_EMPTY message.
+	ReceiverCANMessage  pollMsg;
+	pollMsg.id = RECEIVERCANMSG_ID_POLL;
+
+	ReceiverCANMessage inMsg;
+	int count = 0;
+	bool bEmpty = false;
+
+	do
+	{
+		WriteMessage(pollMsg);
+		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer), 0);
+		if (bytesRead <= 0) bEmpty = true;
+		else if (bytesRead >= 11) {
+			inMsg.id = buffer[0];
+			inMsg.len = buffer[9];
+			if (inMsg.id == RECEIVERCANMSG_ID_COMMANDMESSAGE && buffer[10] == RECEIVERCANMSG_ID_CMD_RESPONSE_QUEUE_EMPTY)
+			{
+				bEmpty = true;
+			}
+		}
+
+	} while (!bEmpty);
+	
+	rawLock.unlock();
+
+	// Push an outbound messge will force the flushing of the out queue
+	//
+	QueryUniqueID();
+	return true;
+
+}
 
 bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, VoxelMask voxelMask, MessageMask messageMask)
 
@@ -345,7 +407,7 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 	if (bMessageOk)
 	{
 		// Set Frame Rate
-		bMessageOk = SetFPGARegister(0x13, frameRate);
+		bMessageOk = SetFPGARegister(frameRateRegister, frameRate);
 	}
 
 	if (bMessageOk)
@@ -370,7 +432,7 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 		{
 			*(int16_t*)&message.data[1] = voxelMask.wordData;
 		}
-		else 
+		else
 		{
 			*(int16_t*)&message.data[1] = 0;
 		}
@@ -385,33 +447,16 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 	if (bMessageOk)
 	{
 		// Acquisition enable
-		bMessageOk = SetFPGARegister(0x10, 1);
+		bMessageOk = SetFPGARegister(acquisitionRegister, 1);
 	}
 
 	// The message has no confirmation built in
 	return(bMessageOk);
 }
-bool  ReceiverLibUSB2Capture::CloseCANPort()
-{
-  boost::mutex::scoped_lock rawLock(m_Mutex);
 
-  if (handle)
-  {
-    libusb_release_interface((libusb_device_handle *)handle, 0);
 
-    libusb_close((libusb_device_handle *)handle);
 
-    handle = NULL;
-  }
-
-	//libusb_exit(NULL);
-
-	reconnectTime = boost::posix_time::microsec_clock::local_time()+boost::posix_time::milliseconds(reopenPortDelaylMillisec);
-
-	return(true);
-}
-
-bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage &inMsg)
+bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage& inMsg)
 {
 	uint8_t buffer[256];
 	uint32_t* buf32;
@@ -445,12 +490,13 @@ bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage &inMsg)
 	offset++;
 	//printf("len :  %d\n", offset);
 
-  	ret = WriteBytes((uint8_t*)buffer, offset);
-//	ret = sendto(fd, (char*)buffer, offset + inMsg.len, 0,
-//		(struct sockaddr *)remoteAddress, sizeof(sockaddr_in));
+	ret = WriteBytes((uint8_t*)buffer, offset);
+	//	ret = sendto(fd, (char*)buffer, offset + inMsg.len, 0,
+	//		(struct sockaddr *)remoteAddress, sizeof(sockaddr_in));
 
 	return(true);
 }
+
 
 static int channelToColumnArray[] = {
   14,
@@ -502,7 +548,7 @@ int ReceiverLibUSB2Capture::GetChannelIDFromCell(CellID inCellID)
 	{
 		if (channelToColumnArray[i] == inCellID.column) return (i);
 	}
-	return (0); 
+	return (0);
 }
 
 void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
@@ -529,7 +575,7 @@ void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 	memcpy(rawBuffers[voxelIndex], rawData, receiveBufferSize);
 	sampleCount = (receiveBufferSize / 2) - sampleOffset;
 	transmit = true;
-	
+
 	if (voxelIndex > max_voxel) max_voxel = voxelIndex;
 	if (voxelIndex == max_voxel) transmit = true;
 
@@ -553,20 +599,57 @@ void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 	}
 }
 
-bool ReceiverLibUSB2Capture::ReadConfigFromPropTree(boost::property_tree::ptree &propTree)
+bool ReceiverLibUSB2Capture::ReadConfigFromPropTree(boost::property_tree::ptree& propTree)
 {
 	ReceiverCANCapture::ReadConfigFromPropTree(propTree);
 
 	std::string receiverKey = std::string("config.receivers.receiver") + std::to_string(receiverID);;
 
-	boost::property_tree::ptree &receiverNode =  propTree.get_child(receiverKey);
+	boost::property_tree::ptree& receiverNode = propTree.get_child(receiverKey);
 	// Communication parameters
 
-	usbVendorId =  receiverNode.get<int>("libUsbVendorId", 1419);
-	usbProductId =  receiverNode.get<int>("libUsbProductId",80);
+	usbVendorId = receiverNode.get<int>("libUsbVendorId", 1419);
+	usbProductId = receiverNode.get<int>("libUsbProductId", 80);
 	usbEndPointIn = (unsigned char)receiverNode.get<int>("libUsbEndPointIn", 129);
 	usbEndPointOut = (unsigned char)receiverNode.get<int>("libUsbEndPointOut", 2);
-	usbTimeOut =  receiverNode.get<int>("libUsbTimeOut", 1000);
+	usbTimeOut = receiverNode.get<int>("libUsbTimeOut", 1000);
 
 	return(true);
+}
+
+
+bool ReceiverLibUSB2Capture::QueryUniqueID()
+{
+	// Basic LibUSB device does not have UniqueID
+	return(QueryFPGARegister(uniqueIDRegister));
+}
+
+bool ReceiverLibUSB2Capture::QueryProductID()
+{
+	// Basic LiBUsb device does not have ProductID emmbeded in firmware 
+	return(QueryFPGARegister(productIDRegister));
+}
+
+uint32_t ReceiverLibUSB2Capture::GetUniqueID()
+{
+	if (registersFPGA[uniqueIDRegister].pendingUpdates == updateStatusPendingUpdate)
+	{
+		// If the contents of the register is not refreshed yet (a query is under way), return (undefined);
+		return(0);
+	}
+
+	// A value of zero indicates that serial No is not available
+	return(registersFPGA[uniqueIDRegister].value);
+}
+
+uint32_t ReceiverLibUSB2Capture::GetProductID()
+{
+	if (registersFPGA[productIDRegister].pendingUpdates == updateStatusPendingUpdate)
+	{
+		// If the contents of the register is not refreshed yet (a query is under way), return (undefined);
+		return(0);
+	}
+
+	// A value of zero indicates that serial No is not available
+	return(registersFPGA[productIDRegister].value);
 }

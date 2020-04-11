@@ -138,6 +138,8 @@ void  ReceiverCANCapture::Go()
 	
 	if (OpenCANPort())
 	{
+		QueryUniqueID();
+		QueryProductID();
 		WriteCurrentDateTime();
 		SetMessageFilters(GetDemandedFrameRate(), receiverStatus.voxelMask, receiverStatus.messageMask);
 		// Update all the info (eventually) from the status of the machine
@@ -167,7 +169,9 @@ void  ReceiverCANCapture::Stop()
 	if (mWorkerRunning) 
 	{
 		CloseCANPort();
+		ClearAllRegisters();
 	}
+
 	ReceiverCapture::Stop();
 }
 
@@ -664,6 +668,15 @@ void ReceiverCANCapture::ParseControlMessage(ReceiverCANMessage &inMsg)
 	case 0xC3:
 		ParseParameterError(inMsg);
 		break;
+	case 0xC8:
+		DebugFilePrintf(debugFile, "Ack Set (Type %x Address %x Value %lx).  Message skipped", inMsg.data[1], *(uint16_t *) &inMsg.data[2], *(uint32_t*)&inMsg.data[4]);
+		break;
+	case 0xC9:
+		DebugFilePrintf(debugFile, "Ack Get (Type %x Address %x Value %lx).  Message skipped", inMsg.data[1], *(uint16_t*)&inMsg.data[2], *(uint32_t*)&inMsg.data[4]);
+		break;
+	case 0xCA:
+		DebugFilePrintf(debugFile, "Queue Empty");
+		break;
 	default:
 		DebugFilePrintf(debugFile, "Error: Unhandled control message (%x).  Message skipped", inMsg.data[0]);
 		break;
@@ -875,6 +888,8 @@ void ReceiverCANCapture::ParseParameterFPGARegisterResponse(ReceiverCANMessage &
 {
 	uint16_t registerAddress = *(uint16_t *) &inMsg.data[2];
 	uint32_t registerValue=  *(uint32_t *) &inMsg.data[4];
+
+	DebugFilePrintf(debugFile, "RegisterResponse %x %lx", registerAddress, registerValue);
 
 	int index = FindRegisterByAddress(registersFPGA, registerAddress);
 
@@ -1415,94 +1430,6 @@ bool ReceiverCANCapture::SetAlgorithm(uint16_t algorithmID)
    return(bMessageOk);
 }
 
-
-bool ReceiverCANCapture::SetSSPFrameRate(ReceiverFrameRate  frameRate )
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-	message.len = RECEIVERCANMSG_LEN;       		// Frame size (0.8)
-	message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] =  RECEIVERCANMSG_ID_CMD_SSP_FRAME_RATE;
-
-	bool bMessageOk = false;
-	if ((( frameRate % 5) == 0) && ( frameRate >=10) && ( frameRate <= 50)) {
-		*(int32_t *)&message.data[4] = (int32_t) frameRate;
-		bMessageOk = WriteMessage(message);
-	}
-
-   	return(bMessageOk);
-}
-
-
-bool ReceiverCANCapture::SetSSPSystemEnable(bool on)
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-	message.len = RECEIVERCANMSG_LEN;       		// Frame size (0.8)
-	message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_SYSTEM;
-	*(int32_t *)&message.data[4] = 0;
-
-	bool bMessageOk = false;
-	if ( on ) 
-		*(int32_t *)&message.data[4] = 1;
-	bMessageOk = WriteMessage(message);
-   	return(bMessageOk);
-}
-
-bool ReceiverCANCapture::SetSSPLaserEnable(bool on)
-{	
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-	message.len = RECEIVERCANMSG_LEN;       		// Frame size (0.8)
-	message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_LASER;
-	*(int32_t *)&message.data[4] = 0;
-
-	bool bMessageOk = false;
-	if ( on ) 
-		*(int32_t *)&message.data[4] = 1;
-	bMessageOk = WriteMessage(message);
-   	return(bMessageOk);
-}
-
-bool ReceiverCANCapture::SetSSPAutoGainEnable(bool on)
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-	message.len = RECEIVERCANMSG_LEN;       		// Frame size (0.8)
-	message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_AUTO_GAIN;
-	*(int32_t *)&message.data[4] = 0;
-
-	bool bMessageOk = false;
-	if ( on ) 
-		*(int32_t *)&message.data[4] = 1;
-	bMessageOk = WriteMessage(message);
-   	return(bMessageOk);
-}
-
-bool ReceiverCANCapture::SetSSPDCBalanceEnable(bool on)
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-	message.len = RECEIVERCANMSG_LEN;       		// Frame size (0.8)
-	message.data[0] = RECEIVERCANMSG_ID_CMD_SET_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_DC_BALANCE;
-	*(int32_t *)&message.data[4] = 0;
-
-	bool bMessageOk = false;
-	if ( on ) 
-		*(int32_t *)&message.data[4] = 1;
-	bMessageOk = WriteMessage(message);
-   	return(bMessageOk);
-}
-
 bool ReceiverCANCapture::SetTracker(uint16_t trackerID)
 {
 
@@ -1764,6 +1691,32 @@ bool ReceiverCANCapture::SetMessageFilters(ReceiverFrameRate frameRate, VoxelMas
    return(bMessageOk);
 }
 
+
+bool ReceiverCANCapture::QueryUniqueID()
+{
+	// Basic CAN device does not have UniqueID
+	return(true);
+}
+
+bool ReceiverCANCapture::QueryProductID()
+{
+	// Basic CAN device does not have ProductID emmbeded in firmware 
+	return(true);
+}
+
+uint32_t ReceiverCANCapture::GetUniqueID()
+{
+	// A value of zero indicates that serial No is not available
+	return(0);
+}
+
+uint32_t ReceiverCANCapture::GetProductID()
+{
+	// Unknown device ID
+	return(0);
+}
+
+
 bool ReceiverCANCapture::QueryAlgorithm()
 {
 	ReceiverCANMessage message;
@@ -1787,89 +1740,6 @@ bool ReceiverCANCapture::QueryAlgorithm()
 	receiverStatus.currentAlgoPendingUpdates = updateStatusPendingUpdate;
 
     return(bMessageOk);
-}
-
-
-bool ReceiverCANCapture::QuerySSPFrameRate()
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-    	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-   	message.data[0] = RECEIVERCANMSG_ID_CMD_QUERY_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] =  RECEIVERCANMSG_ID_CMD_SSP_FRAME_RATE;
-	*(int32_t *)&message.data[4] = 0L;
-
-	bool bMessageOk = false;
-	bMessageOk = WriteMessage(message);
-	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.storedSSPFrameRatePendingUpdates = updateStatusPendingUpdate;
-   	return(bMessageOk);
-}
-
-bool ReceiverCANCapture::QuerySSPSystemEnable()
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-    	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-   	message.data[0] = RECEIVERCANMSG_ID_CMD_QUERY_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_SYSTEM;
-	*(int32_t *)&message.data[4] = 0L;
-
-	bool bMessageOk = false;
-	bMessageOk = WriteMessage(message);
-	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.storedSSPSystemEnablePendingUpdates = updateStatusPendingUpdate;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::QuerySSPLaserEnable()
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-    	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-   	message.data[0] = RECEIVERCANMSG_ID_CMD_QUERY_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_LASER;
-	*(int32_t *)&message.data[4] = 0L;
-
-	bool bMessageOk = false;
-	bMessageOk = WriteMessage(message);
-	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.storedSSPLaserEnablePendingUpdates = updateStatusPendingUpdate;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::QuerySSPAutoGainEnable()
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-    	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-   	message.data[0] = RECEIVERCANMSG_ID_CMD_QUERY_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_AUTO_GAIN;
-	*(int32_t *)&message.data[4] = 0L;
-
-	bool bMessageOk = false;
-	bMessageOk = WriteMessage(message);
-	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.storedSSPAutoGainEnablePendingUpdates = updateStatusPendingUpdate;
-   	return(bMessageOk);
-}
-bool ReceiverCANCapture::QuerySSPDCBalanceEnable()
-{
-	ReceiverCANMessage message;
-	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
-    	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
-   	message.data[0] = RECEIVERCANMSG_ID_CMD_QUERY_PARAMETER;
-	message.data[1] = RECEIVERCANMSG_ID_CMD_PARAM_SENSOR_SPECIFIC;
-	*(int16_t *)&message.data[2] = RECEIVERCANMSG_ID_CMD_SSP_ENABLE_DC_BALANCE;
-	*(int32_t *)&message.data[4] = 0L;
-
-	bool bMessageOk = false;
-	bMessageOk = WriteMessage(message);
-	// Signal that we are waiting for an update of the register settings.
-	receiverStatus.storedSSPDCBalanceEnablePendingUpdates = updateStatusPendingUpdate;
-   	return(bMessageOk);
 }
 
 bool ReceiverCANCapture::QueryTracker()
@@ -1900,7 +1770,7 @@ bool ReceiverCANCapture::QueryTracker()
 bool ReceiverCANCapture::QueryFPGARegister(uint16_t registerAddress)
 {
 	ReceiverCANMessage message;
-	
+
 	message.id = RECEIVERCANMSG_ID_COMMANDMESSAGE;       // Message id: RECEIVERCANMSG_ID_COMMANDMESSAGE- Command message
 
     message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)

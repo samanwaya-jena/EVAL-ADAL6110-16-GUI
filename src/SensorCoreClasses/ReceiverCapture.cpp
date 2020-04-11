@@ -491,6 +491,24 @@ int ReceiverCapture::FindRegisterByAddress(const RegisterSet &inRegisterSet, uin
 	return(-1);
 }
 
+void ReceiverCapture::ClearRegisterSet(RegisterSet& inRegisterSet)
+
+{
+	for (uint16_t i = 0; i < inRegisterSet.size(); i++)
+	{
+		inRegisterSet.at(i).value = 0;
+		inRegisterSet.at(i).pendingUpdates = updateStatusUpToDate;
+	}
+}
+
+void ReceiverCapture::ClearAllRegisters()
+{
+	ClearRegisterSet(registersFPGA);
+	ClearRegisterSet(registersADC);
+	ClearRegisterSet(registersGPIO);
+}
+
+
 AlgorithmDescription * ReceiverCapture::FindAlgoDescriptionByID(AlgorithmSet &inAlgoSet, int inAlgoID)
 {
 	for (uint16_t i = 0; i < inAlgoSet.algorithms.size(); i++)

@@ -64,6 +64,18 @@ public:
       */
 	virtual ~ReceiverLibUSBCapture();
 
+	/** \Brief Get the device serial number
+*   Value of 0 indicates that the data is not available.
+*/
+	virtual uint32_t GetProductID();
+
+	/** \Brief send a message to get the device serial number
+	 *   Value of 0 indicates that the data is not available.
+	*/
+
+	virtual uint32_t GetUniqueID();
+
+
 protected:
 
 	/** \brief Open the CAN port
@@ -83,6 +95,8 @@ protected:
 	*/
 	virtual bool IsConnected() { return (handle != NULL); }
 
+
+
 	/** \brief Reads the configuration proerties from the configuration file
 	  * \param[in] propTree the boost propertyTree created from reading the configuration file.
 	  * \returns Returns true otherwise.
@@ -90,8 +104,18 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
-  virtual int ReadBytes(uint8_t * pData, int num);
-  virtual int WriteBytes(uint8_t * pData, int num);
+	virtual int ReadBytes(uint8_t * pData, int num);
+	virtual int WriteBytes(uint8_t * pData, int num);
+
+	/** \Brief send a message to get the device serial number
+	  *  Message is asynchonous.  Result will not be available immediately.
+      */
+	virtual bool QueryUniqueID();
+
+	/** \Brief send a messahge to get the device type
+	  *  Message is asynchonous.  Result will not be available immediately.
+      */
+	 virtual bool QueryProductID();
 
 // Protected variables
 protected:
@@ -99,6 +123,7 @@ protected:
 
 		int usbVendorId;
 		int usbProductId;
+
 		unsigned char usbEndPointIn;
 		unsigned char  usbEndPointOut;
 		int usbTimeOut;

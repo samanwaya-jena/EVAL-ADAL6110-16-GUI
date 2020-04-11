@@ -133,38 +133,6 @@ public:
 	};
 
 
-	/** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
-   *  \return true if success.  false on error.
-   */
-	virtual bool SetSSPFrameRate(ReceiverFrameRate /*frameRate*/ ) {
-			return(true); };
-
-   
-	/** \brief Issues the command to enable the sensor.
-	 * \return true if success.  false on error.
-	 */
-	virtual bool SetSSPSystemEnable(bool /*on*/) { return(true); };
-
-  
-	/** \brief Issues the command to enable the Laser.
-	   * \return true if success.  false on error.
-	   */
-	virtual bool SetSSPLaserEnable(bool /*on*/) { return(true); };
-
-   
-	/** \brief Issues the command to enable the Auto Gain.
-   * \return true if success.  false on error.
-   */
-	virtual bool SetSSPAutoGainEnable(bool /*on*/) { return(true); };
-
- 
-	/** \brief Issues the command to enable the DC Balance.
-	* \return true if success.  false on error.
-	*/
-	virtual bool SetSSPDCBalanceEnable(bool /*on*/) { return(true); };
-
-  
-
 		/** \brief Sets an internal FPGA register to the value sent as argument.
 		  *\param[in] registerAddress Adrress of the register to change.
 		  *\param[in] registerValue Value to put into register.
@@ -273,39 +241,6 @@ public:
 		*/
 	virtual bool QueryAlgoParameter(int /*algoID*/, uint16_t /*registerAddress*/) {return(true);};
 
-		/** \brief Send an asynchronous query command for a global algorithm parameter. 
-		  *\param[in] algoID ID of the detection algo for which we want to query.
-		 *\param[in] registerAddress Adrress of the register to query.
-	  * \return true if success.  false on error.
-	  * \remarks In Simulation, does nothing. Returns true.
-		*/
-
-        virtual bool QuerySSPFrameRate() { return(true); };
-
-        /** \brief Issues the command to get the frame rate.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool QuerySSPSystemEnable() { return(true); };
-
-        /** \brief Issues the command to know if the sensor.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool QuerySSPLaserEnable() { return(true); };
-
-        /** \brief Issues the command to know if the Laser is on.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool QuerySSPAutoGainEnable() { return(true); };
-
-        /** \brief Issues the command to know if the Auto Gain is on.
-        * \return true if success.  false on error.
-        */
-
-        virtual bool QuerySSPDCBalanceEnable() { return(true); };
-
         /** \brief Issues the command to know if the DC Balance is on.
         * \return true if success.  false on error.
         */
@@ -320,6 +255,17 @@ public:
 	*/
 	virtual bool QueryTrackerParameter(int /*algoID*/, uint16_t /*registerAddress*/) { return(true); };
 
+	/** \Brief Get the device serial number
+     *   Value of 0 indicates that the data is not available.
+     */
+	virtual uint32_t GetProductID();
+
+	/** \Brief send a message to get the device serial number
+	 *   Value of 0 indicates that the data is not available.
+	 */
+
+	virtual uint32_t GetUniqueID();
+
 // Protected methods
 protected:
 
@@ -333,6 +279,16 @@ protected:
 	  * \throws  Throws boost error on read of the property keys.
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
+
+	/** \Brief send a message to get the device serial number
+ *  Message is asynchonous.  Result will not be available immediately.
+*/
+	virtual bool QueryUniqueID();
+
+	/** \Brief send a messahge to get the device type
+	  *  Message is asynchonous.  Result will not be available immediately.
+	*/
+	virtual bool QueryProductID();
 
 // Protected variables
 protected:

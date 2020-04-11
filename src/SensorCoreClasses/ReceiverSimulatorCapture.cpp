@@ -131,6 +131,31 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 }
 
 
+bool ReceiverSimulatorCapture::QueryUniqueID()
+{
+	// Basic Simulator device does not have UniqueID
+	return(true);
+}
+
+bool ReceiverSimulatorCapture::QueryProductID()
+{
+	// Basic Simulator device does not have ProductID emmbeded in firmware 
+	return(true);
+}
+
+uint32_t ReceiverSimulatorCapture::GetUniqueID()
+{
+	// A value of zero indicates that serial No is not available
+	return(0);
+}
+
+uint32_t ReceiverSimulatorCapture::GetProductID()
+{
+	// Unknown device ID
+	return(0);
+}
+
+
 bool ReceiverSimulatorCapture::SetMessageFilters(ReceiverFrameRate /*demandedFrameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/)
 
 {

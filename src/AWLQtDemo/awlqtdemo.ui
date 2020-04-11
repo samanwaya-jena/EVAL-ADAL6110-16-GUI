@@ -1242,7 +1242,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>2</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -5232,99 +5232,6 @@ color: rgb(255,255,255);</string>
           </widget>
          </widget>
         </widget>
-        <widget class="QWidget" name="extraTab">
-         <attribute name="title">
-          <string>Misc</string>
-         </attribute>
-         <widget class="QCheckBox" name="misc_checkBox_System">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>10</y>
-            <width>91</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>System Enable</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="misc_checkBox_Laser">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>40</y>
-            <width>91</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Laser  Enable</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="misc_checkBox_Gain">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>70</y>
-            <width>151</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Auto Gain Control Enable</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="misc_checkBox_DC">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>100</y>
-            <width>121</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Dc Balance Enable</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_FR">
-          <property name="geometry">
-           <rect>
-            <x>230</x>
-            <y>10</y>
-            <width>63</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Frame rate</string>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="pushButton_FR">
-          <property name="geometry">
-           <rect>
-            <x>370</x>
-            <y>10</y>
-            <width>71</width>
-            <height>28</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Set</string>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="spinBox_FR">
-          <property name="geometry">
-           <rect>
-            <x>310</x>
-            <y>10</y>
-            <width>49</width>
-            <height>29</height>
-           </rect>
-          </property>
-         </widget>
-        </widget>
        </widget>
       </item>
       <item>
@@ -5526,34 +5433,18 @@ color: rgb(255,255,255);</string>
  </resources>
  <connections>
   <connection>
-   <sender>sensorHeightSpinBox</sender>
-   <signal>editingFinished()</signal>
+   <sender>logFileSelectButton</sender>
+   <signal>pressed()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_sensorHeightSpin_editingFinished()</slot>
+   <slot>on_logFileSelectorButton_pressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>189</x>
-     <y>109</y>
+     <x>858</x>
+     <y>229</y>
     </hint>
     <hint type="destinationlabel">
-     <x>193</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sensorDepthSpinBox</sender>
-   <signal>editingFinished()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_sensorDepthSpin_editingFinished()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>108</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>327</x>
-     <y>273</y>
+     <x>747</x>
+     <y>298</y>
     </hint>
    </hints>
   </connection>
@@ -5590,6 +5481,38 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
+   <sender>registerADCSetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerADCSetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>593</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>697</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorHeightSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_sensorHeightSpin_editingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>189</x>
+     <y>109</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>193</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>recordButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5606,17 +5529,33 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>sensorRangeMinSpinBox</sender>
-   <signal>valueChanged(double)</signal>
+   <sender>registerFPGAAddressSetComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
+   <slot>on_registerFPGAAddressSetComboBox_indexChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>171</x>
-     <y>169</y>
+     <x>227</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>127</x>
+     <x>464</x>
+     <y>226</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stopButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_stopPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>353</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>314</x>
      <y>273</y>
     </hint>
    </hints>
@@ -5638,18 +5577,18 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>stopButton</sender>
+   <sender>registerSaveToFlashPushButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_stopPushButton_clicked()</slot>
+   <slot>on_registerSaveToFlashPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>353</x>
-     <y>251</y>
+     <x>244</x>
+     <y>253</y>
     </hint>
     <hint type="destinationlabel">
-     <x>314</x>
-     <y>273</y>
+     <x>246</x>
+     <y>315</y>
     </hint>
    </hints>
   </connection>
@@ -5670,98 +5609,34 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>registerFPGASetPushButton</sender>
-   <signal>clicked()</signal>
+   <sender>comboBoxMaxRange</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>onRegisterFPGASetPushButton_clicked()</slot>
+   <slot>on_comboBoxMaxRange_indexChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>140</x>
-     <y>180</y>
+     <x>332</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
-     <x>136</x>
-     <y>273</y>
+     <x>485</x>
+     <y>159</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>registerFPGAGetPushButton</sender>
+   <sender>registerRestoreFactoryDefaultsPushButton</sender>
    <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerFPGAGetPushButton_clicked()</slot>
+   <slot>on_registerRestoreFactoryDefaultsPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>313</x>
-     <y>180</y>
+     <x>361</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
-     <x>72</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>registerADCSetPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerADCSetPushButton_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>593</x>
-     <y>180</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>697</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>registerADCGetPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerADCGetPushButton_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>751</x>
-     <y>180</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>538</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>registerGPIOSetPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerGPIOSetPushButton_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>139</x>
-     <y>240</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>247</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>registerGPIOGetPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerGPIOGetPushButton_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>264</x>
-     <y>240</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>265</x>
-     <y>273</y>
+     <x>517</x>
+     <y>315</y>
     </hint>
    </hints>
   </connection>
@@ -5798,17 +5673,17 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>globalParametersSetPushButton</sender>
-   <signal>clicked()</signal>
+   <sender>sensorDepthSpinBox</sender>
+   <signal>editingFinished()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_globalParametersSetPushButton_clicked()</slot>
+   <slot>on_sensorDepthSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>745</x>
-     <y>240</y>
+     <x>359</x>
+     <y>108</y>
     </hint>
     <hint type="destinationlabel">
-     <x>840</x>
+     <x>327</x>
      <y>273</y>
     </hint>
    </hints>
@@ -5830,33 +5705,17 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>targetHintAngleSpinBox</sender>
-   <signal>editingFinished()</signal>
+   <sender>globalParametersSetPushButton</sender>
+   <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_targetHintAngleSpin_editingFinished()</slot>
+   <slot>on_globalParametersSetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>929</x>
-     <y>119</y>
+     <x>745</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
-     <x>937</x>
-     <y>273</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>distanceLogFileCheckbox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>901</x>
-     <y>144</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>882</x>
+     <x>840</x>
      <y>273</y>
     </hint>
    </hints>
@@ -5878,34 +5737,34 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>algoSelectComboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>targetHintAngleSpinBox</sender>
+   <signal>editingFinished()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_algoSelectComboBox_indexChanged(int)</slot>
+   <slot>on_targetHintAngleSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>159</x>
+     <x>929</x>
      <y>119</y>
     </hint>
     <hint type="destinationlabel">
-     <x>305</x>
+     <x>937</x>
      <y>273</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>trackerSelectComboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>registerADCGetPushButton</sender>
+   <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_trackerSelectComboBox_indexChanged(int)</slot>
+   <slot>on_registerADCGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>116</x>
-     <y>113</y>
+     <x>751</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
-     <x>241</x>
-     <y>287</y>
+     <x>538</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -5926,6 +5785,70 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
+   <sender>distanceLogFileCheckbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_distanceLogCheckBox_setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>901</x>
+     <y>144</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>882</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>registerGPIOGetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerGPIOGetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>264</x>
+     <y>240</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>registerGPIOSetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_registerGPIOSetPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>139</x>
+     <y>240</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>247</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>trackerSelectComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AWLQtDemoClass</receiver>
+   <slot>on_trackerSelectComboBox_indexChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>116</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>241</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>trackerParametersGetPushButton</sender>
    <signal>clicked(bool)</signal>
    <receiver>AWLQtDemoClass</receiver>
@@ -5942,34 +5865,18 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>comboBoxMaxRange</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>registerFPGASetPushButton</sender>
+   <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_comboBoxMaxRange_indexChanged(int)</slot>
+   <slot>onRegisterFPGASetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>332</x>
-     <y>135</y>
+     <x>140</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
-     <x>485</x>
-     <y>159</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>registerFPGAAddressSetComboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerFPGAAddressSetComboBox_indexChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>227</x>
-     <y>105</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>464</x>
-     <y>226</y>
+     <x>136</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -5990,50 +5897,50 @@ color: rgb(255,255,255);</string>
    </hints>
   </connection>
   <connection>
-   <sender>logFileSelectButton</sender>
-   <signal>pressed()</signal>
+   <sender>registerFPGAGetPushButton</sender>
+   <signal>clicked()</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_logFileSelectorButton_pressed()</slot>
+   <slot>on_registerFPGAGetPushButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>858</x>
-     <y>229</y>
+     <x>313</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
-     <x>747</x>
-     <y>298</y>
+     <x>72</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>registerSaveToFlashPushButton</sender>
-   <signal>clicked()</signal>
+   <sender>sensorRangeMinSpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerSaveToFlashPushButton_clicked()</slot>
+   <slot>on_calibrationRangeMinSpin_editingFinished()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>244</x>
-     <y>253</y>
+     <x>171</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
-     <x>246</x>
-     <y>315</y>
+     <x>127</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>registerRestoreFactoryDefaultsPushButton</sender>
-   <signal>clicked()</signal>
+   <sender>algoSelectComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>AWLQtDemoClass</receiver>
-   <slot>on_registerRestoreFactoryDefaultsPushButton_clicked()</slot>
+   <slot>on_algoSelectComboBox_indexChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>361</x>
-     <y>250</y>
+     <x>159</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
-     <x>517</x>
-     <y>315</y>
+     <x>305</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>

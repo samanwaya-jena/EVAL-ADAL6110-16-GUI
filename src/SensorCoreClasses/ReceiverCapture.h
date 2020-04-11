@@ -236,18 +236,6 @@ public:
 	uint16_t currentAlgo;
 	uint16_t currentAlgoPendingUpdates;
 
-	uint32_t storedSSPFrameRate;
-	uint32_t storedSSPFrameRatePendingUpdates;
-	uint32_t storedSSPSystemEnable;
-	uint32_t storedSSPSystemEnablePendingUpdates;
-	uint32_t storedSSPLaserEnable;
-	uint32_t storedSSPLaserEnablePendingUpdates;
-	uint32_t storedSSPAutoGainEnable;
-	uint32_t storedSSPAutoGainEnablePendingUpdates;
-	uint32_t storedSSPDCBalanceEnable;
-	uint32_t storedSSPDCBalanceEnablePendingUpdates;
-
-
 	uint16_t currentTracker;
 	uint16_t currentTrackerPendingUpdates;
 
@@ -471,6 +459,17 @@ public:
       */
 	int  GetFrameQty();
 
+	/** \Brief Get the device serial number
+	 *   Value of 0 indicates that the data is not available.
+	 */
+	virtual uint32_t GetProductID() = 0;
+
+	/** \Brief send a message to get the device serial number
+	 *   Value of 0 indicates that the data is not available.
+	 */
+
+	virtual uint32_t GetUniqueID() = 0;
+
 	/** \brief Return the frame rate requested by the application to the sensor
 	  * \return frame rate requested by the application to the sensor. Corresponds to configuration file settings.
 	  */
@@ -486,6 +485,10 @@ public:
 	  */
 	ReceiverFrameRate  GetCalculatedFrameRate();
 
+	/** \brief Return true if connexion with the device has been etablished.
+      * \return True if device connexion is established.
+ 
+	  */
   virtual bool IsConnected() { return true; }
 
 	/** \brief Return the number of receiver voxels used for video projection
@@ -635,43 +638,12 @@ public:
 
 	virtual bool SetTracker(uint16_t trackerID) = 0;
 
-	/** \brief Sets an internal FPGA register to the value sent as argument. 
+	/** \brief Sets an FPGA register to the value sent as argument.
 	  *\param[in] registerAddress Adrress of the register to change.
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
 
-        virtual bool SetSSPFrameRate(ReceiverFrameRate frameRate ) = 0;
-
-        /** \brief Issues the command to set the frame rate from 10 to 50 by 5 Hz step
-        * \return true if success.  false on error.
-        */
-
-	virtual bool SetSSPSystemEnable(bool on) = 0;
-
-	/** \brief Issues the command to enable the sensor.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPLaserEnable(bool on) = 0;
-
-	/** \brief Issues the command to enable the Laser.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPAutoGainEnable(bool on) = 0;
-
-	/** \brief Issues the command to enable the Auto Gain.
-	* \return true if success.  false on error.
-	*/
-
-	virtual bool SetSSPDCBalanceEnable(bool on) = 0;
-
-	/** \brief Issues the command to enable the DC Balance.
-	* \return true if success.  false on error.
-	*/
-
-		
 	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets an ADC register to the value sent as argument. 
@@ -727,37 +699,7 @@ public:
 
 
 
-	/** \brief Issues the command to get the frame rate.
-	* \return true if success.  false on error.
-	*/   
-	virtual bool QuerySSPFrameRate() = 0;
-
-
-
-/** \brief Issues the command know if the sensor is on.
-* \return true if success.  false on error.
-*/
-	virtual bool QuerySSPSystemEnable() = 0;
-
-
-	/** \brief Issues the command to know if the Laser is on.
-	* \return true if success.  false on error.
-	*/
-	virtual bool QuerySSPLaserEnable() = 0;
-
-
-	/** \brief Issues the command to know if the Auto Gain is on.
-	* \return true if success.  false on error.
-	*/
-	virtual bool QuerySSPAutoGainEnable() = 0;
-
-
-	/** \brief Issues the command to know if the DC Balance is on.
-	* \return true if success.  false on error.
-	*/
-	virtual bool QuerySSPDCBalanceEnable() = 0;
-
-
+	
 	/** \  an asynchronous query command to get the current tracker.
 	* \return true if success.  false on error.
 	*/
@@ -844,7 +786,6 @@ public:
 	*/
 	
 	virtual int GetChannelIDFromCell(CellID inCellID);
-
 
 
 	// public variables
@@ -1004,6 +945,18 @@ protected:
       */
 	int FindRegisterByAddress(const RegisterSet &inRegisterSet, uint16_t inAddress);
 
+	/** \brief Set all registers in the registerSet to 0, and pendingUpdates status to updateStatusUpToDate;
+	  * \param[in] inRegisterSet the registerSet that we want to clear into
+	*/
+
+	void ClearRegisterSet(RegisterSet& inRegisterSet);
+
+	/** \brief Clear All RegisterSets in the receiver, by calling ClearRegisterSet for each of them.
+	*		   RegisterSets should be cleared when a unit is disconnected.	
+	* \param[in] inRegisterSet the registerSet that we want to clear into
+	*/
+	void ClearAllRegisters();
+
 	/** \brief Returns pointer to the Algorithm parameter for the parameter that
 	           has the address specified
 	  * \param[in] algoID an algorithm for which we want the parameter description.
@@ -1044,6 +997,16 @@ protected:
 	  * \throws  Throws boost error on read of the property keys orther than the root key.
       */
 	virtual bool ReadRegistersFromPropTree( boost::property_tree::ptree & /*propTree*/);
+
+	/** \Brief send a message to get the device serial number
+     *  Message is asynchonous.  Result will not be available immediately.
+    */
+	virtual bool QueryUniqueID() = 0;
+
+	/** \Brief send a messahge to get the device type
+	  *  Message is asynchonous.  Result will not be available immediately.
+	*/
+	virtual bool QueryProductID() = 0;
 
 // Protected variables
 protected:
