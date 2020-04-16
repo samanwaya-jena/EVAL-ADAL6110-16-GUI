@@ -61,12 +61,7 @@
 #include "DetectionStruct.h"
 #include "ReceiverCANCapture.h"
 
-#ifdef WIN32
-        #include <libusb.h>
-#endif
-#ifdef __linux__
-        #include <libusb-1.0/libusb.h>
-#endif
+#include <libusb.h>
 
 
 SENSORCORE_BEGIN_NAMESPACE

@@ -38,12 +38,8 @@
 #ifndef SENSORCORE_RECEIVER_LIBUSB_CAPTURE_H
 #define SENSORCORE_RECEIVER_LIBUSB_CAPTURE_H
 
-#ifdef WIN32
-        #include <libusb.h>
-#endif
-#ifdef __linux__
-        #include <libusb-1.0/libusb.h>
-#endif
+
+#include <libusb.h>
 
 #include "SensorCoreClassesGlobal.h"
 #include "ReceiverPolledCapture.h"
