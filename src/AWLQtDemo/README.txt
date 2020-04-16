@@ -29,14 +29,14 @@ git checkout ADI_Develop
 
 #### For linux pc std architecture:
 ```bash
-cp ../CMakeList/CMakeLists.txt.linux CMakeLists.txt  
+cp ../CMakeFiles/CMakeLists.txt.linux CMakeLists.txt  
 cmake .
 make
 ```
 
 #### For petalinux on ultrascale board
 ```bash
-cp ../CMakeList/CMakeLists.txt.ultrascale CMakeLists.txt
+cp ../CMakeFiles/CMakeLists.txt.ultrascale CMakeLists.txt
 export QT_BIN_PATH=/usr/bin/qt5	
 cmake .
 make
