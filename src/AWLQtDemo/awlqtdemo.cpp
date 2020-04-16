@@ -54,8 +54,9 @@
 
 #include "DebugPrintf.h"
 #include "awlqtdemo.h"
-
-#include <QTableWidget.h>
+#ifdef WIN32
+	#include <QTableWidget.h>
+#endif
 #include <QTableWidget>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -2555,7 +2556,7 @@ void AWLQtDemo::FillFPGAList()
 			QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
 			sLabel += ": ";
 			sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
-			ui.registerFPGAAddressSetComboBox->addItem(sLabel, QVariant(i));
+			ui.registerFPGAAddressSetComboBox->addItem(sLabel, QVariant((int16_t)i));
 		}
 	}
 
@@ -2698,7 +2699,7 @@ void AWLQtDemo::FillADCList()
 			QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
 			sLabel += ": ";
 			sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
-			ui.registerADCAddressSetComboBox->addItem(sLabel, QVariant(i));
+			ui.registerADCAddressSetComboBox->addItem(sLabel, QVariant((int16_t)i));
 		}
 	}
 

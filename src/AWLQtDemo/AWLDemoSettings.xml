@@ -130,7 +130,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>0.0</displayedRangeMin>
-      <displayedRangeMax>60</displayedRangeMax>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
 
