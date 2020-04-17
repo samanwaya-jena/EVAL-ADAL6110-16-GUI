@@ -13,13 +13,13 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 # QtWidgets always finds its dependencies (QtGui and QtCore)
 FIND_PACKAGE(Qt5Widgets)
-find_package(Boost COMPONENTS thread system filesystem date_time signals REQUIRED)
+find_package(Boost COMPONENTS thread system filesystem date_time REQUIRED)
 find_package (Threads)
 if(Boost_FOUND)
 	message("Boost Found!")
 endif()
 #SET(BOOST_INCLUDE_DIRS "/usr/include/boost")
-file(GLOB QWT_INCLUDE_DIR "/usr/include/qt5/qwt")
+file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
 file(GLOB QWT_LIBRARIES "/usr/lib64/libqwt-qt5*")
 # Qt5Widgets_INCLUDES also includes header files for its dependencies (QtCore et QtGui)
 INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
@@ -29,8 +29,8 @@ message("${Qt5Widgets_INCLUDES}")
 #  -DQT_WIDGETS_LIB is necessary when one uses QtWidgets in Qt5
 #file(GLOB QWT_INCLUDE_DIR "/usr/include/qwt")
 include_directories(include ${QWT_INCLUDE_DIR} )
-include_directories(include "./AWLCoreClasses")
-include_directories(include "./AWLQtScope")
+include_directories(include "../SensorCoreClasses")
+include_directories(include "../AWLQtDemo")
 ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
 message("QT5 DEF")
 message(${Qt5Widgets_DEFINITIONS})
@@ -38,58 +38,60 @@ message(${Qt5Widgets_DEFINITIONS})
 SET(CMAKE_CXX_FLAGS "-g ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 message("QT5 CFLAGS")
 message("${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-ADD_EXECUTABLE( LinuxCute main.cpp awlqtdemo.cpp  AWLSettings.cpp  fov_2dscan.cpp 
-	awlplotscan.cpp
-      	TableView.cpp awlqtdemo.ui fov_2dscan.ui TableView.ui awlplotscan.ui
-./AWLCoreClasses/awlcoord.cpp          ./AWLCoreClasses/Publisher.cpp                ./AWLCoreClasses/ReceiverPostProcessor.cpp
-./AWLCoreClasses/CoordinateSystem.cpp  ./AWLCoreClasses/ReceiverCANCapture.cpp       ./AWLCoreClasses/ReceiverSimulatorCapture.cpp
-./AWLCoreClasses/DebugPrintf.cpp       ./AWLCoreClasses/ReceiverCapture.cpp          ./AWLCoreClasses/Subscription.cpp
-./AWLCoreClasses/DetectionStruct.cpp   ./AWLCoreClasses/ThreadedWorker.cpp
-./AWLCoreClasses/LoopedWorker.cpp      
-./AWLQtScope/awlqtscope.cpp    ./AWLQtScope/knob.cpp        
-./AWLQtScope/awlscopeplot.cpp  ./AWLQtScope/signaldata.cpp
-./AWLQtScope/curvedata.cpp     ./AWLQtScope/wheelbox.cpp
-./AWLQtScope/awlqtscope.ui     awlqtdemo.qrc
+ADD_EXECUTABLE( LinuxCute ../AWLQtDemo/main.cpp ../AWLQtDemo/awlqtdemo.cpp  ../AWLQtDemo/AWLSettings.cpp  ../AWLQtDemo/fov_2dscan.cpp 
+	../AWLQtDemo/awlplotscan.cpp
+	../AWLQtDemo/TableView.cpp ../AWLQtDemo/awlqtdemo.ui ../AWLQtDemo/fov_2dscan.ui ../AWLQtDemo/TableView.ui ../AWLQtDemo/awlplotscan.ui
+	../SensorCoreClasses/SensorCoord.cpp          ../SensorCoreClasses/Publisher.cpp                ../SensorCoreClasses/ReceiverPostProcessor.cpp
+../SensorCoreClasses/CoordinateSystem.cpp  ../SensorCoreClasses/ReceiverCANCapture.cpp       ../SensorCoreClasses/ReceiverSimulatorCapture.cpp
+../SensorCoreClasses/DebugPrintf.cpp       ../SensorCoreClasses/ReceiverCapture.cpp          ../SensorCoreClasses/Subscription.cpp
+../SensorCoreClasses/DetectionStruct.cpp   ../SensorCoreClasses/ThreadedWorker.cpp
+../SensorCoreClasses/LoopedWorker.cpp      
+../SensorCoreClasses/SensorSettings.cpp      
+#./AWLQtScope/awlqtscope.cpp    ./AWLQtScope/knob.cpp        
+#./AWLQtScope/awlscopeplot.cpp  ./AWLQtScope/signaldata.cpp
+#./AWLQtScope/curvedata.cpp     ./AWLQtScope/wheelbox.cpp
+#./AWLQtScope/awlqtscope.ui     awlqtdemo.qrc
 )
 
 # Comment next 2 lines to disable EasySync support
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
-TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverEasySyncCapture.cpp )
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_EASYSYNC )
+#TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverEasySyncCapture.cpp )
 
 # Comment next 6 lines to disable Kvaser support
 #file(GLOB CAN_INCLUDE_DIR "/usr/local/include/canlib")
 #file(GLOB CAN_LIBRARIES "/usr/local/lib/libcan*")
 #include_directories(include ${CAN_INCLUDE_DIR})
 #TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_KVASER )
-#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverKvaserCapture.cpp )
+#TARGET_SOURCES( LinuxCute PUBLIC .../SensorCoreClasses/ReceiverKvaserCapture.cpp )
 #TARGET_LINK_LIBRARIES(LinuxCute ${CAN_LIBRARIES} )
 
 # Comment next 2 lines to disable SocketCAN support WARNING Linux Only
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
-TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverSocketCANCapture.cpp )
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_CAN_SOCKETCAN )
+#TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverSocketCANCapture.cpp )
 
 # Comment next 2 lines to disable PosixUDP support WARNING Linux Only
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXUDP )
-TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverPosixUDPCapture.cpp )
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXUDP )
+#TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverPosixUDPCapture.cpp )
 
 # Comment next 2 lines to disable PosixTTY support WARNING Linux Only
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXTTY )
-TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverPosixTTYCapture.cpp )
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_POSIXTTY )
+#TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverPosixTTYCapture.cpp )
 
 # Comment next 2 lines to disable LibUSB support
 TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_LIBUSB )
 TARGET_LINK_LIBRARIES( LinuxCute /usr/lib64/libusb-1.0.so.0 )
-TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverPolledCapture.cpp )
-TARGET_SOURCES( LinuxCute PUBLIC ./AWLCoreClasses/ReceiverLibUSBCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverPolledCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverLibUSBCapture.cpp )
+TARGET_SOURCES( LinuxCute PUBLIC ../SensorCoreClasses/ReceiverLibUSB2Capture.cpp )
 
 # Comment next 2 lines to disable TCP support
 #TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_TCP )
-#TARGET_SOURCES( LinuxCute PUBLIC ../AWLCoreClasses/ReceiverTCPCapture.cpp )
+#TARGET_SOURCES( LinuxCute PUBLIC .../SensorCoreClasses/ReceiverTCPCapture.cpp )
 
 # Comment next 4 lines to disable OpenCV Video (and OpenCV in general)
-TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
+#TARGET_COMPILE_DEFINITIONS( LinuxCute PUBLIC USE_OPENCV_VIDEO )
 FIND_PACKAGE(OpenCV REQUIRED)
-TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
+#TARGET_SOURCES( LinuxCute PUBLIC VideoCapture.cpp  VideoViewer.cpp )
 TARGET_LINK_LIBRARIES(LinuxCute ${OpenCV_LIBS} )
 
 # Comment next 5 lines to disable AP Video
