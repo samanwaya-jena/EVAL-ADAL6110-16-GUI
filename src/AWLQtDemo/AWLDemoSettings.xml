@@ -20,7 +20,6 @@
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
 
-
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
 	       1: Units are in km/h -->

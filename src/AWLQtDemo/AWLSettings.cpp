@@ -113,6 +113,8 @@ bool AWLSettings::ReadSettings()
 	bTabSettingTrackerControl = propTree.get<bool>("config.layout.TabSettingTrackerControl", false);
 	bTabSettingAScan = propTree.get<bool>("config.layout.TabSettingAScan", false);
 
+	bCalibrationTabShowSensorCalib = propTree.get<bool>("config.layout.calibrationTabShowSensorCalib", false);
+
 	velocityUnits = (VelocityUnits) propTree.get<int>("config.layout.velocityUnits", 1);
 
 	sLogoFileName = propTree.get<std::string>("config.layout.logoFileName");

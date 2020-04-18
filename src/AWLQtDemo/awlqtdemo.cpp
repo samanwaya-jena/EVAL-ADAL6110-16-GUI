@@ -181,9 +181,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverLibUSB2Capture(receiverID, globalSettings->GetPropTree()));
 
 		}
-		else
+		else  // Includes the case if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("Simulator")), which is the default.
 #endif
-		{
+		{  
 			// If the type is undefined, just use the dumb simulator, not using external device
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSimulatorCapture(receiverID, globalSettings->GetPropTree()));
 		}
@@ -224,8 +224,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize the controls from the settings in INI file
 
-	ui.calibrationVoxelMaskGroupBox->setVisible(false);
-	ui.voxelMaskGroupBox->setVisible(false);
+	ui.internalCalibrationGroupBox->setVisible(globalSettings->bCalibrationTabShowSensorCalib);
 
 	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	ui.sensorHeightSpinBox->setValue(sensorPosition.position.bodyRelative.up);
@@ -558,7 +557,7 @@ void AWLQtDemo::SetupToolBar()
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
-	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.png"), "2Z View", 0);
+	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.png"), "2D View", 0);
 	action2DButton->setCheckable(true);
 	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
 	ui.mainToolBar->addAction(action2DButton);

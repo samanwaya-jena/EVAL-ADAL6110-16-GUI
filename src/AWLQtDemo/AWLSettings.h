@@ -81,6 +81,8 @@ public:
 	bool bTabSettingTrackerControl;
 	bool bTabSettingAScan;
 
+	// Calibration tab: Show sensor calibration buttons (were used for AWL)
+	bool bCalibrationTabShowSensorCalib;
 
 	std::string sDisplayShowSize;
 

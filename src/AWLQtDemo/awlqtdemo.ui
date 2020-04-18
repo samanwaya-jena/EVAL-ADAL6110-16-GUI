@@ -1242,7 +1242,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -1260,7 +1260,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
          <widget class="QGroupBox" name="internalCalibrationGroupBox">
           <property name="geometry">
            <rect>
-            <x>550</x>
+            <x>730</x>
             <y>10</y>
             <width>201</width>
             <height>201</height>
@@ -1859,7 +1859,7 @@ border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, 
           </property>
           <property name="geometry">
            <rect>
-            <x>770</x>
+            <x>550</x>
             <y>10</y>
             <width>161</width>
             <height>201</height>
