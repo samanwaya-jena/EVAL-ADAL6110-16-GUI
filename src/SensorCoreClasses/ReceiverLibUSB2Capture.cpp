@@ -338,11 +338,9 @@ bool  ReceiverLibUSB2Capture::CloseCANPort()
 
 bool ReceiverLibUSB2Capture::FlushMessages()
 {
-	int ret = 0;
 	int bytesRead;
 
 	uint8_t buffer[receiveBufferSize];
-		int received = 0;
 
 	if (!handle) return(false);
 
@@ -367,7 +365,6 @@ bool ReceiverLibUSB2Capture::FlushMessages()
 	pollMsg.id = RECEIVERCANMSG_ID_POLL;
 
 	ReceiverCANMessage inMsg;
-	int count = 0;
 	bool bEmpty = false;
 
 	do

@@ -377,7 +377,7 @@ part4Entered(false)
 }
 
 
-AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, AlertVoxelMask inVoxelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel):
+AlertCondition::AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, AlertVoxelMask inVoxelMask, float inMinRange, float inMaxRange, AlertCondition::ThreatLevel inThreatLevel):
 alertType(inAlertType),
 receiverID(inReceiverID),
 alertVoxelMask(inVoxelMask),

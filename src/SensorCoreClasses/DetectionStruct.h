@@ -142,11 +142,20 @@ public:
 		eAlertTTC = 6		// Alert based on time to collision;
 
 	}
-	AlertType;
+	AlertType;  
 
 public:
-	AlertCondition() {};
-	AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, VoxelMask inVoxelMask, float inMinRange, float inMaxRange, ThreatLevel inThreatLevel = eThreatNone);
+	AlertCondition():
+		alertType(eAlertInvalid),
+		receiverID(0),
+		minRange(0.0),
+		maxRange(10.0),
+	    threatLevel(eThreatNone)
+	    {
+		alertVoxelMask.wordData = 0;
+	    };
+
+	AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, VoxelMask inVoxelMask, float inMinRange, float inMaxRange, AlertCondition::ThreatLevel inThreatLevel = eThreatNone);
 	AlertCondition(AlertCondition &sourceCondition);
 
 	static AlertCondition::ThreatLevel FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track);
@@ -282,6 +291,7 @@ public:
 		sampleSize = 0;
 		sampleSigned = false;
 		samples = 0;
+		sampleDrop = 0;
 	}
 /*
 	~AScan()
@@ -318,8 +328,6 @@ public:
 	bool sampleSigned; // Are the sample signed ?
 
 	uint8_t *samples;
-
-
 };
 
 /** \brief A track corresponds to an obstacle tracking based on a singl;e or multiple detections,

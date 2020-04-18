@@ -78,6 +78,7 @@ ReceiverSimulatorCapture::~ReceiverSimulatorCapture()
 
 int threadCount = 0;
 static float trackDistance = 0.0;
+static float trackDirection = 1.0; // Set to -1.0 for incoming displacement
 
 void ReceiverSimulatorCapture::DoOneThreadIteration()
 
@@ -86,9 +87,10 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 	{
 		// Simulate some tracks for debug purposes
 		Timestamp elapsed = GetElapsed();
-
-		trackDistance += 0.0001f;
+		
+		trackDistance += (0.0001f * trackDirection);
 		if (trackDistance > 10.0) trackDistance = 0.0;
+		if (trackDistance < 0.0) trackDistance = 10.0;
 
 		for (uint16_t voxelIndex= 0; voxelIndex < 16; voxelIndex++)
 		{
@@ -110,7 +112,7 @@ void ReceiverSimulatorCapture::DoOneThreadIteration()
 					track->trackChannels.wordData = 0x01 << (track->trackMainVoxel % 8);
 					
 
-					track->velocity = 3;
+					track->velocity = 3.0f * trackDirection;
 					track->acceleration = 0;
 					track->threatLevel = AlertCondition::eThreatLow;
 					track->part1Entered = true;
