@@ -57,6 +57,8 @@
 #ifdef WIN32
 	#include <QTableWidget.h>
 #endif
+#include <QProcess>
+#include <QThread>
 #include <QTableWidget>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -110,6 +112,18 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.setupUi(this);
 	//setStyleSheet("background-color:rgb(30,64,86)");
 	//setAutoFillBackground( true );
+
+#ifdef _WINDOWS_
+
+	// Set the thread priority for the application under Windows
+	// Process priority has to be elevated to support real-time communications, 
+
+    HANDLE proc = GetCurrentProcess();
+	SetPriorityClass(proc, ABOVE_NORMAL_PRIORITY_CLASS);
+
+
+	QThread::currentThread()->setPriority(QThread::LowestPriority);
+#endif
 
 	// Set the basic paths
 //	QCoreApplication::setOrganizationName("Phantom Intelligence");

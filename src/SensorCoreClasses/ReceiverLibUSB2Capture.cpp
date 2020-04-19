@@ -95,6 +95,11 @@ ReceiverLibUSB2Capture::ReceiverLibUSB2Capture(int receiverID, boost::property_t
 	handle(NULL),
 	swap_handle(NULL)
 {
+
+	// Prepare the static pollMessage;
+	pollMsg.id = RECEIVERCANMSG_ID_POLL;
+	pollMsg.len = RECEIVERCANMSG_LEN;
+
 	reconnectTime = boost::posix_time::microsec_clock::local_time();
 	m_pFile = NULL;
 	// Read the configuration from the configuration file
@@ -166,11 +171,12 @@ void  ReceiverLibUSB2Capture::Go()
 	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ReceiverLibUSB2Capture::DoThreadLoop, this)));
 
 #ifdef _WINDOWS_
-	// Set the priority under windows.  This is the most critical display thread 
+	// Set the threadpriority under windows.  This is the most critical display thread 
 	// for user interaction
-	HANDLE th = mThread->native_handle();
 
-	SetThreadPriority(th, THREAD_PRIORITY_TIME_CRITICAL);
+	// We have found that setting to THREAD_PRIORITY_TIME_CRITICAL is slighly less performant.  May reduce performance of LiBUSB.
+	HANDLE th = mThread->native_handle();
+	SetThreadPriority(th, THREAD_PRIORITY_HIGHEST);
 #endif
 }
 
@@ -183,10 +189,7 @@ void ReceiverLibUSB2Capture::Stop()
 bool ReceiverLibUSB2Capture::IsConnected() 
 { 
 	bool hasHandle = handle != NULL;
-	bool hasUniqueID = GetUniqueID() != 0;
-	bool hasProductID = GetProductID() != 0;
-
-	return (hasHandle && hasUniqueID && hasProductID);
+	return(hasHandle);
 }
 
 
@@ -197,36 +200,30 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 	int bytesRead;
 	bool sent;
 
-	ReceiverCANMessage msg, poll;
-	poll.id = RECEIVERCANMSG_ID_POLL;
 	if (swap_handle) {
 		handle = swap_handle;
 		swap_handle = NULL;
 	}
 	if (handle)
 	{
-		sent = WriteMessage(poll);
+		sent = WriteMessage(pollMsg);
 
 		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer));
 
-		if (bytesRead <= 0)
+		if (bytesRead < sizeof(ReceiverCANMessage))
 		{
-			//perror("UDP read");
 			CloseCANPort();
 		}
 		else
 		{
-			msg.id = buffer[0];
-			msg.len = buffer[9];
-			//printf ("UDP %08x\n", msg.id);
-			if (msg.id < 0x60) {
-				msg.len = ((uint8_t)bytesRead) - (int)sizeof(uint32_t);
-				for (int i = 0; i < 8 && i < msg.len; i++) {
-					msg.data[i] = buffer[10 + i];
-				}
-				ParseMessage(msg);
+			ReceiverCANMessage* msgPtr;
+			msgPtr = (ReceiverCANMessage*) buffer;
+			if (msgPtr->id < 0xB0)
+			{
+				ParseMessage(*msgPtr);
 			}
-			else {
+			else 
+			{
 				ProcessRaw(buffer);
 			}
 		}
@@ -361,9 +358,6 @@ bool ReceiverLibUSB2Capture::FlushMessages()
 
 	// Clear messages outstanding in the sensor's internal queues, but do not process them.
 	// End only when there is no more datam, or we have hit a QUEU_EMPTY message.
-	ReceiverCANMessage  pollMsg;
-	pollMsg.id = RECEIVERCANMSG_ID_POLL;
-
 	ReceiverCANMessage inMsg;
 	bool bEmpty = false;
 
@@ -455,6 +449,9 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 
 bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage& inMsg)
 {
+#if 0
+	WriteBytes((uint8_t *)&inMsg, sizeof(ReceiverCANMessage));
+#else
 	uint8_t buffer[256];
 	uint32_t* buf32;
 	size_t offset = 0;
@@ -490,7 +487,7 @@ bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage& inMsg)
 	ret = WriteBytes((uint8_t*)buffer, offset);
 	//	ret = sendto(fd, (char*)buffer, offset + inMsg.len, 0,
 	//		(struct sockaddr *)remoteAddress, sizeof(sockaddr_in));
-
+#endif
 	return(true);
 }
 
@@ -550,14 +547,15 @@ int ReceiverLibUSB2Capture::GetChannelIDFromCell(CellID inCellID)
 
 void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 {
+	const size_t sampleOffset = 12;
+	const size_t sampleDrop = 0;
+	const size_t sampleSize = 2;
+	const bool sampleSigned = true;
+
 	uint16_t* rawData16 = (uint16_t*)rawData;
 	int voxelIndex = rawData16[1] & 0xFF;
 	CellID cellID(voxelIndex, 0);
 	int msg_id = rawData[0];
-	size_t sampleOffset = 12;
-	size_t sampleDrop = 0;
-	size_t sampleSize = 2;
-	bool sampleSigned = true;
 	bool transmit = false;
 
 	if (msg_id != 0xb0) return;
@@ -570,14 +568,13 @@ void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 	rawBufferCount++;
 
 	memcpy(rawBuffers[voxelIndex], rawData, receiveBufferSize);
+
 	sampleCount = (receiveBufferSize / 2) - sampleOffset;
 	transmit = true;
 
 	if (voxelIndex > max_voxel) max_voxel = voxelIndex;
 	if (voxelIndex == max_voxel) transmit = true;
 
-
-	//printf("ascan %02x %02x %d %d %d\n", msg_id, max_msg_id, channel, size, sampleCount);
 
 	if (transmit)
 	{

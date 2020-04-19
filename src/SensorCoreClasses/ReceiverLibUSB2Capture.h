@@ -233,6 +233,8 @@ protected:
 		static const int numBuffers = 4;
 		uint8_t *buffers[numBuffers];
 		int currentBuffer;
+
+		ReceiverCANMessage pollMsg;
 }; // class USB2
 
 SENSORCORE_END_NAMESPACE

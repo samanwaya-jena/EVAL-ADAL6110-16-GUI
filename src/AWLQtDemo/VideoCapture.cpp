@@ -108,6 +108,15 @@ void  VideoCapture::Go()
     mWorkerRunning = true;
 
 	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
+
+#ifdef _WINDOWS_
+	// Set the priority under windows.  
+	// Camera thread has to be lower priority than sensor communications threads
+	HANDLE th = mThread->native_handle();
+
+	SetThreadPriority(th, THREAD_PRIORITY_LOWEST);
+#endif
+
 }
  
 void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID inSubscriberID) 
