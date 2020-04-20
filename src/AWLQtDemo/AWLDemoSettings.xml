@@ -168,7 +168,7 @@
 
   
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
-      <frameRate>50</frameRate>
+      <frameRate>200</frameRate>
 
         <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
       <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->

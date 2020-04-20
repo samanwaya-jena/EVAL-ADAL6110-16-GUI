@@ -364,8 +364,8 @@ bool ReceiverLibUSB2Capture::FlushMessages()
 	do
 	{
 		WriteMessage(pollMsg);
-		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer), 0);
-		if (bytesRead <= 0) bEmpty = true;
+		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer), 10 );
+		if (bytesRead <= sizeof(ReceiverCANMessage)) bEmpty = true;
 		else if (bytesRead >= 11) {
 			inMsg.id = buffer[0];
 			inMsg.len = buffer[9];
