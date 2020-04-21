@@ -208,7 +208,16 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 	{
 		sent = WriteMessage(pollMsg);
 
+		ReceiverCANMessage* msgPtr = (ReceiverCANMessage*)buffer;
+
+#ifdef _WINDOWS_
+		// Under Windows, do not wait for other input.
+		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer),0);
+#else
+		// Use time-out defined in XML file
 		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer));
+#endif
+
 
 		if (bytesRead < sizeof(ReceiverCANMessage))
 		{
@@ -216,19 +225,18 @@ void ReceiverLibUSB2Capture::DoOneThreadIteration()
 		}
 		else
 		{
-			ReceiverCANMessage* msgPtr;
-			msgPtr = (ReceiverCANMessage*) buffer;
 			if (msgPtr->id < 0xB0)
 			{
 				ParseMessage(*msgPtr);
 			}
-			else 
+			else
 			{
 				ProcessRaw(buffer);
 			}
 		}
 	}
-	else {
+
+	else { // Handle = NULL
 		if (boost::posix_time::microsec_clock::local_time() > reconnectTime) {
 			if (OpenCANPort()) {
 				QueryProductID();
@@ -304,7 +312,17 @@ bool  ReceiverLibUSB2Capture::OpenCANPort()
 	//printf("out %p\n", handle);
 	if (handle)
 	{
-		return (FlushMessages());
+		// force stop on acquisition. Unit may have been running for a while and 
+		// has data in queue we may need to get rid of. 
+		SetFPGARegister(acquisitionRegister, 0);
+		// Wait for the acquisition to stop
+		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+
+		FlushMessages();
+
+		// Restart the acquisition
+		SetFPGARegister(acquisitionRegister, 1);
+		return(true);
 	}
 	else {  // if (!handle)
 		ClearAllRegisters();
@@ -341,20 +359,14 @@ bool ReceiverLibUSB2Capture::FlushMessages()
 
 	if (!handle) return(false);
 
-
-	boost::mutex::scoped_lock rawLock(m_Mutex);
-
-	// force stop on acquisition. Unit may have been running for a while and 
-	// has data in queue we may need to get rid of. 
-	SetFPGARegister(acquisitionRegister, 0);
-
 	//  Clear any outstanding data left in the USB buffers
 	do
 	{
-		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer), 100);
+		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer));
 	} while (bytesRead > 0);
 
-
+	// Wait for a complete reset of the unit, in case this is where we start the unit
+	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 
 	// Clear messages outstanding in the sensor's internal queues, but do not process them.
 	// End only when there is no more datam, or we have hit a QUEU_EMPTY message.
@@ -364,9 +376,9 @@ bool ReceiverLibUSB2Capture::FlushMessages()
 	do
 	{
 		WriteMessage(pollMsg);
-		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer), 10 );
+		bytesRead = ReadBytes((uint8_t*)buffer, sizeof(buffer));
 		if (bytesRead <= sizeof(ReceiverCANMessage)) bEmpty = true;
-		else if (bytesRead >= 11) {
+		else {
 			inMsg.id = buffer[0];
 			inMsg.len = buffer[9];
 			if (inMsg.id == RECEIVERCANMSG_ID_COMMANDMESSAGE && buffer[10] == RECEIVERCANMSG_ID_CMD_RESPONSE_QUEUE_EMPTY)
@@ -376,12 +388,10 @@ bool ReceiverLibUSB2Capture::FlushMessages()
 		}
 
 	} while (!bEmpty);
-	
-	rawLock.unlock();
 
-	// Push an outbound messge will force the flushing of the out queue
-	//
-	QueryUniqueID();
+	// Messages have been flushed. Reset the sensor status for comm errors.
+	receiverStatus.receiverError.byteData = 0;
+
 	return true;
 
 }
@@ -394,6 +404,11 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 	message.len = RECEIVERCANMSG_LEN;       // Frame size (0.8)
 
 	bool bMessageOk = true;
+
+	// Stop the acquisition while we set the operating parameters
+	bMessageOk = SetFPGARegister(acquisitionRegister, 0);
+	// Wait for the acquisition to stop
+	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 
 	if (bMessageOk)
 	{
@@ -435,11 +450,13 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 		bMessageOk = WriteMessage(message);
 	}
 
+
+	// Restart the acquisition
 	if (bMessageOk)
 	{
-		// Acquisition enable
 		bMessageOk = SetFPGARegister(acquisitionRegister, 1);
 	}
+
 
 	// The message has no confirmation built in
 	return(bMessageOk);
@@ -449,7 +466,7 @@ bool ReceiverLibUSB2Capture::SetMessageFilters(ReceiverFrameRate frameRate, Voxe
 
 bool ReceiverLibUSB2Capture::WriteMessage(const ReceiverCANMessage& inMsg)
 {
-#if 0
+#if 1
 	WriteBytes((uint8_t *)&inMsg, sizeof(ReceiverCANMessage));
 #else
 	uint8_t buffer[256];

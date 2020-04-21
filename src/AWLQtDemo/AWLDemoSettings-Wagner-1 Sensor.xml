@@ -19,8 +19,6 @@
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>false</TabSettingMisc>
-
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
@@ -45,7 +43,7 @@
   </layout>
 
   <debug>
-    <enableDebugFile>false</enableDebugFile>
+    <enableDebugFile>true</enableDebugFile>
     <enableLogFile>false</enableLogFile>
     <!-- Path for debug and log files.  Must be terminated by a "/" -->
     <defaultPath>./</defaultPath>
@@ -85,7 +83,7 @@
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
+      <libUsbTimeOut>1</libUsbTimeOut>
       
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
@@ -130,7 +128,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>0.0</displayedRangeMin>
-      <displayedRangeMax>60</displayedRangeMax>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
 
@@ -151,7 +149,7 @@
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
       <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
 
-        <!-- The LibUSB Vendor id -->
+      <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductId>
@@ -159,20 +157,19 @@
       <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
-      <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
-  
+       <!-- The LibUSB time out -->
+      <libUsbTimeOut>1</libUsbTimeOut>
+
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
           if not defined, the value assumes there is footer payload-->
       <xmitsFooterData>true</xmitsFooterData>
 
 
-  
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>50</frameRate>
 
-        <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
       <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
       <voxelMask>65535</voxelMask>
 
@@ -186,8 +183,8 @@
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
-      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
+      <msgEnableObstacleCompact>false</msgEnableObstacleCompact>
+      <msgEnableRaw>true</msgEnableRaw>
  
       <sensorGeometry>
         <position>
@@ -225,8 +222,7 @@
 		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
       <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
-
-          <!-- The LibUSB Vendor id -->
+      <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductId>
@@ -235,14 +231,15 @@
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
- 
+      <libUsbTimeOut>1</libUsbTimeOut>
+
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
-          Earlier versions did not produce footer payload.  Boolean.
-          if not defined, the value assumes there is footer payload-->
+            Earlier versions did not produce footer payload.  Boolean.
+            if not defined, the value assumes there is footer payload-->
       <xmitsFooterData>true</xmitsFooterData>
 
-       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
       <frameRate>50</frameRate>
 
       <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
@@ -250,18 +247,18 @@
       <voxelMask>65535</voxelMask>
 
       <!-- Message mask flags: 
-		       Controls which messages are sent to client unit
-		       if msgEnableObstacle is true, all displays will
-		       be configured for track mode operation -->
+		        Controls which messages are sent to client unit
+		        if msgEnableObstacle is true, all displays will
+		        be configured for track mode operation -->
       <msgEnableObstacle>true</msgEnableObstacle>
       <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
       <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
-      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
- 
+      <msgEnableObstacleCompact>false</msgEnableObstacleCompact>
+      <msgEnableRaw>true</msgEnableRaw>
+  
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
@@ -285,7 +282,7 @@
   </receivers>
 
   <cameras>
-    <cameraQty>1</cameraQty>
+    <cameraQty>0</cameraQty>
 
     <camera0>
       <!-- cameraName:
