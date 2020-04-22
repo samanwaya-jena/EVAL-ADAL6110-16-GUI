@@ -43,7 +43,7 @@
   </layout>
 
   <debug>
-    <enableDebugFile>true</enableDebugFile>
+    <enableDebugFile>false</enableDebugFile>
     <enableLogFile>false</enableLogFile>
     <!-- Path for debug and log files.  Must be terminated by a "/" -->
     <defaultPath>./</defaultPath>
