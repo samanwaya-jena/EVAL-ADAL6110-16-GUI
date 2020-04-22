@@ -70,6 +70,7 @@
 #include "ReceiverCANCapture.h"
 
 #include "ReceiverLibUSB2Capture.h"
+#include "SensorSettings.h"
 
 
 SENSORCORE_USE_NAMESPACE
@@ -79,6 +80,13 @@ const int reopenPortDelaylMillisec = 2000; // We try to repopen the conmm fds ev
 
 
 const size_t receiveBufferSize = 212;
+
+// Data charactereistics of raw buffer
+const size_t sampleQty = 100;
+const size_t sampleSize = 2;
+const size_t sampleOffset = 12;
+const size_t sampleDrop = 0;
+const bool sampleSigned = true;
 
 const uint16_t productIDRegister = 0x00;
 const uint16_t manufactureDateRegister = 0x01;
@@ -564,11 +572,6 @@ int ReceiverLibUSB2Capture::GetChannelIDFromCell(CellID inCellID)
 
 void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 {
-	const size_t sampleOffset = 12;
-	const size_t sampleDrop = 0;
-	const size_t sampleSize = 2;
-	const bool sampleSigned = true;
-
 	uint16_t* rawData16 = (uint16_t*)rawData;
 	int voxelIndex = rawData16[1] & 0xFF;
 	CellID cellID(voxelIndex, 0);
@@ -608,6 +611,54 @@ void ReceiverLibUSB2Capture::ProcessRaw(uint8_t* rawData)
 
 		rawLock.unlock();
 	}
+
+	// Log the data, if logging is enabled.
+	if (SensorSettings::GetGlobalSettings()->bWriteLogFile)
+	{
+		boost::mutex::scoped_lock rawLock(m_Mutex);
+
+		if (SensorSettings::GetGlobalSettings()->bWriteLogFile) // Check again for file handle now that we have the mutex
+		{
+				LogWaveform(rawData);
+		}
+		rawLock.unlock();
+	}
+}
+
+bool ReceiverLibUSB2Capture::LogWaveform(uint8_t* rawData)
+{
+	uint16_t* rawData16 = (uint16_t*)rawData;
+	int voxelIndex = rawData16[1] & 0xFF;
+	CellID cellID(voxelIndex, 0);
+	int msg_id = rawData[0];
+
+	if (msg_id != 0xb0) return false;
+
+	logFileMutex.lock();
+
+	if (!logFilePtr)
+	{
+		logFileMutex.unlock();
+		return false;
+	}
+
+	std::string theWaveString(", ,Wave, ,");
+	theWaveString += std::to_string(receiverID);
+	theWaveString += std::string(",Channel,");
+	theWaveString += std::to_string(cellID.column) + "," + std::to_string(cellID.row) + ",";
+	theWaveString += std::to_string(GetChannelIDFromCell(cellID)) + ", ,";
+
+	short* pData = (short*)&rawData[sampleOffset];
+	for (size_t i = 0; i < sampleQty; i++)
+	{
+		if (i == (sampleQty - 1))
+			theWaveString += std::to_string(*pData++);
+		else
+			theWaveString += std::to_string(*pData++) + ",";
+	}
+	LogFilePrintf(*logFilePtr, theWaveString.c_str());
+	
+	logFileMutex.unlock();
 }
 
 bool ReceiverLibUSB2Capture::ReadConfigFromPropTree(boost::property_tree::ptree& propTree)

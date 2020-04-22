@@ -204,6 +204,11 @@ protected:
 	*/
 	bool FlushMessages();
 
+	/** \Brief Log the raw data.
+	   * \param[in] rawData pointer to the raw data memory block
+	*/
+	bool LogWaveform(uint8_t* rawData);
+
 
 // Protected variables
 protected:

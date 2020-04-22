@@ -592,7 +592,7 @@ bool ReceiverCapture::BeginDistanceLog()
 	LogFilePrintf(*logFilePtr, ",Track Description:,Track,trackID,ReceiverID,Channel,ColumnID, RowID,ChannelID,___,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel,Ch.0,Ch.1,Ch.2,Ch.3,Ch.4,Ch.5,Ch.6,");
 	LogFilePrintf(*logFilePtr, ",Distance Description:,Dist,_,ReceiverID,Channel,ColumnID,RowID,ChannelID,DetectionID,Expected,expectDistance,expectAngle,Val,distance,intensity,velocity,acceleration,ttc,decelerationToStop,probability,ThreatLevel");
 	LogFilePrintf(*logFilePtr, ",Footer Description:,Footer,_,ReceiverID,_,_,_,_,FooterData");
-	LogFilePrintf(*logFilePtr, ",Wave Description:,Wave,_,ReceiverID,Channel,ColumID, RowID, ChannelID,point0,point1,point3,etc");
+	LogFilePrintf(*logFilePtr, ",Wave Description:,Wave,_,ReceiverID,Channel,ColumID, RowID, ChannelID,,point0,point1,point2,etc");
 
 	logFileMutex.unlock();
 
