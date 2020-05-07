@@ -659,6 +659,8 @@ bool ReceiverLibUSB2Capture::LogWaveform(uint8_t* rawData)
 	LogFilePrintf(*logFilePtr, theWaveString.c_str());
 	
 	logFileMutex.unlock();
+
+	return true;
 }
 
 bool ReceiverLibUSB2Capture::ReadConfigFromPropTree(boost::property_tree::ptree& propTree)
