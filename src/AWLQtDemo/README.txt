@@ -1,4 +1,3 @@
-# Phantom Intelligence 2018-05-10  
 # Phantom Intelligence 2020-04-16 Compile from ADI_Develop branche
 
 ### This is the README file for [AWLQtDemo](https://github.com/PhantomIntelligence/awlcutedemo.git)  
