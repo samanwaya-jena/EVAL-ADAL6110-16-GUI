@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['warranty_1510',['WARRANTY',['../_c_o_p_y_i_n_g_8txt.html#a01d4ec73d916d67d085f3e63d1fdbd4b',1,'WARRANTY():&#160;COPYING.txt'],['../_l_i_c_e_n_s_e___f_f_m_p_e_g_8txt.html#a01d4ec73d916d67d085f3e63d1fdbd4b',1,'WARRANTY():&#160;LICENSE_FFMPEG.txt'],['../_c_o_p_y_i_n_g_8txt.html#a6f8a0b00b312e98edeb34127b2365ebb',1,'warranty():&#160;COPYING.txt'],['../_l_i_c_e_n_s_e___f_f_m_p_e_g_8txt.html#a6f8a0b00b312e98edeb34127b2365ebb',1,'warranty():&#160;LICENSE_FFMPEG.txt']]],
+  ['wasstopped_1511',['WasStopped',['../classawl_1_1_video_viewer.html#a0cfceb7e07bd60a7f21a535d67284ca2',1,'awl::VideoViewer::WasStopped()'],['../class_looped_worker.html#a187cf166ad831a3b535e9de57d1c37d3',1,'LoopedWorker::WasStopped()'],['../class_threaded_worker.html#a4a0533b05d520c33f90dc127de63acb2',1,'ThreadedWorker::WasStopped()']]],
+  ['waveform_5ffooter_5fsize_1512',['WAVEFORM_FOOTER_SIZE',['../_receiver_polled_capture_8cpp.html#ac9af6f3439c2a9bb85f477cacf749c68',1,'ReceiverPolledCapture.cpp']]],
+  ['waveform_5fpoint_5fqty_1513',['WAVEFORM_POINT_QTY',['../_receiver_polled_capture_8cpp.html#afff3f6452c9cf6aa95e6c45fcc140c80',1,'ReceiverPolledCapture.cpp']]],
+  ['whole_1514',['whole',['../_c_o_p_y_i_n_g_8txt.html#af769a7190a391b8b7e0e51a42e3436fd',1,'whole():&#160;COPYING.txt'],['../_l_i_c_e_n_s_e___f_f_m_p_e_g_8txt.html#af769a7190a391b8b7e0e51a42e3436fd',1,'whole():&#160;LICENSE_FFMPEG.txt']]],
+  ['width_1515',['width',['../_stylesheet_8txt.html#a4ff5f1de476b00500ea4028600e751e7',1,'Stylesheet.txt']]],
+  ['win32_5flean_5fand_5fmean_1516',['WIN32_LEAN_AND_MEAN',['../framework_8h.html#ac7bef5d85e3dcd73eef56ad39ffc84a9',1,'framework.h']]],
+  ['winapi_5ffamily_5fdesktop_5fapp_1517',['WINAPI_FAMILY_DESKTOP_APP',['../resource_8h.html#a7c12fe96be14d8b42b76ac2f08dd70ca',1,'resource.h']]],
+  ['winapi_5ffamily_5fgames_1518',['WINAPI_FAMILY_GAMES',['../resource_8h.html#a711262737158519713c827e43a7b9df6',1,'resource.h']]],
+  ['winapi_5ffamily_5fpc_5fapp_1519',['WINAPI_FAMILY_PC_APP',['../resource_8h.html#a61cac834cf2c75fe4f061bb197262342',1,'resource.h']]],
+  ['winapi_5ffamily_5fphone_5fapp_1520',['WINAPI_FAMILY_PHONE_APP',['../resource_8h.html#ab5244b68e7f118e059f7e93670c6ece1',1,'resource.h']]],
+  ['winapi_5ffamily_5fserver_1521',['WINAPI_FAMILY_SERVER',['../resource_8h.html#ad50355b80fd15f0fae455ddef65c5c06',1,'resource.h']]],
+  ['winapi_5ffamily_5fsystem_1522',['WINAPI_FAMILY_SYSTEM',['../resource_8h.html#a93da3e3605b906a5ebdd9f38e82c327c',1,'resource.h']]],
+  ['windows_1523',['Windows',['../_microsoft_01_visual_01_c_09_092015_01_redistributable_01_07x86_08_0114_823_827820_01_8txt.html#aa51e6145398e305fae941c8cfcf44867',1,'Microsoft Visual C++2015 Redistributable (x86) 14.23.27820 .txt']]],
+  ['with_1524',['with',['../_c_o_p_y_i_n_g_8txt.html#a5ba130494931d00b0b91237b6d58a84e',1,'with():&#160;COPYING.txt'],['../_l_i_c_e_n_s_e___f_f_m_p_e_g_8txt.html#a5ba130494931d00b0b91237b6d58a84e',1,'with():&#160;LICENSE_FFMPEG.txt']]],
+  ['worddata_1525',['wordData',['../union_voxel_mask.html#aaa304c1983b88c2342bbf38b45b27cd0',1,'VoxelMask']]],
+  ['work_1526',['work',['../_c_o_p_y_i_n_g_8txt.html#afdb0a747f08804b5ae928e34146db865',1,'work():&#160;COPYING.txt'],['../_l_i_c_e_n_s_e___f_f_m_p_e_g_8txt.html#afdb0a747f08804b5ae928e34146db865',1,'work():&#160;LICENSE_FFMPEG.txt'],['../_c_o_p_y_i_n_g_8txt.html#a1b5470c60688358a70a69f8556894407',1,'work(Executables containing this object code plus portions of the Library will still fall under Section 6.) Otherwise:&#160;COPYING.txt'],['../_l_i_c_e_n_s_e___f_f_m_p_e_g_8txt.html#a1b5470c60688358a70a69f8556894407',1,'work(Executables containing this object code plus portions of the Library will still fall under Section 6.) Otherwise:&#160;LICENSE_FFMPEG.txt']]],
+  ['worldtocameraxy_1527',['WorldToCameraXY',['../class_sensor_coordinates.html#a2b7099d599bdfca2dff9b99df14fb3f4',1,'SensorCoordinates']]],
+  ['writebytes_1528',['WriteBytes',['../class_receiver_lib_u_s_b2_capture.html#af8c54e10d81746ca9dfbceed6f0d1114',1,'ReceiverLibUSB2Capture::WriteBytes()'],['../class_receiver_lib_u_s_b_capture.html#af1c47e6e7e0e8b55e27813538919316b',1,'ReceiverLibUSBCapture::WriteBytes()'],['../class_receiver_polled_capture.html#adc70ecfe0e748936aa9bd111b72c8cbb',1,'ReceiverPolledCapture::WriteBytes()']]],
+  ['writecurrentdatetime_1529',['WriteCurrentDateTime',['../class_receiver_c_a_n_capture.html#a9d1f8176c6895bd355c0c6029c5646ce',1,'ReceiverCANCapture']]],
+  ['writemessage_1530',['WriteMessage',['../class_receiver_c_a_n_capture.html#a3cdf116651d73825a3ce83724c41ac44',1,'ReceiverCANCapture::WriteMessage()'],['../class_receiver_lib_u_s_b2_capture.html#a13187d41e3dd33406fa73e3a92a049fe',1,'ReceiverLibUSB2Capture::WriteMessage()'],['../class_receiver_polled_capture.html#aed8bf07d687f9e5d41a1260cc8eca868',1,'ReceiverPolledCapture::WriteMessage()']]]
+];
