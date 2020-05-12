@@ -67,9 +67,11 @@ SENSORCORE_BEGIN_NAMESPACE
 class LoopedWorker
 {
 public:
-
+    /** \brief Constructor.
+      */
 	LoopedWorker();
-	/** \brief ThreadedWorker Destructor.  Insures that all threads are stopped before destruction.
+
+	/** \brief LoopedWorker Destructor.  .
       */
 	virtual ~LoopedWorker();
 

@@ -88,14 +88,19 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] propTree propertyTree that contains teh confoguration file information.
       */
-
 	ReceiverLibUSB2Capture(int receiverID,  boost::property_tree::ptree  &propTree);
 
 	/** \brief ReceiverPosixUDPCapture Destructor.  Insures that all threads are stopped before destruction.
       */
 	virtual ~ReceiverLibUSB2Capture();
 
+
+	/** \brief Start the ReceiverCapture acquisition thread.
+	  */
 	virtual void Go();
+
+	/** \brief Stop the ReceiverCapture acquisition thread.
+	  */
 	virtual void Stop();
 
 	/** \brief Return true if connexion with the device has been etablished.
@@ -106,8 +111,8 @@ public:
 	virtual bool IsConnected();
 
 	/** \Brief Get the device serial number
- *   Value of 0 indicates that the data is not available.
-*/
+	*   Value of 0 indicates that the data is not available.
+	*/
 	virtual uint32_t GetProductID();
 
 	/** \Brief send a message to get the device serial number
@@ -153,13 +158,11 @@ protected:
 	* \return ChannelID, indicating unique pixel position in the detector array
 	* \remarks For the ReceiverPolledCapture, channels are out of order on receive for raw data messages.
 	*/
-
-	virtual int GetChannelIDFromCell(CellID inCellID);
+		virtual int GetChannelIDFromCell(CellID inCellID);
 
 	/** \brief Process Raw Data messages from no-CAN devices
 	   * \param[in] rawData pointer to the raw data memeory block
 	 */
-
 	virtual void ProcessRaw(uint8_t* rawData);
 
 
@@ -169,14 +172,34 @@ protected:
 	  * \throws  Throws boost error on read of the property keys.
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
-  	virtual int ReadBytes(uint8_t * pData, int num);
-	virtual int ReadBytes(uint8_t* pData, int num, int timeOut);
-  	virtual int WriteBytes(uint8_t * pData, int num);
- 	uint8_t *GetCurrentBuffer(void);
-	uint8_t *GetNextBuffer(void);
 
-  	void * GetHandle(void);
-  	void SetHandle(void *);
+	/** \brief Read num bytes from the USB port, into the memory pointed to by pData, using configured TimeOut
+	  * \param[in] pData pointer to the read data
+	  * \param[in] num quantity  of bytes to read
+	  * \return quantity of bytes read.
+	 */
+	virtual int ReadBytes(uint8_t * pData, int num);
+
+	/** \brief Read num bytes from the USB port, into the memory pointed to by pData, using provided time out.
+	  * \param[in] pData pointer to the read data
+	  * \param[in] num quantity  of bytes to read
+	  * \param[in] timeOut  timeOut in milliseconds
+	  * \return quantity of bytes read.
+	 */
+	virtual int ReadBytes(uint8_t* pData, int num, int timeOut);
+
+	/** \brief Write num bytes to the USB port, from  the memory pointed to by pData, using configured time out.
+	  * \param[in] pData pointer to the data to be written
+	  * \param[in] num quantity  of bytes to write
+	  * \return quantity of bytes actually written.
+	 */
+	virtual int WriteBytes(uint8_t * pData, int num);
+
+
+	/** \brief Get USB port handle */
+	void * GetHandle(void);
+	/** \brief Set USB port handle as returned by LibUSB Calls */
+	void SetHandle(void *);
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
 	* \param[in] frameRate new frame rate for the system. A value of 0 means no change
@@ -212,27 +235,36 @@ protected:
 
 // Protected variables
 protected:
+		/** \brief LibUSB context info */
 		libusb_context *context;
 
+		/** \brief usbVendorID used to search for the device.  Defined in config file */
 		int usbVendorId;
+		/** \brief usbPrductID used to search for the device.  Defined in config file */
 		int usbProductId;
+		/** \brief usbEndPointIn used to search for the device.  Defined in config file */
 		unsigned char usbEndPointIn;
+		/** \brief usbEndPointOut used to search for the device.  Defined in config file */
 		unsigned char  usbEndPointOut;
+
+		/** \brief default time out in read wand write operation to USB port.  Defined in config file */
 		int usbTimeOut;
 
 
-        void*handle;
-        void *swap_handle;
+		/** \brief USB port handle */
+		        void*handle;
+		
+		/** \brief Temporary variable used to hold USB port handle.  Used when we force reassignment of USB port order */
+		void *swap_handle;
 
         /** \brief Time-out without an input message after which we try to recomnnect the serial port. */
         boost::posix_time::ptime reconnectTime;
 
 		/** \brief counter in the close() call, used to avoid reentry iduring thread close */
 		int closeCANReentryCount;
-		               /** \brief CAN file descriptor.*/
+		
+		/** \brief Mutex to insure thread-safe access to the USB port.*/
 		boost::mutex m_Mutex;
-
-   		FILE * m_pFile;
 
 
 		static const int numBuffers = 4;

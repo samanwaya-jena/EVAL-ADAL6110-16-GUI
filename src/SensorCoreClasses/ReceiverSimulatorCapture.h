@@ -54,7 +54,6 @@ SENSORCORE_BEGIN_NAMESPACE
   *          Since it does not manage connections to the device, it is a poor example for development, though.
   * \author Jean-Yves Deschênes
   */
-
 class ReceiverSimulatorCapture: public ReceiverCapture
 {
 // Public types
@@ -80,7 +79,6 @@ public:
 		* \param[in] inRegistersGPIO default description of the GPIO registers
         * \param[in] inParametersAlgos default description if the algorithm parameters
       */
-
 	ReceiverSimulatorCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround,
 					   ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
@@ -90,7 +88,6 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] propTree propertyTree that contains teh confoguration file information.
       */
-
 	ReceiverSimulatorCapture(int receiverID,  boost::property_tree::ptree  &propTree);
 
 
@@ -110,12 +107,11 @@ public:
 		return(true); 
 	};
 
-		/** \brief Issues the command to set the current algorithm in the sensor.
+	/** \brief Issues the command to set the current algorithm in the sensor.
 	  *\param[in] algorigthmID  ID of the selected algorithm.
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-		
 	virtual bool SetAlgorithm(uint16_t /*algorithmID*/)
 	{
 		return(true);
@@ -126,7 +122,6 @@ public:
 	* \return true if success.  false on error.
 	* \remarks In Simulation, does nothing. Returns true.
 	*/
-
 	virtual bool SetTracker(uint16_t /*trackerID*/)
 	{
 		return(true);
@@ -139,7 +134,6 @@ public:
 		* \return true if success.  false on error.
 		  * \remarks In Simulation, does nothing. Returns true.
 		*/
-
 	virtual bool SetFPGARegister(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets an ADC register to the value sent as argument. 
@@ -156,7 +150,6 @@ public:
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-		
 	virtual bool SetGPIORegister(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets algorithm parameters to the value sent as argument. 
@@ -166,7 +159,6 @@ public:
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-		
 	virtual bool SetAlgoParameter(int /*algoID*/, uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 
@@ -176,7 +168,6 @@ public:
 	* \return true if success.  false on error.
 	  * \remarks In Simulation, does nothing. Returns true.
 	*/
-		
 	virtual bool SetGlobalAlgoParameter(uint16_t /*registerAddress*/, uint32_t /*registerValue*/) {return(true);};
 
 	/** \brief Sets tracker parameters to the value sent as argument.
@@ -186,7 +177,6 @@ public:
 	* \return true if success.  false on error.
 	* \remarks In Simulation, does nothing. Returns true.
 	*/
-
 	virtual bool SetTrackerParameter(int /*trackerID*/, uint16_t /*registerAddress*/, uint32_t /*registerValue*/) { return(true); };
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
@@ -195,7 +185,6 @@ public:
 	* \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
 	* \return true if success.  false on error.
 	*/
-
 	virtual bool SetMessageFilters(ReceiverFrameRate /*demandedFrameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/);
 
 	/** \  an asynchronous query command to get the current algorithm.
@@ -244,7 +233,6 @@ public:
         /** \brief Issues the command to know if the DC Balance is on.
         * \return true if success.  false on error.
         */
-
 	virtual bool QueryGlobalAlgoParameter(uint16_t /*registerAddress*/) {return(true);};
 
 	/** \brief Send an asynchronous query command for a Tracker parameter.
@@ -263,7 +251,6 @@ public:
 	/** \Brief send a message to get the device serial number
 	 *   Value of 0 indicates that the data is not available.
 	 */
-
 	virtual uint32_t GetUniqueID();
 
 // Protected methods

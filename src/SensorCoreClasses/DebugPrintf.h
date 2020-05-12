@@ -114,13 +114,11 @@ void DebugFilePrintf(std::ofstream &debugFile, const char *format, ...);
   * \param[in] bAppend  set to true to open the file in append mode.  
   *                     Otherwise, set to false (default).
   */
-
 bool OpenDebugFile(std::ofstream &debugFile, const std::string fileName, bool bAppend = false);
 
 /** \brief Closes a previously opened debug file.
   * \param[in,out] debugFile the stream to close.
   */
-
 bool CloseDebugFile(std::ofstream &debugFile);
 
 
@@ -164,13 +162,11 @@ void LogFilePrintf(std::ofstream &logFile, const char *format, ...);
   *                     Otherwise, set to false (default).
   * \note The log file name must have been previously set by SetLogFileName(), or default is used.
   */
-
 bool OpenLogFile(std::ofstream &logFile, bool bAppend = false);
 
 /** \brief Closes a previously opened log file.
   * \param[in,out] logFile the stream to close.
   */
-
 bool CloseLogFile(std::ofstream &logFile);
 
 

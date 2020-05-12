@@ -108,7 +108,18 @@ protected:
       */
 	virtual bool ReadConfigFromPropTree( boost::property_tree::ptree &propTree);
 
+	/** \brief Read num bytes from the USB port, into the memory pointed to by pData, using configured TimeOut
+	  * \param[in] pData pointer to the read data
+	  * \param[in] num quantity  of bytes to read
+	  * \return quantity of bytes read.
+	 */
 	virtual int ReadBytes(uint8_t * pData, int num);
+
+	/** \brief Write num bytes to the USB port, from  the memory pointed to by pData, using configured time out.
+	  * \param[in] pData pointer to the data to be written
+	  * \param[in] num quantity  of bytes to write
+	  * \return quantity of bytes actually written.
+	 */
 	virtual int WriteBytes(uint8_t * pData, int num);
 
 	/** \Brief send a message to get the device serial number
@@ -123,17 +134,23 @@ protected:
 
 // Protected variables
 protected:
-		libusb_context *context;
+	/** \brief LibUSB context info */
+	libusb_context* context;
 
-		int usbVendorId;
-		int usbProductId;
+	/** \brief usbVendorID used to search for the device.  Defined in config file */
+	int usbVendorId;
+	/** \brief usbPrductID used to search for the device.  Defined in config file */
+	int usbProductId;
+	/** \brief usbEndPointIn used to search for the device.  Defined in config file */
+	unsigned char usbEndPointIn;
+	/** \brief usbEndPointOut used to search for the device.  Defined in config file */
+	unsigned char  usbEndPointOut;
 
-		unsigned char usbEndPointIn;
-		unsigned char  usbEndPointOut;
-		int usbTimeOut;
+	/** \brief default time out in read wand write operation to USB port.  Defined in config file */
+	int usbTimeOut;
 
-
-		void * swap_handle;
+	/** \brief Temporary variable used to hold USB port handle.  Used when we force reassignment of USB port order */
+	void* swap_handle;
 
 };
 

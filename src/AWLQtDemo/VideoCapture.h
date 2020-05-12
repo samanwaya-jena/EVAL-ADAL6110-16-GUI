@@ -59,7 +59,7 @@ namespace awl
 {
 
 
-/** \brief Threaded Video Capture class.
+/** \brief Threaded Video Capture class acquires and publishes image data from the Cameras.
   *        The video capture thread is based on OpenCV.
   * \author Jean-Yves Deschênes
   */

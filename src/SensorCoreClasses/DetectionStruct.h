@@ -63,7 +63,11 @@ SENSORCORE_BEGIN_NAMESPACE
 #define isNAN(val) (val == NAN)
 #endif
 
+/** \brief TrackID is a unique identifier for a Track
+*/
 typedef uint16_t TrackID;
+/** \brief FrameID is a unique identifier for a Frame
+*/
 typedef uint32_t FrameID;
 
 class AlertCondition;
@@ -77,14 +81,12 @@ class VoxelFrame;
 /** \brief TimeStamp is the standard format for storing time elapsed
 * \author Jean-Yves Deschênes
 */
-
 typedef double Timestamp;
 
 /** \brief VoxelMask struct describes receiverVoxel bit mask used in most data structures
 *        and communications
 * \author Jean-Yves Deschênes
 */
-
 typedef union
 {
 	uint16_t wordData;
@@ -102,7 +104,6 @@ typedef union
 
 /**\brief A CellID is a unique identifier of a "pixel" position (column, row) within a a receiver array.
 */
-
 class CellID
 {
 public:
@@ -114,37 +115,58 @@ public:
 	int row;
 };
 
-/** \brief The Alert class defines alert conditions.
+/** \brief The AlertCondition class defines and manages alert conditions.
+ *
+ *         Within and application, there is a unique global alert storage.
+ *         Tracks can be evaluated to see if they meet conditions for these alerts using AlertCondition::FindTrackThreat()
+ *         The most critical matching alert level is reported.
 */
-
 class AlertCondition {
 public: 
 	typedef boost::shared_ptr<AlertCondition> Ptr;
 	typedef boost::shared_ptr<AlertCondition> ConstPtr;
 	typedef boost::container::vector<AlertCondition::Ptr> Vector;
 
+
+	/** \brief The AlertCondition threat level associates a threat level to the specified condition.
+	*/
 	typedef enum ThreatLevel {
-		eThreatNone = 0,  // No threat level assigned
-		eThreatLow = 1,   // target detected, threat level low
-		eThreatWarn = 2,  // Target may have collision course, but not acertained yet
-		eThreatCritical = 3, // target is within collision range
-		eThreatOutlineOnly = 4 // target is within collision range
+		/**No threat level assigned */
+		eThreatNone = 0, 		
+		/**target detected, threat level low*/
+		eThreatLow = 1,    
+		/**Target may have collision course, but not acertained yet*/
+		eThreatWarn = 2,  
+		/**target is within collision range*/
+		eThreatCritical = 3,  
+		/**No relation to threat level, just used for internal manipulation purposes*/
+		eThreatOutlineOnly = 4 
 	}
 	ThreatLevel;
 
+	/** \brief Specify the type of logic that will be used to evaluate the alert.
+	*/
 	typedef enum AlertType {
+		/**Invalid Alert - Use to document unused alerts or at end of alert list*/
 		eAlertInvalid = 0,
-		eAlertDistanceWithin = 1, // Alert based on distance  within range specified
-		eAlertDistanceOutside = 2, // Alert based on distance  outside range specified
-		eAlertSpeed = 3, // Alert based on speed range;
-		eAlertAcceleration = 4,    // Alert based on accel range;
-		eAlertDecelerationToStop = 5, // Alert based on deceleration to stop
-		eAlertTTC = 6		// Alert based on time to collision;
-
+		/**Alert based on distance  within range specified*/
+		eAlertDistanceWithin = 1,  
+		/**Alert based on distance  outside range specified*/
+		eAlertDistanceOutside = 2,  
+		/**Alert based on speed range*/
+		eAlertSpeed = 3,
+		/**Alert based on accel range*/
+		eAlertAcceleration = 4,    
+		/**Alert based on deceleration to stop*/
+		eAlertDecelerationToStop = 5,  
+		/**Alert based on time to collision*/
+		eAlertTTC = 6		
 	}
 	AlertType;  
 
 public:
+	/** \brief Empty Constructor
+	*/
 	AlertCondition():
 		alertType(eAlertInvalid),
 		receiverID(0),
@@ -155,10 +177,19 @@ public:
 		alertVoxelMask.wordData = 0;
 	    };
 
+	/** \brief Constructor based on detailed specs
+	*/
 	AlertCondition(AlertCondition::AlertType inAlertType, int inReceiverID, VoxelMask inVoxelMask, float inMinRange, float inMaxRange, AlertCondition::ThreatLevel inThreatLevel = eThreatNone);
+
+	/** \brief Copy constructor.
+	*/
 	AlertCondition(AlertCondition &sourceCondition);
 
+	/** \brief Scan the global alert storage to see if the track meets alert conditions.
+	  *  The most critical alert level detected will be returned.
+	*/
 	static AlertCondition::ThreatLevel FindTrackThreat(int inReceiverID, boost::shared_ptr<Track> track);
+
 
 	int	GetReceiverID() { return(receiverID); }
 	AlertVoxelMask	GetVoxelMask() { return(alertVoxelMask); }
@@ -166,8 +197,12 @@ public:
 	float GetMaxRange() { return (maxRange); }
 	ThreatLevel GetThreatLevel (){ return(threatLevel); }
 
+	/** \brief Store the alert to the global alert storageFind the threat level of a track based based on highest altert detected.
+	*/
 	static void Store(AlertCondition::Ptr storedCondition) { globalAlertsVector.push_back(storedCondition); }
 
+	/** \brief Return a pointer to the global alert storage.
+	*/
 	AlertCondition::Vector GetAlertConditions() { return (globalAlertsVector); }
 public:
 
@@ -186,17 +221,20 @@ public:
 	/** \brief maximum range for triggerting of the alert. Nature depends on AlertType */
 	float	  maxRange;
 
+	/** \brief Threat level for the current alert */
 	ThreatLevel threatLevel;
 
 
 protected:
+	/** \brief Unique global alert storage for the application */
 	static AlertCondition::Vector globalAlertsVector;
 };
 
-/** \brief The Detection class corresponds to a single detectio returned by the receiver.
-           It holds the distance for the detection, its intensity, threat level
+/** \brief The Detection class corresponds to a single detection returned by the receiver.
+  *         It holds the distance for the detection, its intensity, threat level.
+  *		   For optimization purposes, multiple transformations of the coordinates for the detection are
+  *        pre-calculated and stored as members. 
 */
-
 class Detection 
 {
 	friend class AlertCondition;
@@ -207,13 +245,22 @@ public:
 	typedef boost::container::vector<Detection::Ptr> Vector;
 
 public:
+	/** \brief Empty constructor */
 	Detection();
+	/** \brief Constructor with cell identification only */
 	Detection(int inReceiverID, CellID inCellID, int inDetectionID);
+
+	/** \brief Constructor with cell identification and complete detection information */
 	Detection(int inReceiverID, CellID inCellID, int inDetectionID, float inDistance, float inIntensity, float inVelocity,
 	          float inTimeStamp, float inFirstTimeStamp, TrackID inTrackID, AlertCondition::ThreatLevel inThreatLevel = AlertCondition::eThreatNone);
 	
-	int	GetReceiverID() {return(receiverID);}	
+	/** \brief Accessor to the receiverID */
+	int	GetReceiverID() {return(receiverID);}
+
+	/** \brief Accessor to the detectionID */
 	int	GetDetectionID() {return(detectionID);}
+	
+	/** \brief Accessor to the cellID */
 	CellID	GetCellID() {return(cellID);}
 
 public:
@@ -257,22 +304,28 @@ public:
 	/** \brief Track ID from which the detection was generated, if that is the case. */
 	TrackID	trackID;
 
-	/** \brief Coordinates of detection relative to sensor */
+	/** \brief Cartesian Coordinates of detection relative to sensor */
 	CartesianCoord relativeToSensorCart;
+	/** \brief Spherical Coordinates of detection relative to sensor */
 	SphericalCoord	   relativeToSensorSpherical;
 
-	/** \brief Coordinates of detection relative to vehicule bumper */
+	/** \brief Cartesian Coordinates of detection relative to vehicule bumper */
 	CartesianCoord relativeToVehicleCart;
+	/** \brief Spherical Coordinates of detection relative to vehicule bumper */
 	SphericalCoord	   relativeToVehicleSpherical;
 
-	/** \brief Coordinates of detection relative to world */
+	/** \brief Cartesian Coordinates of detection relative to world */
 	CartesianCoord relativeToWorldCart;
+	/** \brief Spherical Coordinates of detection relative to world */
 	SphericalCoord	   relativeToWorldSpherical;
 
 	/** \brief Threat level associated to detection */
 	AlertCondition::ThreatLevel	threatLevel;
 };
 
+/** \brief The AScan holds all the data points that correspond to a waveform
+  *         acquired on a single voxel.
+*/
 class AScan
 {
 public:
@@ -280,6 +333,8 @@ public:
     typedef boost::shared_ptr<AScan> ConstPtr;
 	typedef boost::container::vector<AScan::Ptr> Vector;
 public:
+	/** \brief Constructor */
+
 	AScan(int inReceiverID, CellID inCellID, int inChannelNo)
 	{
 		receiverID = inReceiverID;
@@ -299,8 +354,12 @@ public:
 		//if (samples) delete samples;
 	}
 */
+	/** \brief Returns a scale factor for the vertical axis based on the min and max values contained in the waveform */
 	float GetScaleFactorForRange(int range);
+	/** \brief Within the A-Scan Waveform points, find the min, max and mean.  Used to adjust scale and display parameters*/
 	void FindMinMaxMean(float *min, float *max, float *mean);
+
+	/** \brief Comparator is used to order AScans in order of row and column */
 	bool operator < (const AScan& cmp)  const 
 	{ 
 		if (cellID.row > cmp.cellID.row) return false;
@@ -310,30 +369,34 @@ public:
 		return(false);
 	}
 public:
+	/** \brief ReceiverID of the originating receiver */
 	int receiverID;
-	/** \brief cellIDID of the voxel where detection origins from */
+	/** \brief cellID of the voxel where detection origins from */
 	CellID cellID;
 
-	/* Internal channelNo  is the ADC channel from sensor . It used for display purposes */
+	/** \brief Internal channelNo  is the ADC channel from sensor . It used for display purposes */
 	int channelNo;
 
-	size_t sampleOffset; // Samples to ignore at the begining
+	/**Samples to ignore at the begining - Some sensors have "dead zones" of unsused acquisition*/
+	size_t sampleOffset;  
+	/**Samples to ignore at the end - Some sensors have "dead zones" of unused acquisition */
+	size_t sampleDrop;   
+	/**Useful samples within the acquisred data*/
+	size_t sampleCount; 
 
-	size_t sampleDrop;  // Samples to ignore at the end
+	/**Size of a sample in bytes*/
+	size_t sampleSize;  
 
-	size_t sampleCount; // Samples to considere
+	/**True if samples are signed value.  False if unsigned*/
+	bool sampleSigned;  
 
-	size_t sampleSize; // Size of a sample in bytes
-
-	bool sampleSigned; // Are the sample signed ?
-
+	/**Pointer to the waveform sample storage */
 	uint8_t *samples;
 };
 
 /** \brief A track corresponds to an obstacle tracking based on a singl;e or multiple detections,
            and gives information on the evolution of the detected obstacle across multiple frames
 */
-
 class Track
 {
 public:
@@ -341,8 +404,11 @@ public:
     typedef boost::shared_ptr<Track> ConstPtr;
 	typedef boost::container::vector<Track::Ptr> Vector;
 
+	
+	/** \brief Constructor */
 	Track(TrackID trackID);
 
+	/** \brief Accesssor to the TrackkID */
 	int	GetTrackID() {return(trackID);}
 
 	// A track is built from 2 distinct CAN message sections.  Make sure all parts are entered before a track is completed.
@@ -389,12 +455,18 @@ public:
 	uint16_t trackMainVoxel;
 
 
-	// A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed.
-
+	/** \brief A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed. */
 	bool part1Entered;
+	/** \brief A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed. */
 	bool part2Entered;
-	bool part3Entered;  // Not required anymore, message was deprecated.
-	bool part4Entered;  // Note required anymore, message was deprecated.
+	/** \brief A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed. 
+	  *         part3 is not required anymore, message was deprecated 
+	  */
+	bool part3Entered; 
+	/** \brief A track is built from up to 4 message sections (in CAN).  Make sure all parts are entered before a track is completed. 
+	  * part3 is not required anymore, message was deprecated
+	  */
+	bool part4Entered;
 protected:
 };
 
@@ -410,32 +482,60 @@ public:
 	typedef std::deque<SensorFrame::Ptr> Queue;
 
 public:
+	/** \brief Constructor */
 	SensorFrame(int inReceiverID, FrameID inFrameID, int inVoxelQty);
+	/** \brief Destructor*/
 	virtual ~SensorFrame() {};
 
+	/** \brief Accessor to the receiverID */
 	int GetReceiverID() { return(receiverID);}
+
+	/** \brief Accesor to the frameID */
 	FrameID	GetFrameID() {return(frameID);}
 
-
+	/** \brief Create a detection with the CellID, detectionID within the Frame, if said detection does not exist.
+	 *  \return a pointer to the existing detection, or the newly created detection.
+	 */
 	Detection::Ptr MakeUniqueDetection(Detection::Vector &detectionVector, CellID inCellID, int detectionID);
+
+
+	/** \brief Find a detection within the SensorFrame, with the provided CellID, detectionID.
+	  *  copy the   pointer to the detection in outDetection, if found.
+	  * \return true if detection was found, false if detection was not found
+	*/
 	bool FindDetection(Detection::Vector &detectionVector, CellID inCellID, int inDetectionID, Detection::Ptr &outDetection);
 
+
+	/** \brief Create a unque AScan with the receiverID, CellID, detectionID within the Frame, if said A-Scan does not exist.
+	 * \return a pointer to the existing A-Scan, or the newly created A-Scan.
+	 */
 	AScan::Ptr MakeUniqueAScan(AScan::Vector &detectionVector,  int receiverID, CellID inCellID, int inChannelID);
+
+	/** \brief Find an A-Scan within the SensorFrame, with the provided ReceiverID, CellID, detectionID.
+	  *  if found, copy a pointer to the A-Scan in outAScan
+	  * \return true if A-Scan was found, false if A-Scan was not found
+	*/
 	bool FindAScan(AScan::Vector &detectionVector, int inReceiverID, CellID inCellID, AScan::Ptr &outAScan);
 
 public:
+	/**ReceiverID if the originating receiver*/
 	int receiverID;
+	/**FrameID associated with the detections*/
 	FrameID frameID;
+	/**Number of voxels in the receiver*/
 	int voxelQty;
 
-	Detection::Vector rawDetections;		// Raw detections as acquired from device
+	/**Raw detections as acquired from device*/
+	Detection::Vector rawDetections;		
+
+	/**A-Scans  as acquired from device*/
 	AScan::Vector aScans;
 
-	Track::Vector tracks; 
+	/**Tracks  acquired' resulting from transofrmation of detections by ReceiverPostProcessor.*/
+	Track::Vector tracks;
 
 	// Timestamp im milliseconds, elapsed from start of thread.
 	Timestamp timeStamp;
-
 };
 
 /** \brief The AcquisitionSequence is a list of all the information acquired from the receiver,
@@ -449,21 +549,36 @@ public:
 
 
 public:
+
+	/** \brief Constructor */
 	AcquisitionSequence();
 
-//	SensorFrame &operator[](int frameIndex) {return(*(sensorFrames[frameIndex]));}
 
+	/** \brief Destructor */
 	virtual ~AcquisitionSequence() {};
 	
 	/** \brief Get the frameID of the last complete frame
 	*/
 	FrameID	GetLastFrameID();
 
+	/** \brief Allocate a new frame in the allocation sequence */
 	FrameID AllocateFrameID();
 
+	/** \brief Find A track within the current SensorFrame, using the provided TrackID.
+	  *        If the tack is found, copy the pointer for that Track into outTrack;
+	  *  \return true if Track was found, false if Track was not found
+	*/
 	bool FindTrack(SensorFrame::Ptr currentFrame,TrackID trackID, Track::Ptr &outTrack);
+	/** \brief Create a unque Track with the specified TrackID, within the current sensorFrame, if said Track does not exist.
+	 * \return a pointer to the existing Track, or the newly created Track.
+	 */
 	Track::Ptr MakeUniqueTrack(SensorFrame::Ptr currentFrame,TrackID trackID);
 
+
+	/** \brief Find a SensorFrame with teh provided frameID.
+	  *        If the SensorFrame is found, copy the pointer for that SensorFrame into outSensorFrame.
+	  *  \return true if SensorFrame was found, false if SensorFrame was not found
+	*/
 	bool FindSensorFrame(FrameID frameID, SensorFrame::Ptr &outSensorFrame);
 
 public: 

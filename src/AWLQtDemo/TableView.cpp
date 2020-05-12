@@ -185,7 +185,8 @@ void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
 	mainMenu.exec(globalPos);
 }
 
-typedef struct 
+/** \brief Structure to hold the description of a column in the table view.
+*/typedef struct
 {
 		TableView::RealTimeColumn columnID;
 		QString  columnFormat;

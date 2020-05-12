@@ -49,37 +49,69 @@
 namespace awl
 {
 
+/** \brief Window displays detection and track data in tabular form.
+*/
 class TableView : public QFrame
 {
     Q_OBJECT
 public:
 
+	/** \brief enum Column IDs.
+	*/
 	enum RealTimeColumn
 	{
+		/**Column for Receiver ID*/
 		eRealTimeReceiverIDColumn = 0,
+		/**Column for Channel ID*/
 		eRealTimeChannelIDColumn = 1,
+		/** Column for Detection ID*/
 		eRealTimeDetectionIDColumn = 2,
+		/**Column for Track*/
 		eRealTimeTrackColumn = 3,
+		/**Column for Distance*/
 		eRealTimeDistanceColumn = 4,
-		eRealTimeVelocityColumn = 5, 
+		/**Column for Velocity*/
+		eRealTimeVelocityColumn = 5,
+		/**Column for Intensity*/
 		eRealTimeIntensityColumn = 6,
+		/**Column for Collision Level*/
 		eRealTimeCollisionLevelColumn = 7
 	};
 
 
 public:
+	/** \brief Constructor.
+	*/
     explicit TableView(QWidget *parent = 0);
+
+	/** \brief  Used by Qt in resizing, provides "ideal" size for the A-Scan Window.
+		*/
 	QSize sizeHint() const;
+	/** \brief  Used by Qt in resizing, provides "minimum" acceptable size for the A-Scan Window.
+	 */
 	QSize minimumSizeHint() const;
+	/** \brief  Used by Qt in resizing, provides "maximum" size for the A-Scan Window.
+	 */
 	QSize maximumSizeHint() const;
 
 signals:
     void closed();
 
 public slots:
+	/** \brief  Slot sets-up and shows the right-click menu.
+	*/
 	void ShowContextMenu(const QPoint& pos);
+
+	/** \brief  Update the table parameters for  detections par channel, following the right-click menu selection.
+	*/
 	void slotDetectionsPerChannelAction();
-    void slotConfigChanged();
+
+	/** \brief  Update the table with new detections data following any configuration change.
+	*/
+	void slotConfigChanged();
+
+	/** \brief  Update the table with new detections data.
+	*/
     void slotDetectionDataChanged(const SensorCoreScope::Detection::Vector &data);
 
 protected :
@@ -87,13 +119,22 @@ protected :
 	void resizeEvent(QResizeEvent * event);
 
 private:
+	/** \brief  Calculate and returb the "ideal" table size, in preparation for resize*/
 	QSize unconstrainedTableSize() const;
 
+
+	/** \brief  Prepare the table contents, based on current configuration*/
 	void PrepareTableViews();
+	/** \brief  Force recalculation of size preferences.  Used after a change in table configuration.*/
 	void AdjustTableSize();
 
+	/** \brief  Display current receiver data*/
 	void DisplayReceiverValues(const SensorCoreScope::Detection::Vector &data);
+
+	/** \brief  Format distance text and color of all cells of row at rowIndex, for the specified row in the table, using provided detection*/
 	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
+
+	/** \brief  Format distance text and color for all cells at rowIndex, using the the provided detailed information*/
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,
 						   int receiverID,
 						   CellID cellID,
@@ -120,7 +161,10 @@ private:
 	QAction* detectionsPerChannel4Action;
 	QAction* detectionsPerChannel8Action;
 
+	/** \brief  Internal variable holds current configuration for detections per Channel*/
 	int displayedDetectionsPerChannel;
+
+	/** \brief  Array that contains index of the first row for each receiver*/
 	boost::container::vector<int> receiverFirstRow;
 };
 

@@ -49,38 +49,44 @@ SENSORCORE_BEGIN_NAMESPACE
 
 	/** \brief   The ReceiverPostProcessor is used to read the detection and track information acquired from the 
 	  *          Receivers and return "enhanced" detection data.
-	  *	\remarks The enhanced detection data is built with information that the receivers cannot provide due to
-	  *		   implementation limitations, suck as threat level or supplemental geometry information (distance from
-	  *        other objects dependent on placement).
+	  *	\remarks The enhanced detection data add information that the receivers cannot provide due to
+	  *		   implementation limitations.
+	  *        Threat level is calculated.
+	  *        All supplemental geometries (relative positions) are calculated here once, to save on processing time.
      */
-
 class ReceiverPostProcessor
 
 {
 public:
+	/** \brief Constructor
+	*/
 	ReceiverPostProcessor();
 
-	// Build processsed detections from the current track set.
-	// Only detections from tracks that are complete (no errors are kept)
-	// Detections from tracks where distance is oustide the range are not kept. 
-	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid voxel info.
+	/** \brief Build processsed detections from the current track set.
+	 *Only detections from tracks that are complete (no errors are kept)
+	 * Detections from tracks where distance is oustide the range are not kept.
+     * \return Return true if all tracks have been intepreted correctly.
+	 *  Return false if we have found incomplete tracks or invalid voxel info.
+	*/
 	bool GetEnhancedDetectionsFromFrame(ReceiverCapture::Ptr receiver, FrameID inFrameID,  Publisher::SubscriberID inSubscriberID, Detection::Vector &detectionBuffer);
 
 protected:
-		// Complete the track info that was not processed by the AWL Module.
-	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid voxel info.
+
+	/** \brief Complete the track info that was not processed by the receiver Module.
+	  * \return Return true if all tracks have been intepreted correctly.
+	  *Return false if we have found incomplete tracks or invalid voxel info.
+	*/
 	bool CompleteTrackInfo(SensorFrame::Ptr currentFrame);
 
-	// Rebuild processsed detections from the current track set.
-	// Only detections from tracks that are complete (no errors are kept)
-	// Detections from tracks where distance is oustide the range are not kept. 
-	// Return true if all tracks have been intepreted correctly.
-	// Return false if we have found incomplete tracks or invalid voxel info.
+	/** \brief Rebuild processsed detections from the current track set.
+	 *Only detections from tracks that are complete (no errors are kept) 
+	 * Detections from tracks where distance is oustide the range are not kept. 
+	 * \return Return true if all tracks have been intepreted correctly.
+	 Return false if we have found incomplete tracks or invalid voxel info.
+	*/
 	bool BuildEnhancedDetectionsFromTracks(ReceiverCapture::Ptr receiver, SensorFrame::Ptr currentFrame, Detection::Vector &outDetections);
 
-		/** \brief Predict the time to collision (distance = 0) between sensor and obstacle,  
+	/** \brief Predict the time to collision (distance = 0) between sensor and obstacle,  
 	  *        given current distance and speed, assuming constant deceleration.
  	  * \param[in] currentDistance to obstacle, in meters
  	  * \param[in] relativeSpeed relative speed between sensor and obstacle, in meters/sec
@@ -88,7 +94,6 @@ protected:
 	  * \remarks This corresponds to TTC1 measure defined in:
 	  *          Yizhen Zhang, Erik K. Antonsson and Karl Grote: A New Threat Assessment Measure for Collision Avoidance Systems
       */
-
 	float PredictTimeToCollisionConstant (float currentDistance, float relativeSpeed);
 
 	/** \brief Predict the relative distance of an obstacle after a certain time delay,  
@@ -100,8 +105,7 @@ protected:
 	  * \return Predicted relative distance of the obstacle, , in m/s2.
 	  * \remarks  arguments use acceleration, not deceleration! Positive acceleration means object is moving away.
       */
-
-	float PredictDistance(float currentDistance, float relativeSpeed, float acceleration, float time);
+		float PredictDistance(float currentDistance, float relativeSpeed, float acceleration, float time);
 
 	/** \brief Calculate the required accceleration to get to zero speed at the specified distance, 
 	  *        given currentSpeed and current deceleration.

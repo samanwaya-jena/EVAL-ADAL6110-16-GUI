@@ -68,7 +68,6 @@ SENSORCORE_BEGIN_NAMESPACE
   *        and communications
   * \author Jean-Yves Deschênes
   */
-
 typedef union 
 {
 	uint8_t byteData;
@@ -84,10 +83,9 @@ typedef union
 	} bitFieldData;
 } MessageMask;
 
-/** \brief FrameRate container type
-  * \author Jean-Yves Deschênes
+/** \brief FrameRate in frames per second.
+* \author Jean-Yves Deschênes
   */
-
 typedef uint16_t ReceiverFrameRate;
 
 
@@ -102,7 +100,6 @@ public:
 	/** \brief Set to true each time a new status is updated.
 	  *        Should be set to false by the reader thread.
       */
-
 	bool  bUpdated;
 
 
@@ -125,7 +122,6 @@ public:
 
 	/** \brief Hardware error flags.
       */
-
 	union 
 	{
 		uint8_t byteData;
@@ -223,40 +219,61 @@ public:
 	  * 0 means no error. Otherwise, the Command type that generated the error code is indicated.
 	  * \remarks Details on the error can be found in the communications log file.
       */
-
 	uint8_t lastCommandError;
 
+	/** \brief Last FPGA Register Address Read.  Used to update UI */
 	uint16_t fpgaRegisterAddressRead;
+	/** \brief Last FPGA Register Value Read.  Used to update UI */
 	uint32_t fpgaRegisterValueRead;
+
+	/** \brief Last ADC Register Address Read.  Used to update UI */
 	uint16_t adcRegisterAddressRead;
+
+	/** \brief Last ADC Register Value Read.  Used to update UI */
 	uint32_t adcRegisterValueRead;
+
+	/** \brief Last GPIO Register Address Read.  Used to update UI */
 	uint16_t gpioRegisterAddressRead;
+
+	/** \brief Last GPIO Register ValueRead.  Used to update UI */
 	uint32_t gpioRegisterValueRead;
 
+	/** \brief Current Algo.  */
 	uint16_t currentAlgo;
+	/** \brief True if current algo is pending an update following user interaction.  */
 	uint16_t currentAlgoPendingUpdates;
 
+	/** \brief Current Tracking Algo.  */
 	uint16_t currentTracker;
+	/** \brief True if current Tracker is pending an update following user interaction.  */
 	uint16_t currentTrackerPendingUpdates;
 
+	/** \brief Current SNR.  */
 	float    signalToNoiseFloor;
 	
+	/** \brief Voxel mask sent to Receiver to filter messages.  */
 	VoxelMask	voxelMask;
+	/** \brief MessageMask mask sent to Receiver to filter messages.  */
 	MessageMask	messageMask;
 }
 ReceiverStatus;
 
-typedef enum eUpdateStatus 
+/** \brief State indicators used to follow the register update status.
+ *         Register update is asyncronous.
+*/
+typedef enum eUpdateStatus
 {
-	updateStatusUpToDate = 0,
-	updateStatusPendingUpdate = 1,
-	updateStatusPendingVisual = 2
+	/**Register value is up to date*/
+	updateStatusUpToDate = 0, // 
+	/**Register value just has been queried.  Waiting for sensor response*/
+	updateStatusPendingUpdate = 1,   
+	/**Register value has been updated in memory, but not refreshed at the UI level.*/
+	updateStatusPendingVisual = 2  
 }
 eUpdateStatus;
 
 /** \brief RegisterSetting is an internal representation of an AWL register for an internal device
 */
-
 typedef struct RegisterSetting 
 {
   /** \brief Flag indicating whether the register is an advanced register
@@ -299,8 +316,10 @@ typedef boost::container::vector<RegisterSetting> RegisterSet;
 /** \brief The AlgoParamType describles the type of Algorithm parameters, which are either  are either float or int values.
 */
 typedef enum  {
-	eAlgoParamInt = 0,  // Parameter is an  integer
- 	eAlgoParamFloat = 1 // Parameter is a floating point value
+	/**Parameter is an  integer*/
+	eAlgoParamInt = 0,  
+	/**Parameter is a floating point value*/
+ 	eAlgoParamFloat = 1
 }
 AlgoParamType;
 
@@ -344,7 +363,6 @@ AlgorithmParameter;
 
 /** \brief An AlgorithmParameterVector is a container of related AlgorithmParameters
 */
-
 typedef boost::container::vector<AlgorithmParameter> AlgorithmParameterVector;
 
 /** \brief An AlgorithmDescription describes a detection Algorithm and all of its controllable parameters.
@@ -403,7 +421,9 @@ class ReceiverCapture: public ThreadedWorker, public Publisher
 // Public types and constants
 public:
 	
-	static const int maximumSensorFrames;  // Maximum number of frames kept in frame buffer
+	/** \brief Maximum number of frames kept in frame buffer*/
+	static const int maximumSensorFrames;  
+
 	typedef boost::shared_ptr<ReceiverCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCapture> ConstPtr;
 	typedef boost::container::vector<ReceiverCapture::Ptr> List;
@@ -428,7 +448,6 @@ public:
         * \param[in] inParametersAlgos default description if the algorithm parameters
 		* \param[in] inParametersTrackers default description of the Tracker parameters
 		*/
-
 	ReceiverCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows,  float inLineWrapAround,
 						ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
@@ -439,8 +458,8 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] propTree propertyTree that contains teh confoguration file information.
       */
-
 	ReceiverCapture(int receiverID, boost::property_tree::ptree &propTree);
+
 	/** \brief ReceiverCapture Destructor.  Insures that all threads are stopped before destruction.
       */
 	virtual ~ReceiverCapture();
@@ -467,7 +486,6 @@ public:
 	/** \Brief send a message to get the device serial number
 	 *   Value of 0 indicates that the data is not available.
 	 */
-
 	virtual uint32_t GetUniqueID() = 0;
 
 	/** \brief Return the frame rate requested by the application to the sensor
@@ -487,7 +505,6 @@ public:
 
 	/** \brief Return true if connexion with the device has been etablished.
       * \return True if device connexion is established.
- 
 	  */
   virtual bool IsConnected() { return true; }
 
@@ -515,6 +532,12 @@ public:
      */
 	virtual bool CopyReceiverRawDetections(FrameID inFrameID,  Detection::Vector &outDetections, Publisher::SubscriberID inSubscriberID);
 
+	/** \brief copy the A-SCan waveform data identified with a frameID to to a local copy (thread-safe)
+	 * \param[in] inFrameID frame identificator of the requiested frame
+	   \param[out] outAScans AScan:::Vector to which the A-Scans are copied.
+	   \param[in] inSubscriberID subscriber info used to manage the update information and thread locking.
+	 * \return True if A-Scan data is copied successfully. False if frame corresponding to inFrameID or A-Scan data not found
+	 */
 	virtual bool CopyReceiverAScans(FrameID inFrameID,  AScan::Vector &outAScans, Publisher::SubscriberID inSubscriberID);
 
 	/** \brief copy the voxel status informationidentified with a frameID to to a local copy (thread-safe)
@@ -628,14 +651,12 @@ public:
 	  *\param[in] algorigthmID  ID of the selected algorithm.
 	* \return true if success.  false on error.
 	*/
-		
 	virtual bool SetAlgorithm(uint16_t algorithmID) = 0;
 
 	/** \brief Issues the command to set the current tracker in the sensor.
 	*\param[in] trackerID  ID of the selected tracker.
 	* \return true if success.  false on error.
 	*/
-
 	virtual bool SetTracker(uint16_t trackerID) = 0;
 
 	/** \brief Sets an FPGA register to the value sent as argument.
@@ -643,7 +664,6 @@ public:
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
-
 	virtual bool SetFPGARegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets an ADC register to the value sent as argument. 
@@ -658,7 +678,6 @@ public:
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
-		
 	virtual bool SetGPIORegister(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets algorithm parameters to the value sent as argument. 
@@ -667,7 +686,6 @@ public:
 	  *\param[in] registerValue Value to put into register (values accepted are 0-1).
 	* \return true if success.  false on error.
 	*/
-		
 	virtual bool SetAlgoParameter(int algoID, uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Sets global  algorithm parameters to the value sent as argument. 
@@ -675,7 +693,6 @@ public:
 	  *\param[in] registerValue Value to put into register.
 	* \return true if success.  false on error.
 	*/
-		
 	virtual bool SetGlobalAlgoParameter(uint16_t registerAddress, uint32_t registerValue) = 0;
 
 
@@ -685,7 +702,6 @@ public:
 	*\param[in] registerValue Value to put into register .
 	* \return true if success.  false on error.
 	*/
-
 	virtual bool SetTrackerParameter(int trackerID, uint16_t registerAddress, uint32_t registerValue) = 0;
 
 	/** \brief Changes the controls of which messages are sent from AWL to the client to reflect provided settings
@@ -694,13 +710,12 @@ public:
     * \param[in] messageMask mask identifies which groups of target/distance/intensity messages are transmitted over CAN.
 	* \return true if success.  false on error.
 	*/
-		
 	virtual bool SetMessageFilters(ReceiverFrameRate /*frameRate*/, VoxelMask /*voxelMask*/, MessageMask /*messageMask*/) = 0;
 
 
 
 	
-	/** \  an asynchronous query command to get the current tracker.
+	/** \brief  an asynchronous query command to get the current tracker.
 	* \return true if success.  false on error.
 	*/
 	virtual bool QueryTracker() = 0;
@@ -710,7 +725,7 @@ public:
 	  * \return true if success.  false on error.
 	  * \remarks On reception of the answer to query the register address and value will be
 	  *          placed in the FPGA registerSet. 
-		*/
+	*/
 
 	virtual bool QueryFPGARegister(uint16_t registerAddress) = 0;
 
@@ -762,7 +777,6 @@ public:
 	* \param[in] algorithmSet in which we want to find the specified algorith,
 	* \param[in] algoID an algorithm for which we want the parameter description.
 	* \return pointer to the found AlgorithmDescription in the algo Set. NULL if no algorithm matches that algoID.
-
 	*/
 	AlgorithmDescription * FindAlgoDescriptionByID(AlgorithmSet &inAlgoSet, int inAlgoID);
 
@@ -784,7 +798,6 @@ public:
 	*          Some receivers have out of order cell adressing. cellID may not correspond to teh physical position of the pixel.
 	*          Basic ReceiverCapture assumes  linear relationship matrix using rowQty and columnQty.
 	*/
-	
 	virtual int GetChannelIDFromCell(CellID inCellID);
 
 
@@ -1033,12 +1046,17 @@ protected:
 
 	/** \brief  Log file. */
 	std::ofstream *logFilePtr;
+
+	/** \brief  Mutex t insure thread-safe wi=riting to the log file. */
 	boost::mutex logFileMutex;
 
 
   protected:
+	  /** \brief  Frame rate as calculated from processed incoming messages. */
 	  ReceiverFrameRate m_calculatedFrameRate;
+	  /** \brief  Frames processed used in internal frame rate calculation. */
 	  int m_nbrCompletedFrame;
+	  /** \brief  Time stamp used in internal frame rate calculation. */
 	  Timestamp m_frameRateMS;
 };
 

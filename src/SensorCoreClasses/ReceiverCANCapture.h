@@ -80,8 +80,9 @@ public:
 	typedef boost::shared_ptr<ReceiverCANCapture> Ptr;
     typedef boost::shared_ptr<ReceiverCANCapture> ConstPtr;
 
+	/**Allowed CAN Rates for the ReceiverCANCapture device. Preferred rate is canRate1Mbps*/
 	typedef enum eReceiverCANRate 
-	{
+	{	
 		canRate1Mbps = 1000,
 		canRate500kbps = 500,
 		canRate250kbps = 250,
@@ -112,7 +113,6 @@ public:
         * \param[in] inParametersAlgos default description of the algorithm parameters
 		* \param[in] inParametersTrackers default description of the Tracker parameters
       */
-
 	ReceiverCANCapture(int receiverID, int inReceiverVoxelQty, int inReceiverColumns, int inReceiverRows, float inLineWrapAround, 
 					   eReceiverCANRate inCANRate, ReceiverFrameRate inDemandedFrameRate, VoxelMask &inVoxelMask, MessageMask &inMessageMask, float inRangeOffset,
 		               const RegisterSet &inRegistersFPGA, const RegisterSet & inRegistersADC, const RegisterSet &inRegistersGPIO, 
@@ -123,7 +123,6 @@ public:
  	    * \param[in] inReceiverID  unique receiverID
 	    * \param[in] propTree propertyTree that contains teh confoguration file information.
       */
-
 	ReceiverCANCapture(int receiverID,  boost::property_tree::ptree  &propTree);
 
 
@@ -281,7 +280,6 @@ public:
 	/** \brief Issues an asynchronous query command to get the current tracker.
 	* \return true if success.  false on error.
 	*/
-
 	virtual bool QueryTracker();
 
 
@@ -344,7 +342,6 @@ public:
 	/** \Brief send a message to get the device serial number
 	 *   Value of 0 indicates that the data is not available.
 	 */
-
 	virtual uint32_t GetUniqueID();
 
 
@@ -563,22 +560,31 @@ protected:
 		int closeCANReentryCount;
 
 		/** \brief CAN Rate
-		  *
 		 */
 		eReceiverCANRate canRate;
 
+
+		/** \briefmaximum number of rawData buffers for non-CAN devices transmitting raw Data */
 		static const size_t maxRawBufferCount = 1024;
+		/** \brief size of a rawData Buffer for non-CAN devices transmitting raw Data */
 		static const size_t maxRawBufferSize = 16384;
+
+		/** \brief buffers used to acquire rawData form non-CAN devices */
 		uint8_t * rawBuffers[maxRawBufferCount];
+
+		/** \brief number of RawData buffers acqually in use */
 		size_t rawBufferCount;
 
+		/** \brief buffers used to acquire rawData form non-CAN devices */
 		size_t sampleCount;
-		int max_msg_id;
+
+		/** \brief higest voxelID for voxels received.  This is used to determine end of frame on non-CAN devices  */
 		int max_voxel;
 
 #ifdef FORCE_FRAME_RESYNC_PATCH
 		/** \brief Channel Mask variable used to determine if frames are out of order in PATCH ForceFrameResync*/
 		VoxelMask lastVoxelMask;
+		/** \brief Clast received Channel ID used to determine if frames are out of order in PATCH ForceFrameResync*/
 		uint16_t lastChannelID;
 #endif //FORCE_FRAME_RESYNC_PATCH
 

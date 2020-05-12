@@ -42,7 +42,9 @@
 // len
 #define RECEIVERCANMSG_LEN 8
 
-// CAN Frame
+/** \brief The ReceiverCANMessage is the basic structure holding CAN-Based messages.
+*   Note that the structure is also used in some serial and USB derived protocol implementations.
+*/
 typedef struct {
     uint32_t id;        // Message id
     uint32_t timestamp; // timestamp in milliseconds

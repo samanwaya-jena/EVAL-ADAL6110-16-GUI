@@ -109,7 +109,6 @@ ReceiverLibUSB2Capture::ReceiverLibUSB2Capture(int receiverID, boost::property_t
 	pollMsg.len = RECEIVERCANMSG_LEN;
 
 	reconnectTime = boost::posix_time::microsec_clock::local_time();
-	m_pFile = NULL;
 	// Read the configuration from the configuration file
 	ReadConfigFromPropTree(propTree);
 	ReadRegistersFromPropTree(propTree);

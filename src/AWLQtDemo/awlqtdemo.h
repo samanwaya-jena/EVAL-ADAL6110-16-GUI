@@ -66,13 +66,16 @@ namespace awl
 {
 
 
-
+/** \brief Main application Window.
+*/
 class AWLQtDemo : public QMainWindow
 {
 	Q_OBJECT
 
 //		public types and enums:
 public:
+	/** \brief  Column numbers for parameter view - older version.
+	 */
 	typedef enum ParameterColumn 
 	{
 	eParameterCheckColumn = 0,
@@ -83,7 +86,21 @@ public:
 	ParameterColumn;
 
 public:
+	/** \brief  Constructor for main application window.
+	 *
+	 *	The constructor has many steps to go though:
+	 * - Initialize UI.
+	 * - Initialize thread priorities
+	 * - Setup configuration file environment and adjust accordingly
+	 * - Create devices (receivers, cameras)
+	 * - Create display subwindows
+	 * - Setup messaging and notification
+	 * - Start device acquisition threads
+	 */
 	AWLQtDemo(int argc, char *argv[]);
+
+	/** \brief  Destructor for main application window.
+	 */
 	~AWLQtDemo();
 
 private slots:
@@ -166,53 +183,116 @@ private slots:
 
 	void on_destroy();
 
+	/** \brief Main timer event used to control refresh of the UI elements
+	 *
+	 * \ Remark The application refreshes the UI elements based on an external timer.
+	 *          This avoids overconsumption of the CPU by "pacing" refreshes. 
+	*/
 	void on_timerTimeout();
 
 protected:
-	// Setup toolbar layout and events
+	/** \brief Setup toolbar layout and events.
+	*/
 	void SetupToolBar();
 
-	// Setup Diplay Grid for Layout
+	/** \brief Setup Diplay Grid for Layout.
+	*/
 	void SetupDisplayGrid();
 
-	// Adjust the default displayed ranges depending on the sensor capabilities
+	/** \brief Adjust the default displayed ranges depending on the sensor capabilities.
+	*/
 	void AdjustDefaultDisplayedRanges();
 
+	/** \brief Prepare the Algo Parameters boxes according to config file.
+	*/
 	void PrepareAlgoParametersView();
+
+	/** \brief Update Algo Parameters boxes with current Receiver value.
+	*/
 	void UpdateAlgoParametersView();
 
+	/** \brief Prepare the Tracker Parameters boxes according to config file.
+	*/
 	void PrepareTrackerParametersView();
+
+	/** \brief Update Tracker Parameters boxes with current Receiver value.
+	*/
 	void UpdateTrackerParametersView();
 
+	/** \brief Prepare the Global Parameters boxes according to config file.
+	*/
 	void PrepareGlobalParametersView();
+
+	/** \brief Update Global Parameters boxes with current Receiver value.
+	*/
 	void UpdateGlobalParametersView();
+
+	/** \brief Display status of the receiver acording to current receiver.
+	*/
 	void DisplayReceiverStatus();
+
+	/** \brief Display status of the receiver according to  status of the supplied receiverID.
+	*/
 	void DisplayReceiverStatus(int receiverID);
 
-	// Fil the detection data vector with the latest detection data.
-	// Return true if the data has changed since last request.
+	/** \brief Fill the detection data vector with the latest detection data.
+	 * \return true if the data has changed since last request.
+	 * 
+	 * \Note  Since all processes are asynchonous, takes a "snapshot" of acquired receiver detections
+	 *        For subsequent display
+	*/
+
 	bool GetLatestDetections(SensorCoreScope::Detection::Vector &detectionData);
+
+	/** \brief Take a snapshot of AScan data for subsequent display.
+	 * \return true if the data has changed since last request.
+	 *
+	 * \Note  Since all processes are asynchonous, takes a "snapshot" of acquired receiver waveforms
+	 *        For subsequent display
+	*/
 	bool GetLatestAScans(SensorCoreScope::AScan::Vector &aScanData);
+	
 	void closeEvent(QCloseEvent * /*event*/);
 
-	void FillVoxelSelectList();
+	/** \brief Fill the list used to select Voxels from the Setttinns/Calibration tab
+	*          according to the configuration of the Receivers.
+	*/
+		void FillVoxelSelectList();
 
+	/** \brief Fill the list of FPGA Registers according to register description from the config file.
+	*/
 	void FillFPGAList();
+
+	/** \brief Fill the list of ADC Registers according to register description from the config file.
+	*/
 	void FillADCList();
+	
+	/** \brief Fill the list of GPIO Registers according to register description from the config file.
+    */
 	void FillGPIOList();
 
+	/** \brief Update teh list of GPIO registers to reflect changes made by the user, or arrival of new sensor.
+	*/
 	void UpdateGPIOList();
 
+	/** \brief Modify the maximum diaplayed range, used in the 2D view.*/
 	void ChangeRangeMax(int voxelID, float range);
 
-  //void  DoThreadLoop();
-
+ 
 private:
 	Ui::AWLQtDemoClass ui;
+
+	/** \brief Main timer used to trigger periodic refreshes of the UI.*/
 	QTimer *myTimer;
 
+	/** \brief  2D View subwindow.
+	*/
 	FOV_2DScan* m2DScan;
+	/** \brief  Table view Subwindow.
+	*/
 	TableView * mTableView;
+	/** \brief  A-Scan (Waveform) View subwindow.
+	*/
 	AWLPlotScan* mAScanView;
 
 #if 0
@@ -231,15 +311,28 @@ private:
 	QIcon *actionResizeMaximizeIcon;
 	QIcon *actionResizeRestoreDownIcon;
 
+	/** \brief  List holding all of the Lidar Receivers used by the  application.
+	*/
 	SensorCoreScope::ReceiverCapture::List receiverCaptures;
 
 #if defined (USE_OPENCV_VIDEO)
+	/** \brief  List holding all of the video capture devices.
+	*/
 	VideoCapture::List videoCaptures;
+
+	/** \brief  List holding all of the video viewers.
+	*/
 	VideoViewer::List  videoViewers;
 #endif
 
+	/** \brief  Label used to indicate the connexion state of the application.
+	*/
 	QLabel * labelConnected;
+	/** \brief  Label used to display the frame rate.
+	*/
 	QLabel * labelFramerate;
+	/** \brief  Global application indicator to know if at least one receiver is connected..
+	*/
 	bool m_bConnected;
 
 	/** \brief Our subscription identifier to access to lidar data. */

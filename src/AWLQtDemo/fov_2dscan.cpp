@@ -193,11 +193,6 @@ FOV_2DScan::FOV_2DScan(QWidget *parent) :
 	carHeight = globalSettings->carHeight;
 	laneWidth = globalSettings->laneWidth;
 
-    rgblongRangeLimited = qRgba(188,205,203,127);
-    rgblongRange = qRgba(58,126,209,127);
-    rgbshortRangeLimited = qRgba(184,220,175,127);
-    rgbshortRange = qRgba(54,166,38,127);
-
 	// Create a label to hold a logo
 
 	logoLabel = new QLabel(this);

@@ -49,17 +49,17 @@
 #include "SensorCoreClassesGlobal.h"
 
 
-/** \brief Simple threaded subscription management class.
-  * Just helps determine when an object has an updated "publication" in store for 
-  * a given subscriber.
-  * A subscriber just 
-  * \author Jean-Yves Deschênes
-  */
+
 
 
 SENSORCORE_BEGIN_NAMESPACE
 
-
+/** \brief Simple threaded subscription management class.
+  * Just helps determine when an object has an updated "publication" in store for
+  * a given subscriber.
+  * A subscriber just
+  * \author Jean-Yves Deschênes
+  */
 class Subscription
 {
 public:

@@ -55,30 +55,86 @@ public:
 // public Methods
 public:
 
-  ReceiverPolledCapture(int receiverID,  boost::property_tree::ptree  &propTree);
+    /** \brief ReceiverPolledCapture constructor from a configuration file information.
+        * \param[in] inReceiverID  unique receiverID
+        * \param[in] propTree propertyTree that contains teh configuration file information.
+      */
+    ReceiverPolledCapture(int receiverID,  boost::property_tree::ptree  &propTree);
 
-	virtual ~ReceiverPolledCapture();
-  virtual void  Go();
-  virtual void  Stop();
-  virtual bool IsConnected();
+    /** \brief ReceiverPolledCapture Destructor.  Insures that all threads are stopped before destruction.
+      */
+    virtual ~ReceiverPolledCapture();
+
+    /** \brief Start the lidar Data Projection  thread
+      */
+    virtual void  Go();
+
+    /** \brief Stop the lidar data projection thread
+      */
+    virtual void  Stop(); 
+    
+    /** \brief Return true if connexion with the device has been etablished.
+      * \return True if device connexion is established.
+      */
+    virtual bool IsConnected();
 
   void * GetHandle(void);
   void SetHandle(void *);
 
 protected:
 
-  void DoThreadLoop();
-  bool DoOneLoop();
-	virtual void DoOneThreadIteration();
+    /** \brief Do one iteration of the thread loop.
+      *        Call DoOneLoop() to acquire data and insure that the port stays open..
+      */
 
+  void DoThreadLoop();
+
+  /** \brief Within one iteration of the thread loop, read a block of polled Data, if available.
+    *         First, poll the Receiver for additional messages, and then get all returned data in one block.
+    */
+  bool DoOneLoop();
+
+  /** \brief Do one iteration of the thread loop.
+    *        Acquire CAN Data until ParseMessage() can be called with a CAN Message.
+    *        Try to manage automatic connection/reconnection of the CAN communications in the loop.
+    */
+  virtual void DoOneThreadIteration();
+
+  /** \brief Send the polling message to the receive and get the returned cycleCount and messageCount.
+    */
   bool LidarQuery(size_t & cycleCount, size_t & messageCount);
+
+  /** \brief Read formatted data from USB into dataBuffer.
+   *         First, send a query to the receiver for "cycleCount" cycles of data.
+   *         Expect payloadSize bytes as returned payload.
+  */  
   bool ReadDataFromUSB(char * dataBuffer, int payloadSize, size_t cycleCount);
-	virtual bool WriteMessage(const ReceiverCANMessage &inMsg);
+
+  /** \brief Write the provided CAN message to the USB port
+    */
+virtual bool WriteMessage(const ReceiverCANMessage &inMsg);
+
+/** \brief Write to the Receiver to request "messageCOunt" CAN messages.
+  *        Acquire the messages from the USB port, and process their contents..
+    */
   bool PollMessages(size_t messageCount);
 
+  /** \brief Send a Software Reset command to the USB port.
+      */
   bool SendSoftwareReset();
 
+  /** \brief Read num bytes from the USB port, into the memory pointed to by pData, using configured TimeOut
+    * \param[in] pData pointer to the read data
+    * \param[in] num quantity  of bytes to read
+    * \return quantity of bytes read.
+   */
   virtual int ReadBytes(uint8_t * pData, int num) = 0;
+
+  /** \brief Write num bytes to the USB port, from  the memory pointed to by pData, using configured time out.
+    * \param[in] pData pointer to the data to be written
+    * \param[in] num quantity  of bytes to write
+    * \return quantity of bytes actually written.
+   */
   virtual int WriteBytes(uint8_t * pData, int num) = 0;
 
 
@@ -108,20 +164,23 @@ protected:
   /** \brief Process Raw Data messages from no-CAN devices
         * \param[in] rawData pointer to the raw data memeory block
       */
-
- 
 	virtual void ProcessRaw(uint8_t* rawData);
 
 // Protected variables
 protected:
 
-		void*handle;
-		void *swap_handle;
+    /** \brief USB port handle */
+    void* handle;
+
+    /** \brief Temporary variable used to hold USB port handle.  Used when we force reassignment of USB port order */
+    void* swap_handle;
+
 
 		/** \brief Time-out without an input message after which we try to recomnnect the serial port. */
 		boost::posix_time::ptime reconnectTime;
 
-		bool xmitsFooterData;   // There is some extra data in the wave acquisition payload for some USB sensors (Gordon and later Guardians).  Earlier versions did not produce footer payload
+        /**There is some extra data in the wave acquisition payload for some USB sensors (Gordon and later Guardians).  Earlier versions did not produce footer payload*/
+		bool xmitsFooterData;   
 
 
     boost::mutex m_Mutex;

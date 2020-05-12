@@ -88,35 +88,48 @@ class TransformationMatrix;
 class TransformationNode;
 class CameraCalibration;
 
-
+/** \brief Identifies the "layer" of coordinate transformation.
+  *        The coordinate transformations strart at Pixel (voxel) level, then Sensor (or camera) Level, 
+  *        are transformed to vehicle coordinates and then 
+  *        to world coordinates.
+*/
 typedef enum eCoordLevel
 {
+	/**Convert internal sensor (voxel) to Receiver coordinates*/
 	eSensorToReceiverCoord = 2,
+	/**Convert internal sensor (voxel) to Vehicle coordinates*/
 	eSensorToVehicleCoord = 1,
+	/**Convert internal sensor (voxel) to World coordinates*/
 	eSensorToWorldCoord = 0,
 
+	/**Convert Receiver to Vehicle coordinates */
 	eReceiverToVehicleCoord = 1,
+	/**Convert Receiver to World coordinates*/
 	eReceiverToWorldCoord = 0,
 
+	/**Convert Vehicle to World coordinates*/
 	eVehicleToWorldCoord = 0,
 
+	/**Convert Camera pixel to Vehicle coordinates*/
 	eCameraToVehicleCoord = 1,
+	/**Convert Camera pixel to World coordinates*/
 	eCameraToWorldCoord = 0,
 
+	/**Convert World coordinates back into vehicle coordinates*/
 	eWorldToVehicleCoord = 0,
+	/**Convert World coordinates back into receiver coordinates*/
 	eWorldToReceiverCoord = 1,
+	/**Convert World coordinates back into camera coordinates*/
 	eWorldToCameraCoord = 1
 }
 eCoordLevel;
 
 /** \brief Structure holding the values of a 4x4 homogeneous 3D transformation matrix. 
 */
-//typedef float (TransformationArray)[4][4];
  typedef float(TransformationArray)[4][4];
 
 /** \brief Structure holding the a vector (row or column) of a 1x4 homogeneous coordinate. 
 */
-//typedef float (TransformationRow)[4];
  typedef float (TransformationRow)[4];
 
 /** \brief The CartesianCoord class defines a position, in cartesian coordinates. 
@@ -144,42 +157,55 @@ eCoordLevel;
   * X is always forward.
   * The only exception to this rule is when we will get to convert Coordinates to camera pixels in the CameraCalibration class.
   */
-
-
 class CartesianCoord 
 {
 public:
+	/** \brief Constructor */
 	CartesianCoord();
+	/** \brief Constructor based on individual axes values*/
 	CartesianCoord(float inX, float inY, float inZ);
+	/** \brief Copy Constructor */
 	CartesianCoord(const CartesianCoord &inCartesian);
+
+	/** \brief Constructor from spherical coordinates*/
 	CartesianCoord(const SphericalCoord &inSpherical);
+
+	/** \brief Constructor from a transformation vector*/
 	CartesianCoord(const TransformationVector &inVect);
 
+	/** \brief Set coordinates on individual axes */
 	void Set(float x, float y, float z);
 
+	/** \brief Convert  a given CartesianCoord spherical coordinates */
 	static SphericalCoord ToSpherical(const CartesianCoord &inCartesian);
+
+	/** \brief Convert the object to spherical coordinates */
 	SphericalCoord ToSpherical() const;
 
-
+	/** \brief Assign spherical coordinates to a CartesianCoord */
 	CartesianCoord& operator=(const SphericalCoord &sourceSpherical);
+
+	/** \brief Assign a transformation vector to a cartesianCoord */
 	CartesianCoord& operator=(const TransformationVector &inVector);
 
 //	operator SphericalCoord() const;
 
 public:
+	/** \brief Coordinates have two different naming conventions */
 	union 
 	{
-		// The standard "x,y,z" naming convention.
+		/** The standard "x,y,z" naming convention. */
 		struct {
 			float x;
 			float y;
 			float z;
 		} cartesian;
 
-		// The alternate "relative to body" naming convention can be useful for 
-		// code that wants non-equivocal naming and avoid confusion,
-		// for example when when converting to 
-		// graphics X, Y coordinates.
+		/** The alternate "relative to body" naming convention can be useful for 
+		 * code that wants non-equivocal naming and avoid confusion,
+		 * for example when when converting to 
+		 * graphics X, Y coordinates.
+		 */
 		struct {
 			float forward;
 			float left;
@@ -208,27 +234,43 @@ public:
  * Theta: -: Up  +: Down
  * Phi:   + Left  -: Right
 */
-
 class SphericalCoord 
 {
 public:
+	/** \brief Constructor */
 	SphericalCoord();
+	/** \brief Constructor based on individual axes values*/
 	SphericalCoord(float inRho, float inTheta, float inPhi);
-	SphericalCoord(const SphericalCoord &inSpherical);	
+	/** \brief Copy Constructor */
+	SphericalCoord(const SphericalCoord &inSpherical);
+
+
+	/** \brief Constructor from Cartesian coordinates*/
 	SphericalCoord(const CartesianCoord &inCartesian);
+
+	/** \brief Constructor from a transformation vector*/
 	SphericalCoord(const TransformationVector &inVect);
 
+	/** \brief Set coordinates on individual axes */
 	void Set(float inRho, float inTheta, float inPhi);
 
+	/** \brief Convert  a given SphericaCoord to cartesian coordinates */
 	static CartesianCoord ToCartesian(const SphericalCoord &inSpherical);
+	/** \brief Convert the object to cartesian coordinates */
 	CartesianCoord ToCartesian() const;
 
+	/** \brief Assign Cartesian coordinates to a SpherticalCoord */
 	SphericalCoord & operator=(const CartesianCoord &sourceCartesian);
+	/** \brief Assign a transformation Vector its Sperical coordinates */
 	SphericalCoord& operator=(const TransformationVector &inVector);
 
 public:
+	/* \brief rho is distance.*/
+
 	float rho;
+	/* \brief theta is angle from z axis, clockwise*/
 	float theta;
+	/* \brief  phi is angle from x axis, counterclockwise*/
 	float phi;
 };
 
@@ -244,40 +286,56 @@ public:
 
 	 * \reference: http://planning.cs.uiuc.edu/node102.html
 */
-
 class Orientation 
 {
 public:
+
+	/** \brief Constructor */
 	Orientation();
 	
-	// We use the roll, pitch, yaw order, to keep consistent with eigen 
+	/** \brief Constructor using roll, pich, yaw 
+	    \Notes We use the roll, pitch, yaw order, to keep consistent with eigen */
 	Orientation(float inRoll, float inPitch, float inYaw);
+
+	/** \brief Copy Constructor */
 	Orientation(const Orientation  &inOrientation);
+
+	/** \brief Constructor  from a TransformationVector*/
 	Orientation(const TransformationVector &inVect);
 
+	/** \brief Assignment from a transformation vector */
 	Orientation& operator=(const TransformationVector &inVector);
 
 public:
+	/** \brief  roll is a counterclockwise rotation of $ \gamma$ about the $ x$-axis (rolling rightwards is roll negative). */
 	float roll;
+	/** \brief  pitch is a counterclockwise rotation of $ \beta$ about the $ y$-axis (looking down is pitch positive [since Y axis is oriented leftwards]). */
 	float pitch;
+	/** \brief  yaw is a counterclockwise rotation of $ \alpha$ about the $ z$-axis (looking right is yaw negative) */
 	float yaw;
 };
 
 /** \brief The RelativePosition Class defines the relative position AND orientation of an object or frame of reference from another. 
  *  \notes The class contains the relative position and orientation of a frame of reference, from the origin frame of reference. 
 */
-
 class RelativePosition
 {
 public:
+	/** \brief Constructor */
 	RelativePosition();
+	/** \brief Constructor from individual cartesian position and orientation components*/
 	RelativePosition(float inX, float inY, float inZ, float inRoll, float inPitch, float inYaw);
+	/** \brief Constructor from cartesian position and orientation */
 	RelativePosition(const CartesianCoord &inPosition, const Orientation &inOrientation);
+	/** \brief Constructor from spherical position and orientation */
 	RelativePosition(const SphericalCoord &inPosition, const Orientation &inOrientation);
+	/** \brief Copy Constructor */
 	RelativePosition(const RelativePosition &inRelativePosition);
 	
 public:
+	/** \brief Position component of the relative position */
 	CartesianCoord	position;
+	/** \brief Orientation component of the relative position */
 	Orientation		orientation;
 };
 
@@ -289,23 +347,38 @@ public:
 class TransformationMatrix
 {
 public:
+	/** \brief Constructor */
 	TransformationMatrix();	
+	/** \brief Constructor from cartesian coordinates */
 	TransformationMatrix(const CartesianCoord &inCartesian);
+	/** \brief Constructor from spherical coordinates */
 	TransformationMatrix(const SphericalCoord &inSpherical);
+	/** \brief Constructor from an orientation */
 	TransformationMatrix(const Orientation &inOrientation);
 
+	/** \brief Constructor from cartesian coordinates and orientation */
 	TransformationMatrix(const CartesianCoord &inCartesian, const Orientation &inOrientation);	
-	TransformationMatrix(const SphericalCoord &inSpherical, const Orientation &inOrientation);	
+	/** \brief Constructor from spherical coordinates and orientation */
+	TransformationMatrix(const SphericalCoord &inSpherical, const Orientation &inOrientation);
+	/** \brief Constructor from a RelativePosition */
 	TransformationMatrix(const RelativePosition &inRelativePosition);
 
+	/** \brief Assignment of CartesianCoord into a TransformationMatrix */
 	TransformationMatrix& operator=(const CartesianCoord &inCartesian);
+	/** \brief Assignment of SphericalCoord into a TransformationMatrix */
 	TransformationMatrix& operator=(const SphericalCoord &inSpherical);
+	/** \brief Assignment of Orientation into a TransformationMatrix */
 	TransformationMatrix& operator=(const Orientation &inOrientation);
+	/** \brief Assignment of RelativePosition into a TransformationMatrix */
 	TransformationMatrix& operator=(const RelativePosition &inRelativePosition);
 
+	/** \brief Reverse the transformation 
+	 * Ref: <a href="linkURL">http://www.cse.psu.edu/~rcollins/CSE486/lecture12.pdf</a>
+	*/
 	TransformationMatrix Reverse();
 
 public:
+	/** \brief Structure that holds the transformation information */
 	TransformationArray matrix; 
 };
 
@@ -317,30 +390,49 @@ public:
 class TransformationVector
 {
 public:
+	/** \brief Constructor */
 	TransformationVector();	
+	/** \brief Constructor from cartesian coordinates */
 	TransformationVector(const CartesianCoord &inCartesian);
+	/** \brief Constructor from spherical coordinates */
 	TransformationVector(const SphericalCoord &inSpherical);
+	/** \brief Constructor from an orientation */
 	TransformationVector(const Orientation &inOrientation);
 
 	
+	/** \brief Assignment of CartesianCoord into a TransformationVector*/
 	TransformationVector& operator=(const CartesianCoord &inCartesian);
+	/** \brief Assignment of SphericalCoord into a TransformationVector */
 	TransformationVector& operator=(const SphericalCoord &inSpherical);
+	/** \brief Assignment of Orientation into a TransformationVector */
 	TransformationVector& operator=(const Orientation &inOrientation);
 
 public:
-	TransformationRow vect; 
+	/** \brief Structure that holds the transformation information */
+	TransformationRow vect;
 };
 
+
+
+/** \brief Concatenating transformation vectors by vector multiplication */
 TransformationVector operator * (float scalarLeft, const TransformationVector& right);
+/** \brief Concatenating transformation vectors by vector multiplication */
 TransformationVector operator * (const TransformationVector& left, float scalarRight);
 
+/** \brief Concatenating transformation matrices by matricial multiplication */
 TransformationMatrix operator * (const TransformationMatrix &left, const TransformationMatrix &right);
+/** \brief Addition of two transformation matrices */
 TransformationMatrix operator + (const TransformationMatrix &left, const TransformationMatrix &right);
+/** \brief Substaction of two transformation matrices */
 TransformationMatrix operator - (const TransformationMatrix &left, const TransformationMatrix &right);
+/** \brief Multiplication of scalar by TransformationMatrix*/
 TransformationMatrix operator * (float scalarLeft, const TransformationMatrix &right);
+/** \brief Multiplication of TransformationMatrix by a scalar*/
 TransformationMatrix operator * (const TransformationMatrix &left, float scalarRight);
+/** \brief Concatenation of a TransformationMatrix and Transformation Vector*/
 TransformationVector operator * (const TransformationMatrix &left, const TransformationVector &right); 
-TransformationVector operator * (const TransformationVector &left, const TransformationMatrix &right); 
+/** \brief Concatenation of a TransformationVector and Transformation matrix*/
+TransformationVector operator * (const TransformationVector &left, const TransformationMatrix &right);
 
 /** \brief TransformationMatrixSteps define a sequence of affine transformations.
  *  \notes	Using a deque (1 sided list) the steps can identify a sequence
@@ -363,29 +455,46 @@ class TransformationNode : public boost::enable_shared_from_this<TransformationN
 
 {
 public:
+	/** \brief Pointer to a Transformation node */
 	typedef boost::shared_ptr<TransformationNode> Ptr;
+	/** \brief Const Pointer to a Transformation node */
 	typedef boost::shared_ptr<TransformationNode> ConstPtr;
+	/** \brief List of transformations applied to coordinates  */
 	typedef boost::container::vector<TransformationNode::Ptr> List;
+	/** \brief Pointer to a List of transformations applied to coordinates  */
 	typedef TransformationNode::List *ListPtr;
 
 public:
+	/** \brief Constructor of TransformationNode based on Cartesian Coordinates and Orientation  */
 	TransformationNode(const CartesianCoord &inCartesian, const Orientation &inOrientation);
+	/** \brief Constructor of TransformationNode based on RelativePosition  */
 	TransformationNode(const RelativePosition &inRelativePosition);
+
+	/** \brief Constructor for an empty TransformationNode  */
 	TransformationNode();
 
+	/** \brief Add a transformation to ane xisting transformation node  */
 	void AddChild(TransformationNode::Ptr inChild);
 	
+
+	/** \brief Calculate the resulting transformation across the trasformation chain  */
 	void RefreshGlobal();
 
+	/** \brief Convert the provided coordinates to the number of levels provided  */
 	CartesianCoord ToReferenceCoord(eCoordLevel inLevel, const CartesianCoord & inCoord);
+	/** \brief Convert the provided coordinates from the number of levels provided to the root coordinates  */
 	CartesianCoord FromReferenceCoord(eCoordLevel inLevel, const CartesianCoord & inCoord);
 
 public:
+	/** \brief Parent in the transformation chain  */
 	TransformationNode::Ptr parent;
+	/** \brief List of children in the transformation chain  */
 	TransformationNode::List children;
 	
-
+	/** \brief Relative position in current coordinate system*/
 	RelativePosition relativePosition;
+
+	/** \brief Computed list of affine transformations (used to optimize compute time)  */
 	TransformationMatrixSteps transformations;
 };
 
@@ -398,10 +507,10 @@ public:
   *        distorsion matrixes and camera calibration matrix.
   *		   This means we can use the results from OpenCV calibration procedures in configuration files.
 */
-
 class CameraCalibration
 {
-public: 
+public:	
+	/** \brief Constriuctor, using the openCV standard parameters  */
 	CameraCalibration(int inFrameWidthInPixels = 640, int inFrameHeightInPixels = 480, 
 					  float inFovWidth = 0.0, float inFovHeight = 0.0, 
 					  float inFocalLengthX = 0.0, float inFocalLengthY = 0.0,
@@ -433,19 +542,31 @@ public:
 	 *           as FOV may be constrained by mechanical constraints on some devices 
 	 */
 	float fovHeight;
-	int frameWidthInPixels; /** \brief Camera frame width in pixels */
-	int frameHeightInPixels; /** \brief Camera frame height in pixels */
-	float focalLengthX; /** \brief Camera focal length and scaling (accounts for pixel size in x direction) */
-	float focalLengthY;/** \brief Camera focal length and scaling (accounts for pixel size in y direction) */
-	float centerX; /** \brief sensorCenter offset in x direction*/
-	float centerY; /** \brief sensorCenter offset in y direction*/
-	float radialK1; /** \brief radial distorsion (barrel and pincushion) parameter 1*/
-	float radialK2; /** \brief radial distorsion (barrel and pincushion) parameter 2*/
-	float radialK3; /** \brief radial distorsion (barrel and pincushion) parameter 3*/
-	float tangentialP1; /** \brief tangential distorsion (keystone) parameter 1*/
-	float tangentialP2; /** \brief tangential distorsion (keystone) parameter 2*/
+	/** \brief Camera frame width in pixels */
+	int frameWidthInPixels; 
+	/** \brief Camera frame height in pixels */
+	int frameHeightInPixels; 
+	/** \brief Camera focal length and scaling (accounts for pixel size in x direction) */
+	float focalLengthX; 
+	/** \brief Camera focal length and scaling (accounts for pixel size in y direction) */
+	float focalLengthY;
+	/** \brief sensorCenter offset in x direction*/
+	float centerX; 
+	/** \brief sensorCenter offset in y direction*/
+	float centerY; 
+	/** \brief radial distorsion (barrel and pincushion) parameter 1*/
+	float radialK1; 
+	/** \brief radial distorsion (barrel and pincushion) parameter 2*/
+	float radialK2; 
+	/** \brief radial distorsion (barrel and pincushion) parameter 3*/
+	float radialK3;
+	/** \brief tangential distorsion (keystone) parameter 1*/
+	float tangentialP1;
+	/** \brief tangential distorsion (keystone) parameter 2*/
+	float tangentialP2;
 };
 
+/** \brief Convert Camera pixel coordinates into a straigtened X-Y coordinates, accounting for camera distorsion*/
 bool CameraCoordToFrameXY(float cameraFovWidthInRad, float cameraFovHeightInRad, int frameWidthInPixels, int frameHeightInPixels, const CartesianCoord &coordInCameraCart, int &cameraX, int &cameraY, float barrelK1 = 0.0, float barrelK2 = 0.0);
 
 SENSORCORE_END_NAMESPACE

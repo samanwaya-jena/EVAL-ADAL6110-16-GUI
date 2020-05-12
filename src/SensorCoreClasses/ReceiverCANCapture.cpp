@@ -70,7 +70,7 @@ ReceiverCANCapture::ReceiverCANCapture(int receiverID, int inReceiverVoxelQty, i
 ReceiverCapture(receiverID, inReceiverVoxelQty, inReceiverColumns, inReceiverRows, inLineWrapAround, inDemandedFrameRate, inVoxelMask, inMessageMask, inRangeOffset, 
                 inRegistersFPGA, inRegistersADC, inRegistersGPIO, inParametersAlgos, inParametersTrackers),
 canRate(inCANRate),
-sampleCount(0), max_msg_id(0x80), max_voxel(0),
+sampleCount(0), max_voxel(0),
 closeCANReentryCount(0)
 
 
@@ -94,7 +94,7 @@ closeCANReentryCount(0)
 
 ReceiverCANCapture::ReceiverCANCapture(int receiverID, boost::property_tree::ptree &propTree):
 ReceiverCapture(receiverID, propTree),
-sampleCount(0), max_msg_id(0x80), max_voxel(0),
+sampleCount(0),  max_voxel(0),
 closeCANReentryCount(0)
 
 {

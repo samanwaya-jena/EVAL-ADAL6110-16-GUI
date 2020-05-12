@@ -49,11 +49,17 @@
 
 #include "SensorCoreClassesGlobal.h"
 
+
+
+
+SENSORCORE_BEGIN_NAMESPACE
+
+
 /** \brief Simple thread-safe class for a object that needs to inform
   * other objects of changes to its contents..
-  * Just helps determine when a Publisher has an updated "publication" in store for 
+  * Just helps determine when a Publisher has an updated "publication" in store for
   * a given subscriber.
-  * A Publisher keeps track of its current publication number, and also keeps track of the 
+  * A Publisher keeps track of its current publication number, and also keeps track of the
   * latest issue that was consumed (Locked) by the subscriber.
   * This way, it can tell the subscriber which issue was the last consumed.
   *
@@ -64,7 +70,7 @@
   *        // In application event loop
   *        if (publisher->HasNews(subscriberID))
   *        {
-  *            if (publisher->LockNews(subscriberID));  // Informs the publisher and locks the mutex; 
+  *            if (publisher->LockNews(subscriberID));  // Informs the publisher and locks the mutex;
   *			   {
   *                ... // Process the publisher news
   *                publisher->GetIssueDerivateClassMethod(latestIssueNumber);
@@ -80,13 +86,13 @@
   *        if (publisher->HasNews())
   *        {
   *            Publisher::IssueID latestIssue = publisher->GetCurrentIssueID();
-  *            Publisher::IssueID issueOnHand =  publisher->GetConsumedIssueID();             
-  *            Publisher::IssueID issueRequested =  issueOnHand;             
-  *            ... // Process all of the back issues 
-  *            do 
+  *            Publisher::IssueID issueOnHand =  publisher->GetConsumedIssueID();
+  *            Publisher::IssueID issueRequested =  issueOnHand;
+  *            ... // Process all of the back issues
+  *            do
   *			   {
   *                issueRequested++;  // Request the next issue.
-  *                if (publisher->LockNews(subscriberID, issueRequested);  // Informs the publisher and locks the mutex; 
+  *                if (publisher->LockNews(subscriberID, issueRequested);  // Informs the publisher and locks the mutex;
   *			       {
   *                     publisher->GetIssueDerivateClassMethod(issueRequested);
   *			            publisher->UnlockNews(subscriberID);  // Frees the lock on the news.
@@ -99,67 +105,77 @@
   *        publisher->GetIssueDerivateClassMethod(issueOnHandNumber);
   * \author Jean-Yves Deschênes
   */
-
-
-SENSORCORE_BEGIN_NAMESPACE
-
-
-class Publisher
+  class Publisher
 {
 public:
+    /** \brief Unique ID assigned to a susbsriber to a specific publication. */
 	typedef  int SubscriberID;
-	typedef  uint32_t IssueID;
+
+    /** \brief Unique ID assigned to a specific issue of a publication. */
+    typedef  uint32_t IssueID;
 
 	typedef boost::shared_ptr<Publisher> Ptr;
 	typedef boost::container::vector<Publisher::Ptr> List;
 
+    /** \brief Constructor. */
 	Publisher();
+
+    /** \brief Subscribe to a publisher object. 
+     * \return Unique SubscriberID, used in further iteractions with the publisher.
+     */
 	Publisher::SubscriberID Subscribe();
 
-	// Returns true if the current publication ID is differerent from the latest accessed.
-	// Note that the publications are not kept in store
-
+    /** \brief Determine if there is any new issue from the publisher, for the given Subscriber.
+     * \Return true if the current publication ID is differerent from the latest accessed.
+	 * \Note The publications are not kept in store, if the subscribers don't pick them up, they are lost.
+     *       Only the atest publication is available
+     */
 	bool HasNews(SubscriberID inSubscriber);
 	
-	// Locks the publisher's mutex for accessing the news.
-	// and marks the current publication ID as consumed for the given subscriber
-	// \return Returns true if successfully locked.  Otherwise returns false.
-	//         (Lock may fail if subscriber ID is invalid).
+    /** \brief Locks the publisher's mutex for accessing the news.
+	  * and marks the current publication ID as consumed for the given subscriber
+	  * \return Returns true if successfully locked.  Otherwise returns false.
+	  * \note  (Lock may fail if subscriber ID is invalid).
+      */
 	bool LockNews(SubscriberID inSubscriber);
 
-	// Locks the publisher's mutex for accessing the news.
-	// and marks the provided publication ID as the last consumed for the given subscriber
-	// \return Returns true if successfully locked.  Otherwise returns false.
-	//         (Lock may fail if subscriber ID is invalid).
+    /** \brief Locks the publisher's mutex for accessing the news.
+	 * and marks the provided publication ID as the last consumed for the given subscriber
+	 * \return Returns true if successfully locked.  Otherwise returns false.
+	 * \note Lock may fail if subscriber ID is invalid.
+     */
 	bool LockNews(SubscriberID inSubscriber, IssueID inIssueID);
 
-	// Unlocks the publisher's mutex for accessing the news.
+    /** \brief Unlocks the publisher's mutex for accessing the news. */
 	void UnlockNews(SubscriberID inSubscriber);
 
-	// Get the current publication ID for this subscriber
+    /** \brief Get the current publication ID for this subscriber */
 	IssueID GetCurrentIssueID(SubscriberID inSubscriber);
 
-	// Get the publication ID of the latest issue that was Locked()
+    /** \brief Get the publication ID of the latest issue that was Locked() */
 	IssueID GetConsumedIssueID(SubscriberID inSubscriber);
 
 protected:
-	// Increments the publications number for all subscribers
+    /** \brief Increments the publications number for all subscribers */
 	void PutNews();
 
-	// Sets the latest publication number for all subscribers
+    /** \brief Sets the latest publication number for all subscribers */
 	void PutNews(IssueID newPublication);
 
+    /** \brief returns Mutex to guyaratee thread-safe access to the publication */
 	boost::mutex &GetMutex() {return(mMutex);};
 
-	// For each subscriber, the vector contains the issue number of latest news.
-	// Note: There is no guarantee from the publisher that the IssueIDs will be consecutive.
-	//       The only guarantee is that consecutive publications will not have the same number for a reasonable amoount of time.
-	//       (For example, there may be wraparound of the IssueIDs)
+    /** \brief For each subscriber, the vector contains the issue number of latest news.
+	 *  \note: There is no guarantee from the publisher that the IssueIDs will be consecutive.
+	 *       The only guarantee is that consecutive publications will not have the same number for a reasonable amoount of time.
+	 *       (For example, there may be wraparound of the IssueIDs)
+     */
 	boost::container::vector<IssueID> currentPublications;
 
-	// For each subscriber, the vector contains the issue number last Locked() news.
+    /** \brief For each subscriber, the vector contains the issue number last Locked() news. */
 	boost::container::vector<IssueID> consumedPublications;
 
+    /** \brief mutex used for thread-safe access to the news */
    boost::mutex mMutex;
 
 }; // Publisher
