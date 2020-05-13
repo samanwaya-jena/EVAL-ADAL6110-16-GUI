@@ -300,10 +300,11 @@ bool ReceiverPolledCapture::WriteMessage(const ReceiverCANMessage &inMsg)
   int transferred = 0;
   int received = 0;
 
-  if (!handle)
-    return false;
+
 
   boost::mutex::scoped_lock rawLock(m_Mutex);
+  if (!handle)
+      return false;
 
   transferred = WriteBytes((uint8_t*)&inMsg, sizeof(inMsg));
   if (transferred != sizeof(ReceiverCANMessage))
