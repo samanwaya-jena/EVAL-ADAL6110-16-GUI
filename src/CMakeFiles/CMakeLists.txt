@@ -390,7 +390,7 @@ list(APPEND Boost_LIBRARIES
 ###    Qt       #############################################################################
 #############################################################################################
 if(WIN32)
-    set(Qt5_INSTALLED_PATH "$ENV{QTDIR}")
+    set(Qt5_INSTALLED_PATH "$ENV{QTDIR}" CACHE STRING "Root path Path of the files")
     
     # From --> https://doc.qt.io/qt-5/cmake-manual.html
     set(OLD_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
@@ -702,16 +702,43 @@ if(${WANT_OPENCV_VIDEO})
 
     FIND_PACKAGE(OpenCV REQUIRED PATHS D:/opencv-3.1.0/Build)
 
-    SET( ${OpenCV}_LIBRARIES} "${OpenCV_INSTALL_PATH}/lib/release/opencv_world346.lib")
-    print_package_info(OpenCV)
+    SET( OpenCV_LIBRARIES "${OpenCV_INSTALL_PATH}/lib/release/opencv_world346.lib")
    
-    target_include_directories(
-		${PROJECT_NAME}
-		PRIVATE
+ 
+    SET( OpenCV_INCLUDE_DIRS
+       ${OpenCV_DIR}/;
+       ${OpenCV_DIR}/include
+       ${OpenCV_DIR}/include/opencv
+       ${OpenCV_DIR}/include/opencv2
+       ${OpenCV_DIR}/modules/flann/include
+       ${OpenCV_DIR}/modules/core/include
+       ${OpenCV_DIR}/modules/imgproc/include
+       ${OpenCV_DIR}/modules/ml/include
+       ${OpenCV_DIR}/modules/photo/include
+       ${OpenCV_DIR}/modules/video/include
+       ${OpenCV_DIR}/modules/dnn/include
+       ${OpenCV_DIR}/modules/imgcodecs/include
+       ${OpenCV_DIR}/modules/shape/include
+       ${OpenCV_DIR}/modules/videoio/include
+       ${OpenCV_DIR}/modules/highgui/include
+       ${OpenCV_DIR}/modules/superres/include
+       ${OpenCV_DIR}/modules/features2d/include
+       ${OpenCV_DIR}/modules/calib3d/include
+       ${OpenCV_DIR}/modules/objdetect/include
+       ${OpenCV_DIR}/modules/stitching/include
+       ${OpenCV_DIR}/modules/videostab/include
+       ${OpenCV_DIR}/modules/world/include
+       ${OpenCV_DIR}/modules/ts/include
+     )
+
+     target_include_directories(
+        ${PROJECT_NAME}
+  	    PRIVATE
 			${OpenCV_INCLUDE_DIRS}
 	)
+  
 
-    TARGET_SOURCES(
+ TARGET_SOURCES(
         CuteDemo 
     PRIVATE 
             ${CUTEDEMO_FILES_DIR}/VideoCapture.cpp 
@@ -727,6 +754,7 @@ if(${WANT_OPENCV_VIDEO})
 	"${OpenCV_INSTALL_PATH}/bin/release/opencv_world346.dll"
 )
 
+    print_package_info(OpenCV)
 
 
 endif()
