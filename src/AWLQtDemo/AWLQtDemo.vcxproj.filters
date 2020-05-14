@@ -212,9 +212,6 @@
     <None Include="..\InstallableDLLs\libusb-1.0.dll">
       <Filter>Installable DLLs</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\Widgets\checkbox_checked.png">
