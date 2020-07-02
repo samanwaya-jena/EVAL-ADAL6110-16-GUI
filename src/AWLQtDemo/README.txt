@@ -28,7 +28,11 @@ git checkout ADI_Develop
 
 #### For linux pc std architecture:
 ```bash
+#### For Ubuntu:
+cp ../CMakeFiles/CMakeLists.txt.ubuntu CMakeLists.txt  
+#### For all other distribution:
 cp ../CMakeFiles/CMakeLists.txt.linux CMakeLists.txt  
+
 cmake .
 make
 ```
