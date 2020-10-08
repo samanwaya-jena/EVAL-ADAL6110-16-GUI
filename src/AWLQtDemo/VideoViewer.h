@@ -1,30 +1,49 @@
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
+
 #ifndef _VIDEOVIEWER_H
 #define _VIDEOVIEWER_H
-
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
 
 #define CV_NO_BACKWARD_COMPATIBILITY
 
 
 #include <iostream>
 
-
-
-using namespace std;
 
 #include <opencv2/core/core_c.h>
 #include <opencv2/core/core.hpp>
@@ -92,7 +111,7 @@ public slots:
 	void ShowContextMenu(const QPoint& pos);
 	/** \brief Update the detection positions.
       */
-	void slotDetectionDataChanged(const Detection::Vector & data);
+	void slotDetectionDataChanged(const SensorCoreScope::Detection::Vector & data);
 	void slotImageChanged();
 	void slotVideoOptionsChangedAction();
 
@@ -110,23 +129,23 @@ protected:
       */
 	void resizeEvent(QResizeEvent * /*event*/);
 
-	void DisplayReceiverValues(QImage &sourceFame, QPainter& painter, const Detection::Vector & data);
+	void DisplayReceiverValues(QImage &sourceFame, QPainter& painter, const SensorCoreScope::Detection::Vector & data);
 
 protected:
 	void paintEvent(QPaintEvent* /*event*/); 
 
-	void GetDetectionColors(const Detection::Ptr &detection, QColor &colorEnhance,  int &iThickness);
-	/** \brief get the four corners of the specified Detection's channel FOV, as projected at the Detection distance
+	void GetDetectionColors(const SensorCoreScope::Detection::Ptr &detection, QColor &colorEnhance,  int &iThickness);
+	/** \brief get the four corners of the specified Detection's voxel FOV, as projected at the Detection distance
 	  *         in the camera plane.
 	  *\return Returns false if all the points in the projection are behind the camera plane. Returns true
 	  *        if at least one of the points is in front of the camera.
       */
 
-	bool GetChannelRect(const Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
+	bool GetChannelRect(const SensorCoreScope::Detection::Ptr &detection, CvPoint &topLeft, CvPoint &topRight, CvPoint &bottomLeft, CvPoint &bottomRight);
 
 	
 
-	void DisplayTarget(QImage &sourceFame, QPainter& painter, const Detection::Ptr &detection);
+	void DisplayTarget(QImage &sourceFame, QPainter& painter, const SensorCoreScope::Detection::Ptr &detection);
 
 	void DisplayCrossHairs(QImage &sourceFame, QPainter& painter);
 
@@ -163,13 +182,13 @@ protected:
 	VideoCapture::Ptr videoCapture; 
 
 	/** \brief Sunscriber identification to the video feed. */
-	Publisher::SubscriberID currentVideoSubscriberID;
+	SensorCoreScope::Publisher::SubscriberID currentVideoSubscriberID;
 
 	/** \brief Time the object was created.  Used to calculate flashing rates */
 	boost::posix_time::ptime startTime;
 
 	/** \brief Vector containing the detections to be displayed */
-   Detection::Vector detectionData;
+	SensorCoreScope::Detection::Vector detectionData;
 
    /** \brief Screen scale factor in Qt Widget */
    float displayScaleFactor;

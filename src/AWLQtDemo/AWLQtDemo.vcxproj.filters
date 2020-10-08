@@ -77,12 +77,6 @@
     <ClCompile Include="VideoViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_awlqtscope.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_awlqtscope.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="AWLSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -104,29 +98,8 @@
     <ClCompile Include="GeneratedFiles\Release\moc_TableView.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_awlscopeplot.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_knob.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_VideoViewer.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wheelbox.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_awlscopeplot.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_knob.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wheelbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="awlplotscan.cpp">
       <Filter>Source Files</Filter>
@@ -137,80 +110,8 @@
     <ClCompile Include="GeneratedFiles\Release\moc_awlplotscan.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\awlcoord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLQtScope\awlqtscope.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLQtScope\awlscopeplot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\CoordinateSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLQtScope\curvedata.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\DebugPrintf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\DetectionStruct.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLQtScope\knob.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\LoopedWorker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\Publisher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverCANCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverEasySyncCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverKvaserCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverLibUSBCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverPolledCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverPosixTTYCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverPosixUDPCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverPostProcessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverSimulatorCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ReceiverTCPCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLQtScope\signaldata.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\Subscription.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLCoreClasses\ThreadedWorker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\AWLQtScope\wheelbox.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VideoViewer.cpp">
+      <Filter>Generated Files\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,21 +145,6 @@
     <CustomBuild Include="awlplotscan.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include=".\AWLQtScope\wheelbox.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include=".\AWLQtScope\knob.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include=".\AWLQtScope\awlscopeplot.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include=".\AWLQtScope\awlqtscope.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include=".\AWLQtScope\awlqtscope.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_awlqtdemo.h">
@@ -266,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="VideoCapture.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_awlqtscope.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="AWLSettings.h">
       <Filter>Header Files</Filter>
@@ -282,93 +165,14 @@
     <ClInclude Include="GeneratedFiles\ui_awlplotscan.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\AWLCANMessageDef.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\awlcoord.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\BlockingReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\CoordinateSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\DebugPrintf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\DetectionStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\LoopedWorker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\Publisher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ReceiverCANCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ReceiverCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ReceiverEasySyncCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ReceiverKvaserCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ReceiverPostProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ReceiverSimulatorCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\Subscription.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLCoreClasses\ThreadedWorker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLQtScope\curvedata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\AWLQtScope\signaldata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverLibUSBCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverPolledCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="APVideoCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="APVideoViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverPosixTTYCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverPosixUDPCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverSocketCANCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWLCoreClasses\ReceiverTCPCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="CuteDemo.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="InstallableDLLs\CopyDLLDependencies.BAT">
       <Filter>HelperTools</Filter>
     </None>
-    <None Include="plugin1.bin" />
     <None Include="..\..\..\..\..\Links\Downloads.lnk">
       <Filter>HelperTools</Filter>
     </None>
@@ -539,5 +343,10 @@
     <Image Include="Images\Logos\ADIQtDemo.ico">
       <Filter>Resource Files\Logos</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CuteDemo.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -1,20 +1,42 @@
 
-/* Fov_2DScan.cpp */
-/*
-	Copyright (C) 2014, 2015  Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
+/* awlplotscan.cpp */
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 
 #include "awlplotscan.h"
 
@@ -32,12 +54,14 @@
 #include <boost/foreach.hpp>
 
 
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "AWLSettings.h"
 
 #include <math.h>
 
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
+
 const QColor rgbRulerLight(255, 255, 255, 128); // Transparent gray light
 const QColor rgbRulerMed(128, 128, 128, 128); // Transparent gray light
 const QColor rgbRulerText(255, 170, 0);
@@ -92,7 +116,7 @@ void AWLPlotScan::stop()
      ;
 }
 
-void AWLPlotScan::setChannelMask(uint32_t chMask)
+void AWLPlotScan::setVoxelMask(uint32_t chMask)
 {
   m_chMask = chMask;
   m_nbrCh = numberOfSetBits(m_chMask);
@@ -110,7 +134,7 @@ void AWLPlotScan::LabelAScan(QPainter* p)
 	float maxRange, scale;
 	int step;
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	maxRange = globalSettings->receiverSettings[0].channelsConfig[0].maxAscanRange / 5;
+	maxRange = globalSettings->receiverSettings[0].voxelsConfig[0].maxAscanRange / 5;
 	if ( maxRange < 10.0 ) {
 		step = ((int)((maxRange+2.5)/5)) * 5;
 	} else {
@@ -245,6 +269,10 @@ void AWLPlotScan::plotAScans(QPainter* p)
   float maxRange = 0.0F;
   float fAscanHeight = float(height()) / (m_nbrCh + 1);
 
+  // Text formatting info
+  int lineSpacing = p->fontMetrics().lineSpacing();
+  int leading = p->fontMetrics().leading();
+
   if (m_maxRange)
   {
     maxRange = m_maxRange;
@@ -254,7 +282,7 @@ void AWLPlotScan::plotAScans(QPainter* p)
     i = 0;
     BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
     {
-      if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->channelID))
+      if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->cellID.column))
       {
         float minV, maxV, meanV;
 
@@ -282,14 +310,15 @@ void AWLPlotScan::plotAScans(QPainter* p)
   i = 0;
 	BOOST_FOREACH(const AScan::Ptr & aScan, aScanData)
 	{
-    if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->channelID))
+    if (aScan->receiverID == m_selectedReceiver && m_chMask & (1 << aScan->cellID.column))
     {
       PlotAScan(p, aScan, fAscanHeight * (chIdx + 1), 0, width(), fAscanHeight, maxRange);
 
       p->setBrush(QBrush(rgbRulerMed));
       p->setPen(QPen(rgbRulerText));
-      p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1), "Ch " + QString::number(aScan->receiverID + 1) + "." + QString::number(aScan->channelID + 1));
-      p->drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
+	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) - (leading/2) - 1, "Rcv " + QString::number(aScan->receiverID + 1) + " Col " + QString::number(aScan->cellID.column));
+	  p->drawText(SCAN_POSX, fAscanHeight * (chIdx + 1) + lineSpacing - (leading/2) -1, "Channel " + QString::number(aScan->channelNo));
+	  p->drawLine(SCAN_POSX, fAscanHeight * (chIdx + 1), width(), fAscanHeight * (chIdx + 1));
 
       ++chIdx;
     }

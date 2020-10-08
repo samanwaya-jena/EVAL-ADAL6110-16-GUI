@@ -1,20 +1,42 @@
-/* VideoCapture.cpp */
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
+/* VideoCapture.cpp: Capture from an OpenCV Camera */
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
-// define XIFORWINDOWS
 #include <fstream>
 
 #ifndef Q_MOC_RUN
@@ -23,7 +45,7 @@
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "DebugPrintf.h"
 
 #include "opencv2/core/core_c.h"
@@ -34,46 +56,19 @@
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "xiapi.h"
 
 using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 // Frame rate, in frame per seconds
 #define FRAME_RATE	33.0
 
-const int ximeaDefaultBinningMode  = 4; // Binning mode on the ximea camera for 648x486 resolution
 const int reopenCameraDelaylMillisec = 5000; // We try to repopen the conmm ports every repoenPortDelayMillisec, 
 										   // To see if the system reconnects
 
 boost::posix_time::ptime reconnectTime;
 
-class CvCaptureCAM_XIMEA
-{
-public:
-    CvCaptureCAM_XIMEA() { init(); }
-    virtual ~CvCaptureCAM_XIMEA() { close(); }
-
-    virtual bool open( int index );
-    virtual void close();
-    virtual double getProperty(int);
-    virtual bool setProperty(int, double);
-    virtual bool grabFrame();
-    virtual IplImage* retrieveFrame(int);
-    virtual int getCaptureDomain() { return cv::CAP_XIAPI; } // Return the type of the capture object: cv::CAP_VFW, etc...
-
-public:
-    void init();
-    void errMsg(const char* msg, int errNum);
-    void resetCvImage();
-    int  getBpp();
-    IplImage* frame;
-
-    HANDLE    hmv;
-    DWORD     numDevices;
-    int       timeout;
-    XI_IMG    image;
-};
 
 
 VideoCapture::VideoCapture(int inCameraID, int argc, char** argv, boost::property_tree::ptree &propTree):
@@ -113,6 +108,15 @@ void  VideoCapture::Go()
     mWorkerRunning = true;
 
 	mThread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&VideoCapture::DoThreadLoop, this)));
+
+#ifdef _WINDOWS_
+	// Set the priority under windows.  
+	// Camera thread has to be lower priority than sensor communications threads
+	HANDLE th = mThread->native_handle();
+
+	SetThreadPriority(th, THREAD_PRIORITY_LOWEST);
+#endif
+
 }
  
 void VideoCapture::CopyCurrentFrame(VideoCapture::FramePtr targetFrame, Publisher::SubscriberID inSubscriberID) 
@@ -194,15 +198,6 @@ void VideoCapture::DoThreadIteration()
 
 		if (!bufferFrame.empty()) 
 		{
-#if 1  // Patch: Do not remove JYD 2014-07-07
-			// Force-set the bufferFrame dimensions.  This corrects an OpenCV reporting bug with the XIMEA Camera, after downsampling
-			bufferFrame.cols = calibration.frameWidthInPixels;
-			bufferFrame.rows = calibration.frameHeightInPixels;
-			bufferFrame.step = bufferFrame.cols*(bufferFrame.channels());
-			// End of the Ximea patch
-#endif
-
-
 			boost::mutex::scoped_lock currentLock(GetMutex());
 			if (bCameraFlip) 
 			{
@@ -243,27 +238,8 @@ void VideoCapture::ListCameras()
 	AWLSettings::GetGlobalSettings()->bWriteDebugFile = true;
 
 	DebugFilePrintf("Requested Camera: %s", sCameraName.c_str());
-	//num of connected SHT devices	
-#ifdef XIFORWINDOWS	
-	if(xiGetNumberDevices(&dwNumDevices) == XI_OK)
-	{
-		int dwSerial = 0;
-
-		if(xiOpenDevice( 0, &hMV) != XI_OK)
-		{ 
-			DebugFilePrintf("Cannot Open Ximea Cam");
-		}
-
-		xiGetParamInt( hMV, XI_PRM_DEVICE_SN, &dwSerial);
 	
-		char camName[512];
-	
-		xiGetParamString( hMV, XI_PRM_DEVICE_NAME, camName, 256);
-				
-		DebugFilePrintf("%s %08X", camName, dwSerial);
-	}
-#endif
-
+	//max num of conected devices is 2000	
 
 	for (int i = 0; i < 2000; i++) 
 	{
@@ -298,16 +274,6 @@ bool VideoCapture::OpenCamera()
 		
 	if (cam.isOpened()) 
 	{
-		// interpret preferred interface (0 = autodetect). This tells us what type of marea capabilities to expect
-		int pref = (inputID / 100) * 100;
-
-		// If we are using the Ximea driver, set the downsampling for a 640x480 image
-		if (pref == cv::CAP_XIAPI)
-		{
-			// Set the amount of downsampling to get decent frame rate.
-			cam.set(cv::CAP_PROP_XI_DOWNSAMPLING, ximeaDefaultBinningMode);
-		}
-
 		calibration.frameWidthInPixels = (int) cam.get(cv::CAP_PROP_FRAME_WIDTH);
 		calibration.frameHeightInPixels = (int) cam.get(cv::CAP_PROP_FRAME_HEIGHT);
 		float framesPerSecond = (float) cam.get(cv::CAP_PROP_FPS);

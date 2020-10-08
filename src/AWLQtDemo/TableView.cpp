@@ -1,19 +1,41 @@
-/* TableView.cpp */
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
+/* TableView.cpp : Display detection characteristics in a table*/
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 
 #include <QMenu>
 #include <QApplication>
@@ -28,8 +50,9 @@
 #include "TableView.h"
 #include "DetectionStruct.h"
 
-using namespace std;
+//using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 TableView::TableView(QWidget *parent) :
     QFrame(parent)
@@ -40,7 +63,7 @@ TableView::TableView(QWidget *parent) :
 	setWindowIcon(QApplication::windowIcon());
 
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
-	displayedDetectionsPerChannel = globalSettings->displayedDetectionsPerChannelInTableView;
+	displayedDetectionsPerChannel = globalSettings->displayedDetectionsPerVoxelInTableView;
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),this, SLOT(ShowContextMenu(const QPoint&)));
@@ -115,7 +138,7 @@ void TableView::slotDetectionsPerChannelAction()
 	}
 	else 
 	{
-		displayedDetectionsPerChannel = globalSettings->displayedDetectionsPerChannelInTableView;
+		displayedDetectionsPerChannel = globalSettings->displayedDetectionsPerVoxelInTableView;
 	}
 
 	PrepareTableViews();
@@ -153,7 +176,7 @@ void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
 
 
 	QMenu mainMenu;
-	QMenu* menuDisplayedDetectionsPerChannel = mainMenu.addMenu("Detections per channel");
+	QMenu* menuDisplayedDetectionsPerChannel = mainMenu.addMenu("Detections per voxel");
  	menuDisplayedDetectionsPerChannel->addAction(detectionsPerChannel1Action);
  	menuDisplayedDetectionsPerChannel->addAction(detectionsPerChannel2Action);
  	menuDisplayedDetectionsPerChannel->addAction(detectionsPerChannel4Action);
@@ -162,7 +185,8 @@ void TableView::ShowContextMenu(const QPoint& pos) // this is a slot
 	mainMenu.exec(globalPos);
 }
 
-typedef struct 
+/** \brief Structure to hold the description of a column in the table view.
+*/typedef struct
 {
 		TableView::RealTimeColumn columnID;
 		QString  columnFormat;
@@ -233,7 +257,7 @@ QSize TableView::unconstrainedTableSize() const
 	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
-		rowCount += globalSettings->receiverSettings[receiverID].channelsConfig.size()*displayedDetectionsPerChannel;
+		rowCount += globalSettings->receiverSettings[receiverID].voxelsConfig.size()*displayedDetectionsPerChannel;
 	} // for receiverID
 	tableHeight = rowCount * (tableWidget->rowHeight(1));
 	tableHeight += tableWidget->horizontalHeader()->height() + 10;
@@ -250,7 +274,7 @@ QSize TableView::unconstrainedTableSize() const
 		QFontMetrics fm(headerItem->font());
 		int headerTextWidth = fm.width(headerItem->text());
 		int dataTextWidth = fm.width(columnSettings[column].columnFormat);
-		int headerWidth = max(headerTextWidth, dataTextWidth) + headerSpacing;
+		int headerWidth = std::max(headerTextWidth, dataTextWidth) + headerSpacing;
 		tableWidth += headerWidth;
 #endif
 	}
@@ -298,7 +322,7 @@ void TableView::PrepareTableViews()
 		QFontMetrics fm(headerItem->font());
 		int headerTextWidth = fm.width(headerItem->text());
 		int dataTextWidth = fm.width(columnSettings[column].columnFormat);
-		int headerWidth = max(headerTextWidth, dataTextWidth) + headerSpacing;
+		int headerWidth = std::max(headerTextWidth, dataTextWidth) + headerSpacing;
 
 		tableWidget->setColumnWidth(column, headerWidth);
 		tableWidth += headerWidth;
@@ -310,11 +334,11 @@ void TableView::PrepareTableViews()
 	int receiverCount = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++)
 	{
-		// Store the index of the first row for each channel, for future references
+		// Store the index of the first row for each voxel, for future references
 		receiverFirstRow.push_back(row);
 
-		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelCount; channelID++) 
+		int voxelCount = globalSettings->receiverSettings[receiverID].voxelsConfig.size();
+		for (int voxelIndex = 0; voxelIndex < voxelCount; voxelIndex++) 
 		{
 			for (int detectionID = 0; detectionID < displayedDetectionsPerChannel; detectionID++) 
 			{ 
@@ -333,7 +357,7 @@ void TableView::PrepareTableViews()
 
 				row++;
 			} // for detectionID
-		} // for channelID
+		} // for voxelIndex
 	} // for receiverID
 }
 
@@ -353,21 +377,32 @@ void TableView::DisplayReceiverValues(const Detection::Vector &inData)
 	int tableRow = 0;
 	for (int receiverID = 0; receiverID < receiverCount; receiverID++) 
 	{	
-		int channelCount = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelCount; channelID++) 
+		int voxelCount = globalSettings->receiverSettings[receiverID].voxelsConfig.size();
+		int columns = globalSettings->receiverSettings[receiverID].receiverColumns;
+
+		for (int voxelIndex = 0; voxelIndex < voxelCount; voxelIndex++) 
 		{
+			CellID cellID(voxelIndex % columns, voxelIndex / columns);
 			for (int detectionID = 0; detectionID < displayedDetectionsPerChannel; detectionID++)
 			{
-				AddDistanceToText(tableRow++, tableWidget, receiverID, channelID, detectionID);
+				AddDistanceToText(tableRow++, tableWidget, receiverID, cellID, detectionID);
 			}  // for detection ID;
-		} // for channelID
+		} // for voxelIndex
 	} // for receiverID
 
 	// Place the receiver data
 	BOOST_FOREACH(const Detection::Ptr & detection, inData)
 	{
-		tableRow = detection->detectionID + (detection->channelID * displayedDetectionsPerChannel) + receiverFirstRow.at(detection->receiverID); 
-		if (detection->detectionID < displayedDetectionsPerChannel) AddDistanceToText(tableRow, tableWidget, detection);
+		if (detection->detectionID < displayedDetectionsPerChannel) 
+		{
+			CellID cellID = detection->cellID;
+			int columns = globalSettings->receiverSettings[detection->receiverID].receiverColumns;
+			tableRow = detection->detectionID + 
+				       (cellID.column * displayedDetectionsPerChannel) + 
+				       (cellID.row * columns * displayedDetectionsPerChannel) + 
+					   receiverFirstRow.at(detection->receiverID);
+			AddDistanceToText(tableRow, tableWidget, detection);
+		}
 	}
 
 }
@@ -378,14 +413,13 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable, const Dete
 {
 	if (rowIndex >= pTable->rowCount()) return;
 
-
-	AddDistanceToText(rowIndex, pTable, detection->receiverID, detection->channelID, detection->detectionID,
+	AddDistanceToText(rowIndex, pTable, detection->receiverID, detection->cellID, detection->detectionID,
 		detection->trackID, detection->distance,  detection->threatLevel,
 		detection->intensity, detection->velocity, detection->acceleration, detection->timeToCollision,
 		detection->decelerationToStop, detection->probability);
 }
 
-void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int receiverID, int channelID, int detectionID, TrackID trackID, 
+void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int receiverID, CellID inCellID, int detectionID, TrackID trackID, 
 								float distance, 
 								AlertCondition::ThreatLevel threatLevel,
 								float intensity,
@@ -398,7 +432,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 
 {
 	QString receiverStr;
-	QString channelStr;
+	QString voxelStr;
 	QString detectionStr;
 	QString distanceStr;
 	QString trackStr;
@@ -418,7 +452,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 	if ((distance <= 0.0) || isNAN(distance) || trackID == 0)
 	{
 		receiverStr.sprintf("%d", receiverID+1);
-		channelStr.sprintf("%d", channelID+1);
+		voxelStr.sprintf("%d,%d", inCellID.column, inCellID.row);
 		detectionStr.sprintf("%d", detectionID+1);
 		distanceStr.sprintf("");
 		trackStr.sprintf("");
@@ -430,7 +464,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 	else
 	{
 		receiverStr.sprintf("%d", receiverID+1);
-		channelStr.sprintf("%d", channelID+1);
+		voxelStr.sprintf("%d,%d", inCellID.column, inCellID.row);
 		detectionStr.sprintf("%d", detectionID+1);
 
 		distanceStr.sprintf("%.2f", distance);
@@ -516,7 +550,7 @@ void TableView::AddDistanceToText(int rowIndex, QTableWidget *pTable,  int recei
 	if (pTable->isVisible())
 	{
 		pTable->item(rowIndex, eRealTimeReceiverIDColumn)->setText(receiverStr);
-		pTable->item(rowIndex, eRealTimeChannelIDColumn)->setText(channelStr);
+		pTable->item(rowIndex, eRealTimeChannelIDColumn)->setText(voxelStr);
 		pTable->item(rowIndex, eRealTimeDetectionIDColumn)->setText(detectionStr);
 
 		pTable->item(rowIndex, eRealTimeDistanceColumn)->setText(distanceStr);

@@ -1,55 +1,64 @@
-/* AWLQtDemo.cpp */
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
-
+/* AWLQtDemo.cpp : CuteApplication user interface management*/
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 
 #include <boost/foreach.hpp>
 
 
 #include "AWLSettings.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "DetectionStruct.h"
 #include "ReceiverCapture.h"
-#ifdef USE_CAN_EASYSYNC
-#include "ReceiverEasySyncCapture.h"
-#endif
-#ifdef USE_CAN_SOCKETCAN
-#include "ReceiverSocketCANCapture.h"
-#endif
-#ifdef USE_POSIXUDP
-#include "ReceiverPosixUDPCapture.h"
-#endif
-#ifdef USE_POSIXTTY
-#include "ReceiverPosixTTYCapture.h"
-#endif
 #ifdef USE_LIBUSB
 #include "ReceiverLibUSBCapture.h"
+#include "ReceiverLibUSB2Capture.h"
 #endif
-#ifdef USE_TCP
-#include "ReceiverTCPCapture.h"
-#endif
-#ifdef USE_CAN_KVASER
-#include "ReceiverKvaserCapture.h"
-#endif
+
 #include "ReceiverSimulatorCapture.h"
 #include "ReceiverPostProcessor.h"
 
 #include "DebugPrintf.h"
 #include "awlqtdemo.h"
-
+#ifdef WIN32
+	#include <QTableWidget.h>
+#endif
+#include <QProcess>
+#include <QThread>
 #include <QTableWidget>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -60,18 +69,12 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
-
-
 #include <string>
-
 
 #include "TableView.h"
 
-#include "awlqtscope.h"
-
-
-using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 // Text update rate, in frame per seconds
 #define LOOP_RATE	30
@@ -91,15 +94,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	action2DButton(NULL),
 	actionTableButton(NULL),
 	actionAScanButton(NULL),
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	actionCameraButton(NULL),
 #endif
 	actionResizeButton(NULL),
 	actionQuitButton(NULL),
 	actionResizeMaximizeIcon(NULL),
 	actionResizeRestoreDownIcon(NULL),
-	m_bConnected(false),
-	m_frameRate(1)
+	m_bConnected(false)
 {
 
 	labelConnected = new QLabel("Initializing...");
@@ -111,30 +113,21 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	//setStyleSheet("background-color:rgb(30,64,86)");
 	//setAutoFillBackground( true );
 
-	// Set the basic paths
-	QCoreApplication::setOrganizationName("Phantom Intelligence");
-	QCoreApplication::setApplicationName("Phantom Intelligence Lidar Demo");
-	
-	// Set-up the debug and log file paths
+#ifdef _WINDOWS_
 
-	// First, ask Qt for the recommmended directory
-	QString sDebugAndLogPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	//  if the directory does not exist, make it.
-	QDir debugAndLogDir(sDebugAndLogPath);
-	if (!debugAndLogDir.exists()) 
-	{
-		debugAndLogDir.mkpath(".");
-	}
+	// Set the thread priority for the application under Windows
+	// Process priority has to be elevated to support real-time communications, 
 
-#if 1
-	sDebugAndLogPath = QString(".");
+    HANDLE proc = GetCurrentProcess();
+	SetPriorityClass(proc, ABOVE_NORMAL_PRIORITY_CLASS);
+
+
+	QThread::currentThread()->setPriority(QThread::LowestPriority);
 #endif
 
-	// Append the last "/", which Qt does not do.
-	sDebugAndLogPath += "/";
-
-	SetLogAndDebugFilePath(sDebugAndLogPath.toStdString());
-	SetLogFileName(std::string("distanceLog.csv"));
+	// Set the basic paths
+//	QCoreApplication::setOrganizationName("Phantom Intelligence");
+//	QCoreApplication::setApplicationName("Phantom Intelligence Lidar Demo");	
 
 	// Read the settigs from the configuration file
 	//
@@ -176,7 +169,7 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	}
 
 	// Build a reference coodinate system from the settings
-	AWLCoordinates *globalCoordinates = AWLCoordinates::InitCoordinates();
+	SensorCoordinates *globalCoordinates = SensorCoordinates::InitCoordinates();
 	globalCoordinates->BuildCoordinatesFromSettings(globalSettings->GetPropTree());
 
 	// Adjust the default displayed ranges depending on the sensors capabilities
@@ -189,63 +182,22 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	{
 		// Create the LIDAR acquisition thread object, depending on the type identified in the config file
 
-#ifdef USE_CAN_EASYSYNC
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("EasySyncCAN"))
-		{
-			// EasySync CAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverEasySyncCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else
-#endif
-#ifdef USE_CAN_KVASER
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "KvaserLeaf"))
-		{
-			// Kvaser Leaf CAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverKvaserCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else
-#endif
-#ifdef USE_CAN_SOCKETCAN
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "SocketCAN"))
-		{
-			// SocketCAN Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSocketCANCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-#endif
-#ifdef USE_POSIXUDP
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "PosixUDP"))
-		{
-			// PosixUDP Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixUDPCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-#endif
-#ifdef USE_POSIXTTY
-		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "PosixTTY"))
-		{
-			// PosixTTY Capture is used if defined in the ini file
-			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverPosixTTYCapture(receiverID, globalSettings->GetPropTree()));
-		}
-		else 
-#endif
-#ifdef USE_TCP
-    if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("TCP"))
-    {
-      // PosixTTY Capture is used if defined in the ini file
-      receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverTCPCapture(receiverID, globalSettings->GetPropTree()));
-    }
-    else
-#endif
+
 #ifdef USE_LIBUSB
 		if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string( "LibUSB"))
 		{
 			// LibUSB Capture is used if defined in the ini file
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverLibUSBCapture(receiverID, globalSettings->GetPropTree()));
 		}
-		else 
-#endif
+		else if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("LibUSB2"))
 		{
+			// LibUSB2 Capture is used if defined in the ini file
+			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverLibUSB2Capture(receiverID, globalSettings->GetPropTree()));
+
+		}
+		else  // Includes the case if (globalSettings->receiverSettings[receiverID].sReceiverType == std::string("Simulator")), which is the default.
+#endif
+		{  
 			// If the type is undefined, just use the dumb simulator, not using external device
 			receiverCaptures[receiverID] = ReceiverCapture::Ptr(new ReceiverSimulatorCapture(receiverID, globalSettings->GetPropTree()));
 		}
@@ -255,37 +207,23 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	int videoCaptureQty = 0;
 	int opencvCameraID =  0;
-#if defined (USE_AP_VIDEO)
-	int apCameraID = 0;
-#endif
-#if defined (USE_OPENCV_VIDEO) || defined (USE_AP_VIDEO)
+
+#if defined (USE_OPENCV_VIDEO)
 	// Create the video capture objects
 	videoCaptureQty = globalSettings->cameraSettings.size();
 	for (int cameraID = 0; cameraID < videoCaptureQty; cameraID++)
 	{
-		QString cameraName(this->windowTitle()+" Camera");
+		QString cameraName(this->windowTitle() + " Camera");
 		cameraName.append(QString().sprintf(" %02d", cameraID));
 
-		printf ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI.c_str());
-#if defined (USE_AP_VIDEO)
-		if ("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI == std::string( "AP")) {
-			apVideoCaptures.push_back(APVideoCapture::Ptr(new APVideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
-	// Create the video viewer to display the camera image
-	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-			APVideoViewer *viewer =  new APVideoViewer(cameraName.toStdString(), apVideoCaptures[apCameraID]);
-			apVideoViewers.push_back(APVideoViewer::Ptr(viewer));
-			apCameraID ++;
-		} else {
-#endif
-			videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv,globalSettings->GetPropTree())));
-	// Create the video viewer to display the camera image
-	// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
-			VideoViewer *viewer =  new VideoViewer(cameraName.toStdString(), videoCaptures[opencvCameraID]);
-			videoViewers.push_back(VideoViewer::Ptr(viewer));
-			opencvCameraID ++;
-#if defined (USE_AP_VIDEO)
-		}
-#endif
+		printf("%s\n", globalSettings->cameraSettings[cameraID].sCameraAPI.c_str());
+		
+		videoCaptures.push_back(VideoCapture::Ptr(new VideoCapture(cameraID, argc, argv, globalSettings->GetPropTree())));
+		// Create the video viewer to display the camera image
+		// The video viewer feeds from the  videoCapture (for image) and from the receiver (for distance info)
+		VideoViewer* viewer = new VideoViewer(cameraName.toStdString(), videoCaptures[opencvCameraID]);
+		videoViewers.push_back(VideoViewer::Ptr(viewer));
+		opencvCameraID++;
 	}
 #endif
 
@@ -300,10 +238,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize the controls from the settings in INI file
 
-	ui.calibrationChannelMaskGroupBox->setVisible(false);
-	ui.channelMaskGroupBox->setVisible(false);
+	ui.internalCalibrationGroupBox->setVisible(globalSettings->bCalibrationTabShowSensorCalib);
 
-	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	ui.sensorHeightSpinBox->setValue(sensorPosition.position.bodyRelative.up);
 	ui.sensorDepthSpinBox->setValue(sensorPosition.position.bodyRelative.forward);
 	float measurementOffset;
@@ -311,9 +248,9 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.measurementOffsetSpinBox->setValue(measurementOffset);
 	ui.sensorRangeMinSpinBox->setValue(globalSettings->receiverSettings[0].displayedRangeMin);
 
-	ui.sensorRangeMaxSpinBox->setValue(globalSettings->receiverSettings[0].channelsConfig[0].maxRange);
+	ui.sensorRangeMaxSpinBox->setValue(globalSettings->receiverSettings[0].voxelsConfig[0].maxRange);
 
-	FillChannelSelectList();
+	FillVoxelSelectList();
 
 	ui.targetHintDistanceSpinBox->setValue(receiverCaptures[0]->targetHintDistance);
 	ui.targetHintAngleSpinBox->setValue(receiverCaptures[0]->targetHintAngle);
@@ -321,42 +258,42 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	// Default values, currently unused
 	if (receiverCaptures[0]) 
 	{
-		ui.recordChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
-		ui.recordChannel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel1);
-		ui.recordChannel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel2);
-		ui.recordChannel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel3);
-		ui.recordChannel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel4);
-		ui.recordChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
-		ui.recordChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
+		ui.recordVoxel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel0);
+		ui.recordVoxel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel1);
+		ui.recordVoxel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel2);
+		ui.recordVoxel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel3);
+		ui.recordVoxel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel4);
+		ui.recordVoxel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel5);
+		ui.recordVoxel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel6);
 
-		ui.calibrationChannel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel0);
-		ui.calibrationChannel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel1);
-		ui.calibrationChannel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel2);
-		ui.calibrationChannel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel3);
-		ui.calibrationChannel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel4);
-		ui.calibrationChannel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel5);
-		ui.calibrationChannel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.channelMask.bitFieldData.channel6);
+		ui.calibrationVoxel1CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel0);
+		ui.calibrationVoxel2CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel1);
+		ui.calibrationVoxel3CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel2);
+		ui.calibrationVoxel4CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel3);
+		ui.calibrationVoxel5CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel4);
+		ui.calibrationVoxel6CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel5);
+		ui.calibrationVoxel7CheckBox->setChecked(receiverCaptures[0]->receiverStatus.voxelMask.bitFieldData.voxel6);
 
-		ui.frameRateSpinBox->setValue(receiverCaptures[0]->receiverStatus.frameRate);
+		ui.frameRateSpinBox->setValue((int) receiverCaptures[0]->GetDemandedFrameRate());
 	}
 	else
 	{
-		ui.recordChannel1CheckBox->setChecked(true);
-		ui.recordChannel2CheckBox->setChecked(true);
-		ui.recordChannel3CheckBox->setChecked(true);
-		ui.recordChannel4CheckBox->setChecked(true);
-		ui.recordChannel5CheckBox->setChecked(true);
-		ui.recordChannel6CheckBox->setChecked(true);
-		ui.recordChannel7CheckBox->setChecked(true);
+		ui.recordVoxel1CheckBox->setChecked(true);
+		ui.recordVoxel2CheckBox->setChecked(true);
+		ui.recordVoxel3CheckBox->setChecked(true);
+		ui.recordVoxel4CheckBox->setChecked(true);
+		ui.recordVoxel5CheckBox->setChecked(true);
+		ui.recordVoxel6CheckBox->setChecked(true);
+		ui.recordVoxel7CheckBox->setChecked(true);
 
 
-		ui.calibrationChannel1CheckBox->setChecked(true);
-		ui.calibrationChannel2CheckBox->setChecked(true);
-		ui.calibrationChannel3CheckBox->setChecked(true);
-		ui.calibrationChannel4CheckBox->setChecked(true);
-		ui.calibrationChannel5CheckBox->setChecked(true);
-		ui.calibrationChannel6CheckBox->setChecked(true);
-		ui.calibrationChannel7CheckBox->setChecked(true);
+		ui.calibrationVoxel1CheckBox->setChecked(true);
+		ui.calibrationVoxel2CheckBox->setChecked(true);
+		ui.calibrationVoxel3CheckBox->setChecked(true);
+		ui.calibrationVoxel4CheckBox->setChecked(true);
+		ui.calibrationVoxel5CheckBox->setChecked(true);
+		ui.calibrationVoxel6CheckBox->setChecked(true);
+		ui.calibrationVoxel7CheckBox->setChecked(true);
 		
 		ui.frameRateSpinBox->setValue(0);
 	}
@@ -388,7 +325,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	ui.trackerSelectComboBox->setCurrentIndex(ui.trackerSelectComboBox->findData(selectedTrackerID));
 
   // AdvancedMode
-  connect(ui.checkBoxAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAdvanceModeToggled()));
+  connect(ui.checkBoxFPGAAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxFPGAAdvanceModeToggled()));
+  connect(ui.checkBoxADCAdvanceMode, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxADCAdvanceModeToggled()));
 
   // Ascan selection
   connect(ui.checkBox_1, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxAscanSelToggled()));
@@ -415,16 +353,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
   connect(ui.radioButton_5, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
   connect(ui.radioButton_6, SIGNAL(toggled(bool)), this, SLOT(on_radioReceiverSelToggled()));
 
-  // Misc
-
-  connect(ui.misc_checkBox_System, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscSystemSelToggled()));
-  connect(ui.misc_checkBox_Laser, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscLaserSelToggled()));
-  connect(ui.misc_checkBox_Gain, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscGainSelToggled()));
-  connect(ui.misc_checkBox_DC, SIGNAL(toggled(bool)), this, SLOT(on_checkBoxMiscDCSelToggled()));
-
-  ui.spinBox_FR->setRange(10, 50);
-  ui.spinBox_FR->setSingleStep(5);
-  ui.spinBox_FR->setValue(50);
 
 //  connect(ui.pushButtonSwap, SIGNAL(toggled(bool)), this, SLOT(on_ButtonSwapToggled()));
 
@@ -466,10 +394,10 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
   ui.comboBoxMaxRange->setDisabled(true);
   ui.comboBoxMaxRange->clear();
-  ui.comboBoxMaxRange->addItem("100%");
-  ui.comboBoxMaxRange->addItem("75%");
-  ui.comboBoxMaxRange->addItem("50%");
-  ui.comboBoxMaxRange->addItem("25%");
+  ui.comboBoxMaxRange->addItem("100%", QVariant((float)1.00));
+  ui.comboBoxMaxRange->addItem("75%", QVariant((float)0.75));
+  ui.comboBoxMaxRange->addItem("50%", QVariant((float)0.50));
+  ui.comboBoxMaxRange->addItem("25%", QVariant((float)0.25));
 
 	// Calibration 
 	ui.calibrationBetaDoubleSpinBox->setValue(0.8);
@@ -477,8 +405,8 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 
 	// Initialize from other operating variables.
 	ui.distanceLogFileCheckbox->setChecked(globalSettings->bWriteLogFile);
-	ui.logFilePathLabel->setText(QString(GetLogAndDebugFilePath().c_str()));
-	ui.logFileNameLabel->setText(QString(GetLogFileName().c_str()));
+	ui.logFilePathLabel->setText(QString(globalSettings->GetLogAndDebugFilePath().c_str()));
+	ui.logFileNameLabel->setText(QString(globalSettings->GetLogFileName().c_str()));
 
 	// Initialize the AScan window
 	mAScanView = new AWLPlotScan();
@@ -540,16 +468,13 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	if (!globalSettings->bTabSettingAScan) {
                 ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.tab));
         }
-	if (!globalSettings->bTabSettingMisc) {
-                ui.interfaceTabs->removeTab(ui.interfaceTabs->indexOf(ui.extraTab));
-        }
 
 	if (ui.interfaceTabs->count() > 0) ui.interfaceTabs->setCurrentIndex(0);
 
 	    on_view2DActionToggled();
         on_viewTableViewActionToggled();
         on_viewAScanViewActionToggled();
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
         on_viewCameraActionToggled();
 #endif
         on_viewSettingsActionToggled();
@@ -575,12 +500,6 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 	else
 		showNormal();
 
-#if 1
-	// Start the threads for background  receiver capture objects
-	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
-	{
-		receiverCaptures[receiverID]->Go();
-	}
 
 #if defined (USE_OPENCV_VIDEO)
 	// Start the threads for background video capture objects
@@ -589,15 +508,14 @@ AWLQtDemo::AWLQtDemo(int argc, char *argv[])
 		videoCaptures[cameraID]->Go();
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-	// Start the threads for background video capture objects
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++)
-	{
-		apVideoCaptures[cameraID]->Go();
-	}
-#endif
 
-#endif
+
+	// Start the threads for background  receiver capture objects
+	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
+	{
+		receiverCaptures[receiverID]->Go();
+	}
+
 
 	
 	// Set size of statusbar & font
@@ -627,17 +545,17 @@ void AWLQtDemo::AdjustDefaultDisplayedRanges()
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Adjust the default maximum displayed range for the receiver (used in various interfaces) 
-	// to reflect the maximum of all its channel ranges.
+	// to reflect the maximum of all its voxel ranges.
 	size_t receiverQty = globalSettings->receiverSettings.size();
 	//long absoluteMaxRange = 0.0;
 	for (size_t receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
 		long absoluteMaxRangeForReceiver = 0.0;
-		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelIndex = 0; channelIndex < channelQty; channelIndex++)
+		int voxelQty = globalSettings->receiverSettings[receiverID].voxelsConfig.size();
+		for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 		{
-			if (globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange > absoluteMaxRangeForReceiver)
-				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].channelsConfig[channelIndex].maxRange;
+			if (globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex].maxRange > absoluteMaxRangeForReceiver)
+				absoluteMaxRangeForReceiver = globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex].maxRange;
 		}
 		AWLSettings::GetGlobalSettings()->receiverSettings[receiverID].displayedRangeMax = absoluteMaxRangeForReceiver;
 
@@ -653,7 +571,7 @@ void AWLQtDemo::SetupToolBar()
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	ui.mainToolBar->setStyleSheet("QToolBar{spacing:10px;}");
 	// Toolbar items signals and slots
-	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.png"), "2Z View", 0);
+	action2DButton = new QAction(QIcon("./Images/ButtonBitmaps/Scan.png"), "2D View", 0);
 	action2DButton->setCheckable(true);
 	action2DButton->setChecked(globalSettings->bDisplay2DWindow);	
 	ui.mainToolBar->addAction(action2DButton);
@@ -668,7 +586,7 @@ void AWLQtDemo::SetupToolBar()
 	actionAScanButton->setChecked(globalSettings->bDisplayAScanViewWindow);
 	ui.mainToolBar->addAction(actionAScanButton);
 
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	actionCameraButton = new QAction(QIcon("./Images/ButtonBitmaps/Camera.png"), "Camera View", 0);
 	actionCameraButton->setCheckable(true);
 	actionCameraButton->setChecked(globalSettings->bDisplayCameraWindow);
@@ -704,7 +622,7 @@ void AWLQtDemo::SetupToolBar()
 	connect(actionTableButton, SIGNAL(toggled(bool )), this, SLOT(on_viewTableViewActionToggled()));
 	connect(actionAScanButton, SIGNAL(toggled(bool )), this, SLOT(on_viewAScanViewActionToggled()));
 	connect(actionAboutButton, SIGNAL(triggered(bool )), this, SLOT(on_viewAboutActionTriggered()));
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	connect(actionCameraButton, SIGNAL(toggled(bool )), this, SLOT(on_viewCameraActionToggled()));
 #endif
 	connect(actionSettingsButton, SIGNAL(toggled(bool )), this, SLOT(on_viewSettingsActionToggled()));
@@ -731,13 +649,6 @@ void AWLQtDemo::SetupDisplayGrid()
 		ui.gridDisplayLayout->addWidget(videoViewers[videoViewerID].get(), videoViewerID, 2, Qt::AlignTop);
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-        videoViewerQty = apVideoCaptures.size();
-	for (size_t videoViewerID = 0; videoViewerID < videoViewerQty; videoViewerID++)
-	{
-		ui.gridDisplayLayout->addWidget(apVideoViewers[videoViewerID].get(), videoViewerID + videoCaptures.size(), 2, Qt::AlignTop);
-	}
-#endif
 }
 
 void AWLQtDemo::on_destroy()
@@ -746,12 +657,6 @@ void AWLQtDemo::on_destroy()
 	for (size_t cameraID = 0; cameraID < videoCaptures.size(); cameraID++) 
 	{
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
-	}
-#endif
-#if defined (USE_AP_VIDEO)
-	for (size_t cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++) 
-	{
-		if (apVideoCaptures[cameraID]) apVideoCaptures[cameraID]->Stop();
 	}
 #endif
 
@@ -771,22 +676,22 @@ void AWLQtDemo::on_recordPushButton_clicked()
 
 {
 	std::string sRecordFileName(ui.recordFileNameEdit->text().toStdString());
-	uint8_t frameRate = ui.frameRateSpinBox->value();
-	ChannelMask channelMask;
+	ReceiverFrameRate frameRate = (ReceiverFrameRate) ui.frameRateSpinBox->value();
+	VoxelMask voxelMask;
 
-	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.recordChannel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.recordChannel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.recordChannel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.channel7 = 1;
+	voxelMask.bitFieldData.voxel0 = ui.recordVoxel1CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel1 = ui.recordVoxel2CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel2 = ui.recordVoxel3CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel3 = ui.recordVoxel4CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel4 = ui.recordVoxel5CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel5 = ui.recordVoxel6CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel6 = ui.recordVoxel7CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel7 = 1;
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->SetRecordFileName(sRecordFileName);
-		receiverCaptures[0]->StartRecord(frameRate, channelMask);
+		receiverCaptures[0]->StartRecord(frameRate, voxelMask);
 	}
 
 	// Update the state of buttons
@@ -798,22 +703,21 @@ void AWLQtDemo::on_playbackPushButton_clicked()
 
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
-	uint8_t frameRate = ui.frameRateSpinBox->value();
-	ChannelMask channelMask;
+	ReceiverFrameRate frameRate = (ReceiverFrameRate)ui.frameRateSpinBox->value();
+	VoxelMask voxelMask;
 
-	channelMask.bitFieldData.channel0 = ui.recordChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.recordChannel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.recordChannel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.recordChannel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.recordChannel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.recordChannel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.recordChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.channel7= 1;
+	voxelMask.bitFieldData.voxel0 = ui.recordVoxel1CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel1 = ui.recordVoxel2CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel2 = ui.recordVoxel3CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel3 = ui.recordVoxel4CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel4 = ui.recordVoxel5CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel5 = ui.recordVoxel6CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel6 = ui.recordVoxel7CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel7= 1;
 	
-	if (receiverCaptures[0]) 
-	{
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected()) {
 		receiverCaptures[0]->SetPlaybackFileName(sPlaybackFileName);
-		receiverCaptures[0]->StartPlayback(frameRate, channelMask);
+		receiverCaptures[0]->StartPlayback(frameRate, voxelMask);
 	}
 
 	// Update the state of buttons
@@ -848,7 +752,7 @@ void AWLQtDemo::on_stopPushButton_clicked()
 {
 	std::string sPlaybackFileName(ui.playbackFileNameEdit->text().toStdString());
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		if (receiverCaptures[0]->receiverStatus.bInPlayback) 
 		{
@@ -867,11 +771,11 @@ void AWLQtDemo::on_stopPushButton_clicked()
 void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 {
 	float height = (float) ui.sensorHeightSpinBox->value();
-	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	if (abs(height-sensorPosition.position.bodyRelative.up) < 0.001) return;
 	sensorPosition.position.bodyRelative.up = height;
 
-	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
+	SensorCoordinates::SetReceiverPosition(0, sensorPosition);
 
 	// Wait Cursor
 	setCursor(Qt::WaitCursor);
@@ -891,11 +795,11 @@ void AWLQtDemo::on_sensorHeightSpin_editingFinished()
 void AWLQtDemo::on_sensorDepthSpin_editingFinished()
 {
 	float forward = (float) ui.sensorDepthSpinBox->value();
-	RelativePosition sensorPosition = AWLCoordinates::GetReceiverPosition(0);
+	RelativePosition sensorPosition = SensorCoordinates::GetReceiverPosition(0);
 	if (abs(forward - sensorPosition.position.bodyRelative.forward) < 0.001) return;
 
 	sensorPosition.position.bodyRelative.forward = forward;
-	AWLCoordinates::SetReceiverPosition(0, sensorPosition);
+	SensorCoordinates::SetReceiverPosition(0, sensorPosition);
 
 
 	// Wait Cursor
@@ -936,7 +840,7 @@ void AWLQtDemo::on_calibrationRangeMinSpin_editingFinished()
 	setCursor(Qt::ArrowCursor);
 }
 
-void AWLQtDemo::ChangeRangeMax(int channelID, float range)
+void AWLQtDemo::ChangeRangeMax(int voxelID, float range)
 {
 	AWLSettings *globalSettings = AWLSettings::GetGlobalSettings();
 	// Wait Cursor
@@ -952,7 +856,7 @@ void AWLQtDemo::ChangeRangeMax(int channelID, float range)
         {
 
 
-		settings->receiverSettings[receiverID].channelsConfig[channelID].maxRange = range;
+		settings->receiverSettings[receiverID].voxelsConfig[voxelID].maxRange = range;
 	
 		// Calculate the absolute max distance from the settings
 		AdjustDefaultDisplayedRanges();
@@ -974,14 +878,14 @@ void AWLQtDemo::on_calibrationRangeMaxSpin_editingFinished()
 	float range = (float) ui.sensorRangeMaxSpinBox->value();
 
 	// Calculate the absolute max distance from the settings
-	size_t channelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].channelsConfig.size();
-	for (size_t channelIndex = 0; channelIndex < channelQty; channelIndex++)
+	size_t voxelQty = AWLSettings::GetGlobalSettings()->receiverSettings[0].voxelsConfig.size();
+	for (size_t voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 	{
-		QListWidgetItem *listItem = ui.channelSelectListWidget->item(channelIndex);
+		QListWidgetItem *listItem = ui.voxelSelectListWidget->item(voxelIndex);
 		Qt::CheckState checkState = listItem->checkState();
 		if (checkState == Qt::Checked)
 		{
-			ChangeRangeMax(channelIndex, range);
+			ChangeRangeMax(voxelIndex, range);
 		}
 	}
 }
@@ -1003,31 +907,26 @@ void AWLQtDemo::on_receiverCalibStorePushButton_clicked()
 	AWLSettings::GetGlobalSettings()->StoreReceiverCalibration();
 }
 
-void AWLQtDemo::on_pushButton_FR_clicked()
-{
-		receiverCaptures[0]->SetSSPFrameRate(ui.spinBox_FR->value());
-		fprintf(stderr, "Frame rate: %d\n",ui.spinBox_FR->value());
-}
 
 void AWLQtDemo::on_calibratePushButton_clicked()
 
 {
 	uint8_t frameQty = ui.calibrationFrameQtySpinBox->value();
 	float   beta = (float) ui.calibrationBetaDoubleSpinBox->value();
-	ChannelMask channelMask;
+	VoxelMask voxelMask;
 
-	channelMask.bitFieldData.channel0 = ui.calibrationChannel1CheckBox->isChecked();
-	channelMask.bitFieldData.channel1 = ui.calibrationChannel2CheckBox->isChecked();
-	channelMask.bitFieldData.channel2 = ui.calibrationChannel3CheckBox->isChecked();
-	channelMask.bitFieldData.channel3 = ui.calibrationChannel4CheckBox->isChecked();
-	channelMask.bitFieldData.channel4 = ui.calibrationChannel5CheckBox->isChecked();
-	channelMask.bitFieldData.channel5 = ui.calibrationChannel6CheckBox->isChecked();
-	channelMask.bitFieldData.channel6 = ui.calibrationChannel7CheckBox->isChecked();
-	channelMask.bitFieldData.channel7 = 1;
+	voxelMask.bitFieldData.voxel0 = ui.calibrationVoxel1CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel1 = ui.calibrationVoxel2CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel2 = ui.calibrationVoxel3CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel3 = ui.calibrationVoxel4CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel4 = ui.calibrationVoxel5CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel5 = ui.calibrationVoxel6CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel6 = ui.calibrationVoxel7CheckBox->isChecked();
+	voxelMask.bitFieldData.voxel7 = 1;
 
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
-		receiverCaptures[0]->StartCalibration(frameQty, beta, channelMask);
+		receiverCaptures[0]->StartCalibration(frameQty, beta, voxelMask);
 	}
 
 	// Update the state of buttons
@@ -1070,7 +969,8 @@ void AWLQtDemo::on_logFileSelectorButton_pressed()
 	ui.logFileSelectButton->setEnabled(false);
 
 	QString dialogFileName = QFileDialog::getSaveFileName(this,
-		tr("Set Log File Path"), QString(GetLogAndDebugFilePath().c_str()), tr("Distance Log Files (*.csv)"));
+		tr("Set Log File Path"), 
+		QString(AWLSettings::GetGlobalSettings()->GetLogAndDebugFilePath().c_str()), tr("Distance Log Files (*.csv)"));
 
 	if (!dialogFileName.isEmpty())
 	{
@@ -1079,8 +979,8 @@ void AWLQtDemo::on_logFileSelectorButton_pressed()
 		// Append the last "/", which Qt does not do.
 		QString path = fileInfo.absolutePath() + "/";
 		QString fileName = fileInfo.fileName();
-		SetLogAndDebugFilePath(path.toStdString());
-		SetLogFileName(fileName.toStdString());
+		AWLSettings::GetGlobalSettings()->SetLogAndDebugFilePath(path.toStdString());
+		AWLSettings::GetGlobalSettings()->SetLogFileName(fileName.toStdString());
 		ui.logFilePathLabel->setText(path);
 		ui.logFileNameLabel->setText(fileName);
 	}
@@ -1105,18 +1005,6 @@ void AWLQtDemo::on_timerTimeout()
 		}
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-	// Check that the cameras are still working.  Otherwise Stop everyting
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++)
-	{
-		if (apVideoCaptures[cameraID]->WasStopped())
-		{
-			bContinue = false;
-			break;
-		}
-	}
-#endif
-
 
 	// For each receiver. Validate that the receiver exists.
 	// Then display the status flags.
@@ -1159,14 +1047,6 @@ void AWLQtDemo::on_timerTimeout()
 			if (videoViewers[viewerID] && bNewDetections) videoViewers[viewerID]->slotDetectionDataChanged(detectionData);
 		}
 #endif
-#if defined (USE_AP_VIDEO)
-		// Update the data for the camera views. Only if detections have changed have changed.
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID] && bNewDetections) apVideoViewers[viewerID]->slotDetectionDataChanged(detectionData);
-		}
-#endif
-
 
 		// Update the table views only if there is new data
 		if (mTableView && bNewDetections) mTableView->slotDetectionDataChanged(detectionData);
@@ -1184,7 +1064,7 @@ void AWLQtDemo::on_timerTimeout()
 	// Update receiver status
 	bool bWasConnected = labelConnected->text().compare(QString("Connected")) == 0;
 	bool bConnected = receiverCaptures[0]->IsConnected();
-	int frameRate = receiverCaptures[0]->GetFrameRate();
+	ReceiverFrameRate frameRate = receiverCaptures[0]->GetCalculatedFrameRate();
 
 	{
 		QString str;
@@ -1204,7 +1084,7 @@ void AWLQtDemo::on_timerTimeout()
 		labelConnected->setText(str);
 
 		if (bConnected)
-			str.sprintf("Framerate: %3d Hz", frameRate);
+			str.sprintf("Framerate: %3d Hz", (int) frameRate);
 		else
 			str = "";
 		labelFramerate->setText(str);
@@ -1221,13 +1101,6 @@ void AWLQtDemo::on_timerTimeout()
 		for (size_t viewerID = 0; viewerID < videoViewers.size(); viewerID++)
 		{
 			if (videoViewers[viewerID]) videoViewers[viewerID]->slotImageChanged();
-		}
-#endif
-#if defined (USE_AP_VIDEO)
-		// Always spin the video viewers.
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID]) apVideoViewers[viewerID]->slotImageChanged();
 		}
 #endif
 	}
@@ -1291,13 +1164,7 @@ bool AWLQtDemo::GetLatestAScans(AScan::Vector &aScanData)
 		Publisher::SubscriberID subscriberID = receiverCaptureSubscriberIDs[receiverID];
 		FrameID lastDisplayedFrame = receiver->GetCurrentIssueID(subscriberID);
 		bNew = receiver->CopyReceiverAScans(lastDisplayedFrame, aScanData, subscriberID);
-		//printf ("receiver %d\n", receiverID);
 	}
-	/*
-	BOOST_FOREACH(AScan::Ptr aScan, aScanData) {
-		printf ("copied ascan %d-%d\n", aScan->receiverID, aScan->channelID);
-	}
-	*/
 
 	return(bNew);
 }
@@ -1353,13 +1220,13 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		ui.hardwareDSPCheckBox->setChecked(status.hardwareError.bitFieldData.dsp);
 		ui.hardwareMemoryCheckBox->setChecked(status.hardwareError.bitFieldData.memory);
 
-		ui.receiverChannel1CheckBox->setChecked(status.receiverError.bitFieldData.channel0);
-		ui.receiverChannel2CheckBox->setChecked(status.receiverError.bitFieldData.channel1);
-		ui.receiverChannel3CheckBox->setChecked(status.receiverError.bitFieldData.channel2);
-		ui.receiverChannel4CheckBox->setChecked(status.receiverError.bitFieldData.channel3);
-		ui.receiverChannel5CheckBox->setChecked(status.receiverError.bitFieldData.channel4);
-		ui.receiverChannel6CheckBox->setChecked(status.receiverError.bitFieldData.channel5);
-		ui.receiverChannel7CheckBox->setChecked(status.receiverError.bitFieldData.channel6);
+		ui.receiverVoxel1CheckBox->setChecked(status.receiverError.bitFieldData.voxel0);
+		ui.receiverVoxel2CheckBox->setChecked(status.receiverError.bitFieldData.voxel1);
+		ui.receiverVoxel3CheckBox->setChecked(status.receiverError.bitFieldData.voxel2);
+		ui.receiverVoxel4CheckBox->setChecked(status.receiverError.bitFieldData.voxel3);
+		ui.receiverVoxel5CheckBox->setChecked(status.receiverError.bitFieldData.voxel4);
+		ui.receiverVoxel6CheckBox->setChecked(status.receiverError.bitFieldData.voxel5);
+		ui.receiverVoxel7CheckBox->setChecked(status.receiverError.bitFieldData.voxel6);
 
 		ui.statusSelfTestCheckBox->setChecked(status.status.bitFieldData.selfTest);
 		ui.statusShutdownCheckBox->setChecked(status.status.bitFieldData.shutdown);
@@ -1430,13 +1297,13 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		ui.hardwareDSPCheckBox->setEnabled(bEnableButtons);
 		ui.hardwareMemoryCheckBox->setEnabled(bEnableButtons);
 
-		ui.receiverChannel1CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel2CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel3CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel4CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel5CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel6CheckBox->setEnabled(bEnableButtons);
-		ui.receiverChannel7CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel1CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel2CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel3CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel4CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel5CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel6CheckBox->setEnabled(bEnableButtons);
+		ui.receiverVoxel7CheckBox->setEnabled(bEnableButtons);
 
 		ui.statusSelfTestCheckBox->setEnabled(bEnableButtons);
 		ui.statusShutdownCheckBox->setEnabled(bEnableButtons);
@@ -1454,23 +1321,23 @@ void AWLQtDemo::DisplayReceiverStatus(int receiverID)
 		UpdateTrackerParametersView();
 }
 
-void AWLQtDemo::FillChannelSelectList()
+void AWLQtDemo::FillVoxelSelectList()
 {
 
-	ui.channelSelectListWidget->clear();
+	ui.voxelSelectListWidget->clear();
 
-	int channelQty = receiverCaptures[0]->GetChannelQty();
-	for (int channel = 0; channel < channelQty; channel++)
+	int voxelQty = receiverCaptures[0]->GetVoxelQty();
+	for (int voxelID = 0; voxelID < voxelQty; voxelID++)
 	{
-		int row = channel / receiverCaptures[0]->receiverColumnQty;
-		int column= channel % receiverCaptures[0]->receiverColumnQty;
+		int row = voxelID / receiverCaptures[0]->receiverColumnQty;
+		int column= voxelID % receiverCaptures[0]->receiverColumnQty;
 
-		QString sLabel= QString("Row: %1 Col: %2").arg(row+1, 3).arg(column+1, 3);
+		QString sLabel= QString("Row: %1 Col: %2").arg(row, 3).arg(column, 3);
 	
-		QListWidgetItem *listItem = new QListWidgetItem(sLabel, ui.channelSelectListWidget);
+		QListWidgetItem *listItem = new QListWidgetItem(sLabel, ui.voxelSelectListWidget);
 		listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 		listItem->setCheckState(Qt::Checked);
-		ui.channelSelectListWidget->addItem(listItem);
+		ui.voxelSelectListWidget->addItem(listItem);
 	}
 }
 
@@ -2377,7 +2244,41 @@ void AWLQtDemo::on_viewAboutActionTriggered()
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle("About");
 	msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-	msgBox.setText("QtDemo 1.4.2<br><br>Copyright &copy; 2018 Phantom Intelligence inc.<br><br><a href='http://phantomintelligence.com'>http://phantomintelligence.com</a>");
+
+	// allocate a block of memory for the version info
+	QString sApplicationVersion = QApplication::applicationVersion();
+
+	QString aboutText = QString("<p>Cute Demo: LiDAR demo application<br>Version ") + QApplication::applicationVersion() + "</p>"+
+		"<p>"
+		"The CuteDemo Application and Kit Copyright(C) 2013-2019 Phantom Intelligence Inc.<br>"
+		"<a href = \"https://www.phantomintelligence.com/\"style=\"color: gray;\">https://www.phantomintelligence.com/</a></p>"
+		"<p>"
+		"You may use, distribute and copy the this application, its libraries and accompanying source code under the terms of the GNU Lesser General Public License version 3 (LGPL3), "
+		"which supplements GNU General Public License Version 3, appearing in document &quot;PHANTOM_LICENSE.LGPL3&quot; included in the packaging of this application.<br>"
+		"Alternatively, these files may be used under the terms of the GNU General Public License  version 3, appearing in the file &quot;PHANTOM_LICENSE.GPL3&quot; included in the packaging of this application.</p>"
+		"<p>"
+		"This program also makes use of third party tools and libraries, which are used without alteration to their source code.</p>"
+		"<p>"
+		"The use of each of the individual librairies is subject to its own license terms. A copy of the licenses for each of these is available in the <br>"
+		" &quot;Licences&quot; directory packaged with the application.</p>"
+		"<p>"
+		"QT portion of the application is developed under the QT Open Source License<br>"
+		"(a LGPLV3 license).The Qt Toolkit is Copyright(C) 2017 The Qt Company Ltd.<br>"
+		"QT License is in subdirectory &quot;Qt open Source&quot;.<br>"
+		"<a href = \"https://www.qt.io/\"style=\"color: gray;\">https://www.qt.io/</a></p>"
+		"<p>"
+		"OpenCV license is in subdirectory &quot;OpenCV&quot;.OpenCV also makes use of FFmpeg, under a separate license also in subdirectory &quot;OpenCV&quot;.<br>"
+		"<a href =\"https://opencv.org/\"style=\"color: gray;\">https://opencv.org/</a></p>"
+		"<p>"
+		"BOOST license is in subdirectory &quot;BOOST&quot;.<br>"
+		"<a href = \"https://www.boost.org/\"style=\"color: gray;\";>https://www.boost.org/</a></p>"
+		"< p >"
+		"LibUSB license is provided in subdirectory &quot;LibUSB&quot;.<br>"
+		"<a href = \"https://libusb.info/\"style=\"color: gray;\">https://libusb.info/</a></p>"
+		"< p >"
+		"Microsoft Windows Redistributables are subject to the license terms outlined in &quot;Microsoft Visual C++2015 Redistributable (x86) 14.23.27820&quot; </p>";
+
+	msgBox.setText(aboutText);
 	msgBox.exec();
 }
 
@@ -2399,7 +2300,7 @@ void AWLQtDemo::on_viewSettingsActionToggled()
 }
 
 
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 void AWLQtDemo::on_viewCameraActionToggled()
 {
 	if (actionCameraButton->isChecked())
@@ -2412,14 +2313,7 @@ void AWLQtDemo::on_viewCameraActionToggled()
 			}
 		}
 #endif
-#ifdef USE_AP_VIDEO
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID]) {
-				apVideoViewers[viewerID]->show();
-			}
-		}
-#endif
+
 		actionCameraButton->setChecked(true);
 	}
 	else
@@ -2433,76 +2327,20 @@ void AWLQtDemo::on_viewCameraActionToggled()
 			}
 		}
 #endif
-#ifdef USE_AP_VIDEO
-		for (size_t viewerID = 0; viewerID < apVideoViewers.size(); viewerID++)
-		{
-			if (apVideoViewers[viewerID]) 
-			{
-				apVideoViewers[viewerID]->hide();
-			}
-		}
-#endif
+
 		actionCameraButton->setChecked(false);
 	}
 }
 #endif
 
-void AWLQtDemo::on_checkBoxAdvanceModeToggled()
+void AWLQtDemo::on_checkBoxFPGAAdvanceModeToggled()
 {
   FillFPGAList();
 }
 
-void AWLQtDemo::on_checkBoxMiscSystemSelToggled()
+void AWLQtDemo::on_checkBoxADCAdvanceModeToggled()
 {
-
-	if(ui.misc_checkBox_System->isChecked()) {
-		fprintf(stderr, "System enable message\n");
-		receiverCaptures[0]->SetSSPSystemEnable(true);
-	} else {
-		fprintf(stderr, "System disable message\n");
-		receiverCaptures[0]->SetSSPSystemEnable(false);
-
-		receiverCaptures[0]->QuerySSPSystemEnable();
-	}
-
-
-}
-
-void AWLQtDemo::on_checkBoxMiscLaserSelToggled()
-{
-	if(ui.misc_checkBox_Laser->isChecked()) {
-		fprintf(stderr, "Laser enable message\n");
-		receiverCaptures[0]->SetSSPLaserEnable(true);
-	} else {
-		fprintf(stderr, "Laser disable message\n");
-		receiverCaptures[0]->SetSSPLaserEnable(false);
-	}
-
-	receiverCaptures[0]->QuerySSPLaserEnable();
-}
-
-void AWLQtDemo::on_checkBoxMiscGainSelToggled()
-{
-	if(ui.misc_checkBox_Gain->isChecked()) {
-		fprintf(stderr, "Gain enable message\n");
-		receiverCaptures[0]->SetSSPAutoGainEnable(true);
-	} else {
-		fprintf(stderr, "Gain disable message\n");
-		receiverCaptures[0]->SetSSPAutoGainEnable(false);
-	}
-}
-
-void AWLQtDemo::on_checkBoxMiscDCSelToggled()
-{
-	uint16_t registerAddress = 229;
-	uint32_t registerValue = 0;
-
-	if(ui.misc_checkBox_DC->isChecked()) {
-		fprintf(stderr, "DC enable message\n");
-	} else {
-		//fprintf(stderr, "DC disable message\n");
-		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
-	}
+	FillADCList();
 }
 
 void AWLQtDemo::on_pushButtonSelectAllAscan_clicked()
@@ -2524,7 +2362,7 @@ void AWLQtDemo::on_pushButtonSelectAllAscan_clicked()
   ui.checkBox_15->setChecked(true);
   ui.checkBox_16->setChecked(true);
 
-  mAScanView->setChannelMask(0xFFFF);
+  mAScanView->setVoxelMask(0xFFFF);
 }
 
 void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
@@ -2546,7 +2384,7 @@ void AWLQtDemo::on_pushButtonSelectNoneAscan_clicked()
   ui.checkBox_15->setChecked(false);
   ui.checkBox_16->setChecked(false);
 
-  mAScanView->setChannelMask(0);
+  mAScanView->setVoxelMask(0);
 }
 
 void AWLQtDemo::on_checkBoxAscanSelToggled()
@@ -2568,7 +2406,7 @@ void AWLQtDemo::on_checkBoxAscanSelToggled()
   if (ui.checkBox_14->isChecked()) mask |= 1 << 13;
   if (ui.checkBox_15->isChecked()) mask |= 1 << 14;
   if (ui.checkBox_16->isChecked()) mask |= 1 << 15;
-  mAScanView->setChannelMask(mask);
+  mAScanView->setVoxelMask(mask);
 }
 
 void AWLQtDemo::on_radioReceiverSelToggled()
@@ -2587,13 +2425,10 @@ void AWLQtDemo::on_comboBoxMaxRange_indexChanged(int newIndex)
 {
   if (!ui.checkBoxAutoScale->isChecked())
   {
-    switch (newIndex)
-    {
-    case 0: mAScanView->SetMaxRange(32767.0F); break;
-    case 1: mAScanView->SetMaxRange(32767.0F * 0.75F); break;
-    case 2: mAScanView->SetMaxRange(32767.0F * 0.50F); break;
-    default:mAScanView->SetMaxRange(32767.0F * 0.25F); break;
-    }
+	  if (newIndex >= 0) {
+		  float rangeScale = ui.comboBoxMaxRange->itemData(newIndex).value<float>();
+		  mAScanView->SetMaxRange(32767.0F * rangeScale);
+	  }
   }
 }
 
@@ -2608,13 +2443,7 @@ void AWLQtDemo::on_checkBoxAutoScaleToggled()
   {
     ui.comboBoxMaxRange->setDisabled(false);
     int sel = ui.comboBoxMaxRange->currentIndex();
-    switch (sel)
-    {
-    case 0: mAScanView->SetMaxRange(32767.0F); break;
-    case 1: mAScanView->SetMaxRange(32767.0F * 0.75F); break;
-    case 2: mAScanView->SetMaxRange(32767.0F * 0.50F); break;
-    default:mAScanView->SetMaxRange(32767.0F * 0.25F); break;
-    }
+	on_comboBoxMaxRange_indexChanged(sel);
   }
 }
 
@@ -2654,7 +2483,7 @@ void AWLQtDemo::on_viewAScanClose()
 
 void AWLQtDemo::FillFPGAList()
 {
-	bool bAdvancedModeChecked = ui.checkBoxAdvanceMode->isChecked();
+	bool bAdvancedModeChecked = ui.checkBoxFPGAAdvanceMode->isChecked();
 
 	if (!receiverCaptures[0]->registersFPGALabel.empty())
 		ui.registerFPGAGroupBox->setTitle(receiverCaptures[0]->registersFPGALabel.c_str());
@@ -2670,7 +2499,7 @@ void AWLQtDemo::FillFPGAList()
 			QString sLabel = receiverCaptures[0]->registersFPGA[i].sIndex.c_str();
 			sLabel += ": ";
 			sLabel += receiverCaptures[0]->registersFPGA[i].sDescription.c_str();
-			ui.registerFPGAAddressSetComboBox->addItem(sLabel);
+			ui.registerFPGAAddressSetComboBox->addItem(sLabel, QVariant((int16_t)i));
 		}
 	}
 
@@ -2696,9 +2525,13 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	size_t comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
+	// Index in combo box does not correspond to address in registerList, 
+	// since some items in regisster list are not always displayed.
+	// Trust the user data
+	size_t registerIndex = ui.registerFPGAAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersFPGA.size()) return;
 
-	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersFPGA[registerIndex].address;
 
 	sValue = ui.registerFPGAValueSetLineEdit->text();
 	bool ok;
@@ -2716,10 +2549,14 @@ void AWLQtDemo::on_registerFPGASetPushButton_clicked()
 	ui.registerFPGAValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->SetFPGARegister(registerAddress, registerValue);
 	}
+
+
+	// Force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerFPGAGetPushButton_clicked();
 
 }
 
@@ -2730,23 +2567,26 @@ void AWLQtDemo::on_registerFPGAGetPushButton_clicked()
 
 	size_t comboIndex = ui.registerFPGAAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+	// Index in combo box does not correspond to address in registerList, 
+// since some items in regisster list are not always displayed.
+// Trust the user data
+	size_t registerIndex = ui.registerFPGAAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersFPGA.size()) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
-
-	registerAddress = receiverCaptures[0]->registersFPGA[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersFPGA[registerIndex].address;
 
 	// Now update user interface
 	ui.registerFPGAAddressGetLineEdit->setText("");
 	ui.registerFPGAValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected()) 
 	{
 		receiverCaptures[0]->QueryFPGARegister(registerAddress);
 	}
 }
 
-void AWLQtDemo::on_registerFPGASaveToFlash_clicked()
+void AWLQtDemo::on_registerSaveToFlashPushButton_clicked()
 {
   QMessageBox::StandardButton reply;
 
@@ -2756,14 +2596,14 @@ void AWLQtDemo::on_registerFPGASaveToFlash_clicked()
   if (reply == QMessageBox::Yes)
   {
     // Send the command to the device
-    if (receiverCaptures[0])
+    if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
     {
-      receiverCaptures[0]->SetFPGARegister(0x3FFE, 0);
+      receiverCaptures[0]->SetADCRegister(0xFE, 0);
     }
   }
 }
 
-void AWLQtDemo::on_registerFPGARestoreFactoryDefaults_clicked()
+void AWLQtDemo::on_registerRestoreFactoryDefaultsPushButton_clicked()
 {
   QMessageBox::StandardButton reply;
 
@@ -2775,59 +2615,35 @@ void AWLQtDemo::on_registerFPGARestoreFactoryDefaults_clicked()
     // Send the command to the device
     if (receiverCaptures[0])
     {
-      receiverCaptures[0]->SetFPGARegister(0x3FFF, 0);
+      receiverCaptures[0]->SetADCRegister(0xFF, 0);
     }
   }
-}
 
-void AWLQtDemo::on_registerADCSaveToFlash_clicked()
-{
-  QMessageBox::StandardButton reply;
-
-  reply = QMessageBox::question(this, "Warning", "Save current configuration to Flash. Are you sure?",
-    QMessageBox::Yes | QMessageBox::No);
-
-  if (reply == QMessageBox::Yes)
-  {
-    // Send the command to the device
-    if (receiverCaptures[0])
-    {
-      receiverCaptures[0]->SetADCRegister(0x3FFE, 0);
-    }
-  }
-}
-
-void AWLQtDemo::on_registerADCRestoreFactoryDefaults_clicked()
-{
-  QMessageBox::StandardButton reply;
-
-  reply = QMessageBox::question(this, "Warning", "Restore factory default configuration. Are you sure?",
-    QMessageBox::Yes | QMessageBox::No);
-
-  if (reply == QMessageBox::Yes)
-  {
-    // Send the command to the device
-    if (receiverCaptures[0])
-    {
-      receiverCaptures[0]->SetADCRegister(0x3FFF, 0);
-    }
-  }
+  // Force a get of the current values, to force a refresh
+  AWLQtDemo::on_registerADCGetPushButton_clicked();
+  AWLQtDemo::on_registerFPGAGetPushButton_clicked();
 }
 
 void AWLQtDemo::FillADCList()
 {
+	bool bAdvancedModeChecked = ui.checkBoxADCAdvanceMode->isChecked();
+
 	if (!receiverCaptures[0]->registersADCLabel.empty())
 		ui.registerADCGroupBox->setTitle(receiverCaptures[0]->registersADCLabel.c_str());
 
-
 	ui.registerADCAddressSetComboBox->clear();
 
-	for (size_t i = 0; i < receiverCaptures[0]->registersADC.size(); i++) 
+	for (size_t i = 0; i < receiverCaptures[0]->registersADC.size(); i++)
 	{
-		QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
-		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
-		ui.registerADCAddressSetComboBox->addItem(sLabel);
+		if (!bAdvancedModeChecked && receiverCaptures[0]->registersADC[i].bAdvanced)
+			; // Skip advanced register
+		else
+		{
+			QString sLabel = receiverCaptures[0]->registersADC[i].sIndex.c_str();
+			sLabel += ": ";
+			sLabel += receiverCaptures[0]->registersADC[i].sDescription.c_str();
+			ui.registerADCAddressSetComboBox->addItem(sLabel, QVariant((int16_t)i));
+		}
 	}
 
 	if (receiverCaptures[0]->registersADC.size() > 0)
@@ -2851,9 +2667,13 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 
 	size_t comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+	// Index in combo box does not correspond to address in registerList, 
+    // since some items in register list are not always displayed.
+    // Trust the user data
+	size_t registerIndex = ui.registerADCAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersADC.size()) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersADC.size()) return;
-	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersADC[registerIndex].address;
 
 	sValue = ui.registerADCValueSetLineEdit->text();
 	bool ok;
@@ -2871,10 +2691,13 @@ void AWLQtDemo::on_registerADCSetPushButton_clicked()
 	ui.registerADCValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->SetADCRegister(registerAddress, registerValue);
 	}
+
+	// Force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerADCGetPushButton_clicked();
 
 }
 
@@ -2885,16 +2708,20 @@ void AWLQtDemo::on_registerADCGetPushButton_clicked()
 
 	size_t comboIndex = ui.registerADCAddressSetComboBox->currentIndex();
 	if (comboIndex < 0) return;
+	// Index in combo box does not correspond to address in registerList, 
+	// since some items in register list are not always displayed.
+	// Trust the user data
+	size_t registerIndex = ui.registerADCAddressSetComboBox->itemData(comboIndex).value<size_t>();
+	if (registerIndex >= receiverCaptures[0]->registersADC.size()) return;
 
-	if (comboIndex >= receiverCaptures[0]->registersFPGA.size()) return;
-	registerAddress = receiverCaptures[0]->registersADC[comboIndex].address;
+	registerAddress = receiverCaptures[0]->registersADC[registerIndex].address;
 
 	// Now update user interface
 	ui.registerADCAddressGetLineEdit->setText("");
 	ui.registerADCValueGetLineEdit->setText("");
 
 	// Send the command to the device
-	if (receiverCaptures[0]) 
+	if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 	{
 		receiverCaptures[0]->QueryADCRegister(registerAddress);
 	}
@@ -2917,26 +2744,26 @@ void AWLQtDemo::FillGPIOList()
         listItem->setFlags(listItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 		listItem->setCheckState(Qt::Unchecked);
 		ui.registerGPIOListWidget->addItem(listItem);
-
-
 	}
 }
 
 void AWLQtDemo::UpdateGPIOList()
 {
-	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	size_t comboSize = (size_t) ui.registerGPIOListWidget->count();
+	for (size_t comboIndex = 0; comboIndex < comboSize; comboIndex++) 
 	{
-		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
+		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
+		size_t registerIndex = comboIndex;
 
-		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[registerIndex].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates  == updateStatusPendingUpdate)
+		sLabel += receiverCaptures[0]->registersGPIO[registerIndex].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates  == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}
 	
-		if (receiverCaptures[0]->registersGPIO[i].value) 
+		if (receiverCaptures[0]->registersGPIO[registerIndex].value) 
 		{
 			listItem->setCheckState(Qt::Checked);
 		}
@@ -2945,20 +2772,22 @@ void AWLQtDemo::UpdateGPIOList()
 			listItem->setCheckState(Qt::Unchecked);
 		}
 
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingVisual)
-			receiverCaptures[0]->registersGPIO[i].pendingUpdates = updateStatusUpToDate;
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates == updateStatusPendingVisual)
+			receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates = updateStatusUpToDate;
 	}
 }
 
 void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 {
 	// Update all of the MIOs at the same time
-	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	size_t comboSize = (size_t) ui.registerGPIOListWidget->count();
+	for (size_t comboIndex = 0; comboIndex < comboSize; comboIndex++)
 	{
-		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
+		size_t registerIndex = comboIndex;
+		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[registerIndex].address;
 		uint32_t registerValue = 0;
 
-		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
+		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
 		Qt::CheckState checkState = listItem->checkState();
 		if (checkState == Qt::Checked) 
 		{
@@ -2967,44 +2796,49 @@ void AWLQtDemo::on_registerGPIOSetPushButton_clicked()
 
 
 		// Send the command to the device
-		if (receiverCaptures[0]) 
+		if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 		{
 			receiverCaptures[0]->SetGPIORegister(registerAddress, registerValue);
 		}
 
 		// Update the user interface
-		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[registerIndex].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates == updateStatusPendingUpdate)
+		sLabel += receiverCaptures[0]->registersGPIO[registerIndex].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates == updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}		
 		listItem->setText(sLabel);
 	}// For
+
+	  // Force a get of the current value, to force a refresh
+	AWLQtDemo::on_registerGPIOGetPushButton_clicked();
 }
 
 
 void AWLQtDemo::on_registerGPIOGetPushButton_clicked()
 {
 	// Update all of the MIOs at the same time
-	for (size_t i = 0; i < receiverCaptures[0]->registersGPIO.size(); i++) 
+	size_t comboSize = (size_t) ui.registerGPIOListWidget->count();
+	for (size_t comboIndex = 0; comboIndex < comboSize; comboIndex++)
 	{
-		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[i].address;
+		size_t registerIndex = comboIndex;
+		uint16_t registerAddress = receiverCaptures[0]->registersGPIO[registerIndex].address;
 
-		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(i);
+		QListWidgetItem *listItem = ui.registerGPIOListWidget->item(comboIndex);
 	
 		// Send the command to the device
-		if (receiverCaptures[0]) 
+		if (receiverCaptures[0] && receiverCaptures[0]->IsConnected())
 		{
 			receiverCaptures[0]->QueryGPIORegister(registerAddress);		
 		}
 
 		// Update the user interface
-		QString sLabel = receiverCaptures[0]->registersGPIO[i].sIndex.c_str();
+		QString sLabel = receiverCaptures[0]->registersGPIO[registerIndex].sIndex.c_str();
 		sLabel += ": ";
-		sLabel += receiverCaptures[0]->registersGPIO[i].sDescription.c_str();
-		if (receiverCaptures[0]->registersGPIO[i].pendingUpdates = updateStatusPendingUpdate)
+		sLabel += receiverCaptures[0]->registersGPIO[registerIndex].sDescription.c_str();
+		if (receiverCaptures[0]->registersGPIO[registerIndex].pendingUpdates = updateStatusPendingUpdate)
 		{
 			sLabel += " -- UPDATING...";
 		}		
@@ -3021,13 +2855,6 @@ void AWLQtDemo::closeEvent(QCloseEvent * /*event*/)
 		if (videoCaptures[cameraID]) videoCaptures[cameraID]->Stop();
 	}
 #endif
-#if defined (USE_AP_VIDEO)
-	for (int cameraID = 0; cameraID < apVideoCaptures.size(); cameraID++) 
-	{
-		if (apVideoCaptures[cameraID]) apVideoCaptures[cameraID]->Stop();
-	}
-#endif
-
 
 	for (size_t receiverID = 0; receiverID < receiverCaptures.size(); receiverID++)
 	{
@@ -3037,26 +2864,3 @@ void AWLQtDemo::closeEvent(QCloseEvent * /*event*/)
 	qApp->closeAllWindows();
 }	
 
-#if 0
-void AWLQtDemo::DoThreadLoop()
-{
-	int dgg = 0;
-	char str[256];
-	int nbrPrevFrame = 0;
-	int nbrPrevRaw = 0;
-
-	while (true)
-	{
-		int nbrFrame = receiverCaptures[0]->m_nbrCompletedFrameCumul;
-		int nbrRaw = receiverCaptures[0]->m_nbrRawCumul;
-
-		sprintf(str, "frame: %5d (%3d) - Raw: %5d (%3d)\n", nbrFrame, nbrFrame - nbrPrevFrame, nbrRaw, nbrRaw - nbrPrevRaw);
-		OutputDebugStringA(str);
-
-		nbrPrevFrame = nbrFrame;
-		nbrPrevRaw = nbrRaw;
-
-		Sleep(1000);
-	}
-}
-#endif

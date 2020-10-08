@@ -1,23 +1,45 @@
-/* VideoViewer.cpp */
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
+/* VideoViewer.cpp : Overlay LiDAR detection info on top of camera image*/
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 
 #include "AWLSettings.h"
 #include "VideoCapture.h"
-#include "awlcoord.h"
+#include "SensorCoord.h"
 #include "VideoViewer.h"
 #include "DebugPrintf.h"
 #include "DetectionStruct.h"
@@ -40,8 +62,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 
-using namespace std;
 using namespace awl;
+SENSORCORE_USE_NAMESPACE
 
 #ifdef _WIN32
   #include <windows.h>
@@ -500,7 +522,7 @@ void VideoViewer::DrawHorizontalTicks(QImage &sourceFrame, QPainter &painter, fl
 	CvPoint endPoint;
 
 	// Cartesian coord at the outer edge of screen
-	CartesianCoord lineCart(SphericalCoord(10, M_PI_2 - DEG2RAD(tickAngle), (videoCapture->calibration.fovWidth/2)));
+	CartesianCoord lineCart(SphericalCoord(10, M_SENSORCORE_2 - DEG2RAD(tickAngle), (videoCapture->calibration.fovWidth/2)));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);
 	startPoint.x = videoCapture->calibration.frameWidthInPixels-1;
 	endPoint.y = startPoint.y;
@@ -514,7 +536,7 @@ void VideoViewer::DrawHorizontalTicks(QImage &sourceFrame, QPainter &painter, fl
 	
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
-	lineCart = SphericalCoord(10, M_PI_2 - DEG2RAD(tickAngle), 0);
+	lineCart = SphericalCoord(10, M_SENSORCORE_2 - DEG2RAD(tickAngle), 0);
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
 	startPoint.x = (videoCapture->calibration.frameWidthInPixels- tickLength) /2;
 	endPoint.y = startPoint.y;
@@ -531,7 +553,7 @@ void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  flo
 	CvPoint endPoint;
 
 	// Cartesian coord at the outer edge of the screen
-	CartesianCoord lineCart(SphericalCoord(10, M_PI_2-(videoCapture->calibration.fovHeight/2), DEG2RAD(-tickAngle)));
+	CartesianCoord lineCart(SphericalCoord(10, M_SENSORCORE_2-(videoCapture->calibration.fovHeight/2), DEG2RAD(-tickAngle)));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);
 	startPoint.y = videoCapture->calibration.frameHeightInPixels-1;
 	endPoint.y = startPoint.y - tickLength;
@@ -544,7 +566,7 @@ void VideoViewer::DrawVerticalTicks(QImage &sourceFrame, QPainter &painter,  flo
 	DrawDetectionLine(sourceFrame, painter, startPoint, endPoint, colorEnhance, thickness);
 
 	// Retake Cartesian coord at the center edge of screen: Wide FOV screens may have barrel effect
-	lineCart = SphericalCoord(10., (float) M_PI_2, (float) DEG2RAD(-tickAngle));
+	lineCart = SphericalCoord(10., (float) M_SENSORCORE_2, (float) DEG2RAD(-tickAngle));
 	videoCapture->calibration.ToFrameXY(lineCart, startPoint.x, startPoint.y);	
 	startPoint.y = (videoCapture->calibration.frameHeightInPixels - tickLength) / 2;
 	endPoint.y = startPoint.y + tickLength;
@@ -560,12 +582,15 @@ void VideoViewer::DrawChannelOutlines(QImage &sourceFrame, QPainter &painter)
 	int receiverQty = globalSettings->receiverSettings.size();
 	for (int receiverID = 0; receiverID < receiverQty; receiverID++)
 	{
-		int channelQty = globalSettings->receiverSettings[receiverID].channelsConfig.size();
-		for (int channelID = 0; channelID < channelQty; channelID++)
+		int voxelQty = globalSettings->receiverSettings[receiverID].voxelsConfig.size();
+		int columnQty = globalSettings->receiverSettings[receiverID].receiverColumns;
+
+		for (int voxelIndex = 0; voxelIndex < voxelQty; voxelIndex++)
 		{
-			Detection::Ptr detection = Detection::Ptr(new Detection(receiverID, channelID, 0));
+			CellID cellID(voxelIndex % columnQty, voxelIndex / columnQty);
+
+			Detection::Ptr detection = Detection::Ptr(new Detection(receiverID, cellID, 0));
 			detection->distance = 10.0;
-			detection->channelID = channelID;
 			detection->distance = 10.0;
 
 			detection->intensity = 99.0;
@@ -651,27 +676,29 @@ bool VideoViewer::GetChannelRect(const Detection::Ptr &detection, CvPoint &topLe
 	bool bSomePointsInFront = false;
 
 	int receiverID = detection->receiverID;
-	int channelID = detection->channelID;
 	int cameraID = videoCapture->GetCameraID();
 
 	// Channel description pointer
-	ChannelConfig *channel = &globalSettings->receiverSettings[receiverID].channelsConfig[channelID];
+	int columns = globalSettings->receiverSettings[receiverID].receiverColumns;
+	int voxelIndex = (detection->cellID.row * columns) + detection->cellID.column;
+	VoxelConfig *voxel= &globalSettings->receiverSettings[receiverID].voxelsConfig[voxelIndex];
 
-	// Position of the topLeft corner of the channel FOV 
-	SphericalCoord topLeftInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), +DEG2RAD(channel->fovWidth/2));  // Spherical coordinate, relative to sensor
-	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topLeftInChannel, topLeft.x, topLeft.y);
 
-	// Position of the topRight corner of the channel FOV 
-	SphericalCoord topRightInChannel(detection->distance, M_PI_2 - DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2)); 
-    bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, topRightInChannel, topRight.x, topRight.y);
+	// Position of the topLeft corner of the voxel FOV 
+	SphericalCoord topLeftInvoxel(detection->distance, M_SENSORCORE_2 - DEG2RAD(voxel->fovHeight/2), +DEG2RAD(voxel->fovWidth/2));  // Spherical coordinate, relative to sensor
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, topLeftInvoxel, topLeft.x, topLeft.y);
 
-	// Position of the bottomLeft corner of the channel FOV 
-	SphericalCoord bottomLeftInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), + DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomLeftInChannel, bottomLeft.x, bottomLeft.y);
+	// Position of the topRight corner of the voxel FOV 
+	SphericalCoord topRightInvoxel(detection->distance, M_SENSORCORE_2 - DEG2RAD(voxel->fovHeight/2), -DEG2RAD(voxel->fovWidth/2)); 
+    bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, topRightInvoxel, topRight.x, topRight.y);
 
-	// Position of the topRight corner of the channel FOV 
-	SphericalCoord bottomRightInChannel(detection->distance, M_PI_2 + DEG2RAD(channel->fovHeight/2), -DEG2RAD(channel->fovWidth/2));
-	bSomePointsInFront |= AWLCoordinates::SensorToCameraXY(receiverID, channelID, cameraID, videoCapture->calibration, bottomRightInChannel, bottomRight.x, bottomRight.y);
+	// Position of the bottomLeft corner of the voxel FOV 
+	SphericalCoord bottomLeftInvoxel(detection->distance, M_SENSORCORE_2 + DEG2RAD(voxel->fovHeight/2), + DEG2RAD(voxel->fovWidth/2));
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, bottomLeftInvoxel, bottomLeft.x, bottomLeft.y);
+
+	// Position of the topRight corner of the voxel FOV 
+	SphericalCoord bottomRightInvoxel(detection->distance, M_SENSORCORE_2 + DEG2RAD(voxel->fovHeight/2), -DEG2RAD(voxel->fovWidth/2));
+	bSomePointsInFront |= SensorCoordinates::SensorToCameraXY(receiverID, voxelIndex, cameraID, videoCapture->calibration, bottomRightInvoxel, bottomRight.x, bottomRight.y);
 
 	if (bSomePointsInFront)
 	{

@@ -8,20 +8,17 @@
     <display2DWindow>true</display2DWindow>
     <displayAScanViewWindow>true</displayAScanViewWindow>
     <displayTableViewWindow>false</displayTableViewWindow>
-    <display3DWindow>false</display3DWindow>
     <displayCameraWindow>false</displayCameraWindow>
 
     <!-- Tells which settings tabs are displayed -->
     <TabSettingCalibration>true</TabSettingCalibration>
     <TabSettingControl>false</TabSettingControl>
-    <TabSettingStatus>flase</TabSettingStatus>
+    <TabSettingStatus>false</TabSettingStatus>
     <TabSettingRegisters>true</TabSettingRegisters>
     <TabSettingGPIOs>false</TabSettingGPIOs>
     <TabSettingAlgoControl>false</TabSettingAlgoControl>
     <TabSettingTrackerControl>false</TabSettingTrackerControl>
     <TabSettingAScan>true</TabSettingAScan>
-    <TabSettingMisc>true</TabSettingMisc>
-
 
     <!-- velocity units: display velocity in km/h or m/s
 	       0:  Units are in m/s
@@ -48,6 +45,10 @@
   <debug>
     <enableDebugFile>false</enableDebugFile>
     <enableLogFile>false</enableLogFile>
+    <!-- Path for debug and log files.  Must be terminated by a "/" -->
+    <defaultPath>./</defaultPath>
+    <!-- Name of the log file.  Should include extension. Recommended extension is CSV -->
+    <logFileName>distanceLog.csv</logFileName>
   </debug>
 
    <video>
@@ -60,18 +61,18 @@
     <receiver0>
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
-		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+		       Valid values currently possible are "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
+      <receiverType>LibUSB2</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
       <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
-      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
-		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+      <!-- The receiverVoxelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
 
       <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
@@ -82,7 +83,7 @@
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
+      <libUsbTimeOut>1</libUsbTimeOut>
       
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
@@ -91,11 +92,11 @@
 
 
        <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
-      <frameRate>0</frameRate>
+      <frameRate>50</frameRate>
 
-        <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
-      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>65535</channelMask>
+      <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
+      <voxelMask>65535</voxelMask>
 
       <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
@@ -107,17 +108,17 @@
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
-      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
+      <msgEnableObstacleCompact>false</msgEnableObstacleCompact>
+      <msgEnableRaw>true</msgEnableRaw>
  
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
-          <forward>0.06</forward>
+          <forward>0.00</forward>
           <!-- lateral offet -->
           <left>0.0</left>
           <!-- height -->
-          <up>0.08</up>
+          <up>0.0</up>
          </position>
         <orientation>
           <pitch>0.0</pitch>
@@ -127,7 +128,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>0.0</displayedRangeMin>
-      <displayedRangeMax>60</displayedRangeMax>
+      <displayedRangeMax>20</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver0>
 
@@ -136,19 +137,19 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>LibUSB2</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
       <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
-      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
-		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+      <!-- The receiverVoxelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
+      <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
 
-        <!-- The LibUSB Vendor id -->
+      <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductId>
@@ -156,24 +157,23 @@
       <libUsbEndPointIn>129</libUsbEndPointIn>
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
-      <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
-  
+       <!-- The LibUSB time out -->
+      <libUsbTimeOut>1</libUsbTimeOut>
+
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
           Earlier versions did not produce footer payload.  Boolean.
           if not defined, the value assumes there is footer payload-->
       <xmitsFooterData>true</xmitsFooterData>
 
 
-  
       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
-      <frameRate>0</frameRate>
+      <frameRate>50</frameRate>
 
-       <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
-      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>65535</channelMask>
+      <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
+      <voxelMask>65535</voxelMask>
 
-     <!-- Message mask flags: 
+      <!-- Message mask flags: 
 		       Controls which messages are sent to client unit
 		       if msgEnableObstacle is true, all displays will
 		       be configured for track mode operation -->
@@ -183,8 +183,8 @@
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
-      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
+      <msgEnableObstacleCompact>false</msgEnableObstacleCompact>
+      <msgEnableRaw>true</msgEnableRaw>
  
       <sensorGeometry>
         <position>
@@ -211,19 +211,18 @@
       <!-- The receiverType determines which desccendant of the Receiver class is used in the configuration.
 		       This is greatly incluence by  comm port communications.
 		       Valid values currently possible are "EasySyncCAN",  "KvaserLeaf", "SocketCAN", "PosixUDP", "PosixTTY", "LibUSB", "TCP" or "Simulator" (case sensistive!) -->
-      <receiverType>LibUSB</receiverType>
+      <receiverType>LibUSB2</receiverType>
 
       <!-- The receiverRegisterSet determines which version of the RegisterConfiguration is accessible for the sensor.
 		       This is usually incluenced by model and firmare version.
 		       Valid values currently possible are "registerDescription_RevC",  "registerDescription_RevD" (case sensistive!) for AWL -->
       <receiverRegisterSet>registerDescription_ADI</receiverRegisterSet>
 
-      <!-- The receiverChannelGeometry identifies which version of the sensor Geometry is used..
-		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each channel) and also depends on lensing.
+      <!-- The receiverVoxelGeometry identifies which version of the sensor Geometry is used..
+		       The sensor geomtretry describes the optical configuration (qty and optical FOVs of each voxel) and also depends on lensing.
 		       Valid values currently possible are "GeometryAWL7",  and "GeometryAWL16Array" (case sensistive!) -->
-      <receiverChannelGeometry>GeometryADI1x16Array</receiverChannelGeometry>
-
-          <!-- The LibUSB Vendor id -->
+      <receiverVoxelGeometry>GeometryADI1x16Array</receiverVoxelGeometry>
+      <!-- The LibUSB Vendor id -->
       <libUsbVendorId>1611</libUsbVendorId>
       <!-- The LibUSB Product id -->
       <libUsbProductId>30755</libUsbProductId>
@@ -232,33 +231,34 @@
       <!-- The LibUSB output end point -->
       <libUsbEndPointOut>1</libUsbEndPointOut>
       <!-- The LibUSB time out -->
-      <libUsbTimeOut>1000</libUsbTimeOut>
- 
+      <libUsbTimeOut>1</libUsbTimeOut>
+
       <!-- In LibUSB and TCP devices devices there some esensor models addd some extra info after the wave acquisition payload (Gordon and later Guardians).  
-          Earlier versions did not produce footer payload.  Boolean.
-          if not defined, the value assumes there is footer payload-->
+            Earlier versions did not produce footer payload.  Boolean.
+            if not defined, the value assumes there is footer payload-->
       <xmitsFooterData>true</xmitsFooterData>
 
-       <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
-      <frameRate>0</frameRate>
 
-      <!-- Channel mask: Controls which channels are processed at AWL Unit Level -->
-      <!--This is a bit mask for channels 0 to 7. Enter the mask in decimal -->
-      <channelMask>65535</channelMask>
+      <!-- Frame rate in Hz.  Set to 0 to use default frame rate -->
+      <frameRate>50</frameRate>
 
-     <!-- Message mask flags: 
-		       Controls which messages are sent to client unit
-		       if msgEnableObstacle is true, all displays will
-		       be configured for track mode operation -->
+      <!-- Voxel mask: Controls which voxels are processed at AWL Unit Level -->
+      <!--This is a bit mask for voxels 0 to 7. Enter the mask in decimal -->
+      <voxelMask>65535</voxelMask>
+
+      <!-- Message mask flags: 
+		        Controls which messages are sent to client unit
+		        if msgEnableObstacle is true, all displays will
+		        be configured for track mode operation -->
       <msgEnableObstacle>true</msgEnableObstacle>
       <msgEnableDistance_1_4>false</msgEnableDistance_1_4>
       <msgEnableDistance_5_8>false</msgEnableDistance_5_8>
       <msgEnableIntensity_1_4>false</msgEnableIntensity_1_4>
       <msgEnableIntensity_5_8>false</msgEnableIntensity_5_8>
       <msgEnableDistanceIntensity>false</msgEnableDistanceIntensity>
-      <msgEnableObstacleCompact>true</msgEnableObstacleCompact>
-      <msgEnableRaw>false</msgEnableRaw>
- 
+      <msgEnableObstacleCompact>false</msgEnableObstacleCompact>
+      <msgEnableRaw>true</msgEnableRaw>
+  
       <sensorGeometry>
         <position>
           <!-- positionFromBumper -->
@@ -276,7 +276,7 @@
       </sensorGeometry>
 
       <displayedRangeMin>1.0</displayedRangeMin>
-      <displayedRangeMax>20</displayedRangeMax>
+      <displayedRangeMax>60</displayedRangeMax>
       <rangeOffset>0.0</rangeOffset>
     </receiver2>
   </receivers>
@@ -289,8 +289,7 @@
 	    Camera index, as used in openCV.
        Indexes start at 0, up to 99. 
        To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
-       A non-numeric camera name can be used to specify a video file.-->
+       XIMEA Cameras (if supported by code), add 1100 to the camera index (default XIMEA camera would be "1100").-->
       <cameraName>0</cameraName>  <!-- Camera #1 is the computer webcam in a 2 camera setup -->
 
       <!-- cameraFlip:
@@ -300,11 +299,11 @@
 
       <position>
         <!-- positionFromBumper -->
-        <forward>0.03</forward>
+        <forward>0.00</forward>
         <!-- lateral offet -->
         <left>0</left>
         <!-- height -->
-        <up>0.13</up>
+        <up>0.0</up>
       </position>
       <orientation>
         <pitch>0.0</pitch>
@@ -312,154 +311,19 @@
         <yaw>0.0</yaw>
       </orientation>
 
-      <!-- Comment out unused cameras
-		< MS_LIFECAM_CINEMA >
-		<fov>
-			<x>47.4</x>
-			<y>30.6</y>
-		</fov>
-
-		< MS_LIFECAM_HD6000 @640x360 >
-		<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-
-		< MS_LIFECAM_HD5000 @640x360 >
-			<fov>
-			<x>45.0</x>
-			<y>39.0</y>
-		</fov>
-    
-     < LOGITECH_C270 @640 x 480 >
-    <fov>
-      <x>42.0</x>
-      <y>27.0</y>
-    </fov>
-
-     < XIMEA with 3.6mm lensing (M12 Lenses PT-03618MP)>
-    <fov>
-      <x>96.75</x>
-      <y>72.5</y>
-     </fov>
-     < radial distorsion correction parameters >
-     <radialCorrectionK1>-.16</radialCorrectionK1>
-     <radialCorrectionK2>0.0</radialCorrectionK2>
-
-
-     < XIMEA with 6mm lensing (M12 Lenses PT-0620BMP) >
+      <!-- MS_LIFECAM_HD5000 @640x360 -->
       <fov>
-        <x>54.6</x>
-        <y>41.3</y>
+        <x>50.3</x>
+        <y>43.6</y>
       </fov>
-      <radialCorrectionK1>-.06</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-  
-  
-     < XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) >
-      <fov>
-        <x>45.0</x>
-        <y>34.0</y>
-      </fov>
-      <radialCorrectionK1>-.04</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-
-      End Comment out unused cameras -->
-
-
-      <!-- XIMEA with 8mm lensing (M12 Lenses PT-0820BMP) -->
-      <fov>
-        <x>82.1</x>
-        <y>52.2</y>
-      </fov>
+      <!-- radial distorsion correction parameters -->
       <radialCorrectionK1>0.0</radialCorrectionK1>
       <radialCorrectionK2>0.0</radialCorrectionK2>
     </camera0>
-
-    <cameraWebcamSample>
-      <!-- cameraName:
-	    Camera index, as used in openCV.
-       Indexes start at 0, up to 99. 
-       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index (default XIMEA camera would be "1100").
-       A non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1</cameraName> <!-- Camera #1 is the computer webcam in a 2 camera setup -->
-
-      <!-- cameraFlip:
-       if true, 180 degree rotation of the camera image, 
-       for cameras that need to be fixed upside down. -->
-      <cameraFlip>false</cameraFlip>
-
-      <position>
-        <!-- positionFromBumper -->
-        <forward>0</forward>
-        <!-- lateral offet -->
-        <left>0</left>
-        <!-- height -->
-        <up>0</up>
-      </position>
-      <orientation>
-        <pitch>0.0</pitch>
-        <roll>0.0</roll>
-        <yaw>0.0</yaw>
-      </orientation>
-
-        <!-- MS_LIFECAM_HD5000 @640x360 -->
-      <fov>
-        <x>45.0</x>
-        <y>39.0</y>
-      </fov>
-      <!-- radial distorsion correction parameters -->
-      <radialCorrectionK1>0.0</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-    </cameraWebcamSample>
-
-
-    <cameraXimea3_6mmSample>
-      <!-- cameraName:
-	    Camera index, as used in openCV.
-       Indexes start at 0, up to 99. 
-       To the index, you a can add a number (multiple of 100) to specify specific OpenCV camera driver handler.
-       XIMEA Cameras, add 1100 to the camera index.
-       An non-numeric camera name can be used to specify a video file.-->
-      <cameraName>1100</cameraName> <!-- Camera #1100 is first Ximea in a 2 camera setup -->
-
-      <!-- cameraFlip:
-       if true, 180 degree rotation of the camera image, 
- 
-     for cameras that need to be fixed upside down. -->
-      <cameraFlip>true</cameraFlip>
-
-      <position>
-        <!-- positionFromBumper -->
-        <forward>0</forward>
-        <!-- lateral offet -->
-        <left>0.0</left>
-        <!-- height -->
-        <up>0</up>
-      </position>
-      <orientation>
-        <pitch>0.0</pitch>
-        <roll>0.0</roll>
-        <yaw>0.0</yaw>
-      </orientation>
-
-      <!-- XIMEA with 3.6mm lensing. F1.8 -->
-      <fov>
-        <x>96.75</x>
-        <y>72.5</y>
-      </fov>
-      <!-- radial distorsion correction parameters -->
-      <radialCorrectionK1>-.16</radialCorrectionK1>
-      <radialCorrectionK2>0.0</radialCorrectionK2>
-    </cameraXimea3_6mmSample>
-
   </cameras>
-  
-
-  
+    
   <displayTableView>
-    <displayedDetectionsPerChannelInTableView>2</displayedDetectionsPerChannelInTableView>
+    <displayedDetectionsPerVoxelInTableView>2</displayedDetectionsPerVoxelInTableView>
   </displayTableView>
 
   <display2D>
@@ -504,7 +368,7 @@
 	     0: Colors indicate distances
 	     1: Colors indicate speed 
        2: Colors indicate obstacle type according to classifier
-       3: Colors correspond to channel "color"
+       3: Colors correspond to voxel displayed "color"
        4: Colors indicate Threat Level-->
     <colorCode>4</colorCode>
    
@@ -540,14 +404,6 @@
     <showPalette>0</showPalette>
   </display2D>
 
-  <scope>
-    <!-- interval in ms -->
-    <timerInterval>30</timerInterval>
-    <!-- scope window:determine what curves are displayed -->
-    <displayScopeDistance>true</displayScopeDistance>
-    <displayScopeVelocity>true</displayScopeVelocity>
-  </scope>
-
 
   <dynamicTesting>
     <!-- Max deceleration of the vehicle with full brakes on
@@ -567,7 +423,7 @@
     <alert0>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-      <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+      <alertVoxel> 65535 </alertVoxel> <!-- Bitmask for voxels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 1.0</alertMin>  <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>2.0</alertMax> <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>1</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -576,7 +432,7 @@
     <alert1>
       <alertType>decelerationToStop</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+       <alertVoxel> 65535 </alertVoxel> <!-- Bitmask for voxels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin> 2.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>3.0</alertMax>  <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>2</alertLevel><!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -585,7 +441,7 @@
     <alert2>
       <alertType>decelerationToStop</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
       <alertReceiver>0</alertReceiver>
-       <alertChannels> 65535 </alertChannels> <!-- Bitmask for channels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
+      <alertVoxel> 65535 </alertVoxel> <!-- Bitmask for voxels 0 to 16.  Enter in decimal (unsigned int 16 bit - 0 to 65535) -->
       <alertMin>3.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax></alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
@@ -594,49 +450,142 @@
      <alert3Ignored>
       <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
        <alertReceiver>0</alertReceiver>
-       <alertChannels> 1 </alertChannels>
+       <alertVoxel> 1 </alertVoxel>
       <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
       <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
       <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
     </alert3Ignored>
-
-     <alert4Ignored>
-      <alertType>distanceOutside</alertType> <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
-       <alertReceiver>0</alertReceiver>
-       <alertChannels> 2 </alertChannels>
-      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
-      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert4Ignored>
-
-    <alert5Ignored>
-      <alertType>distanceOutside</alertType>
-      <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
-      <alertReceiver>0</alertReceiver>
-      <alertChannels> 4 </alertChannels>
-      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
-      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert5Ignored>
-
-    <alert6Ignored>
-      <alertType>distanceOutside</alertType>  <!-- Alert type can be "distanceWithin", "distanceOutside", "speed", "acceleration", "decelerationToStop", "TTC"(time to collision) -->
-      <alertReceiver>0</alertReceiver>
-      <alertChannels> 8 </alertChannels>
-      <alertMin>5.0</alertMin> <!-- Leave min empty for minimum possible value for a float -->
-      <alertMax>10.0</alertMax>    <!-- Leave max empty for maximum possible value for a float -->
-      <alertLevel>3</alertLevel> <!-- Alert level can be 0 (none), 1 (low), 2 (warn) or 3 (critical) -->
-    </alert6Ignored>
   </dynamicTesting>
-
-
-
 
 
   <registerDescription_ADI>
 
+    <registersFPGA label="CPU Registers">
+      <register>
+        <index>0</index>
+        <address>0</address>
+        <description>Device ID (read only)</description>
+      </register>
+
+      <register>
+        <index>1</index>
+        <address>1</address>
+        <description>Manufacture Date (read only)</description>
+      </register>
+
+      <register>
+        <index>2</index>
+        <address>2</address>
+        <description>Serial number (read only)</description>
+      </register>
+
+      <register>
+        <index>3</index>
+        <address>16</address>
+        <description>Acquisition Enable</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>4</index>
+        <address>17</address>
+        <description>DSP enable</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>5</index>
+        <address>18</address>
+        <description>Serial log (bit0: detection, bit1: USB communications, bit2: debug info)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>6</index>
+        <address>19</address>
+        <description>Frame rate (in fps)</description>
+      </register>
+
+      <register>
+        <index>7</index>
+        <address>32</address>
+        <description>Detection algorithm selection</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>8</index>
+        <address>33</address>
+        <description>Tracking algorithm selection</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>9</index>
+        <address>34</address>
+        <description>Number of detections per channel</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>10</index>
+        <address>35</address>
+        <description>Number of tracks per channel</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>11</index>
+        <address>96</address>
+        <description>Detection/track data xmit decimation (0 to disable)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>12</index>
+        <address>97</address>
+        <description>Detection/track data xmit mask</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>13</index>
+        <address>98</address>
+        <description>Raw data xmit decimation (0 to disable)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>14</index>
+        <address>99</address>
+        <description>Raw Data xmit mask</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>15</index>
+        <address>100</address>
+        <description>Status period (in ms)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>cmd1</index>
+        <address>254</address>
+        <description>Save config to flash (write only)</description>
+        <advanced>1</advanced>
+      </register>
+
+      <register>
+        <index>cmd2</index>
+        <address>255</address>
+        <description>Reset to factory default (write only)</description>
+        <advanced>1</advanced>
+      </register>
+    </registersFPGA>
+
     <!-- Registers for Wagner evaluation board based on ADI Gordon -->
-    <registersFPGA label="ADAL6110-16 Registers">
+    <registersADC label="ADAL6110-16 Registers">
 
       <register>
         <index>Rx00</index>
@@ -1082,36 +1031,8 @@
         <description>SRAM_DATA</description>
         <advanced>1</advanced>
       </register>
-    </registersFPGA>
-
-    <registersADC label="CPU Registers">
-
-      <register>
-        <index>0</index>
-        <address>0</address>
-        <description>Software Reset</description>
-      </register>
-
-      <register>
-        <index>1</index>
-        <address>1</address>
-        <description>Wagner: Max Acc</description>
-      </register>
-
-      <!--register>
-        <index>254</index>
-        <address>254</address>
-        <description>SAVE_CONFIG_TO_FLASH</description>
-      </register>
-
-      <register>
-        <index>255</index>
-        <address>255</address>
-        <description>RESET_FACTORY_DEFAULT</description>
-      </register-->
-
     </registersADC>
-
+    
     <GPIOs>
     </GPIOs>
 
@@ -1124,13 +1045,11 @@
   </registerDescription_ADI>
 
 
-
   <GeometryADI1x16Array>
     <!-- For multi-line sensors define wraparound and number of sensors per line.
            If sensor does not support wrap around, write a wierdly high number that 
            exceeds sensor physical range -->
     <lineWrapAround>-1</lineWrapAround>
-    <channelsPerLine>16</channelsPerLine>
 
     <arraySize>
       <x>16</x>

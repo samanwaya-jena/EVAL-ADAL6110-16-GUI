@@ -1,0 +1,26 @@
+var class_track =
+[
+    [ "ConstPtr", "class_track.html#a4103f3ca7cd04ccc1b694fb45f1518bf", null ],
+    [ "Ptr", "class_track.html#a00a9948f6b00418ef772914d254304b6", null ],
+    [ "Vector", "class_track.html#a7419f21b9deb07ff3fb6d03a6d4de96c", null ],
+    [ "Track", "class_track.html#ac3f50b50a742f4be2dbacc11fd7e7fbe", null ],
+    [ "GetTrackID", "class_track.html#a318e7292cd10554a75f13e7af7c47222", null ],
+    [ "IsComplete", "class_track.html#ab550c2bd1e108c1bcf5c0da112e6e6f9", null ],
+    [ "acceleration", "class_track.html#ac323754a22e3172c4232f219cfac6f0a", null ],
+    [ "decelerationToStop", "class_track.html#a7a5413e50b56abf2cd6674475b1dbfdc", null ],
+    [ "distance", "class_track.html#a4b31068c97407ef5675d183f38b2745b", null ],
+    [ "firstTimeStamp", "class_track.html#aa9269fabf821eb9b2168820c4d872b7d", null ],
+    [ "intensity", "class_track.html#a0a08a483e1baa9e4cac0beef2cb3f306", null ],
+    [ "part1Entered", "class_track.html#ae2faf7669df9fb29832b16393a63dd57", null ],
+    [ "part2Entered", "class_track.html#af7e881b29fe85fd4af7f2da1f8aac244", null ],
+    [ "part3Entered", "class_track.html#af19e7d18c06f3c7e2d5bf3ff5f407921", null ],
+    [ "part4Entered", "class_track.html#a667308dcdcca1d55b05506ad8a5d9317", null ],
+    [ "probability", "class_track.html#a591203e3bd4d96f615b0cb829c52517c", null ],
+    [ "threatLevel", "class_track.html#a502dff1e458214c8340ac31213f779de", null ],
+    [ "timeStamp", "class_track.html#afb733b730d6307669a0e0637bd9efd2e", null ],
+    [ "timeToCollision", "class_track.html#a27c10db862e4eb95c2e529b168e1758f", null ],
+    [ "trackChannels", "class_track.html#a96954552096f74ed42b89cb169b3a3e3", null ],
+    [ "trackID", "class_track.html#a47e2e778587cdf25ecae5058acb22cff", null ],
+    [ "trackMainVoxel", "class_track.html#a156ae087b0bd2811ec1a4670e2c48d97", null ],
+    [ "velocity", "class_track.html#a369eaa04f493d81b98a95d62800d2765", null ]
+];

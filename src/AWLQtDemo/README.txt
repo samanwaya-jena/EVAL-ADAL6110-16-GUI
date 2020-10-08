@@ -1,8 +1,8 @@
-# Phantom Intelligence 2018-05-10  
+# Phantom Intelligence 2020-04-16 Compile from ADI_Develop branche
 
 ### This is the README file for [AWLQtDemo](https://github.com/PhantomIntelligence/awlcutedemo.git)  
 
-*** LinuxPort branche ***
+*** ADI_Develop branche ***
 
 ## 1 CONTENTS OF THE PACKAGE:
 
@@ -21,21 +21,25 @@ see [treefile.txt](treefile.txt)
 
 ```bash
 git clone https://github.com/PhantomIntelligence/awlcutedemo.git
-git checkout LinuxPort
+git checkout ADI_Develop 
 ```
 
 ## 4 CODE COMPILATION:
 
 #### For linux pc std architecture:
 ```bash
-cp CMakeLists.txt.linux CMakeLists.txt  
+#### For Ubuntu:
+cp ../CMakeFiles/CMakeLists.txt.ubuntu CMakeLists.txt  
+#### For all other distribution:
+cp ../CMakeFiles/CMakeLists.txt.linux CMakeLists.txt  
+
 cmake .
 make
 ```
 
 #### For petalinux on ultrascale board
 ```bash
-cp CMakeLists.txt.ultrascale CMakeLists.txt
+cp ../CMakeFiles/CMakeLists.txt.ultrascale CMakeLists.txt
 export QT_BIN_PATH=/usr/bin/qt5	
 cmake .
 make

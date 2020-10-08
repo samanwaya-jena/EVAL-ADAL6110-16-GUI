@@ -1,21 +1,42 @@
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 #ifndef TableView_H
 #define TableView_H
-
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
 
 #include <QFrame>
 #include <QAction>
@@ -28,58 +49,99 @@
 namespace awl
 {
 
+/** \brief Window displays detection and track data in tabular form.
+*/
 class TableView : public QFrame
 {
     Q_OBJECT
 public:
 
+	/** \brief enum Column IDs.
+	*/
 	enum RealTimeColumn
 	{
+		/**Column for Receiver ID*/
 		eRealTimeReceiverIDColumn = 0,
+		/**Column for Channel ID*/
 		eRealTimeChannelIDColumn = 1,
+		/** Column for Detection ID*/
 		eRealTimeDetectionIDColumn = 2,
+		/**Column for Track*/
 		eRealTimeTrackColumn = 3,
+		/**Column for Distance*/
 		eRealTimeDistanceColumn = 4,
-		eRealTimeVelocityColumn = 5, 
+		/**Column for Velocity*/
+		eRealTimeVelocityColumn = 5,
+		/**Column for Intensity*/
 		eRealTimeIntensityColumn = 6,
+		/**Column for Collision Level*/
 		eRealTimeCollisionLevelColumn = 7
 	};
 
 
 public:
+	/** \brief Constructor.
+	*/
     explicit TableView(QWidget *parent = 0);
+
+	/** \brief  Used by Qt in resizing, provides "ideal" size for the A-Scan Window.
+		*/
 	QSize sizeHint() const;
+	/** \brief  Used by Qt in resizing, provides "minimum" acceptable size for the A-Scan Window.
+	 */
 	QSize minimumSizeHint() const;
+	/** \brief  Used by Qt in resizing, provides "maximum" size for the A-Scan Window.
+	 */
 	QSize maximumSizeHint() const;
 
 signals:
     void closed();
 
 public slots:
+	/** \brief  Slot sets-up and shows the right-click menu.
+	*/
 	void ShowContextMenu(const QPoint& pos);
+
+	/** \brief  Update the table parameters for  detections par channel, following the right-click menu selection.
+	*/
 	void slotDetectionsPerChannelAction();
-    void slotConfigChanged();
-    void slotDetectionDataChanged(const Detection::Vector &data);
+
+	/** \brief  Update the table with new detections data following any configuration change.
+	*/
+	void slotConfigChanged();
+
+	/** \brief  Update the table with new detections data.
+	*/
+    void slotDetectionDataChanged(const SensorCoreScope::Detection::Vector &data);
 
 protected :
 	void closeEvent(QCloseEvent * event);
 	void resizeEvent(QResizeEvent * event);
 
 private:
+	/** \brief  Calculate and returb the "ideal" table size, in preparation for resize*/
 	QSize unconstrainedTableSize() const;
 
+
+	/** \brief  Prepare the table contents, based on current configuration*/
 	void PrepareTableViews();
+	/** \brief  Force recalculation of size preferences.  Used after a change in table configuration.*/
 	void AdjustTableSize();
 
-	void DisplayReceiverValues(const Detection::Vector &data);
+	/** \brief  Display current receiver data*/
+	void DisplayReceiverValues(const SensorCoreScope::Detection::Vector &data);
+
+	/** \brief  Format distance text and color of all cells of row at rowIndex, for the specified row in the table, using provided detection*/
 	void AddDistanceToText(int rowIndex,  QTableWidget *pTable , const Detection::Ptr &detection);
+
+	/** \brief  Format distance text and color for all cells at rowIndex, using the the provided detailed information*/
 	void AddDistanceToText(int rowIndex, QTableWidget *pTable,
 						   int receiverID,
-						   int channelID,
+						   CellID cellID,
 						   int detectionID, 
 						   TrackID trackID = 0, 
 						   float distance = NAN, 
-						   AlertCondition::ThreatLevel level = AlertCondition::eThreatNone, 
+						  SensorCoreScope::AlertCondition::ThreatLevel level =SensorCoreScope::AlertCondition::eThreatNone,
 						   float intensity = NAN,
 						   float velocity = NAN,
 						   float acceleration = NAN, 
@@ -99,7 +161,10 @@ private:
 	QAction* detectionsPerChannel4Action;
 	QAction* detectionsPerChannel8Action;
 
+	/** \brief  Internal variable holds current configuration for detections per Channel*/
 	int displayedDetectionsPerChannel;
+
+	/** \brief  Array that contains index of the first row for each receiver*/
 	boost::container::vector<int> receiverFirstRow;
 };
 

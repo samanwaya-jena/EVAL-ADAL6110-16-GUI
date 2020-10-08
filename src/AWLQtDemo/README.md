@@ -2,26 +2,22 @@
 
 ### This is the README file for [AWLQtDemo](https://github.com/PhantomIntelligence/awlcutedemo.git)  
 
-*** LinuxPort branche ***
+*** ADI_DEVELOP BRANCH ***
 
 ## 1 CONTENTS OF THE PACKAGE:
 
-see [treefile.txt](treefile.txt)
 
 ## 2 SYSTEM REQUIREMENTS:
 
  - OpenCV library
  - Qt 5.0 library
- - Qwt library
- - Boost library
- - Canbus support
- - gcc - GNU Compiler Colection
+ - Visual Studio 
 
 ## 3 INSTALLATION:
 
 ```bash
 git clone https://github.com/PhantomIntelligence/awlcutedemo.git
-git checkout LinuxPort
+git checkout ADI_Develop
 ```
 
 ## 4 CODE COMPILATION:

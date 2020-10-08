@@ -1,20 +1,42 @@
+/****************************************************************************
+**
+** Copyright (C) 2014-2019 Phantom Intelligence Inc.
+** Contact: https://www.phantomintelligence.com/contact/en
+**
+** This file is part of the CuteApplication of the
+** LiDAR Sensor Toolkit.
+**
+** $PHANTOM_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding a valid commercial license granted by Phantom Intelligence
+** may use this file in  accordance with the commercial license agreement
+** provided with the Software or, alternatively, in accordance with the terms
+** contained in a written agreement between you and Phantom Intelligence.
+** For licensing terms and conditions contact directly
+** Phantom Intelligence using the contact informaton supplied above.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License  version 3 or any later version approved by
+** Phantom Intelligence. The licenses are as published by the Free Software
+** Foundation and appearing in the file PHANTOM_LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-3.0.html.
+**
+** $PHANTOM_END_LICENSE$
+**
+****************************************************************************/
 #ifndef AWLQTDEMO_H
 #define AWLQTDEMO_H
-/*
-	Copyright 2014, 2015 Phantom Intelligence Inc.
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
 
 #include <QtWidgets/QMainWindow>
 #include <QTimer>
@@ -32,16 +54,11 @@
 #include "VideoCapture.h"
 #include "VideoViewer.h"
 #endif
-#ifdef USE_AP_VIDEO
-#include "APVideoCapture.h"
-#include "APVideoViewer.h"
-#endif
 
 #include "ReceiverCapture.h"
 
 #include "fov_2dscan.h"
 #include "TableView.h"
-#include "awlqtscope.h"
 #include "awlplotscan.h"
 
 
@@ -49,13 +66,16 @@ namespace awl
 {
 
 
-
+/** \brief Main application Window.
+*/
 class AWLQtDemo : public QMainWindow
 {
 	Q_OBJECT
 
 //		public types and enums:
 public:
+	/** \brief  Column numbers for parameter view - older version.
+	 */
 	typedef enum ParameterColumn 
 	{
 	eParameterCheckColumn = 0,
@@ -66,7 +86,21 @@ public:
 	ParameterColumn;
 
 public:
+	/** \brief  Constructor for main application window.
+	 *
+	 *	The constructor has many steps to go though:
+	 * - Initialize UI.
+	 * - Initialize thread priorities
+	 * - Setup configuration file environment and adjust accordingly
+	 * - Create devices (receivers, cameras)
+	 * - Create display subwindows
+	 * - Setup messaging and notification
+	 * - Start device acquisition threads
+	 */
 	AWLQtDemo(int argc, char *argv[]);
+
+	/** \brief  Destructor for main application window.
+	 */
 	~AWLQtDemo();
 
 private slots:
@@ -100,10 +134,9 @@ private slots:
 	void on_registerADCGetPushButton_clicked();
 	void on_registerGPIOSetPushButton_clicked();
 	void on_registerGPIOGetPushButton_clicked();
-  void on_registerFPGASaveToFlash_clicked();
-  void on_registerFPGARestoreFactoryDefaults_clicked();
-  void on_registerADCSaveToFlash_clicked();
-  void on_registerADCRestoreFactoryDefaults_clicked();
+
+  void on_registerSaveToFlashPushButton_clicked();
+  void on_registerRestoreFactoryDefaultsPushButton_clicked();
 
 	void on_algoSelectComboBox_indexChanged(int newIndex);
 
@@ -118,9 +151,9 @@ private slots:
 
 	void on_globalParametersSetPushButton_clicked();
 	void on_globalParametersGetPushButton_clicked();
-	void on_pushButton_FR_clicked();
 
-  void on_checkBoxAdvanceModeToggled();
+  void on_checkBoxFPGAAdvanceModeToggled();
+  void on_checkBoxADCAdvanceModeToggled();
 
   void on_comboBoxMaxRange_indexChanged(int newIndex);
   void on_checkBoxAutoScaleToggled();
@@ -132,11 +165,6 @@ private slots:
   void on_pushButtonSelectAllAscan_clicked();
   void on_pushButtonSelectNoneAscan_clicked();
 
-	void on_checkBoxMiscSystemSelToggled();
-	void on_checkBoxMiscLaserSelToggled();
-	void on_checkBoxMiscGainSelToggled();
-	void on_checkBoxMiscDCSelToggled();
-
 	void on_viewSettingsActionToggled();
 
 	void on_view2DActionToggled();
@@ -144,7 +172,7 @@ private slots:
 	void on_viewAScanViewActionToggled();
 	void on_viewAboutActionTriggered();
 
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	void on_viewCameraActionToggled();
 #endif
 	void on_resizeActionToggled();
@@ -155,53 +183,116 @@ private slots:
 
 	void on_destroy();
 
+	/** \brief Main timer event used to control refresh of the UI elements
+	 *
+	 * \ Remark The application refreshes the UI elements based on an external timer.
+	 *          This avoids overconsumption of the CPU by "pacing" refreshes. 
+	*/
 	void on_timerTimeout();
 
 protected:
-	// Setup toolbar layout and events
+	/** \brief Setup toolbar layout and events.
+	*/
 	void SetupToolBar();
 
-	// Setup Diplay Grid for Layout
+	/** \brief Setup Diplay Grid for Layout.
+	*/
 	void SetupDisplayGrid();
 
-	// Adjust the default displayed ranges depending on the sensor capabilities
+	/** \brief Adjust the default displayed ranges depending on the sensor capabilities.
+	*/
 	void AdjustDefaultDisplayedRanges();
 
+	/** \brief Prepare the Algo Parameters boxes according to config file.
+	*/
 	void PrepareAlgoParametersView();
+
+	/** \brief Update Algo Parameters boxes with current Receiver value.
+	*/
 	void UpdateAlgoParametersView();
 
+	/** \brief Prepare the Tracker Parameters boxes according to config file.
+	*/
 	void PrepareTrackerParametersView();
+
+	/** \brief Update Tracker Parameters boxes with current Receiver value.
+	*/
 	void UpdateTrackerParametersView();
 
+	/** \brief Prepare the Global Parameters boxes according to config file.
+	*/
 	void PrepareGlobalParametersView();
+
+	/** \brief Update Global Parameters boxes with current Receiver value.
+	*/
 	void UpdateGlobalParametersView();
+
+	/** \brief Display status of the receiver acording to current receiver.
+	*/
 	void DisplayReceiverStatus();
+
+	/** \brief Display status of the receiver according to  status of the supplied receiverID.
+	*/
 	void DisplayReceiverStatus(int receiverID);
 
-	// Fil the detection data vector with the latest detection data.
-	// Return true if the data has changed since last request.
-	bool GetLatestDetections(Detection::Vector &detectionData);
-	bool GetLatestAScans(AScan::Vector &aScanData);
+	/** \brief Fill the detection data vector with the latest detection data.
+	 * \return true if the data has changed since last request.
+	 * 
+	 * \Note  Since all processes are asynchonous, takes a "snapshot" of acquired receiver detections
+	 *        For subsequent display
+	*/
+
+	bool GetLatestDetections(SensorCoreScope::Detection::Vector &detectionData);
+
+	/** \brief Take a snapshot of AScan data for subsequent display.
+	 * \return true if the data has changed since last request.
+	 *
+	 * \Note  Since all processes are asynchonous, takes a "snapshot" of acquired receiver waveforms
+	 *        For subsequent display
+	*/
+	bool GetLatestAScans(SensorCoreScope::AScan::Vector &aScanData);
+	
 	void closeEvent(QCloseEvent * /*event*/);
 
-	void FillChannelSelectList();
+	/** \brief Fill the list used to select Voxels from the Setttinns/Calibration tab
+	*          according to the configuration of the Receivers.
+	*/
+		void FillVoxelSelectList();
 
+	/** \brief Fill the list of FPGA Registers according to register description from the config file.
+	*/
 	void FillFPGAList();
+
+	/** \brief Fill the list of ADC Registers according to register description from the config file.
+	*/
 	void FillADCList();
+	
+	/** \brief Fill the list of GPIO Registers according to register description from the config file.
+    */
 	void FillGPIOList();
 
+	/** \brief Update teh list of GPIO registers to reflect changes made by the user, or arrival of new sensor.
+	*/
 	void UpdateGPIOList();
 
-	void ChangeRangeMax(int channelID, float range);
+	/** \brief Modify the maximum diaplayed range, used in the 2D view.*/
+	void ChangeRangeMax(int voxelID, float range);
 
-  //void  DoThreadLoop();
-
+ 
 private:
 	Ui::AWLQtDemoClass ui;
+
+	/** \brief Main timer used to trigger periodic refreshes of the UI.*/
 	QTimer *myTimer;
 
+	/** \brief  2D View subwindow.
+	*/
 	FOV_2DScan* m2DScan;
+	/** \brief  Table view Subwindow.
+	*/
 	TableView * mTableView;
+	/** \brief  A-Scan (Waveform) View subwindow.
+	*/
 	AWLPlotScan* mAScanView;
 
 #if 0
@@ -212,7 +303,7 @@ private:
 	QAction *actionTableButton;
 	QAction *actionAScanButton;
 	QAction *actionAboutButton;
-#if defined (USE_OPENCV_VIDEO) || defined(USE_AP_VIDEO)
+#if defined (USE_OPENCV_VIDEO)
 	QAction *actionCameraButton;
 #endif
 	QAction *actionResizeButton;
@@ -220,21 +311,29 @@ private:
 	QIcon *actionResizeMaximizeIcon;
 	QIcon *actionResizeRestoreDownIcon;
 
-	ReceiverCapture::List receiverCaptures;
+	/** \brief  List holding all of the Lidar Receivers used by the  application.
+	*/
+	SensorCoreScope::ReceiverCapture::List receiverCaptures;
 
 #if defined (USE_OPENCV_VIDEO)
+	/** \brief  List holding all of the video capture devices.
+	*/
 	VideoCapture::List videoCaptures;
+
+	/** \brief  List holding all of the video viewers.
+	*/
 	VideoViewer::List  videoViewers;
 #endif
-#if defined(USE_AP_VIDEO)
-	APVideoCapture::List apVideoCaptures;
-	APVideoViewer::List  apVideoViewers;
-#endif
 
+	/** \brief  Label used to indicate the connexion state of the application.
+	*/
 	QLabel * labelConnected;
+	/** \brief  Label used to display the frame rate.
+	*/
 	QLabel * labelFramerate;
+	/** \brief  Global application indicator to know if at least one receiver is connected..
+	*/
 	bool m_bConnected;
-	int m_frameRate;
 
 	/** \brief Our subscription identifier to access to lidar data. */
 	boost::container::vector<Publisher::SubscriberID> receiverCaptureSubscriberIDs;
